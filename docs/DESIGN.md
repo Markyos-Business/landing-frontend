@@ -204,12 +204,26 @@ tone checker *is* the thing being flagged as needing to be «قهوة نخلة»
 
 **Two departures worth knowing.**
 
-`components/sections/PlatformGrid.tsx` contains the repo's first `<svg>`
-outside `components/brand/`, which trips the §14 "definition of done" grep.
+`components/sections/PlatformGrid.tsx` contains the repo's only `<svg>`
+outside `components/brand/`, which trips the §14 "definition of done" rule.
 It is a two-series line chart, not an icon or an illustration — §8 sanctions
-chart fills, and v2 draws it the same way. The grep is a manual check, not part
-of `npm run check`, so nothing fails; it is listed here so the next person
-running §14 knows why it is there rather than deleting it.
+chart fills, and v2 draws it the same way. §6 and §13 ban hand-drawn SVG so
+that nobody draws a magnifying glass when `las la-search` exists; Line Awesome
+has no glyph for a chart carrying real values, and a glyph could not carry
+them if it did.
+
+That used to be the whole note, because the §14 greps were a manual checklist
+and nothing failed. They are a script now — `npm run check:design`, inside
+`npm run check` — so the departure had to become a decision somebody wrote
+down rather than a line in this file. It is the `inline-svg` entry in the
+EXEMPTIONS table at the top of `scripts/check-design-rules.mjs`, with that
+reasoning, beside the two hex exemptions (`mock/BrandHub.tsx` and
+`sections/AiAlongside.tsx` — both showing a customer's brand as content).
+**That table is where an exemption is recorded; this file explains it.** If
+the chart moves, move the exemption with it, and note that the exemption is
+per file: a *second* `<svg>` appearing in `PlatformGrid.tsx` would not fail
+the build, which is the one blunt edge of file-level exemptions and the reason
+the table is kept as short as it is.
 
 The Brand health panel declares its mask twice, for `ltr` and `rtl`. A CSS
 gradient angle is physical and does not mirror, so at `90deg` the Arabic page
