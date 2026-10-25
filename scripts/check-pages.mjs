@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { BASE, assertServerUp, chromium } from "./browser-lib.mjs";
+import { BASE, assertServerUp, launch } from "./browser-lib.mjs";
 
 /*
  * Drive every page in a real browser, at three widths.
@@ -75,7 +75,7 @@ const VIEWPORTS = [
 await assertServerUp();
 
 const PAGES = routes();
-const browser = await chromium().launch({ channel: "chrome" });
+const browser = await launch();
 const problems = [];
 
 for (const vp of VIEWPORTS) {

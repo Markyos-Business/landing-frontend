@@ -27,7 +27,7 @@
  * catches a CSS change that opens a new gap just as well as a JS one.
  */
 
-import { chromium, BASE, assertServerUp } from "./browser-lib.mjs";
+import { launch, BASE, assertServerUp } from "./browser-lib.mjs";
 
 /* Both editions: the panels mirror, and a bug can live in only one of them. */
 const PAGES = ["/", "/en"];
@@ -42,7 +42,7 @@ const SETTLE_MS = 600;
 
 const problems = [];
 
-const browser = await chromium().launch({ channel: "chrome" });
+const browser = await launch();
 
 try {
   await assertServerUp();

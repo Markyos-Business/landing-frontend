@@ -1,4 +1,4 @@
-import { chromium, BASE, assertServerUp } from "./browser-lib.mjs";
+import { launch, BASE, assertServerUp } from "./browser-lib.mjs";
 
 /*
  * Does any Arabic block lay itself out left-to-right?
@@ -56,7 +56,7 @@ const SLACK = 16;
 
 await assertServerUp();
 
-const browser = await chromium().launch({ channel: "chrome" });
+const browser = await launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 
 let total = 0;

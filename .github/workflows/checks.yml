@@ -1,0 +1,96 @@
+# Every gate this project has, run on every push and pull request.
+#
+# Why this exists: the browser checks could not run anywhere but the
+# maintainer's machine. Playwright was resolved from a sibling repo that only
+# exists in one person's folder layout, and the checks asked for real Chrome.
+# So a cloud session, a pull request, or a new contributor could run `npm run
+# check`, see it pass, and still have broken Arabic layout — because the four
+# checks that actually look at the rendered page never ran.
+#
+# Playwright is now a devDependency here, and scripts/browser-lib.mjs falls
+# back to bundled Chromium when Chrome is absent. Both of those exist so this
+# file can work.
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A second push to the same branch cancels the first: no point finishing a
+# run against code nobody will merge.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      # Payload signs admin sessions with this. There is no admin here — the
+      # build only needs it to be present. Nothing secret is involved.
+      PAYLOAD_SECRET: ci-build-only-not-a-secret
+      # Empty DATABASE_URI makes payload.config.ts use a local SQLite file,
+      # so CI provisions no database.
+      DATABASE_URI: ""
+      # No Chrome on a GitHub runner. Ask for bundled Chromium directly rather
+      # than letting each check burn a launch timeout discovering that.
+      PLAYWRIGHT_CHANNEL: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # tsc, eslint, token drift, the design-system gate, Arabic parity.
+      #
+      # check:tokens will report that the platform stylesheet is missing and
+      # skip, because the platform app is a separate private repo that is not
+      # checked out here. That is by design and is NOT a silent hole: the
+      # "token drift" step below makes the skip visible in the log so nobody
+      # reads a green tick as "tokens were verified".
+      - name: Static checks
+        run: npm run check
+
+      - name: Note what token drift did not cover
+        if: always()
+        run: |
+          echo "::notice title=Token drift unchecked::check:tokens needs the platform app checked out beside this repo. It is not available in CI, so app/tokens.generated.css was not compared against its source. Run 'npm run check' locally to verify it."
+
+      - name: Build
+        run: npm run build
+
+      - name: Start the server
+        run: |
+          npx next start -p 3210 &
+          echo $! > server.pid
+          for i in $(seq 1 60); do
+            if curl -sSf http://localhost:3210/ -o /dev/null; then
+              echo "server up after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "server never answered on :3210"
+          exit 1
+
+      # The four that need a rendered page: article URLs, Arabic laid out
+      # right-to-left, every dropdown reachable by mouse, and 70 pages at
+      # three viewports.
+      - name: Browser checks
+        run: npm run check:live
+
+      - name: Stop the server
+        if: always()
+        run: kill "$(cat server.pid)" 2>/dev/null || true
