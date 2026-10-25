@@ -48,10 +48,12 @@ section, in the order that document sets.
 ```bash
 npm run dev            # dev server
 npm run build          # 106 static pages — every route, both locales
-npm run check          # tsc · eslint · token drift · Arabic parity
+npm run check          # tsc · eslint · token drift · design rules · Arabic parity
 npm run cms:types      # regenerate CMS types after a schema change
 npm run cms:importmap  # regenerate the admin import map
 npm run sync:tokens    # pull brand tokens from the platform app
+npm run check:design   # the design system’s §14 rules — add --list for the
+                       #   rules and why each exemption exists
 npm run check:locales  # what still needs Arabic (the transcreation brief)
 ```
 
@@ -94,7 +96,7 @@ lib/
   status.ts        what ships when, and which chip each feature carries
   launch.ts        beta vs public — one env var drives the whole site
   seo.ts           canonicals, hreflang, Open Graph
-scripts/           token sync + drift gate, Arabic parity report
+scripts/           token sync + drift gate, design-rule gate, Arabic parity
 proxy.ts           Arabic at the root, /en prefixed (Next 16: middleware → proxy)
 ```
 
@@ -111,6 +113,15 @@ deploys stop matching — which is the exact problem this product sells against.
 `start`/`end` — never `left`/`right`. The site ships in Arabic, `dir` is set on
 `<html>` by the locale layout, and a physical property is the one thing that
 will not flip with it.
+
+That rule and six others — nothing above weight 500, nothing below 12px, no
+raw hex in a component, one icon system, no emoji, and the retired orange and
+zinc palettes — are `MARKYOS-DESIGN-SYSTEM.md` §14’s "definition of done", and
+`npm run check:design` fails the build on any of them. It began as six greps
+in a markdown file, which is how a 9px label shipped. Exemptions live in one
+commented table at the top of `scripts/check-design-rules.mjs`, never as an
+ignore comment in the source: `npm run check:design --list` prints each one
+and the reason it exists.
 
 **A feature mention needs a `lib/status.ts` entry.** Sections name a feature id
 and ask for its chip; they never write a label. Naming an id that is not in the

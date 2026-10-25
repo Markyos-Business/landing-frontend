@@ -567,7 +567,28 @@ One commit per step. After each: `npm run check`, then look at `/` (Arabic) and 
 7. **Light** — §8: hero pool + beam, one neon edge per section that has a selected state, data bars in the tone checker.
 8. **Docs** — update `docs/DESIGN.md` ("Where the design language is defined" gains `app/markyos-ds.css`; departure §2 now agrees with the design system; note that the reference PNGs govern layout only) and the header comments of `theme.css`, `fonts.ts`, `Icon.tsx`.
 
-Done when all of these return nothing (ripgrep):
+**This list is now enforced. Run `npm run check:design`.**
+
+`scripts/check-design-rules.mjs` holds the six rules below as six named
+checks, plus a seventh for §11's "no emoji, anywhere". It runs inside
+`npm run check`, after `check:tokens`, so a violation fails the build instead
+of waiting for somebody to remember the greps. Every exemption lives in one
+commented table at the top of that script with the reason it is there — there
+are no ignore comments in the source — and `npm run check:design --list`
+prints the rules and the exemptions.
+
+It is not a transcription of the greps. Two of them were wrong in ways that
+mattered: the type-size grep enumerated the string shapes somebody had seen
+(`0.5…`, `0.6…`), so `text-[0.6875rem]` and `text-[0.7rem]` were legal and a
+9px label shipped — the check parses the number and compares it to the 12px
+floor. And the physical-properties grep matches prose inside comments,
+including the two comments that *explain the rule*, so the check strips
+comments before matching. It also catches the forms a `.tsx` file actually
+uses (`text-left`, `left-0`, `fontWeight: 600`), which greps written for CSS
+never looked for.
+
+The greps stay here as the statement of intent — the rules, in the design
+system's own words:
 
 ```bash
 rg -n "font-(semibold|bold)|font-weight:\s*(600|700|800|900)" app components
@@ -577,6 +598,12 @@ rg -n "\b(margin|padding)-(left|right)\b|\b(left|right)\s*:|text-align:\s*(left|
 rg -n "<svg" components --glob '!components/brand/**'
 rg -n "fb923c|fdba74|251, 146, 60|09090b|a1a1aa|fafafa" app components
 ```
+
+Where a grep and the script disagree, the script is the gate: it is the one
+that runs. The hex grep's two `--glob` exclusions are in its exemption table
+alongside a third, `components/sections/AiAlongside.tsx`, whose exploration
+mock shows three client brand palettes — the same "customer's brand as
+content" carve-out §7 already grants `mock/BrandHub.tsx`.
 
 ---
 

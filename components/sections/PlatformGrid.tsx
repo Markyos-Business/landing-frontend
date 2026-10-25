@@ -286,9 +286,16 @@ const Handoff = (t: MockCopy) => {
                   : "text-[var(--text-muted)]"
             } ${nested ? "ps-[2.125rem]" : "ps-2.5"}`}
           >
+            {/*
+             * The avatar initial is one character at the 12px floor inside a
+             * 20px square, not the 10px it shipped at. It reads as an avatar
+             * because of the fill and the 4px radius, not because the letter
+             * is small — and it now matches the row it sits in, which is
+             * `--fs-eyebrow` too. §9: nothing in a mock goes under 12px.
+             */}
             {row.initial ? (
               <span
-                className={`grid size-5 flex-none place-items-center rounded-[var(--mk-r-chip)] text-[0.625rem] ${
+                className={`grid size-5 flex-none place-items-center rounded-[var(--mk-r-chip)] text-[length:var(--fs-eyebrow)] ${
                   owner
                     ? "bg-[var(--accent-soft)] text-[var(--mk-blue-edge)]"
                     : "bg-[var(--surface-2)]"
@@ -402,6 +409,15 @@ const BrandHealth = (t: MockCopy) => (
      * outside `components/brand/`. `preserveAspectRatio="none"` lets it
      * stretch to the panel, and `vector-effect` keeps the stroke 1.5px at
      * every width.
+     *
+     * §6 and §13 forbid hand-drawn SVG, and they mean icons: the rule exists
+     * so nobody draws a magnifying glass when `las la-search` is sitting
+     * there. Line Awesome has no glyph for a chart carrying real values, and
+     * a glyph could not carry them if it did. `npm run check:design` enforces
+     * the rule and exempts this file (`inline-svg`) with that reasoning; if
+     * the chart moves, the exemption moves with it, and a second `<svg>`
+     * appearing in here would fail the build rather than ride along on the
+     * exemption this one earned.
      */}
     <svg
       viewBox="0 0 600 120"

@@ -145,7 +145,11 @@ export type MockCopy = {
      * Three directions. The brand word itself is not translated.
      *
      * `tag` is the small label in the corner of the artwork — short,
-     * because it sits at 9px inside a 4:5 card.
+     * because it shares a row with the brand word inside a 4:5 card whose
+     * column is 13.75rem at its narrowest. It used to be set at 9px, which
+     * bought the room by breaking §13's 12px floor; it is on the floor now
+     * (`--fs-eyebrow`), so the tag has to earn its width instead.
+     * "Direction A" / «اتجاه A» fits; a sentence would not.
      */
     directions: { tag: string; title: string; note: string }[];
     brief: {

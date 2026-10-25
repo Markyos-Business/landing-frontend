@@ -105,7 +105,15 @@ type Direction = {
  * These hexes are content, not chrome — the same exemption
  * `components/mock/BrandHub.tsx` already holds (§7): a customer's brand
  * colours cannot come from our tokens, because the whole point of the
- * picture is that they are theirs.
+ * picture is that they are theirs. Tokenising them would make the mock
+ * render our palette while claiming to show the client's, which is the one
+ * thing this picture must not do.
+ *
+ * `npm run check:design` enforces the no-raw-hex rule, and this file is in
+ * its EXEMPTIONS table (`raw-hex`) with that reasoning written out. If the
+ * exploration mock ever moves, move the exemption with it — the table in
+ * `scripts/check-design-rules.mjs` is the only place the carve-out is
+ * recorded as a decision rather than a gap.
  */
 const DIRECTIONS: Direction[] = [
   {
@@ -163,9 +171,27 @@ const Explorations = (t: MockCopy) => (
               : "border border-[color-mix(in_srgb,var(--accent)_35%,transparent)]"
           }`}
         >
+          {/*
+           * Both labels in this card — the header row here and the note under
+           * the swatches — are at the 12px floor, not below it.
+           *
+           * They were 9px and 10px, which is how tight artwork gets built if
+           * nobody is checking: the card is a 4:5 box in a 13.75rem column, so
+           * every extra pixel of type has to come from somewhere, and shrinking
+           * the type is the move that costs nothing until somebody tries to
+           * read it. §13 has no exception for mock artwork and §9 says the same
+           * thing again — "nothing under 12px" — because a picture of the
+           * product is a picture of type people will have to read.
+           *
+           * Nothing had to be re-laid-out to pay for it. The header row holds
+           * "Nakhla" plus an 11-character tag, which is ~100px of the ~184px
+           * this column gives at its narrowest, and the preview block below is
+           * `flex-1`, so the few pixels the note gained come out of its
+           * whitespace rather than out of the frame.
+           */}
           <div
             dir="ltr"
-            className="flex justify-between text-[0.5625rem] text-[var(--text-faint)]"
+            className="flex justify-between text-[length:var(--fs-eyebrow)] text-[var(--text-faint)]"
           >
             <span>Nakhla</span>
             <span>{t.ai.directions[i]?.tag}</span>
@@ -205,7 +231,7 @@ const Explorations = (t: MockCopy) => (
               />
             ))}
           </div>
-          <span className="text-[0.625rem] leading-[1.5] text-[var(--text-muted)]">
+          <span className="text-[length:var(--fs-eyebrow)] leading-[1.5] text-[var(--text-muted)]">
             {t.ai.directions[i]?.note}
           </span>
         </div>
