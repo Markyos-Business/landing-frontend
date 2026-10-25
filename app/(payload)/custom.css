@@ -1,0 +1,195 @@
+@import "../tokens.generated.css";
+
+/*
+ * The Markyos skin for the Payload admin.
+ *
+ * ── Why this is a re-point and not a restyle ──────────────────────────────
+ *
+ * Payload's admin is built on about thirty theme variables — `--theme-bg`,
+ * `--theme-elevation-N`, `--theme-text` — and every one of its own components
+ * reads them. Re-pointing those is the same move `app/theme.css` makes for
+ * the marketing site: one file decides the look, and nothing has to know the
+ * difference. Writing rules against Payload's internal class names instead
+ * would break on their next release, and there are a lot of them.
+ *
+ * So: no component selectors below, only variables, with the handful of
+ * exceptions at the bottom that are genuinely ours (the brand mark's sizing,
+ * the login card) and are marked as such.
+ *
+ * ── Which palette ─────────────────────────────────────────────────────────
+ *
+ * The admin is product UI, not marketing, so it follows the product rules in
+ * MARKYOS-DESIGN-SYSTEM.md §9 and §10 rather than the landing page's: the
+ * same canvas and panels, the same white-opacity text ramp, and blue as the
+ * one light — selection, focus, progress, the active nav item. It is a tool
+ * somebody uses for an hour at a time, so it is quieter than the website:
+ * no glow, no beam, no pattern.
+ *
+ * The elevation ramp is Payload's own vocabulary and it runs the other way
+ * from ours: `elevation-0` is the furthest back and `elevation-1000` the
+ * furthest forward. On a dark theme that means 0 is the canvas and 1000 is
+ * white, which is why the numbers below climb in lightness rather than fall.
+ */
+
+/*
+ * ── Which palette, and why it is the platform's and not the website's ─────
+ *
+ * The admin is product UI. It sits next to the platform app in a person's
+ * day — same person, same session, often the same tab — so it follows the
+ * platform's surfaces rather than the marketing site's, and the difference is
+ * not cosmetic: the website is #000 with #111 cards at 15px, the platform is
+ * #060607 with #16161a cards at 16px and a much brighter text ramp. Side by
+ * side the website's palette reads as a different product.
+ *
+ * The values come from `app/tokens.generated.css`, imported above — the file
+ * `npm run sync:tokens` copies out of the platform app and `npm run
+ * check:tokens` guards against drift. So this maps names to names and holds
+ * no literals: when the platform moves, the admin moves with it, and a drift
+ * is a failing check rather than a thing somebody notices a year later.
+ *
+ * Payload's elevation ramp runs the opposite way from ours — `elevation-0` is
+ * furthest back, `elevation-1000` furthest forward — which on a dark theme
+ * means it climbs in lightness.
+ */
+:root,
+[data-theme="dark"] {
+  /* ground */
+  --theme-bg: var(--canvas);
+  --theme-input-bg: var(--surface-2);
+
+  --theme-elevation-0: var(--canvas);
+  --theme-elevation-50: var(--surface-1); /* cards, the sidebar, table heads */
+  --theme-elevation-100: var(--surface-2); /* inputs, secondary buttons */
+  --theme-elevation-150: var(--hairline-strong); /* card edges, row rules */
+  --theme-elevation-200: var(--surface-3); /* hover and selected rows */
+  --theme-elevation-250: var(--hairline-strong);
+  --theme-elevation-300: var(--text-faint);
+  --theme-elevation-400: var(--text-faint); /* disabled, decorative */
+  --theme-elevation-500: var(--text-muted); /* meta, captions */
+  --theme-elevation-600: var(--text-muted); /* descriptions */
+  --theme-elevation-700: var(--text-secondary); /* prose */
+  --theme-elevation-800: var(--text-secondary);
+  --theme-elevation-900: var(--text);
+  --theme-elevation-1000: var(--text);
+
+  --theme-text: var(--text);
+
+  /*
+   * Blue is light, never ink (§1.4). Payload spends `success` on its primary
+   * button and active states, which is a filled control — light on a surface,
+   * not coloured type.
+   */
+  --theme-success-50: var(--accent-soft);
+  --theme-success-100: var(--accent-soft);
+  --theme-success-500: var(--accent);
+  --theme-success-600: var(--accent);
+  --theme-success-900: var(--accent-on-soft);
+
+  /*
+   * State hues: the platform's, not the design system's.
+   *
+   * §3 gives #FF0066 and #FFBB00, which are the website's — saturated, meant
+   * to be seen once on a dark marketing page. The platform ships desaturated
+   * versions solved for contrast on its own surfaces (#ffa8b0, #f4be5e), and
+   * those are the ones somebody reads twenty error toasts a day in.
+   *
+   * The tints are mixed from the same token rather than written as a second
+   * literal, so there is only ever one definition of "danger" to change.
+   */
+  --theme-error-50: color-mix(in srgb, var(--danger) 14%, transparent);
+  --theme-error-100: color-mix(in srgb, var(--danger) 22%, transparent);
+  --theme-error-500: var(--danger);
+  --theme-error-900: var(--danger);
+
+  --theme-warning-50: color-mix(in srgb, var(--warning) 14%, transparent);
+  --theme-warning-100: color-mix(in srgb, var(--warning) 22%, transparent);
+  --theme-warning-500: var(--warning);
+  --theme-warning-900: var(--warning);
+
+  /* shape — the platform's radii: 16 for cards, 10 for controls */
+  --style-radius-s: 6px;
+  --style-radius-m: var(--radius-widget);
+  --style-radius-l: var(--radius-card);
+}
+
+/*
+ * Inter and Thmanya, the same two faces as the website.
+ *
+ * `--font-body` and `--font-serif` are Payload's. The families themselves are
+ * loaded by `app/fonts.ts` for the marketing site; the admin is a separate
+ * root layout, so the variables are not in scope here and the names are
+ * spelled out. `local(...)` first means no download when Inter is installed.
+ */
+:root {
+  --font-body: Inter, "Inter var", "Thmanya Sans", system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-body);
+}
+
+/*
+ * Inter's character alternates, as on the website (§1.5): a single-storey
+ * "a" is not Markyos, and the admin sits beside the site in the same tab.
+ */
+body {
+  font-feature-settings: "cv01", "cv05", "cv09", "cv11";
+}
+
+/*
+ * Nothing above 500 (§13).
+ *
+ * Payload sets 600 and 700 on headings, table headers and buttons. This is
+ * the one place a sweep by selector is better than a variable, because there
+ * is no weight variable to re-point — and `:where()` keeps the specificity at
+ * zero, so any component that genuinely needs its own weight still wins.
+ */
+:where(h1, h2, h3, h4, h5, h6, th, legend, label, button, .btn, strong, b) {
+  font-weight: 500;
+}
+
+/*
+ * The primary action is blue, and it is the only blue surface in the panel.
+ *
+ * Two reasons, and the second is the one that matters. §10 puts the product's
+ * primary button at #0099FF with a soft glow. And before this, "Publish
+ * changes" and "Save Draft" sat side by side in two shades of grey a few
+ * percent apart — the consequential action and the reversible one looked the
+ * same, which is a thing you find out by pressing the wrong one.
+ *
+ * This is a variable override, not a restyle: Payload's button declares its
+ * own four custom properties and every state reads them, so the component
+ * keeps its sizing, focus ring and disabled handling. Those four names are
+ * the only Payload internals this file touches.
+ */
+.btn--style-primary {
+  --bg-color: var(--accent);
+  --color: var(--text);
+  /* The design system's blue-edge, not a scrim: this is product UI, where
+     lighten-on-hover is the convention, and it stays inside the palette. */
+  --hover-bg: var(--accent-on-soft);
+  --hover-color: var(--text);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* A disabled primary is not a lit one — the glow would promise a press. */
+.btn--style-primary.btn--disabled {
+  box-shadow: none;
+}
+
+/*
+ * The brand mark, in the sidebar and on the login screen.
+ *
+ * Ours, not Payload's — see cms/views/BrandLogo.tsx. The sizing lives here
+ * because the component renders the real SVG file from public/brand/ and is
+ * not allowed to redraw or recolour it (§12).
+ */
+.mk-admin-logo {
+  display: block;
+  inline-size: auto;
+  block-size: 1.25rem;
+}
+
+.mk-admin-icon {
+  display: block;
+  /* Square: the mark is 1:1, and the slot it sits in is too. */
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
+}

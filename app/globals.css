@@ -1,0 +1,933 @@
+@import "tailwindcss";
+
+/* The brand tokens, generated from the platform app. Never edited here.
+   See scripts/sync-tokens.mjs and `npm run check:tokens`. */
+@import "./tokens.generated.css";
+
+/* The Markyos Design System's marketing identity layer (`--mk-*`).
+   Values come from MARKYOS-DESIGN-SYSTEM.md §3 and are not decided here. */
+@import "./markyos-ds.css";
+
+/* The marketing site's own token names, re-pointed onto the `--mk-*` layer
+   above. This is the one place the two vocabularies meet, which is why a
+   component never reads `--mk-*` directly. Read app/theme.css before
+   changing any colour on this site. */
+@import "./theme.css";
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Marketing site base layer
+ *
+ * Everything below is page furniture, not brand values: rhythm, measure,
+ * focus rings. No hex, no font size that isn't derived from a token — the
+ * token contract applies here exactly as it does in the product, and for the
+ * same reason. A marketing site that invents its own blue is the first step of
+ * the decay this site is about.
+ *
+ * The one rule worth repeating: logical properties only. `margin-inline-start`
+ * and never `margin-left`, `padding-inline` and never `padding-left/right`,
+ * `start`/`end` and never `left`/`right`. The page ships in Arabic, `dir` is
+ * stamped on <html> by the locale layout, and a physical property is the one
+ * thing that will not flip with it. The platform repo gates this with
+ * scripts/no-physical-props.mjs across 242 files; the same discipline is
+ * cheaper to keep than to retrofit.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/*
+ * ── Cascade layers ───────────────────────────────────────────────────────
+ *
+ * Everything below is in a layer, and that is load-bearing rather than tidy.
+ *
+ * `@import "tailwindcss"` declares `@layer theme, base, components, utilities`
+ * in that order. Rules written *outside* a layer beat every rule inside one,
+ * whatever the specificity — so an unlayered `p { margin: 0 }` silently wins
+ * against `mx-auto` on a paragraph. It did: the hero's headline, subheadline
+ * and microcopy all computed `margin-inline: 0` and sat hard against the
+ * start edge of a block that was supposed to be centred, on every page.
+ *
+ * So the element resets go in `base`, where a utility can override them, and
+ * the `.mk-*` vocabulary goes in `components`, where a utility can override
+ * that too — which is what lets a card title say `.mk-h3` for its weight and
+ * `text-[1.0625rem]` for its size without the two fighting.
+ *
+ * The one thing to remember when adding to this file: put it in a layer.
+ */
+
+@layer base {
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* The in-page anchors (the hero's "see how it works" jumps to the path
+     chooser) need to clear the sticky header. */
+  scroll-behavior: smooth;
+  scroll-padding-block-start: 5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--canvas);
+  color: var(--text);
+  font-family: var(--font-inter), var(--font-thmanya), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  /* Inter's alternate glyph set, exactly the four the design system names:
+     single-storey a, tailed l, alternate 1, flat-top 3. They warm Inter up
+     where it sits beside Arabic. Arabic faces ignore features they don't
+     ship. ss03/ss07 were dropped — see MARKYOS-DESIGN-SYSTEM.md §5. */
+  font-feature-settings: var(--mk-features);
+}
+
+/*
+ * Arabic gets the Arabic face for body text too, not only for headings.
+ *
+ * Keyed off the `dir` attribute rather than a class, so it follows the one
+ * thing that is always correct for the locale being rendered and cannot fall
+ * out of step with it.
+ *
+ * Matched on the element rather than on `body`, so it also catches an Arabic
+ * island inside an English page — the product mock in the hero is a real
+ * Arabic brand hub shown to English readers, and it has to be set in the
+ * Arabic face whichever locale the page around it is in.
+ */
+[dir="rtl"] {
+  font-family: var(--font-arabic);
+  /* Thmanya Sans sits optically smaller than Inter at the same size, and the
+     Arabic script needs more leading to stay readable with its ascenders.
+     1.6 is the design system's text leading for Arabic. */
+  line-height: var(--mk-lh-text-ar);
+}
+
+/* Arabic display copy: never tracked — tracking breaks the joins between
+   letters — and 1.3 rather than the text leading. */
+[dir="rtl"] :where(h1, h2, h3) {
+  letter-spacing: 0;
+  line-height: var(--mk-lh-display-ar);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  /* Display type is set tight; the token carries the brand's own tracking. */
+  letter-spacing: var(--g-hero-tracking, -0.02em);
+  text-wrap: balance;
+  margin: 0;
+}
+
+p {
+  text-wrap: pretty;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/*
+ * One visible focus ring for the whole site.
+ *
+ * `:focus-visible`, so it appears for a keyboard and not for a mouse click,
+ * and on an outline rather than a box-shadow so it is never clipped by an
+ * ancestor's overflow.
+ */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  /* Blue, because focus is light — not `--accent-text`, which is now white
+     and would be invisible as a ring against white type. */
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--mk-r-chip);
+}
+}
+
+@layer components {
+/* ── Layout primitives ───────────────────────────────────────────────────── */
+
+/*
+ * The page gutter.
+ *
+ * 20px on a phone and not less: the hero's two CTAs stack at that width and a
+ * tighter gutter makes them read as full-bleed bars rather than buttons.
+ */
+.mk-container {
+  width: 100%;
+  /* 1100px with a 20px gutter — the design system's website container. The
+     previous 1180/28 pair was measured off the reference crops; the system
+     now decides this, and the reference governs layout only. */
+  max-inline-size: var(--mk-container);
+  margin-inline: auto;
+  padding-inline: var(--mk-gutter);
+}
+
+/* Vertical rhythm between top-level sections: 100px at full width. */
+.mk-section {
+  padding-block: clamp(3.75rem, 8vw, 6.25rem);
+}
+
+/*
+ * Prose measure.
+ *
+ * `ch` rather than `rem`, because the comfortable line length is a function of
+ * the glyphs, and Arabic at the same point size fits fewer characters per line
+ * than Latin. One value, two scripts, both readable.
+ */
+.mk-measure {
+  max-inline-size: 62ch;
+}
+
+/* ── Screen-reader-only, for the skip link and icon-button labels ────────── */
+
+.mk-sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+ * The skip link, when it is focused.
+ *
+ * It is the first tab stop on every page and it was hidden in every state,
+ * including the one it exists for: a keyboard user tabbed onto a control they
+ * could not see, pressed Enter, and the page jumped with no explanation.
+ * Revealing it on focus is the whole point of the pattern.
+ *
+ * `:focus-visible` rather than `:focus`, so it never appears for a mouse.
+ */
+.mk-sr-only:focus-visible {
+  inline-size: auto;
+  block-size: auto;
+  clip-path: none;
+  inset-block-start: 0.5rem;
+  inset-inline-start: 0.5rem;
+  z-index: 100;
+  border-radius: var(--mk-r-button);
+  background: var(--solid);
+  color: var(--solid-ink);
+  padding: 0.5rem 1rem;
+  font-size: var(--fs-ui);
+  font-weight: 500;
+}
+
+/* ── Article body ─────────────────────────────────────────────────────────
+ *
+ * Styling for whatever an editor writes in the CMS. Scoped to `.mk-prose` and
+ * applied by descendant selector, because the markup is produced by the rich
+ * text renderer and cannot carry classes of its own.
+ *
+ * Everything here is spacing, measure and colour from tokens. No font sizes
+ * invented: headings inherit the display family and the body ramp, so an
+ * article reads as part of the site rather than as a document pasted into it.
+ */
+
+.mk-prose {
+  color: var(--text-secondary);
+  font-size: var(--fs-lead);
+  line-height: 1.75;
+}
+
+.mk-prose > * + * {
+  margin-block-start: 1.25em;
+}
+
+.mk-prose h2,
+.mk-prose h3,
+.mk-prose h4 {
+  color: var(--text);
+  font-family: var(--font-display);
+  line-height: 1.25;
+  /* More space above a heading than below it, so a heading belongs to the
+     text that follows rather than floating between two blocks. */
+  margin-block-start: 2em;
+  margin-block-end: 0.6em;
+}
+
+.mk-prose h2 { font-size: 1.625rem; }
+.mk-prose h3 { font-size: 1.3125rem; }
+.mk-prose h4 { font-size: 1.125rem; }
+
+/* White and underlined, not coloured. The underline is the affordance; blue
+   arrives on hover, which is the one place this site uses it as ink. */
+.mk-prose a {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.mk-prose a:hover { color: var(--accent); }
+
+.mk-prose strong { color: var(--text); font-weight: 500; }
+
+.mk-prose ul,
+.mk-prose ol {
+  /* Logical, so the markers sit on the correct side in Arabic. */
+  padding-inline-start: 1.5em;
+}
+
+.mk-prose li + li { margin-block-start: 0.4em; }
+.mk-prose ul { list-style: disc; }
+.mk-prose ol { list-style: decimal; }
+
+.mk-prose blockquote {
+  border-inline-start: 2px solid var(--mk-line-strong);
+  padding-inline-start: 1.25em;
+  margin-inline: 0;
+  color: var(--text-muted);
+}
+
+.mk-prose hr {
+  border: 0;
+  border-block-start: 1px solid var(--hairline-strong);
+  margin-block: 2.5em;
+}
+
+.mk-prose img {
+  max-inline-size: 100%;
+  height: auto;
+  border-radius: var(--radius-card);
+}
+
+.mk-prose code {
+  background: var(--surface-2);
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.mk-prose pre {
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-widget);
+  padding: 1em 1.25em;
+  overflow-x: auto;
+  /* Code is left-to-right even on an Arabic page. */
+  direction: ltr;
+  text-align: start;
+}
+
+.mk-prose pre code { background: none; padding: 0; }
+
+.mk-prose table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+
+.mk-prose th,
+.mk-prose td {
+  border-block-end: 1px solid var(--hairline);
+  padding-block: 0.6em;
+  padding-inline-end: 1em;
+  text-align: start;
+}
+
+/* ── Bidirectional text isolation ─────────────────────────────────────────
+ *
+ * Found by running the Arabic page and reading it.
+ *
+ * A Latin string inside an RTL container is laid out by the Unicode bidi
+ * algorithm as part of the surrounding Arabic paragraph, which moves its
+ * trailing punctuation and its leading digits to the wrong end. On /ar the
+ * proof strip rendered "guideline sections that build themselves 16" — the
+ * 16 had jumped from the front of the sentence to the back — and the
+ * announcement bar put its full stop at the left edge.
+ *
+ * `unicode-bidi: plaintext` is the CSS form of `dir="auto"`: it resolves each
+ * element's direction from its own first strong character instead of
+ * inheriting the page's. An English line inside the Arabic page then lays out
+ * as English, and an Arabic line as Arabic, with no per-element attribute and
+ * nothing for a component to remember.
+ *
+ * This matters in two situations that are both permanent:
+ *
+ *   1. Untranslated copy. Arabic falls back to English by design, so Latin
+ *      text on the Arabic page is a normal state, not a bug to be fixed by
+ *      translating it away.
+ *   2. Terms that stay Latin on purpose — PDF, Figma, Stripe, API,
+ *      final_FINAL_v3.pdf — which the Arabic copy document lists explicitly
+ *      and which will still be there long after everything else is Arabic.
+ *
+ * Scoped to RTL: the English page has no mixed-direction problem to solve,
+ * and applying it there would change nothing while costing a rule.
+ */
+[dir="rtl"]
+  :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, summary, figcaption, th, td, blockquote, cite, label, time) {
+  unicode-bidi: plaintext;
+}
+
+/*
+ * An isolate inside a plaintext block hides the text from it.
+ *
+ * `plaintext` reads the block's first strong character to decide which way
+ * the block runs. An isolated child is not transparent to that scan: the
+ * algorithm sees one neutral object replacement character, finds no strong
+ * character at all, and falls back to left-to-right. The block then sets
+ * `text-align: start` to the *left*, and an Arabic heading lands on the
+ * wrong side of the page — while the Arabic inside it still reads correctly,
+ * which is what makes it look like a styling accident rather than a bidi one.
+ *
+ * `.mk-bidi` makes exactly that isolate. Wherever a component wrapped its
+ * string in one *inside* an element the rule above already covers —
+ * `<h2><span class="mk-bidi">…</span></h2>` is the common shape, and
+ * `<li><a class="mk-bidi">…</a></li>` is the other — the block it was meant
+ * to help was the thing it broke. It cost 250 blocks across the site: every
+ * footer link, every CMS-rendered heading, and most cells of the comparison
+ * tables on /pricing, /platform and /solutions.
+ *
+ * So an inline `.mk-bidi` directly inside one of those blocks stops
+ * isolating. The resolution does not disappear, it moves up one level to the
+ * block that actually owns the alignment — which is a better place for it:
+ * an English fallback string now turns its whole heading left-to-right
+ * instead of leaving an English line hard against the right edge.
+ *
+ * Inline only, and at any depth. A block child — `<li><p class="mk-bidi">` —
+ * starts its own bidi paragraph whatever this says and keeps resolving its
+ * own direction, so no block tag is listed here. Depth matters because the
+ * isolates nest: a status chip is `<span class="mk-bidi"><span
+ * class="mk-bidi">…`, and de-isolating only the outer one leaves the inner
+ * one still hiding the text from the cell.
+ *
+ * Nesting is also the case the original rule was written for — "a Latin
+ * fragment inside an Arabic sentence should inherit the paragraph's
+ * direction, not isolate" — so a Latin term inside an Arabic paragraph now
+ * behaves the way that comment asks for, which it did not before.
+ */
+[dir="rtl"]
+  :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, summary, figcaption, th, td, blockquote, cite, label, time)
+  :where(a, span, strong, em, b, i, code, abbr, small, time).mk-bidi {
+  unicode-bidi: normal;
+}
+
+/*
+ * The one case the rule above cannot reach.
+ *
+ * An `inline-flex` box is atomic to the bidi algorithm whatever its
+ * `unicode-bidi` says — the parent sees one object replacement character and
+ * nothing inside it. So a cell holding only a chip has no text for
+ * `plaintext` to read and falls back to left-to-right forever.
+ *
+ * `.mk-atomic` marks a wrapper that is one of those boxes, and the block
+ * holding it stops guessing: `isolate` makes it use its own inherited
+ * `direction`, which on this page is the page's. That is the right answer
+ * here — a chip is a label in the reader's language, not a string that might
+ * be either — and it is the only way out, since there is no "plaintext, but
+ * fall back to rtl" in CSS.
+ */
+[dir="rtl"]
+  :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, summary, figcaption, th, td, blockquote, cite, label, time):has(
+    > .mk-atomic
+  ) {
+  unicode-bidi: isolate;
+}
+
+/*
+ * Deliberately only the reordering, not alignment.
+ *
+ * Adding `text-align: start` here would also have been correct in principle,
+ * and it overrode the hero's `text-center` — same specificity, later in the
+ * file — which centred nothing and left the headline hard against one edge.
+ * Alignment belongs to the component that laid the section out; the bidi
+ * algorithm's ordering does not.
+ */
+
+/*
+ * For a standalone string inside a generic wrapper.
+ *
+ * The rule above covers real text elements. A string rendered into a bare
+ * <span> or <div> — the announcement bar, a chip, a pill — is not covered,
+ * because applying `plaintext` to every inline span would also isolate the
+ * Latin fragments *inside* an Arabic sentence, where inheriting the
+ * paragraph's direction is exactly what should happen.
+ *
+ * So those opt in. Use this on any element whose entire content is one string
+ * that might be in either language.
+ */
+.mk-bidi {
+  unicode-bidi: plaintext;
+}
+
+/* ── The design language ──────────────────────────────────────────────────
+ *
+ * Everything from here down is the Markyos Design System's vocabulary,
+ * written once so that twenty sections cannot each invent their own card.
+ * The values come from MARKYOS-DESIGN-SYSTEM.md; UI-UX Design Reference/
+ * still governs layout, section order and composition, but no longer colour,
+ * type or shape.
+ *
+ * The rule that keeps it honest: a section composes these, it does not
+ * redefine them. If a section needs a card that is 2px rounder, that is a
+ * design question, not a licence to write a one-off class.
+ */
+
+/*
+ * The card.
+ *
+ * Flat #111 with a 1px ring at 10% white. Depth comes from surface lift and
+ * light, never from a gradient or a drop shadow — the gradient this rule used
+ * to carry is retired.
+ *
+ * The ring is an outer `box-shadow` rather than a `border`: a child that
+ * paints to the card's edge cannot cover it, and swapping it for the lit
+ * variant does not shift the card's geometry by a pixel.
+ *
+ * `isolation` so a card that carries a glow inside it clips and composites it
+ * against itself rather than the page.
+ */
+.mk-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-card);
+  background: var(--surface-1);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+}
+
+/* Card padding, one value, so a grid of them lines up internally as well as
+   externally. 25px at desktop, tightened on a phone where it would otherwise
+   eat half the measure. */
+.mk-card-pad {
+  padding: 1.25rem;
+}
+
+@media (min-width: 40rem) {
+  .mk-card-pad {
+    padding: var(--mk-card-pad);
+  }
+}
+
+/* The large feature card: same surface, rounder. */
+.mk-feature {
+  border-radius: var(--mk-r-feature);
+}
+
+/*
+ * Bento.
+ *
+ * A grid of parallel cards that should read as one object rather than as
+ * several. 1px gaps over a 10% white ground draw every divider at once, so
+ * there are no doubled edges where two cards meet and no gap for the page to
+ * show through.
+ */
+.mk-bento {
+  display: grid;
+  gap: 1px;
+  background: var(--hairline-strong);
+  border-radius: var(--mk-r-feature);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+}
+
+.mk-bento > * {
+  background: var(--canvas);
+  padding: var(--mk-card-pad);
+}
+
+/*
+ * The cell — a bento cell that a picture fills rather than sits inside.
+ *
+ * This is the reference's grid, and it is the one composition on that site
+ * doing real work (UI-UX Design Reference/20, 21). Every cell there holds a
+ * fragment of the product at full size, cropped by the cell's own edges,
+ * with the cell's name on the floor beneath it: "Performance →", "CMS →",
+ * "Localization →". You are not looking at a diagram of the feature, you are
+ * looking through a window at the thing itself.
+ *
+ * What makes it work is the crop. A screenshot scaled down to fit its box
+ * reads as a picture of software; the same screenshot at full size with its
+ * edges cut off reads as software that continues past the frame. The second
+ * is the claim this page is making, so the art is sized to overflow and the
+ * cell clips it.
+ *
+ * The floor is where the fade earns itself. Without one the crop ends on a
+ * hard horizontal line a few pixels above the label and the cell reads as
+ * two stacked boxes; `--mk-fade-bottom` (§8 — product imagery fades into the
+ * canvas rather than sitting in a hard-edged box) dissolves the art into the
+ * ground the label stands on, so the cell reads as one surface.
+ */
+.mk-bento > .mk-cell {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.mk-cell-art {
+  position: relative;
+  flex: 1;
+  /* `min-block-size: 0` so the art is what gets clipped when the row is
+     short, rather than the label being pushed off the floor. */
+  min-block-size: 0;
+  overflow: hidden;
+  padding-block-start: var(--mk-card-pad);
+  padding-inline: var(--mk-card-pad);
+  -webkit-mask-image: var(--mk-fade-bottom);
+  mask-image: var(--mk-fade-bottom);
+}
+
+/*
+ * Lets a caller oversize the art without it widening the grid column.
+ *
+ * The width is a variable rather than a class per size because the amount of
+ * overflow is the caller's judgement — it depends on what the fragment is and
+ * where it should be cut — and because a grid column that a child can widen
+ * stops being a grid.
+ */
+.mk-cell-art > * {
+  inline-size: var(--mk-cell-art-w, 100%);
+  max-inline-size: none;
+}
+
+.mk-cell-foot {
+  padding: 0 var(--mk-card-pad) var(--mk-card-pad);
+}
+
+/*
+ * A panel inside a card.
+ *
+ * Drops back to the canvas colour rather than going lighter, which is the
+ * reference's move for the tone checker's input, the analysis findings and
+ * the voice table: inside an already-raised surface, *recessed* is the only
+ * direction left that still reads.
+ */
+.mk-inset {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-widget);
+  background: var(--canvas);
+}
+
+/*
+ * ── Light — the signature ────────────────────────────────────────────────
+ *
+ * Blue is never a fill on this site. It is light: ~2% of any layout, and
+ * **one source per composition**. Four forms, and a section uses at most one.
+ */
+
+/*
+ * The light pool.
+ *
+ * Decorative and nothing else, so every use is aria-hidden and none of it is
+ * in the tab or reading order. Sized by the element it is placed in, and sits
+ * behind the one object a section is about.
+ */
+.mk-glow {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--glow), transparent 100%);
+  filter: blur(40px);
+}
+
+/*
+ * The neon edge: the one selected or focused object in a composition.
+ *
+ * A lit 1px ring, drawn as an inset shadow so it replaces the card's resting
+ * ring without changing its geometry.
+ */
+.mk-neon {
+  box-shadow:
+    inset 0 0 0 1px var(--mk-blue-edge),
+    var(--mk-glow);
+}
+
+/* The beam: a vertical lit line framing the hero's product frame. Ends before
+   the bottom third — it is a light source, not a border. */
+.mk-beam {
+  inline-size: 2px;
+  background: var(--mk-blue);
+  box-shadow: var(--mk-beam);
+}
+
+/*
+ * The pattern, built from the iconmark.
+ *
+ * White at 8%, fading out from the edges with a mask so it never ends on a
+ * hard line, and never coloured. At most once per page, and never behind body
+ * text.
+ */
+.mk-pattern {
+  background: url("/brand/markyos-pattern-white.png") center / cover no-repeat;
+  opacity: 0.08;
+  pointer-events: none;
+  mask-image: radial-gradient(closest-side, #000 40%, transparent);
+}
+
+/* ── Type ────────────────────────────────────────────────────────────────── */
+
+/*
+ * Display type: one weight, one tracking.
+ *
+ * 500 everywhere and -0.04em — the design system allows no weight above 500
+ * anywhere on the website, so there is no 600 to fall back to and no second
+ * tracking value to choose between. Three sizes: 54 / 44 / 28.
+ */
+.mk-display,
+.mk-h2-lg,
+.mk-h2 {
+  font-family: var(--font-display);
+  font-weight: var(--mk-weight-display);
+  letter-spacing: var(--g-hero-tracking);
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.mk-display {
+  font-size: var(--fs-display);
+  line-height: var(--mk-lh-display);
+}
+
+.mk-h2-lg,
+.mk-h2 {
+  font-size: var(--fs-h2);
+  line-height: var(--mk-lh-display-2);
+}
+
+/* Card titles sit in the text scale, not the display scale: 18px, untracked.
+   At that size the -0.04em that makes a 54px hero deliberate only makes a
+   title look cramped. */
+.mk-h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+/*
+ * Arabic does not take the Latin tracking.
+ *
+ * Negative tracking on an Arabic headline pulls joined letterforms into each
+ * other — it is not a tighter line, it is a broken word. The Arabic face also
+ * sits optically smaller than Inter at the same size and needs more leading.
+ */
+[dir="rtl"] :where(.mk-display, .mk-h2-lg, .mk-h2, .mk-h3) {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  line-height: var(--mk-lh-display-ar);
+}
+
+/* The paragraph under a section heading. */
+.mk-lead {
+  font-size: var(--fs-lead);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* Body copy inside a card or a column. */
+.mk-body {
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.mk-body strong,
+.mk-lead strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/*
+ * The eyebrow.
+ *
+ * Grey, uppercase, tracked out — never coloured. Uppercase is a *style role*
+ * here, which is why it is applied in CSS and never typed into the copy.
+ *
+ * Two forms: an uppercase tracked one inside a card ("STEP 2 · ANALYZE") and
+ * a sentence-case label above a section heading ("For studios"), which is the
+ * `-accent` variant. It is white rather than blue: blue is light on this
+ * site, never ink.
+ */
+.mk-eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mk-eyebrow-accent {
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--fs-ui);
+}
+
+/* Arabic has no case, and tracking breaks its joins — so the eyebrow's two
+   Latin mannerisms both come off in RTL. */
+[dir="rtl"] .mk-eyebrow {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ── Controls ────────────────────────────────────────────────────────────── */
+
+/*
+ * The primary action: flat white, black label.
+ *
+ * No gradient and no hover colour of its own. Every filled control on this
+ * site states hover and press the same way — one 35% black scrim laid over
+ * the resting fill by `.mk-btn::after` — so a variant only has to declare
+ * what it looks like at rest.
+ */
+.mk-solid {
+  background: var(--solid);
+  color: var(--solid-ink);
+}
+
+/* The secondary action: the raised panel fill, white label. No border — the
+   fill is the affordance, and an edge as well would read as two. */
+.mk-outline {
+  background: var(--surface-2);
+  border: 0;
+  color: var(--text);
+}
+
+/* ── Rules ───────────────────────────────────────────────────────────────── */
+
+/* The line between sections. Full-bleed, drawn by the section rather than by
+   a card, so it survives a section having no card in it. */
+.mk-rule {
+  border-block-start: 1px solid var(--hairline);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+
+/*
+ * The button.
+ *
+ * 8px radius, not a pill: radius encodes size class in this system, and a
+ * button sits in the 8px class with inputs, tags and nav items.
+ *
+ * 38px tall for a hero or section CTA, 32px inside a card or the header.
+ * Neither clears the 44px that touch guidance asks for, so a coarse pointer
+ * gets the taller target. Keying off the pointer rather than the viewport is
+ * the honest test: it is a finger, not a narrow window, that needs the room.
+ *
+ * Weight 500 — the heaviest weight anywhere on this site.
+ */
+.mk-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--mk-r-button);
+  min-block-size: 2.375rem;
+  padding-inline: 1rem;
+  font-size: var(--fs-ui);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color var(--mk-dur-fast) var(--mk-ease),
+    color var(--mk-dur-fast) var(--mk-ease);
+}
+
+/*
+ * Hover and press, for every filled variant at once.
+ *
+ * One 35% black scrim over whatever the resting fill is. That is the whole
+ * state model: no lift, no shrink, no nudge, and no variant needing its own
+ * hover colour — which is what kept the white CTA and the grey one in step
+ * when the white one stopped being a gradient.
+ */
+.mk-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--mk-scrim);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--mk-dur-fast) var(--mk-ease);
+}
+
+.mk-btn:hover::after,
+.mk-btn:active::after {
+  opacity: 1;
+}
+
+/* Inside a card or the header. Same type size — 14px is the UI size and there
+   is nothing below it but meta. */
+.mk-btn-sm {
+  min-block-size: 2rem;
+  padding-inline: 0.875rem;
+  font-size: var(--fs-ui);
+}
+
+@media (pointer: coarse) {
+  .mk-btn,
+  .mk-btn-sm {
+    min-block-size: 2.75rem;
+  }
+}
+
+/*
+ * The arrow that follows a CTA label.
+ *
+ * It points the way the page reads, so in Arabic it points the other way.
+ * Done with a transform on the glyph rather than by branching on the locale in
+ * every component: one rule, and no component can forget it.
+ */
+.mk-arrow {
+  flex: none;
+}
+
+[dir="rtl"] .mk-arrow {
+  transform: scaleX(-1);
+}
+
+/*
+ * …except inside a left-to-right island.
+ *
+ * `[dir="rtl"] .mk-arrow` matches on *any* RTL ancestor, not the nearest one,
+ * so on /ar it also caught the arrows inside the product mocks — which carry
+ * their own `dir="ltr"` because a picture of a screen does not mirror. The
+ * term-base arrow in the voice mock pointed from the Arabic back to the
+ * English, which is the opposite of what that row is showing.
+ *
+ * These rules are identical in specificity to the two above and come after
+ * them, so for an arrow that matches both — an LTR island inside an RTL page —
+ * the later rule wins and the arrow follows the mock. `:dir(ltr)` would say
+ * this more directly; it is left alone because a browser that does not know
+ * the selector drops the whole rule, and this way nothing is conditional on
+ * support.
+ */
+[dir="ltr"] .mk-arrow {
+  transform: none;
+}
+
+/*
+ * There is no hover nudge, and therefore no reduced-motion block to undo one.
+ * The design system allows states, not choreography: colour, opacity and
+ * shadow crossfades only.
+ */
+
+/* ── Grids ───────────────────────────────────────────────────────────────── */
+
+/*
+ * The reference's gutter is 16px between cards, everywhere, in every grid.
+ * That tightness is deliberate: a bento of eight step cards reads as one
+ * object at 16px and as eight loose rectangles at 32px.
+ */
+.mk-grid {
+  display: grid;
+  gap: 1rem;
+}
+}

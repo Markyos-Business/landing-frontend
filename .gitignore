@@ -1,0 +1,40 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+.pnpm-debug.log*
+
+# env files — the example template carries no secrets and is the only record
+# of what a new machine needs.
+.env*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# local scratch
+/_*.mjs
+/_*.png
+*.log
+
+# Payload: generated media from local uploads. Production uses R2.
+# The local SQLite database lives in node_modules/.cache/payload, which is
+# already ignored — see sqliteFile() in payload.config.ts for why.
+/media

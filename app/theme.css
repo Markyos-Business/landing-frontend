@@ -1,0 +1,86 @@
+/*
+ * The marketing site's token names, pointed at the Markyos Design System.
+ *
+ * Every value here comes from `app/markyos-ds.css` (the `--mk-*` identity
+ * layer, exported from the design system — see MARKYOS-DESIGN-SYSTEM.md §4).
+ * Nothing on this page is decided in this file any more; it is a mapping.
+ *
+ * ── Why the mapping exists at all ─────────────────────────────────────────
+ *
+ * Forty-two components read names like `var(--text-muted)` and
+ * `var(--surface-1)`. Keeping those names and re-pointing them means the
+ * entire site changes look from one file, and a future design-system export
+ * changes `markyos-ds.css` and stops there. The alternative — rewriting every
+ * component to read `--mk-*` — would couple 42 files to a vocabulary that is
+ * not theirs and would have to be redone the next time the system moves.
+ *
+ * `app/tokens.generated.css` is generated from the platform app and is never
+ * edited. Where a product token name needs a different value here, it is
+ * re-pointed below rather than changed at the source — which is why
+ * `--radius-card`, `--radius-widget`, `--radius-pill`, `--font-arabic` and
+ * `--text-muted` appear in this block.
+ *
+ * ── The art direction, in one line ────────────────────────────────────────
+ *
+ * Black is the brand. Light is the colour. ~90% true black, ~8% white and
+ * grey type, ~2% blue light. Text hierarchy is white *opacity*, never hue —
+ * so there are no coloured headings, eyebrows or links anywhere, and blue is
+ * only ever light: glow, neon edge, focus ring, selection, progress fill.
+ */
+:root {
+  /* ground + surfaces */
+  --canvas: var(--mk-canvas); /* #000 */
+  --surface-0: var(--mk-panel-1); /* #111 */
+  --surface-1: var(--mk-panel-1); /* #111 — cards */
+  --surface-2: var(--mk-panel-2); /* #1A1A1A — inputs, secondary buttons, table heads, segmented controls */
+  --surface-3: var(--mk-panel-3); /* #242424 — hover / selected row only */
+  --card-top: var(--mk-panel-1); /* flat: the gradient is retired */
+  --card-bottom: var(--mk-panel-1);
+
+  /* lines */
+  --hairline: var(--mk-line-subtle); /* 5% — dividers inside a card */
+  --hairline-strong: var(--mk-line); /* 10% — card edges, rows, header rule */
+
+  /* text */
+  --text: var(--mk-text-1);
+  --text-secondary: var(--mk-text-2); /* long-form prose */
+  --text-muted: var(--mk-text-3); /* 60% — 7.2:1 on #111, keeps the 7:1 small-type floor */
+  --text-faint: var(--mk-text-3); /* 40% fails 7:1; use --mk-text-4 only for disabled/decorative */
+
+  /* accent = light */
+  --accent: var(--mk-blue); /* FILLS: progress, data bars, selected tile edge, focus */
+  --accent-text: var(--mk-text-1); /* INK: links, eyebrows, numerals are white, not blue */
+  --accent-soft: var(--mk-blue-soft);
+  --accent-on-soft: #85caff; /* product token value: blue label on its 14% tint, solved for contrast */
+  --accent-ink: #000000;
+  --accent-edge: var(--mk-blue);
+
+  /* primary CTA — flat white, black label */
+  --solid: #ffffff;
+  --solid-from: #ffffff;
+  --solid-to: #ffffff;
+  --solid-ink: #000000;
+
+  --track: var(--mk-panel-2);
+  --glow: rgba(0, 85, 255, 0.32); /* the light pool's core */
+
+  /* type */
+  --font-display: var(--font-inter), "Inter", var(--font-thmanya), var(--font-plex-arabic), system-ui,
+    sans-serif;
+  --font-arabic: var(--font-thmanya), var(--font-plex-arabic), system-ui, sans-serif;
+  --fs-display: clamp(2.25rem, 4.2vw, 3.375rem); /* 36 → 54 */
+  --fs-h2-lg: clamp(1.75rem, 3.4vw, 2.75rem); /* 28 → 44 — one h2 size in the system */
+  --fs-h2: clamp(1.75rem, 3.4vw, 2.75rem); /* 28 → 44 */
+  --fs-d3: 1.75rem; /* 28 — feature-card headlines */
+  --fs-h3: 1.125rem; /* 18 — card titles */
+  --fs-lead: 1.125rem; /* 18 */
+  --fs-body: 0.9375rem; /* 15 */
+  --fs-ui: 0.875rem; /* 14 */
+  --fs-eyebrow: 0.75rem; /* 12 — the floor */
+  --g-hero-tracking: var(--mk-track-display); /* -0.04em */
+
+  /* shape */
+  --radius-card: var(--mk-r-ui); /* 15 */
+  --radius-widget: var(--mk-r-button); /* 8 — insets, inputs, nav items */
+  --radius-pill: var(--mk-r-pill);
+}
