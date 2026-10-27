@@ -107,6 +107,37 @@ body {
   line-height: var(--mk-lh-text-ar);
 }
 
+/*
+ * Declared Arabic is set in the Arabic face, and this rule is why the brand
+ * face is used at all.
+ *
+ * `[dir="rtl"]` above matches `<html>`, but `body` re-declares
+ * `font-family` on the next line, and a declaration on `body` beats what its
+ * descendants would otherwise inherit from `<html>`. So every paragraph,
+ * nav link and footer link on an Arabic page was resolving against the body
+ * stack instead.
+ *
+ * That stack is `var(--font-inter), var(--font-thmanya), …`, which looks
+ * harmless and is not: next/font expands `--font-inter` to
+ * `Inter, "Inter Fallback"`, and "Inter Fallback" is a metric-adjusted local
+ * face — Arial on Windows — that *does* carry Arabic glyphs. Inter has none,
+ * so the browser fell through to Arial and stopped, one position before
+ * Thmanya. Headings escaped it only because they get an explicit rule later.
+ * Measured with CSS.getPlatformFontsForNode, not read off the stack: the
+ * computed `font-family` named Thmanya the whole time while the engine was
+ * painting Arial.
+ *
+ * Keyed on `:lang(ar)` rather than on direction, because the thing that
+ * decides a typeface is the language, not the way the line runs — and it is
+ * `lang` that a screen reader reads too. It therefore also catches an Arabic
+ * island inside an English page, which `[dir="rtl"]` on an ancestor cannot:
+ * the language switch, and the name of an Arabic-only page in the notice
+ * that stands in for its English edition.
+ */
+:lang(ar) {
+  font-family: var(--font-arabic);
+}
+
 /* Arabic display copy: never tracked — tracking breaks the joins between
    letters — and 1.3 rather than the text leading. */
 [dir="rtl"] :where(h1, h2, h3) {
@@ -250,10 +281,34 @@ a {
   color: var(--text);
   font-family: var(--font-display);
   line-height: 1.25;
+  /* Overridden for Arabic just below — see that rule for why it has to be
+     repeated here rather than inherited. */
   /* More space above a heading than below it, so a heading belongs to the
      text that follows rather than floating between two blocks. */
   margin-block-start: 2em;
   margin-block-end: 0.6em;
+}
+
+/*
+ * An article heading written in Arabic.
+ *
+ * `.mk-prose h2` sets `--font-display` in this layer, and the `:lang(ar)`
+ * rule in the base layer cannot reach it: a later layer wins regardless of
+ * specificity. Every heading in every Arabic article was therefore set in
+ * the Latin stack, which has no Arabic glyphs and falls through to Arial.
+ *
+ * Body copy in the same articles was never affected — it inherits, and
+ * nothing in this layer re-declares a family for it.
+ *
+ * `:is()` and not `:where()`: `.mk-prose h2` is (0,1,1), and a selector
+ * built from `:where()` contributes nothing to specificity, so the first
+ * attempt at this rule computed to (0,1,0) and lost silently. `:lang(ar)
+ * .mk-prose :is(h2, h3, h4)` is (0,2,1) and wins.
+ */
+:lang(ar) .mk-prose :is(h2, h3, h4) {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  line-height: var(--mk-lh-display-ar);
 }
 
 .mk-prose h2 { font-size: 1.625rem; }
@@ -715,7 +770,16 @@ a {
  * other — it is not a tighter line, it is a broken word. The Arabic face also
  * sits optically smaller than Inter at the same size and needs more leading.
  */
-[dir="rtl"] :where(.mk-display, .mk-h2-lg, .mk-h2, .mk-h3) {
+/*
+ * The second selector is the heading that carries the Arabic itself rather
+ * than sitting inside something Arabic — an Arabic headline on an English
+ * page. `[dir="rtl"] …` is a descendant selector and cannot match it, and
+ * the `:lang(ar)` rule in the base layer loses to `.mk-h2` here, because a
+ * later layer beats an earlier one whatever the specificity. Without this
+ * line the only Arabic word on 28 English pages was set in Arial.
+ */
+[dir="rtl"] :where(.mk-display, .mk-h2-lg, .mk-h2, .mk-h3),
+:lang(ar):where(.mk-display, .mk-h2-lg, .mk-h2, .mk-h3) {
   font-family: var(--font-arabic);
   letter-spacing: 0;
   line-height: var(--mk-lh-display-ar);

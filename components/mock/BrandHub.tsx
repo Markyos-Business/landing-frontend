@@ -80,7 +80,10 @@ export function BrandHub() {
           </span>
           <span
             className="rounded-[var(--radius-pill)] bg-[var(--surface-3)] px-2 py-0.5 text-[var(--text)]"
-            style={{ fontFamily: "var(--font-plex-arabic)" }}
+            // §9: Arabic in a mock is set in Thmanya Sans, which is what
+            // `--font-arabic` resolves to. `--font-plex-arabic` is the fallback
+            // behind it, not the face.
+            style={{ fontFamily: "var(--font-arabic)" }}
           >
             ع
           </span>

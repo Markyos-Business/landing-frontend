@@ -41,7 +41,17 @@ export function NotTranslated({
     <Section className="pt-[clamp(4rem,10vw,7rem)]">
       <div className="mk-measure">
         <p className="mk-eyebrow mk-eyebrow-accent">Arabic only, for now</p>
-        <h1 className="mk-h2 mt-4">{name}</h1>
+        {/*
+         * The name is the Arabic page's own title, sitting in a document
+         * declared `lang="en"`. Without `lang` and `dir` here it inherited
+         * English: a screen reader pronounced Arabic with an English voice,
+         * and the heading was set in Inter rather than the Arabic face.
+         * CLAUDE.md asks for exactly this on any standalone string that may
+         * be either language.
+         */}
+        <h1 className="mk-h2 mt-4" lang={DEFAULT_LOCALE} dir="rtl">
+          {name}
+        </h1>
         <p className="mk-lead mt-5">
           This page is written in Arabic and has not been translated yet. Markyos is built
           Arabic-first, and the English edition follows.
@@ -56,7 +66,7 @@ export function NotTranslated({
           >
             {/* The Arabic face explicitly: this string sits in an otherwise
                 English, left-to-right page, so it does not inherit it. */}
-            <span style={{ fontFamily: "var(--font-plex-arabic)" }} dir="rtl">
+            <span style={{ fontFamily: "var(--font-arabic)" }} dir="rtl">
               اقرأ الصفحة بالعربية
             </span>
             <Arrow size={16} />

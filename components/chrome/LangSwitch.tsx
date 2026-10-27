@@ -53,7 +53,11 @@ export function LangSwitch({
       className="text-[length:var(--fs-ui)] font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
       // Arabic set in the Arabic face even on the English page, because "ع" in
       // a Latin font is not the same letterform.
-      style={other === "ar" ? { fontFamily: "var(--font-plex-arabic)" } : undefined}
+      //
+      // `--font-arabic`, not `--font-plex-arabic`: §2.1 makes Thmanya Sans the
+      // Arabic face and keeps Plex as the last-resort fallback behind it. Naming
+      // Plex directly here skipped the brand face on every English page.
+      style={other === "ar" ? { fontFamily: "var(--font-arabic)" } : undefined}
     >
       {LOCALE_LABEL[other]}
     </Link>
