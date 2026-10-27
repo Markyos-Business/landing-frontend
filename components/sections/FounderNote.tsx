@@ -22,7 +22,15 @@ export function FounderNote({ copy }: { copy: FounderNoteCopy }) {
     <Section id="founder-note" labelledBy="founder-note-heading" rule>
       <div className="grid gap-10 md:grid-cols-2 md:gap-16">
         <div>
-          <h2 id="founder-note-heading" className="mk-h2 text-[clamp(1.75rem,2.8vw,2.125rem)]">
+          {/*
+           * No size override. `--fs-h2` is "one h2 size in the system"
+           * (theme.css), and this heading was hand-set to a bespoke
+           * 28-to-34px clamp that appears nowhere else — so the one section
+           * on the page that speaks in the founder's voice was also the one
+           * whose heading came in smaller than its neighbours. §7: a display
+           * size hand-set in a section goes back to the nearest token.
+           */}
+          <h2 id="founder-note-heading" className="mk-h2">
             {copy.headline}
           </h2>
 
