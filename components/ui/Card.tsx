@@ -48,7 +48,12 @@ export function CardTitle({
   className = "",
 }: {
   children: ReactNode;
-  as?: "p" | "h3" | "h4";
+  /*
+   * `h2` is here because a card grid is sometimes the first thing under the
+   * page's own <h1>, with no section heading between them. The level has to
+   * follow the outline in that case; `mk-h3` keeps the size either way.
+   */
+  as?: "p" | "h2" | "h3" | "h4";
   id?: string;
   className?: string;
 }) {

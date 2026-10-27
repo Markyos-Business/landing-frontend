@@ -162,7 +162,7 @@ function ProseBlock({
           {align !== "split" && block.body && block.body.length > 1 ? (
             <div className={`space-y-4 ${align === "center" ? "text-center" : ""}`}>
               {block.body.slice(1).map((p) => (
-                <p key={p} className="mk-body mk-bidi">
+                <p key={p} className="mk-body mk-bidi mk-measure">
                   {p}
                 </p>
               ))}
@@ -181,7 +181,7 @@ function ProseBlock({
       ) : (
         <div className="mk-measure space-y-4">
           {block.body?.map((p) => (
-            <p key={p} className="mk-body mk-bidi">
+            <p key={p} className="mk-body mk-bidi mk-measure">
               {p}
             </p>
           ))}
@@ -212,6 +212,8 @@ function NumberedBlock({
   headingId: string;
   rule: boolean;
 }) {
+  const ItemHeading = block.title ? "h3" : "h2";
+
   return (
     <Section id={block.id} labelledBy={block.title ? headingId : undefined} rule={rule}>
       {block.title ? (
@@ -248,7 +250,18 @@ function NumberedBlock({
                 {String(i + 1).padStart(2, "0")}
               </span>
               <div>
-                <h3 className="mk-h3 mk-bidi">{item.title}</h3>
+                {/*
+                 * The level follows the outline, the class follows the
+                 * design. When this block carries its own title that title
+                 * is the <h2> and these sit under it; when it does not —
+                 * which is how /compare, /resources, /solutions and
+                 * /whats-new use it — there is no <h2> on the page at all,
+                 * and an <h3> straight after the <h1> is a hole in the
+                 * document outline that a screen-reader user navigating by
+                 * heading falls through. `mk-h3` stays either way: nothing
+                 * about the size changes.
+                 */}
+                <ItemHeading className="mk-h3 mk-bidi">{item.title}</ItemHeading>
                 {item.feature ? (
                   <Chip feature={item.feature} chips={ctx.chips} className="mt-3" />
                 ) : null}
@@ -257,7 +270,7 @@ function NumberedBlock({
 
             <div className="space-y-4 md:pt-0.5">
               {item.body.map((p) => (
-                <p key={p} className="mk-body mk-bidi">
+                <p key={p} className="mk-body mk-bidi mk-measure">
                   {p}
                 </p>
               ))}
@@ -345,7 +358,14 @@ function CardsBlock({
             {item.feature ? (
               <Chip feature={item.feature} chips={ctx.chips} className="mb-4 self-start" />
             ) : null}
-            <CardTitle as="h3">{item.title}</CardTitle>
+            {/*
+             * Same reasoning as the numbered block above: when this grid
+             * carries its own title that title is the <h2>, and when it does
+             * not — /compare, /resources, /solutions, /whats-new all open
+             * straight into a grid — these cards are the first level under
+             * the page's <h1>, so <h3> would leave a gap in the outline.
+             */}
+            <CardTitle as={block.title ? "h3" : "h2"}>{item.title}</CardTitle>
             {item.body ? (
               <p className="mk-body mk-bidi mt-3">{item.body}</p>
             ) : null}
@@ -382,7 +402,7 @@ function CardsBlock({
       </ul>
 
       {block.note ? (
-        <p className="mk-bidi mt-8 text-[0.875rem] leading-[1.65] text-[var(--text-muted)]">
+        <p className="mk-bidi mk-measure mt-8 text-[length:var(--fs-ui)] leading-[1.65] text-[var(--text-muted)]">
           {block.note}
         </p>
       ) : null}
@@ -504,7 +524,7 @@ function TableBlock({
       </div>
 
       {block.note ? (
-        <p className="mk-bidi mt-6 text-[0.875rem] leading-[1.65] text-[var(--text-muted)]">
+        <p className="mk-bidi mk-measure mt-6 text-[length:var(--fs-ui)] leading-[1.65] text-[var(--text-muted)]">
           {block.note}
         </p>
       ) : null}
@@ -565,7 +585,7 @@ function StepsBlock({
       </ol>
 
       {block.note ? (
-        <p className="mk-bidi mt-8 text-[0.875rem] leading-[1.65] text-[var(--text-muted)]">
+        <p className="mk-bidi mk-measure mt-8 text-[length:var(--fs-ui)] leading-[1.65] text-[var(--text-muted)]">
           {block.note}
         </p>
       ) : null}
@@ -601,7 +621,7 @@ function CalloutBlock({
         ) : null}
         <div className={`space-y-4 ${block.title ? "mt-4" : ""}`}>
           {block.body.map((p) => (
-            <p key={p} className="mk-body mk-bidi">
+            <p key={p} className="mk-body mk-bidi mk-measure">
               {p}
             </p>
           ))}
@@ -661,7 +681,7 @@ function FaqBlock({
                 {item.feature ? (
                   <Chip feature={item.feature} chips={ctx.chips} className="mb-3" />
                 ) : null}
-                <p className="mk-body mk-bidi">{item.a}</p>
+                <p className="mk-body mk-bidi mk-measure">{item.a}</p>
               </div>
             </details>
           ))}
@@ -777,7 +797,7 @@ function PlansBlock({
       </ul>
 
       {block.note ? (
-        <p className="mk-bidi mt-8 text-[0.875rem] leading-[1.65] text-[var(--text-muted)]">
+        <p className="mk-bidi mk-measure mt-8 text-[length:var(--fs-ui)] leading-[1.65] text-[var(--text-muted)]">
           {block.note}
         </p>
       ) : null}
@@ -884,7 +904,7 @@ export function Block({
             <TermList items={block.items} ctx={ctx} cols={block.cols} />
           </div>
           {block.note ? (
-            <p className="mk-bidi mt-8 text-[0.875rem] leading-[1.65] text-[var(--text-muted)]">
+            <p className="mk-bidi mk-measure mt-8 text-[length:var(--fs-ui)] leading-[1.65] text-[var(--text-muted)]">
               {block.note}
             </p>
           ) : null}
