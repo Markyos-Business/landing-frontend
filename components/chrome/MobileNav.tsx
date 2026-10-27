@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { NavCopy } from "@/content/types";
 import { localeHref } from "@/lib/i18n/href";
 import type { Locale } from "@/lib/i18n/locales";
@@ -28,7 +28,31 @@ import { Arrow, Icon } from "@/components/ui/Icon";
 
 export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
   const [open, setOpen] = useState(false);
+  const [panelTop, setPanelTop] = useState<number | null>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
+
+  /*
+   * Where the panel's top edge goes.
+   *
+   * It used to be `top-14` — a hard-coded 56px, commented as "the header's
+   * own height". The header is 64px, and an announcement bar sits above it,
+   * so on an unscrolled page the header's real bottom edge is around 156px.
+   * The panel was starting 100px too high and covering the header, including
+   * the button that closes it. Opening the menu on a phone was a trap: the
+   * Escape handler below is no help without a keyboard, and the only way out
+   * was to follow a link to somewhere you had not asked to go.
+   *
+   * Measured rather than named, because the number depends on whether the
+   * announcement bar is showing and on how far the page has scrolled when
+   * the menu opens. Reading it once per opening is enough: the effect below
+   * locks body scroll, so the header cannot move while the panel is up.
+   */
+  useEffect(() => {
+    if (!open) return;
+    const header = toggleRef.current?.closest("header");
+    if (header) setPanelTop(Math.round(header.getBoundingClientRect().bottom));
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -52,11 +76,26 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
   return (
     <>
       <button
+        ref={toggleRef}
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
-        className="-me-1 grid size-9 place-items-center rounded-[var(--mk-r-button)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)] md:hidden"
+        /*
+         * `relative z-50` keeps this button above the panel it opens.
+         *
+         * MobileNav renders inside the header, so the panel is this button's
+         * own sibling. The panel is positioned and this button was not, which
+         * put the panel in front of it whatever their top edges did. Belt as
+         * well as braces: the measured top above should already keep them
+         * apart, but a button that closes a panel must never be underneath
+         * it, and a rounding error should not be able to re-trap anyone.
+         *
+         * 44px on a coarse pointer, per §10. 36px clears the 24px WCAG
+         * minimum but is small for the one control that dismisses a
+         * full-screen overlay.
+         */
+        className="relative z-50 -me-1 grid size-9 place-items-center rounded-[var(--mk-r-button)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)] [@media(pointer:coarse)]:size-11 md:hidden"
       >
         <Icon name={open ? "close" : "menu"} size={20} label={copy.menuLabel} />
       </button>
@@ -64,9 +103,14 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
       <div
         id={panelId}
         hidden={!open}
-        // `top-14` is the header's own height: the panel starts where the
-        // header ends rather than under it.
-        className="fixed inset-x-0 bottom-0 top-14 z-40 overflow-y-auto overscroll-contain border-t border-[var(--hairline)] bg-[var(--canvas)] md:hidden"
+        /*
+         * The top edge is measured — see the effect above. The class is the
+         * fallback for the first paint, before the measurement lands: the
+         * header's own token, which is at least the right number when the
+         * announcement bar is absent.
+         */
+        style={panelTop === null ? undefined : { insetBlockStart: `${panelTop}px` }}
+        className="fixed inset-x-0 bottom-0 top-[var(--mk-header-h)] z-40 overflow-y-auto overscroll-contain border-t border-[var(--hairline)] bg-[var(--canvas)] md:hidden"
         /*
          * Following a link closes the panel.
          *

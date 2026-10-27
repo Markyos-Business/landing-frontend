@@ -134,6 +134,66 @@ try {
     if (checked === 0) problems.push(`${path}: found no dropdown triggers to check`);
     await page.close();
   }
+
+  /*
+   * The phone menu, which until now nothing checked at all.
+   *
+   * It opened and could not be closed. MobileNav renders inside the header,
+   * so its panel is the toggle's own sibling; the panel was positioned and
+   * the toggle was not, so the panel painted in front of the one control
+   * that dismisses it. Its top edge was a hard-coded 56px described as the
+   * header's height, while the header is 64px and sits below an
+   * announcement bar — so the panel started about 100px too high and lay
+   * over the header. With no Escape key on a phone, the only way out of the
+   * menu was to follow a link somewhere you had not chosen to go.
+   *
+   * Tested the way a finger works: ask what is topmost at the middle of the
+   * button, then tap that point and see whether the menu actually closed.
+   * Checking `isVisible` on the toggle would have passed against the broken
+   * build, because the button was visible the whole time — just buried.
+   */
+  for (const path of PAGES) {
+    const context = await browser.newContext({
+      viewport: { width: 375, height: 812 },
+      hasTouch: true,
+      isMobile: true,
+    });
+    const page = await context.newPage();
+    await page.goto(BASE + path, { waitUntil: "networkidle" });
+    await page.waitForTimeout(300);
+
+    const toggle = page.locator("header button[aria-controls]:visible").first();
+    if ((await toggle.count()) === 0) {
+      problems.push(`${path} (phone): found no menu button`);
+      await context.close();
+      continue;
+    }
+
+    await toggle.click();
+    await page.waitForTimeout(400);
+
+    if ((await toggle.getAttribute("aria-expanded")) !== "true") {
+      problems.push(`${path} (phone): the menu did not open`);
+    }
+
+    const covered = await toggle.evaluate((el) => {
+      const b = el.getBoundingClientRect();
+      const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+      return !(hit === el || el.contains(hit));
+    });
+    if (covered) {
+      problems.push(`${path} (phone): the open panel covers the button that closes it`);
+    }
+
+    const box = await toggle.boundingBox();
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    await page.waitForTimeout(400);
+    if ((await toggle.getAttribute("aria-expanded")) !== "false") {
+      problems.push(`${path} (phone): tapping the toggle again did not close the menu`);
+    }
+
+    await context.close();
+  }
 } finally {
   await browser.close();
 }
@@ -147,4 +207,4 @@ if (problems.length > 0) {
   process.exit(1);
 }
 
-console.log(`\n✓ ${PAGES.length} editions, every dropdown reachable by mouse.`);
+console.log(`\n✓ ${PAGES.length} editions: dropdowns reachable by mouse, phone menu opens and closes.`);
