@@ -142,3 +142,82 @@ opposite it. Not a defect in what exists — a piece that is missing.
 One mega panel, two-line descriptions. Flagged repeatedly and still true.
 Hick's law applies: this is more choice than the moment deserves. A
 restructure needs a content decision first, not a code change.
+
+---
+
+# Whole-site sweep — all 96 pages, both editions
+
+Driven in a real browser at 1440px and at 375px with touch emulation. Covers
+what `npm run check:live` deliberately does not: link integrity, accessible
+names, heading order, contrast, physical alignment, WCAG 2.5.8 target sizing
+including its spacing clause, line measure, focus visibility and duplicate
+ids.
+
+| | before | after |
+| :--- | ---: | ---: |
+| pages returning something other than 200 | 0 | 0 |
+| JavaScript errors | 0 | 0 |
+| dead or empty `href` | 0 | 0 |
+| controls with no accessible name | 0 | 0 |
+| duplicate element ids | 0 | 0 |
+| contrast failures (WCAG AA) | 0 | 0 |
+| physical `text-align` in a mirrored layout | 0 | 0 |
+| Arabic laid out left to right | 0 | 0 |
+| WCAG 2.5.8 target failures | 0 | 0 |
+| controls with no visible focus ring | 0 | 0 |
+| **Arabic painted in the wrong typeface** | **~350** | **1** |
+| **gaps in the heading outline** | **4** | **0** |
+| **paragraphs over 46em** | **36** | **0** |
+
+## Fixed in this pass
+
+### Arabic was being set in Arial, nearly everywhere
+
+The largest finding on the site, and invisible to every check that reads the
+source. `[dir="rtl"]` sets `--font-arabic` on `<html>`, but `body`
+re-declares `font-family`, and a declaration on `body` beats what its
+descendants inherit from `<html>`. The body stack is
+`var(--font-inter), var(--font-thmanya), …`, and next/font expands
+`--font-inter` to `Inter, "Inter Fallback"` — where "Inter Fallback" is a
+metric-adjusted local face (Arial on Windows) that *does* carry Arabic
+glyphs. Inter has none, so the browser stopped at Arial, one position short
+of Thmanya.
+
+Only headings escaped, because a later rule names the Arabic face for them.
+Everything else — nav, footer, body copy, buttons, article headings — was
+Arial. The computed `font-family` said Thmanya the whole time; the engine was
+asked directly with `CSS.getPlatformFontsForNode`.
+
+Fixed with `:lang(ar)`, keyed on language rather than direction, which also
+catches an Arabic island inside an English page. `check:design` gained an
+`arabic-face` rule.
+
+### The heading outline had a hole on four pages
+
+/compare, /resources, /solutions and /whats-new open straight into a card
+grid or numbered list with no section heading between the `<h1>` and the
+items, and both blocks hard-coded `<h3>`. Navigating by heading skipped a
+level that was never there. The level now follows whether the block has its
+own title; the size does not change.
+
+### Prose had no measure
+
+`.mk-body` paragraphs and several footnotes filled the full 1100px container
+— 71 to 76em a line, against a comfortable 30–40em. The repo already had
+`.mk-measure` at 62ch for this.
+
+## Known residual
+
+One Arabic fragment still paints in Arial: `Key term: «قهوة نخلة»` in an
+English product mock, where the Arabic sits inside an English label with no
+element of its own to carry `lang`. Fixing it means splitting the string in
+`content/mocks.ts`, which is a content change rather than a style one.
+
+## Outside this repository
+
+Every "start" call to action on the site redirects, correctly, to
+`app.markyos.com/start` — and **that URL returns 404**. `app.markyos.com/login`
+returns 200, so the host is up and it is this one route that is missing. The
+redirect here is right; the destination is not there yet. Nothing in this
+repo can fix it, and it is the single most expensive broken thing a visitor
+can hit.
