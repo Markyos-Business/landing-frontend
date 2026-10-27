@@ -54,7 +54,7 @@ export function ToneChecker({
           {copy.headline}
         </h2>
 
-        <p className="mk-bidi mt-5 max-w-[37.5rem] text-[var(--fs-lead)] leading-[1.6] text-[var(--text-muted)]">
+        <p className="mk-bidi mt-5 max-w-[37.5rem] text-[length:var(--fs-lead)] leading-[1.6] text-[var(--text-muted)]">
           {copy.body}
         </p>
       </div>

@@ -41,7 +41,7 @@ export function HandoffLoop({
           {copy.body.map((paragraph, i) => (
             <p
               key={paragraph.slice(0, 32)}
-              className={`mk-bidi mt-5 text-[var(--fs-lead)] leading-[1.6] ${
+              className={`mk-bidi mt-5 text-[length:var(--fs-lead)] leading-[1.6] ${
                 i === copy.body.length - 1
                   ? "font-medium text-[var(--text)]"
                   : "text-[var(--text-muted)]"

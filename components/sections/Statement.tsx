@@ -140,7 +140,7 @@ export function Statement({
         </h2>
 
         {lead ? (
-          <p className="mk-bidi mt-6 max-w-[37.5rem] text-[var(--fs-lead)] leading-[1.6] text-[var(--text-muted)]">
+          <p className="mk-bidi mt-6 max-w-[37.5rem] text-[length:var(--fs-lead)] leading-[1.6] text-[var(--text-muted)]">
             {lead}
           </p>
         ) : null}
@@ -148,7 +148,7 @@ export function Statement({
         {rest.map((paragraph) => (
           <p
             key={paragraph.slice(0, 32)}
-            className="mk-bidi mt-6 max-w-[37.5rem] text-[var(--fs-lead)] font-medium leading-[1.6] text-[var(--text)]"
+            className="mk-bidi mt-6 max-w-[37.5rem] text-[length:var(--fs-lead)] font-medium leading-[1.6] text-[var(--text)]"
           >
             {paragraph}
           </p>

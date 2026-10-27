@@ -50,7 +50,7 @@ export function FounderNote({ copy }: { copy: FounderNoteCopy }) {
           {copy.body.map((paragraph, i) => (
             <p
               key={paragraph.slice(0, 32)}
-              className={`mk-bidi text-[var(--fs-lead)] leading-[1.65] ${
+              className={`mk-bidi text-[length:var(--fs-lead)] leading-[1.65] ${
                 i === 0 ? "text-[var(--text)]" : "text-[var(--text-muted)]"
               }`}
             >

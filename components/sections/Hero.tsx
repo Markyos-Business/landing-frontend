@@ -127,7 +127,7 @@ export function Hero({
             </Heading>
 
             <p
-              className={`mk-bidi text-[var(--fs-lead)] leading-[1.6] text-[var(--text-muted)] ${
+              className={`mk-bidi text-[length:var(--fs-lead)] leading-[1.6] text-[var(--text-muted)] ${
                 final ? "mx-auto mt-7 max-w-[36rem]" : "mt-6"
               }`}
             >

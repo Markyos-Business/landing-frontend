@@ -410,6 +410,38 @@ const RULES = [
   },
 
   {
+    id: "size-token-hint",
+    ref: "§4, §6",
+    title: "Size tokens reach the page",
+    roots: ["app", "components"],
+    /*
+     * `text-[var(--fs-lead)]` silently does nothing.
+     *
+     * Tailwind cannot tell whether an arbitrary value in `text-[…]` is a
+     * size or a colour, so a bare custom property needs the `length:` hint.
+     * Without it the declaration is dropped: the element keeps the inherited
+     * 16px and the design system's size never arrives. Nothing looks broken,
+     * which is why this survived — the hero's own standfirst, the founder
+     * note and the closing call to action were all rendering at 16px while
+     * `--fs-lead` said 18px, and every other size on the page was correct.
+     *
+     * Only `--fs-*` is a size. `text-[var(--text-muted)]` is a colour and is
+     * right exactly as written, so matching on the token's own name is what
+     * keeps this from firing on every coloured span in the repo.
+     */
+    find(text) {
+      const hits = [];
+      for (const m of scan(/text-\[var\((--fs-[a-z0-9-]+)\)\]/, text)) {
+        hits.push({
+          index: m.index,
+          detail: `\`text-[var(${m[1]})]\` renders at the inherited size — write \`text-[length:var(${m[1]})]\``,
+        });
+      }
+      return hits;
+    },
+  },
+
+  {
     id: "inline-svg",
     ref: "§6, §13",
     title: "One icon system — no hand-drawn SVG",

@@ -212,7 +212,7 @@ export function SectionHead({
             return (
               <p
                 key={paragraph}
-                className={`mk-bidi text-[var(--fs-lead)] leading-[1.6] ${
+                className={`mk-bidi text-[length:var(--fs-lead)] leading-[1.6] ${
                   last ? "font-medium text-[var(--text)]" : "text-[var(--text-muted)]"
                 }`}
               >
