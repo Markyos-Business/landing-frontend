@@ -70,9 +70,9 @@ export function DraftsPanel({ locale }: { locale: Locale }) {
            * reader is offered a button that does not exist.
            */}
           <div aria-hidden="true" className="mt-4 flex items-center gap-3">
-            <span className="mk-btn mk-btn-sm mk-solid">Accept</span>
+            <span className="mk-btn mk-btn-sm mk-solid">{d.accept}</span>
             <span className="text-[length:var(--fs-ui)] font-medium text-[var(--text-muted)]">
-              Dismiss
+              {d.dismiss}
             </span>
           </div>
         </div>

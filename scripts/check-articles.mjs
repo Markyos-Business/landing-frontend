@@ -19,6 +19,24 @@ import { BASE, assertServerUp } from "./browser-lib.mjs";
 
 await assertServerUp();
 
+/*
+ * Every editorial section, not the three there used to be.
+ *
+ * `/compare` and `/whats-new` became CMS sections on 8 Nov 2026 and were not
+ * in this list, so twenty of the site's forty articles were going unchecked
+ * — including the ten comparison pages, which are the ones most likely to be
+ * linked from outside.
+ *
+ * One list, used for both the crawl and the pattern that reads the links out
+ * of each index, so adding a sixth section is one edit.
+ */
+const SECTIONS = ["blog", "guides", "help", "compare", "whats-new"];
+
+const LINK = new RegExp(
+  `href="(/(?:en/)?(?:${SECTIONS.join("|")})/[^"#?]+)"`,
+  "g",
+);
+
 async function linkedArticles(indexPath) {
   const res = await fetch(BASE + indexPath);
   if (!res.ok) {
@@ -27,14 +45,14 @@ async function linkedArticles(indexPath) {
   }
   const html = await res.text();
   const found = new Set();
-  for (const m of html.matchAll(/href="(\/(?:en\/)?(?:blog|guides|help)\/[^"#?]+)"/g)) {
+  for (const m of html.matchAll(LINK)) {
     found.add(m[1]);
   }
   return [...found];
 }
 
 const articles = (
-  await Promise.all(["/blog", "/guides", "/help"].map(linkedArticles))
+  await Promise.all(SECTIONS.map((s) => linkedArticles(`/${s}`)))
 ).flat();
 
 // Both editions of each: the language switch in the header offers the other

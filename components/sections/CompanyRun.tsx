@@ -50,7 +50,7 @@ export function CompanyRun({
        * The mocks stay because they were never the weight. They are the only
        * picture of the product a company-side reader gets.
        */}
-      <div className="mt-14 grid gap-5 md:grid-cols-2">
+      <div className="mk-seq mt-14 grid gap-5 md:grid-cols-2">
         <LeadershipMock locale={locale} />
         <VoiceMock locale={locale} />
       </div>

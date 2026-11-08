@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { content } from "@/lib/content";
+import { articleLocales, content } from "@/lib/content";
 import { DEFAULT_LOCALE, isLocale, LOCALES } from "@/lib/i18n/locales";
 import { routeSlug } from "@/lib/pages/params";
-import { localesFor } from "@/lib/pages/registry";
 import { pageMetadata } from "@/lib/seo";
 import { ArticleView } from "@/components/page/editorial";
 import { NotTranslated } from "@/components/page/NotTranslated";
@@ -44,7 +43,7 @@ export async function generateMetadata({
     (await content.getArticle({ locale: DEFAULT_LOCALE, collection: COLLECTION, slug }));
   if (!post) return {};
 
-  const translated = lang === DEFAULT_LOCALE;
+  const available = await articleLocales(COLLECTION, slug);
 
   return pageMetadata({
     locale: lang,
@@ -52,13 +51,15 @@ export async function generateMetadata({
     title: post.seoTitle ?? `${post.title} — Markyos`,
     description: post.seoDescription ?? post.excerpt,
     ogTitle: post.title,
-    // Only Arabic exists; the English edition of each piece is a translation
-    // that has not been written, and declaring the pair would promise a
-    // crawler a page that 404s.
-    available: localesFor(),
+    ogImage: post.ogImage,
+    // The languages this piece is actually written in, asked of the CMS.
+    // This was `localesFor()` from the page registry, which answers for the
+    // hand-written pages and said "Arabic only" — so every English article
+    // declared no pair and was served noindex, with ten of them published.
+    available,
     // Placeholder prose that ranks is placeholder prose that gets cited, and
     // an untranslated notice must never be indexed at all.
-    noindex: post.provisional || !translated,
+    noindex: post.provisional || !available.includes(lang),
   });
 }
 

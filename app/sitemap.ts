@@ -13,13 +13,14 @@ import { PUBLISHED_PATHS, localesFor } from "@/lib/pages/registry";
  *   - A `noindex` page is never listed. The registry filters those out
  *     before they get here, so a page becomes indexable and enters the
  *     sitemap in the same edit rather than in two.
- *   - A page is listed once per locale that *has* it. The pages under
- *     /solutions exist in Arabic only; `/en/solutions` renders an honest
- *     "not translated yet" notice, and listing that would be inviting a
- *     crawler to index it after its own metadata said not to.
+ *   - A page is listed once per locale that *has* it, which the registry
+ *     answers per path. A page written in Arabic only renders an honest
+ *     "not translated yet" notice under /en, and listing that would be
+ *     inviting a crawler to index it after its own metadata said not to.
  *
- * The homepage is the exception and is written out below: it is the one page
- * finished in both languages.
+ * The homepage is written out below because it is not in the registry, not
+ * because it is the only page in both languages — it stopped being that on
+ * 8 Nov 2026.
  */
 
 type Entry = { path: string; priority: number; locales: readonly Locale[] };
@@ -29,7 +30,7 @@ const ROUTES: Entry[] = [
   ...PUBLISHED_PATHS.map(({ path, priority }) => ({
     path,
     priority,
-    locales: localesFor(),
+    locales: localesFor(path),
   })),
 ];
 

@@ -22,7 +22,7 @@ export type BuildStatus =
   | "current"
   /** Real by public launch (15 Feb 2027) — no chip once launched. */
   | "mvp"
-  /** After launch. Always chipped, with a season and never a date. */
+  /** After launch. Always chipped, and the chip never names a date. */
   | "coming";
 
 /**
@@ -31,8 +31,23 @@ export type BuildStatus =
  * The site is bilingual, so the label has to come out of the copy dictionary
  * for the locale being rendered. Resolving a key keeps the Arabic chip from
  * being an English string with Arabic around it.
+ *
+ * ── Why neither key names a date (7 Nov 2026) ─────────────────────────────
+ *
+ * There used to be three, and all three were dates: `comingSpring2027`,
+ * `coming2027`, `arrivingFeb2027`. A chip that names a quarter is a promise
+ * with a deadline on it, and the one thing certain about a roadmap is that
+ * some of it slips — at which point every chip on the site is wrong at once
+ * and the honesty layer is doing the opposite of its job. "Coming soon"
+ * cannot go stale.
+ *
+ * The real dates did not disappear; they were never only in the chip. Each
+ * feature's `shipsIn` still carries its release, the roadmap section still
+ * names its three phases in order, and the roadmap page still dates them.
+ * A visitor who wants to know when still finds out — on the page that exists
+ * to tell them, not in a pill beside a feature name.
  */
-export type ChipKey = "comingSpring2027" | "coming2027" | "arrivingFeb2027";
+export type ChipKey = "comingSoon" | "arrivingSoon";
 
 export type Feature = {
   /** Stable id used by section components. Never renamed. */
@@ -40,10 +55,13 @@ export type Feature = {
   /** What §3 calls it, for traceability back to the doc. */
   label: string;
   status: BuildStatus;
-  /** The release that carries it, for the roadmap page and our own reference. */
+  /**
+   * The release that carries it, for the roadmap page and our own reference.
+   *
+   * This is where the dates live now. It is not rendered as a chip — see
+   * ChipKey — so it can stay as precise as we actually are.
+   */
   shipsIn: string;
-  /** Only set when status is "coming". */
-  chip?: ChipKey;
 };
 
 export const FEATURES = [
@@ -76,22 +94,23 @@ export const FEATURES = [
   { id: "brief-analysis", label: "AI Brief Analysis (first one free per project)", status: "mvp", shipsIn: "v2.0" },
   { id: "voice-profile", label: "Voice profile and bilingual term base", status: "mvp", shipsIn: "v2.0" },
   { id: "tone-checker", label: "Tone checker: quick, deep, rewrite, translate in brand voice", status: "mvp", shipsIn: "v2.0" },
-  // Before-you-publish item 7: if this slips past launch it needs a
-  // "Coming March 2027" chip in section 4.9 Part 2. Confirm at launch.
+  // Before-you-publish item 7: if this slips past launch, move it to
+  // "coming" and it chips itself. Confirm at launch.
   { id: "stakeholder-workshop", label: "Stakeholder workshop and alignment report", status: "mvp", shipsIn: "v2.0, or first 2 weeks after launch" },
 
-  // ── Coming: always chipped, season never date ───────────────────────────
-  { id: "whiteboard", label: "Real-time whiteboard, client guest links", status: "coming", shipsIn: "v3.0 (Feb to May 2027)", chip: "comingSpring2027" },
-  { id: "board-shapes", label: "Brand-aware board shapes, AI art direction", status: "coming", shipsIn: "v3.0", chip: "comingSpring2027" },
-  { id: "department-playbooks", label: "Department playbooks (voice dial, key messages)", status: "coming", shipsIn: "v3.0", chip: "comingSpring2027" },
-  { id: "initiatives", label: "Initiatives (campaigns, launches inside a brand)", status: "coming", shipsIn: "v3.0", chip: "comingSpring2027" },
-  { id: "email-signatures", label: "Email signature generator", status: "coming", shipsIn: "v3.0", chip: "comingSpring2027" },
-  { id: "strategy-ai", label: "Strategy AI assistant, Brainstorm", status: "coming", shipsIn: "v4.0 (May to Aug 2027)", chip: "coming2027" },
-  { id: "ask-the-brand", label: "Ask the Brand", status: "coming", shipsIn: "v4.0", chip: "coming2027" },
-  { id: "document-checks", label: "Document tone checks, PDF guideline import with AI", status: "coming", shipsIn: "v4.0", chip: "coming2027" },
-  { id: "templates-kit", label: "Brand templates kit and mockups", status: "coming", shipsIn: "v4.0", chip: "coming2027" },
-  { id: "brand-health", label: "Review requests, brand health dashboard", status: "coming", shipsIn: "v5.0 (Aug to Oct 2027)", chip: "coming2027" },
-  { id: "integrations", label: "Chrome extension, brand architecture, Figma sync, API, SSO", status: "coming", shipsIn: "v5.0", chip: "coming2027" },
+  // ── Coming: always chipped, and the chip never names a date ────────────
+  { id: "whiteboard", label: "Real-time whiteboard, client guest links", status: "coming", shipsIn: "v3.0 (Feb to May 2027)" },
+  { id: "board-shapes", label: "Brand-aware board shapes, AI art direction", status: "coming", shipsIn: "v3.0" },
+  { id: "department-playbooks", label: "Department playbooks (voice dial, key messages)", status: "coming", shipsIn: "v3.0" },
+  { id: "initiatives", label: "Initiatives (campaigns, launches inside a brand)", status: "coming", shipsIn: "v3.0" },
+  { id: "email-signatures", label: "Email signature generator", status: "coming", shipsIn: "v3.0" },
+  { id: "strategy-ai", label: "Strategy AI assistant, Brainstorm", status: "coming", shipsIn: "v4.0 (May to Aug 2027)" },
+  { id: "ask-the-brand", label: "Ask the Brand", status: "coming", shipsIn: "v4.0" },
+  { id: "document-checks", label: "Document tone checks, PDF guideline import with AI", status: "coming", shipsIn: "v4.0" },
+  { id: "ai-connector", label: "AI connector: point ChatGPT or Claude at the real brand, read-only", status: "coming", shipsIn: "v4.0" },
+  { id: "templates-kit", label: "Brand templates kit and mockups", status: "coming", shipsIn: "v4.0" },
+  { id: "brand-health", label: "Review requests, brand health dashboard", status: "coming", shipsIn: "v5.0 (Aug to Oct 2027)" },
+  { id: "integrations", label: "Chrome extension, brand architecture, Figma sync, API, SSO", status: "coming", shipsIn: "v5.0" },
 
   /*
    * Named separately from the buckets above because the subpages cite them
@@ -104,17 +123,17 @@ export const FEATURES = [
    * has to be able to disappear when *that* item ships, not when the last
    * thing in a bucket of eleven does.
    */
-  { id: "pdf-import", label: "Read an existing PDF guideline and draft sections from it", status: "coming", shipsIn: "v4.0", chip: "coming2027" },
-  { id: "ai-section-copy", label: "AI drafts for guideline section copy", status: "coming", shipsIn: "v4.0", chip: "coming2027" },
-  { id: "webhooks", label: "Studio board webhooks", status: "coming", shipsIn: "v5.0", chip: "coming2027" },
-  { id: "chrome-extension", label: "Chrome extension: review content anywhere", status: "coming", shipsIn: "v5.0", chip: "coming2027" },
-  { id: "figma-sync", label: "Figma sync, then Canva and Framer", status: "coming", shipsIn: "v5.0", chip: "coming2027" },
-  { id: "sub-brands", label: "Sub-brands that inherit from a parent brand", status: "coming", shipsIn: "v5.0", chip: "coming2027" },
-  { id: "download-audit", label: "Partner links: who downloaded what", status: "coming", shipsIn: "v5.0", chip: "coming2027" },
-  { id: "sso", label: "SSO, SAML, SCIM, audit logs, compliance export", status: "coming", shipsIn: "v5.0", chip: "coming2027" },
-  { id: "agency-plan", label: "Agency plan: 30 active projects, studio-branded portal", status: "coming", shipsIn: "v5.0", chip: "coming2027" },
-  { id: "business-plan", label: "Business plan", status: "coming", shipsIn: "v5.0", chip: "coming2027" },
-  { id: "api", label: "Public API", status: "coming", shipsIn: "v5.0", chip: "coming2027" },
+  { id: "pdf-import", label: "Read an existing PDF guideline and draft sections from it", status: "coming", shipsIn: "v4.0" },
+  { id: "ai-section-copy", label: "AI drafts for guideline section copy", status: "coming", shipsIn: "v4.0" },
+  { id: "webhooks", label: "Studio board webhooks", status: "coming", shipsIn: "v5.0" },
+  { id: "chrome-extension", label: "Chrome extension: review content anywhere", status: "coming", shipsIn: "v5.0" },
+  { id: "figma-sync", label: "Figma sync, then Canva and Framer", status: "coming", shipsIn: "v5.0" },
+  { id: "sub-brands", label: "Sub-brands that inherit from a parent brand", status: "coming", shipsIn: "v5.0" },
+  { id: "download-audit", label: "Partner links: who downloaded what", status: "coming", shipsIn: "v5.0" },
+  { id: "sso", label: "SSO, SAML, SCIM, audit logs, compliance export", status: "coming", shipsIn: "v5.0" },
+  { id: "agency-plan", label: "Agency plan: 30 active projects, studio-branded portal", status: "coming", shipsIn: "v5.0" },
+  { id: "business-plan", label: "Business plan", status: "coming", shipsIn: "v5.0" },
+  { id: "api", label: "Public API", status: "coming", shipsIn: "v5.0" },
 ] as const satisfies readonly Feature[];
 
 export type FeatureId = (typeof FEATURES)[number]["id"];
@@ -136,14 +155,14 @@ export function feature(id: FeatureId): Feature {
  * Which chip (if any) a feature carries right now.
  *
  * - `current` never carries one.
- * - `coming` always carries its season.
+ * - `coming` always carries one.
  * - `mvp` carries one only before launch, because until then it genuinely is
  *   not there yet.
  */
 export function chipFor(id: FeatureId): ChipKey | null {
   const f = feature(id);
-  if (f.status === "coming") return f.chip ?? "coming2027";
-  if (f.status === "mvp" && isBeta) return "arrivingFeb2027";
+  if (f.status === "coming") return "comingSoon";
+  if (f.status === "mvp" && isBeta) return "arrivingSoon";
   return null;
 }
 

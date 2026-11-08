@@ -74,6 +74,49 @@ const nextConfig: NextConfig = {
       { source: "/en/resources/help", destination: "/en/help", statusCode: 301 },
       { source: "/en/resources/compare", destination: "/en/compare", statusCode: 301 },
       { source: "/en/resources/changelog", destination: "/en/whats-new", statusCode: 301 },
+
+      /*
+       * The feature pages, until Part 6 is written.
+       *
+       * v2.2 of the homepage copy gives every module its own page under
+       * /platform/ and points the module cards, the new Platform menu and
+       * the footer at them. The pages themselves are
+       * `markyos_pages_ar_6_features.md`, which is not in this repo — so
+       * nine links on the homepage, nine in the menu and one in the footer
+       * would be eleven 404s the day the copy landed.
+       *
+       * Each one redirects to the page that covers that feature today. Two
+       * of them, `/platform/brand-brain` and `/platform/bilingual`, were
+       * *already* 404ing before this change: the brand brain's link was
+       * written at copy v2.0 against a page that was never built, and the
+       * bilingual section has pointed at `/platform/bilingual` since it was
+       * written, where the page is `/platform/arabic`. Neither was caught,
+       * because `check:nav` walks the header and the footer and these were
+       * in section copy.
+       *
+       * `permanent: false`, and deliberately: these are placeholders, not
+       * moves. A 308 is cached by the browser and by every intermediary, so
+       * shipping one here would mean readers still being sent to /platform
+       * weeks after the real page existed. Delete the entry when the page
+       * lands; do not change it to permanent.
+       */
+      ...[
+        ["/platform/discovery-forms", "/solutions/discovery"],
+        ["/platform/strategy-hub", "/platform"],
+        ["/platform/moodboards", "/platform"],
+        ["/platform/asset-library", "/platform"],
+        ["/platform/guideline-sites", "/solutions/guideline-sites"],
+        ["/platform/studio-board", "/solutions/client-projects"],
+        ["/platform/handoff", "/solutions/client-handoff"],
+        ["/platform/brand-voice", "/solutions/brand-voice"],
+        ["/platform/tone-checker", "/solutions/tone-checker"],
+        ["/platform/team-and-sharing", "/solutions/company-rollout"],
+        ["/platform/brand-brain", "/platform"],
+        ["/platform/bilingual", "/platform/arabic"],
+      ].flatMap(([from, to]) => [
+        { source: from, destination: to, permanent: false },
+        { source: `/en${from}`, destination: `/en${to}`, permanent: false },
+      ]),
     ];
   },
 };

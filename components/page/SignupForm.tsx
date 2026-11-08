@@ -2,7 +2,6 @@
 
 import { useId, useState } from "react";
 import type { Locale } from "@/lib/i18n/locales";
-import { Arrow } from "@/components/ui/Icon";
 
 /*
  * Email capture — newsletter, beta waitlist, "tell me when it ships".
@@ -24,7 +23,7 @@ const COPY: Record<Locale, { sent: string; pending: string; failed: string; labe
     sent: "تم. وصلك بريد التأكيد.",
     // Said plainly, because it is true and because the alternative is a
     // visitor who thinks they are on a list that does not exist.
-    pending: "النموذج غير متصل بعد. حفظنا طلبك محلياً فقط — راسلنا مباشرة في الوقت الحالي.",
+    pending: "النموذج غير متصل بعد. حفظنا طلبك محلياً فقط، فراسلنا مباشرة في الوقت الحالي.",
     failed: "لم نستطع إرسال الطلب. حاول مرة أخرى.",
     label: "البريد الإلكتروني",
   },
@@ -111,7 +110,6 @@ export function SignupForm({
           className="mk-btn mk-solid shrink-0 disabled:opacity-60"
         >
           <span className="mk-bidi">{submit}</span>
-          <Arrow size={16} />
         </button>
       </div>
 

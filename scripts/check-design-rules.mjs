@@ -90,6 +90,11 @@ const EXEMPTIONS = [
     why: "This is where the fallback chain is declared — `--font-arabic: var(--font-thmanya), var(--font-plex-arabic), …` — so the fallback's name has to appear once. §2.1 keeps Plex loaded because `tokens.generated.css` still references it. Everywhere else, naming it skips the brand face.",
   },
   {
+    rule: "arabic-face",
+    path: "cms/views/AdminFonts.tsx",
+    why: "The admin is a separate root layout, so `app/fonts.ts` never reaches it and the font variables have to be declared for it somewhere — this is that somewhere, and it declares all three by name the way `app/theme.css` declares the stack for the site. It does not *set* type in Plex: the panel's stack in `app/(payload)/custom.css` names Thmanya and stops, and `:lang(ar)` there reaches Plex only through `--font-arabic`.",
+  },
+  {
     rule: "raw-hex",
     path: "components/brand/",
     why: "§12: the logo is its files. Logo.tsx is `public/brand/*.svg` inlined so the mark can inherit `currentColor`, and the SVG's own path data and fills are the brand asset, not a colour decision made here. §14's grep excludes this folder for the same reason.",
@@ -106,13 +111,18 @@ const EXEMPTIONS = [
   },
   {
     rule: "raw-hex",
-    path: "components/sections/AiAlongside.tsx",
-    why: "The same category as BrandHub, and the same carve-out: `DIRECTIONS` holds three client brand palettes (`bg`, `ink`, `swatches`) rendered inside the exploration mock. They are content, not site chrome. Tokenising a customer's brand colours would make the mock show our palette while claiming to show theirs.",
+    path: "components/mock/GuidelinesBuilder.tsx",
+    why: "The same carve-out §7 grants BrandHub, for the same reason one step along: the client palette is the customer's brand shown as content, and the three grounds here are the product's three guideline templates shown as content. A template whose entire description is \"editorial archive, dark ground\" cannot be composed from a light site's tokens — re-pointing it to `--surface-1` would make all three the same template, which is the one thing the picture must not say. The site's own chrome in this file is tokens throughout; only `GROUND` and the client's two brand colours are literal.",
+  },
+  {
+    rule: "raw-hex",
+    path: "components/sections/",
+    why: "The homepage is a literal trace of `Landing Copy/Markyos Landing AR (readable).html`, which is a design-tool export: every value in it is an inline style, and the point of tracing rather than re-deriving is that the numbers arrive unchanged. The design file is also a LIGHT page (#F7F8FA ground, #0B0B0F ink, white cards on blue-grey shadows) where MARKYOS-DESIGN-SYSTEM.md §1 describes a black one, so there is no token to compose from for most of these values — `theme.css` now carries the light palette for the chrome and the data-driven pages, and the traced sections carry the design file's own numbers. Repeated values are in `components/sections/landing.tsx`; a value used once stays at its use site, where it can be checked against the design file by reading one line. Revisit if the design system is re-exported to describe the light page, at which point most of this becomes tokens again.",
   },
   {
     rule: "inline-svg",
-    path: "components/sections/PlatformGrid.tsx",
-    why: "A two-series `<polyline>` data chart in the Brand health panel. §6 and §13 forbid hand-drawn *icons* — Line Awesome is the one icon system — and §8 sanctions chart fills as light. Line Awesome has no glyph for a chart carrying real values, and a chart is not an icon. Documented as a deliberate departure in docs/DESIGN.md.",
+    path: "components/sections/",
+    why: "Three drawn diagrams, none of them icons: the ecosystem funnel (six bezier curves converging on the mark, plus the two fan-outs under it), the handoff loop (a dotted forward path and a lit arc returning over it), and the two-series `<polyline>` chart in the Brand health panel. §6 and §13 forbid hand-drawn *icons* — Line Awesome is the one icon system, and a missing glyph is a question — and §8 sanctions chart fills as light. A curve that leaves one node vertically and arrives at another vertically cannot be built from boxes: a `border-radius` corner is a quarter circle. In each case the geometry is the content, and each graphic is aria-hidden with everything it says also said in the copy beside it.",
   },
 ];
 
@@ -280,7 +290,7 @@ const RULES = [
     id: "weight",
     ref: "§1.5, §7, §13",
     title: "No weight above 500",
-    roots: ["app", "components", "content"],
+    roots: ["app", "components", "content", "cms"],
     find(text) {
       const hits = [];
 
@@ -320,7 +330,7 @@ const RULES = [
     id: "type-floor",
     ref: "§1.6, §13",
     title: `No type below ${TYPE_FLOOR_PX}px`,
-    roots: ["app", "components", "content"],
+    roots: ["app", "components", "content", "cms"],
     find(text) {
       const hits = [];
 
@@ -363,7 +373,7 @@ const RULES = [
     id: "physical-props",
     ref: "§5, §13",
     title: "Logical properties only",
-    roots: ["app", "components", "content"],
+    roots: ["app", "components", "content", "cms"],
     find(text) {
       const hits = [];
 
@@ -423,7 +433,7 @@ const RULES = [
     id: "arabic-face",
     ref: "§2.1, §9",
     title: "Arabic is set in the Arabic face",
-    roots: ["app", "components"],
+    roots: ["app", "components", "cms"],
     /*
      * `--font-plex-arabic` is the fallback, not the face.
      *
@@ -456,7 +466,7 @@ const RULES = [
     id: "size-token-hint",
     ref: "§4, §6",
     title: "Size tokens reach the page",
-    roots: ["app", "components"],
+    roots: ["app", "components", "cms"],
     /*
      * `text-[var(--fs-lead)]` silently does nothing.
      *
@@ -498,11 +508,75 @@ const RULES = [
     },
   },
 
+  /*
+   * Not a design rule, and here because this is the script that reads every
+   * source file anyway.
+   *
+   * A CSS unicode escape written with four hex digits — the form for a
+   * non-breaking space — reads as an octal escape for zero followed by some
+   * digits in most other languages, including the ones these files get
+   * edited through. It has put a real NUL byte in `app/globals.css` twice:
+   * once in the rule that wanted the space, and once in the comment written
+   * to explain the first one. Nothing complains. The stylesheet still
+   * compiles, the page still renders, and the only outward sign is `grep`
+   * quietly reclassifying the file as binary and refusing to search it —
+   * which is how the second one survived a full green check run.
+   */
+  {
+    id: "control-bytes",
+    ref: "—",
+    title: "No stray control bytes in source",
+    roots: ["app", "components", "content", "cms", "lib", "scripts"],
+    /*
+     * The one rule that reads comments.
+     *
+     * Everything else here strips them first, for the reason the header
+     * gives: the physical-properties rule was matching the prose of the
+     * comments that *explain* the rule. This is the opposite case. Both
+     * real NUL bytes landed in a comment — the second in the sentence
+     * written to explain the first — so a version of this check that could
+     * not see into one would have missed the case it exists for. Verified
+     * by planting one in each position.
+     */
+    comments: false,
+    find(text) {
+      /*
+       * A loop over code points, not a regex.
+       *
+       * The regex form of this was written twice and arrived with literal
+       * control characters inside its own character class both times —
+       * because a unicode escape is exactly the thing that gets eaten on
+       * the way into a file, which is the bug this rule exists to catch.
+       * The check was failing on its own source. Comparing numbers needs
+       * no escape and so cannot be mangled.
+       *
+       * Tab, newline and carriage return belong in a source file, so 9,
+       * 10 and 13 are the gaps in these ranges.
+       */
+      const RANGES = [
+        [0, 8],
+        [11, 12],
+        [14, 31],
+      ];
+      const hits = [];
+      for (let i = 0; i < text.length; i += 1) {
+        const code = text.charCodeAt(i);
+        if (!RANGES.some(([lo, hi]) => code >= lo && code <= hi)) continue;
+        const name = code.toString(16).toUpperCase().padStart(4, "0");
+        hits.push({
+          index: i,
+          detail: `U+${name} in the source — almost always a unicode escape read as an octal one on the way in; write the character, or use a margin where it was spacing`,
+        });
+      }
+      return hits;
+    },
+  },
+
   {
     id: "retired-palette",
     ref: "§13",
     title: "No warm orange, no zinc",
-    roots: ["app", "components", "content"],
+    roots: ["app", "components", "content", "cms"],
     find(text) {
       const hits = [];
 
@@ -539,7 +613,7 @@ const RULES = [
     id: "emoji",
     ref: "§11",
     title: "No emoji",
-    roots: ["app", "components", "content"],
+    roots: ["app", "components", "content", "cms"],
     comments: false,
     find(text) {
       const hits = [];

@@ -1,80 +1,108 @@
+import type { Locale } from "@/lib/i18n/locales";
+import { Words } from "@/components/ui/Words";
 import type { FaqCopy, SiteCopy } from "@/content/types";
 import { Chip } from "@/components/ui/Chip";
-import { Section } from "@/components/ui/Section";
 import { Icon } from "@/components/ui/Icon";
+import { Band, Display, INK, PANEL, TextLink } from "./landing";
 
 /*
  * The FAQ.
  *
- * Native details/summary, so every answer is open to a crawler, searchable
- * with the browser's own find, and expandable before any JavaScript loads. An
- * FAQ built from useState is an FAQ that is invisible to the search engine it
- * exists to feed.
+ * ── Still details/summary ────────────────────────────────────────────────
  *
- * On a narrow measure and centred, which is the reference's layout and the
- * right one: this is the only part of the page somebody reads line by line
- * looking for one specific answer, and a 1100px-wide question is hard to scan
- * down.
+ * The design file builds this as nine buttons driving a `grid-template-rows`
+ * transition, which needs JavaScript. Native `<details>` keeps every answer
+ * open to a crawler, findable with the browser's own find, and expandable
+ * before any script loads — an FAQ built from useState is invisible to the
+ * search engine it exists to feed. So the look is traced and the mechanism
+ * is not: the 32px round toggle, the rotating plus and the 68px row are the
+ * design file's; the disclosure is the platform's.
  *
- * An answer may mention something that has not shipped — importing an old PDF
- * guideline, for instance. When it does it names the feature and gets the same
- * chip the rest of the page uses, so the FAQ cannot quietly become the one
- * place on the site that over-promises.
+ * The plus rotates to an x rather than swapping for a minus, which is one
+ * glyph instead of two and cannot land a frame where neither is painted.
+ * `group-open` drives it off the element's own state, so it stays correct if
+ * a browser opens a `<details>` without a click — which find-in-page does.
+ *
+ * On a narrow measure, which is right: this is the only part of the page
+ * somebody reads line by line looking for one answer, and a 1100px-wide
+ * question is hard to scan down.
+ *
+ * An answer may mention something that has not shipped. When it does it names
+ * the feature and gets the same chip the rest of the page uses, so the FAQ
+ * cannot quietly become the one place on the site that over-promises.
  */
 
-export function Faq({ copy, chips }: { copy: FaqCopy; chips: SiteCopy["chips"] }) {
+export function Faq({ copy, chips, locale }: {
+  locale: Locale; copy: FaqCopy; chips: SiteCopy["chips"] }) {
   return (
-    <Section id="faq" labelledBy="faq-heading">
-      <h2 id="faq-heading" className="mk-h2-lg">
-        {copy.headline}
-      </h2>
+    <Band id="faq" labelledBy="faq-heading" white width={860}>
+      <Display id="faq-heading" size="h3" style={{ marginBlockEnd: 48 }}>
+        <span className="mk-bidi">
+              <Words>{copy.headline}</Words>
+            </span>
+      </Display>
 
-      <div className="mt-12 max-w-[44rem] border-b border-[var(--hairline)]">
+      <div className="mk-still mk-seq" style={{ display: "flex", flexDirection: "column" }}>
         {copy.items.map((item) => (
-          <details key={item.question} className="group border-t border-[var(--hairline)]">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-5 py-4">
-              {/*
-               * 15px, the body size, not the 14px UI size this used to be.
-               * §6 reserves 14 for labels, nav and buttons; a question is
-               * something you read, not a control you operate, even though
-               * it happens to live inside a <summary>.
-               */}
-              <span className="mk-bidi text-[length:var(--fs-body)] font-medium text-[var(--text)]">
+          <details
+            key={item.question}
+            className="group"
+            style={{ boxShadow: "0 -1px 0 rgba(11,11,15,.08)" }}
+          >
+            <summary
+              className="mk-faq-summary flex cursor-pointer list-none items-center gap-4"
+              style={{ minBlockSize: 68, padding: "16px 0" }}
+            >
+              <span
+                className="mk-bidi"
+                style={{ flex: 1, fontSize: 17, fontWeight: 500, color: INK }}
+              >
                 {item.question}
               </span>
-              {/* One glyph that rotates, rather than two that swap — nothing
-                  to mirror in Arabic and nothing to label. */}
-              <Icon
-                name="chevron"
-                size={14}
-                className="flex-none text-[var(--text-muted)] transition-transform group-open:rotate-180"
-              />
+              <span
+                aria-hidden="true"
+                className="flex-none grid place-items-center rounded-full transition-colors group-open:bg-[rgba(0,153,255,.1)]"
+                style={{ inlineSize: 32, blockSize: 32, background: PANEL }}
+              >
+                <Icon
+                  name="plus"
+                  size={16}
+                  className="transition-[transform,color] duration-300 group-hover:text-[#0055FF] group-open:rotate-45 group-open:text-[#0055FF]"
+                />
+              </span>
             </summary>
-
-            <div className="space-y-3 pb-5">
-              {/*
-               * The answer is capped narrower than the question it sits
-               * under.
-               *
-               * At 44rem and 14px these ran to about 50em a line — one of
-               * them 139 characters without a break. Comfortable reading is
-               * roughly 30-40em, and em is the measure to use here rather
-               * than a character count, because the 45-75 character rule is
-               * calibrated on Latin and Arabic sets far more characters into
-               * the same width. 34rem at 15px is about 36em.
-               *
-               * The question keeps the full width: it is one short line you
-               * scan down a list of, and narrowing it would make the list
-               * harder to read, not easier.
-               */}
-              <p className="mk-bidi max-w-[34rem] text-[length:var(--fs-body)] leading-[1.6] text-[var(--text-muted)]">
-                {item.answer}
-              </p>
-              {item.coming ? <Chip feature={item.coming} chips={chips} /> : null}
-            </div>
+            <p
+              className="mk-bidi"
+              style={{
+                margin: 0,
+                padding: "0 0 22px",
+                paddingInlineEnd: 48,
+                fontSize: 16,
+                lineHeight: 1.9,
+                color: "rgba(11,11,15,.66)",
+              }}
+            >
+              {item.coming ? (
+                <>
+                  <Chip feature={item.coming} chips={chips} />{" "}
+                </>
+              ) : null}
+              {item.answer}
+            </p>
           </details>
         ))}
       </div>
-    </Section>
+
+      {/* v3 §2.9 keeps three questions here and sends the rest to the
+          pricing page, where the deck answers all fourteen. Without this
+          link the nine that left the homepage have no route at all. */}
+      {copy.link ? (
+        <p style={{ margin: "32px 0 0" }}>
+          <span className="mk-atomic">
+            <TextLink locale={locale} href={copy.link.href}>{copy.link.label}</TextLink>
+          </span>
+        </p>
+      ) : null}
+    </Band>
   );
 }

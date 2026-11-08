@@ -1,5 +1,5 @@
 import type { PageDoc } from "../types";
-import { COMPARE, CTA, FORK, HOME, LINK, RESOURCES } from "./_shared";
+import { CTA, FORK, HOME, LINK } from "./_shared";
 
 /*
  * الموارد · المقارنات · من نحن · تواصل معنا —
@@ -38,33 +38,41 @@ const resources: PageDoc = {
       kind: "cards",
       cols: 3,
       items: [
+        /* ستة أبواب، ولكلٍّ منها شكله. الأيقونات هنا دليل اتجاه لا زينة:
+           الصفحة فهرس، والقارئ يمسح ستة مقاصد لا ستة نصوص. */
         {
           title: "المدونة",
+          icon: "book",
           body: "أفكار ومقالات عن الاستراتيجية، والهوية، والعلامات ثنائية اللغة.",
           cta: { label: "اقرأ المدونة", href: "/blog" },
         },
         {
           title: "الأدلة والقوالب",
+          icon: "fileAlt",
           body: "أدلة عملية وقوالب جاهزة تستخدمها في مشروعك القادم.",
           cta: { label: "تصفّح الأدلة", href: "/guides" },
         },
         {
           title: "مركز المساعدة",
+          icon: "help",
           body: "كل ما تحتاجه لاستخدام ماركيوس، خطوة بخطوة.",
           cta: { label: "افتح مركز المساعدة", href: "/help" },
         },
         {
           title: "المقارنات",
+          icon: "exchange",
           body: "كيف يقارَن ماركيوس بما تستخدمه اليوم، بصراحة.",
           cta: { label: "اقرأ المقارنات", href: "/compare" },
         },
         {
           title: "ما الجديد",
+          icon: "history",
           body: "آخر ما أضفناه إلى ماركيوس.",
           cta: LINK.whatsNew,
         },
         {
           title: "خريطة الطريق",
+          icon: "rocket",
           body: "ما نبنيه الآن، وما يأتي بعده، بالمواسم لا بالتواريخ.",
           cta: LINK.roadmap,
         },
@@ -76,7 +84,7 @@ const resources: PageDoc = {
       body: [
         "كيف تكتب استبيان اكتشاف يكشف ما لا يقوله العميل. ومعه 40 سؤالاً جاهزاً بالعربية والإنجليزية.",
       ],
-      cta: { label: "اقرأ الدليل", href: "/guides/discovery-brief-guide" },
+      cta: { label: "اقرأ الدليل", href: "/solutions/discovery" },
     },
     {
       kind: "signup",
@@ -86,186 +94,6 @@ const resources: PageDoc = {
       submit: "اشترك",
       topic: "newsletter",
     },
-  ],
-};
-
-/* ── 24 · المقارنات ───────────────────────────────────────────────────── */
-
-const compare: PageDoc = {
-  path: "/compare",
-  shortTitle: "المقارنات",
-  title: "ماركيوس مقارنةً بالبدائل · المقارنات",
-  description:
-    "كيف يقارَن ماركيوس بدليل PDF، وبمجموعة الأدوات المتفرقة، وبمنصات العلامات الأخرى. بصراحة.",
-  breadcrumbs: [HOME, RESOURCES],
-  priority: 0.7,
-  blocks: [
-    {
-      kind: "hero",
-      title: "مقارنات صريحة.",
-      lead: "نقول أين يتفوق ماركيوس، وأين قد يناسبك غيره أكثر. لأن القرار الصحيح أهم من البيع.",
-    },
-    {
-      kind: "cards",
-      cols: 2,
-      items: [
-        {
-          title: "ماركيوس مقابل دليل PDF",
-          body: "لماذا يتوقف الناس عن فتح الدليل، وما البديل.",
-          cta: { label: "اقرأ المقارنة", href: "/compare/pdf-guidelines" },
-        },
-        {
-          title: "ماركيوس مقابل الأدوات المتفرقة",
-          body: "الاستبيان، واللوح، والمجلد، والدليل، وأداة الكتابة، في مكان واحد.",
-          cta: { label: "اقرأ المقارنة", href: "/compare/tool-stack" },
-        },
-      ],
-      // The source has [PLACEHOLDER: named comparisons, added after research].
-      // Saying so is better than an empty third card: it tells a visitor
-      // looking for "Markyos vs X" that the page is coming rather than that
-      // we have not thought about X.
-      note: "مقارنات بأسماء المنصات الأخرى تُنشر بعد التحقق من كل معلومة على مواقعها، ومع تاريخ التحقق مكتوباً على الصفحة.",
-    },
-    { kind: "cta", buttons: [CTA.startFree] },
-  ],
-};
-
-/* ── 25 · ماركيوس مقابل دليل PDF ──────────────────────────────────────── */
-
-const comparePdf: PageDoc = {
-  path: "/compare/pdf-guidelines",
-  shortTitle: "مقابل دليل PDF",
-  title: "دليل الهوية البصرية PDF أم موقع حيّ؟ · ماركيوس",
-  description:
-    "مقارنة صريحة بين دليل الهوية بصيغة PDF وموقع الدليل الحيّ: الاستخدام، والتحديث، واللغتان، والتكلفة.",
-  breadcrumbs: [HOME, RESOURCES, COMPARE],
-  priority: 0.7,
-  blocks: [
-    {
-      kind: "hero",
-      title: "دليل PDF أم موقع حيّ؟",
-      lead: "الـ PDF خدم العلامات لسنوات، وما زال مناسباً أحياناً. لكنه صُنع ليُطبع، لا ليُستخدم كل يوم.",
-    },
-    {
-      kind: "table",
-      head: ["", "دليل PDF", { text: "موقع الدليل في ماركيوس", strong: true }],
-      rows: [
-        [
-          "الوصول",
-          "ملف يُرسل بالبريد ويُحفظ في مكان ما",
-          "رابط واحد يفتحه الجميع، على أي جهاز",
-        ],
-        [
-          "التحديث",
-          "نسخة جديدة كل مرة، والقديمة تبقى متداولة",
-          "عدّل مرة، وتتغيّر كل الصفحات",
-        ],
-        ["الملفات", "منفصلة عن الدليل، في مجلد آخر", "في المركز نفسه، جاهزة للتنزيل"],
-        ["اللغتان", "ملفان، أو ملف بلغة واحدة", "دليل واحد بلغتين متساويتين"],
-        ["الجوال", "صعب القراءة", "مصمم للجوال"],
-        [
-          "الاستخدام اليومي",
-          "يُفتح عند الإطلاق، ثم يُنسى",
-          "يفتحه الموظفون حين يحتاجون، ويراجعون كتاباتهم",
-        ],
-        ["وقت الإعداد", "أيام من التنسيق في InDesign", "دقائق من الملفات النهائية"],
-        ["الطباعة", { text: "ممتاز", strong: true }, "ممكنة، وليست الهدف"],
-      ],
-    },
-    {
-      kind: "callout",
-      title: "متى يكون PDF كافياً",
-      body: [
-        "إن كانت علامتك صغيرة، ولا يستخدمها إلا شخص أو اثنان، ولن تتغيّر كثيراً، فقد يكفيك ملف PDF جيد. لا نريد أن نبيعك ما لا تحتاجه.",
-      ],
-    },
-    {
-      kind: "terms",
-      title: "متى تحتاج أكثر من PDF",
-      cols: 2,
-      items: [
-        { term: "حين يستخدم العلامة أكثر من فريق" },
-        { term: "حين تعمل باللغتين" },
-        { term: "حين تتغيّر العلامة أو تكبر" },
-        { term: "حين تعمل معك وكالات وشركاء" },
-        { term: "حين تصبح أنت من يُسأل عن كل شيء" },
-      ],
-    },
-    {
-      kind: "prose",
-      title: "الانتقال سهل",
-      body: ["لا تبدأ من الصفر. أفلِت ملفات علامتك، ويُبنى المركز منها."],
-    },
-    {
-      kind: "callout",
-      body: ["وقريباً يقرأ ماركيوس الـ PDF القديم نفسه، ويكتب منه المسودات."],
-      feature: "pdf-import",
-    },
-    { kind: "cta", buttons: [CTA.convertPdf], links: [LINK.guidelineSites] },
-  ],
-};
-
-/* ── 26 · ماركيوس مقابل الأدوات المتفرقة ──────────────────────────────── */
-
-const compareStack: PageDoc = {
-  path: "/compare/tool-stack",
-  shortTitle: "مقابل الأدوات المتفرقة",
-  title: "أداة واحدة بدل خمس لمشروع العلامة التجارية · ماركيوس",
-  description:
-    "Google Forms وMiro وDrive وInDesign وأداة كتابة: ماذا تكسب وماذا تخسر حين تجمعها في ماركيوس.",
-  breadcrumbs: [HOME, RESOURCES, COMPARE],
-  priority: 0.7,
-  blocks: [
-    {
-      kind: "hero",
-      title: "خمس أدوات جيدة. ومشروع واحد ضائع بينها.",
-      lead: "كل أداة تستخدمها اليوم ممتازة في عملها. المشكلة ليست فيها، بل في المسافة بينها: النسخ، واللصق، وإعادة التنسيق، والبحث عن آخر نسخة.",
-    },
-    {
-      kind: "table",
-      head: ["المهمة", "ما تستخدمه عادة", "في ماركيوس", { text: "ما تكسبه", strong: true }],
-      rows: [
-        [
-          "الاكتشاف",
-          "أداة استبيانات عامة",
-          "استبيانات علامة باللغتين، وتحليل ذكي",
-          "الإجابات تصبح مسودات للاستراتيجية مباشرة",
-        ],
-        [
-          "الاستكشاف",
-          "لوح رسم عام",
-          "لوحة إلهام بألوانك الحقيقية",
-          "الألوان تُستخرج وتنتقل إلى الهوية",
-        ],
-        ["الملفات", "مجلد مشترك", "مكتبة أصول بنسخة واحدة", "لا «أيها النسخة الأخيرة؟»"],
-        [
-          "الدليل",
-          "برنامج تنسيق وملف PDF",
-          "موقع يبني نفسه",
-          "أيام من التنسيق تصبح دقائق",
-        ],
-        [
-          "الصوت",
-          "أداة كتابة لكل مستخدم",
-          "مدقّق نبرة يعرف العلامة",
-          "سعر للشركة، وفهم للعربية",
-        ],
-        [
-          "التسليم",
-          "ملف مضغوط",
-          "ملكية مركز حيّ",
-          "تسليم يتذكره العميل، وعائد لك",
-        ],
-      ],
-    },
-    {
-      kind: "callout",
-      title: "بصراحة: ما يبقى في أدواتك",
-      body: [
-        "التصميم يبقى في Figma أو Illustrator. والعروض والفواتير تبقى في أدواتك. واللوح العام للعصف الذهني خارج العلامة قد يبقى حيث هو. ماركيوس يجمع ما يخص العلامة، لا كل شيء.",
-      ],
-    },
-    { kind: "cta", buttons: [CTA.fullProject] },
   ],
 };
 
@@ -380,11 +208,11 @@ const contact: PageDoc = {
       head: ["الموضوع", "لمن"],
       rows: [
         ["المبيعات وخطة المؤسسات", "الشركات الكبيرة والمجموعات"],
-        ["الدعم", "مستخدمو ماركيوس — جرّب مركز المساعدة أولاً"],
+        ["الدعم", "مستخدمو ماركيوس. جرّب مركز المساعدة أولاً"],
         ["شراكات الاستوديوهات", "الاستوديوهات التي تريد العمل معنا عن قرب"],
         ["الصحافة", "الصحفيون والإعلام"],
         ["الأمان", "الإبلاغ عن ثغرة"],
-        ["اقتراح ميزة", "الجميع — نقرأ كل اقتراح"],
+        ["اقتراح ميزة", "الجميع. نقرأ كل اقتراح"],
       ],
       note: "نردّ على كل رسالة. ومواعيد الردّ لكل موضوع تُنشر هنا قبل الإطلاق.",
     },
@@ -405,11 +233,15 @@ const contact: PageDoc = {
   ],
 };
 
-export const resourcePages: PageDoc[] = [
-  resources,
-  compare,
-  comparePdf,
-  compareStack,
-  about,
-  contact,
-];
+/*
+ * `/compare` and its two pages are not here any more (8 Nov 2026).
+ *
+ * They were page copy because there was no comparison content and no route
+ * for it. There are ten written comparisons now, in both languages, so the
+ * section is a CMS collection with its own route like the blog and the
+ * guides — `app/[lang]/compare/` — and `pdf-guidelines` and `tool-stack` are
+ * two of the ten rather than two hand-written pages that would shadow them.
+ *
+ * `git show HEAD:content/pages/ar/resources.ts` has the copy they held.
+ */
+export const resourcePages: PageDoc[] = [resources, about, contact];

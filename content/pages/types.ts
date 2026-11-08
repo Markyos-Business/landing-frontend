@@ -1,5 +1,7 @@
 import type { Cta } from "../types";
 import type { FeatureId } from "@/lib/status";
+import type { IconName } from "@/components/ui/Icon";
+import type { MockName } from "@/components/mock/registry";
 
 /*
  * The page contract.
@@ -67,8 +69,20 @@ export type PlanCard = {
   price: string;
   /** "شهرياً" — the unit under the figure. */
   period?: string;
-  /** The annual equivalent, shown as a second line. */
-  annual?: string;
+  /**
+   * The same plan billed yearly.
+   *
+   * It used to be one prose line under the price — "19 دولاراً شهرياً
+   * بالاشتراك السنوي" — which told a reader the annual rate existed and then
+   * made them do the comparison themselves, across four cards, in their head.
+   * Split into its own amount so the billing switch above the grid can show
+   * one rate or the other, and `note` carries what the figure does not say
+   * ("يُدفع سنوياً"). Both are written, never computed, like `price`.
+   *
+   * A plan with no annual rate — free, or a contract — simply keeps showing
+   * its own price when the switch is on yearly, which is the truth about it.
+   */
+  annual?: { price: string; note?: string };
   /** One line on who the plan is for. */
   who?: string;
   rows: { label: string; value: string; strong?: boolean }[];
@@ -81,6 +95,17 @@ export type PlanCard = {
 export type CardItem = {
   title: string;
   body?: string;
+  /**
+   * A glyph above the title, on a tinted tile.
+   *
+   * Optional and off by default, because most card grids on this site are
+   * prose — a claim and a paragraph — and an icon over a claim is decoration.
+   * It earns its place on a grid that is a *directory*: /resources lists six
+   * places to go, and a reader scanning six destinations is helped by six
+   * different shapes. Set it for a whole grid or for none of it; half a grid
+   * with icons reads as a grid with something missing.
+   */
+  icon?: IconName;
   /** A short list under the body — "أهم ما ستجده". */
   bullets?: string[];
   cta?: Cta;
@@ -158,6 +183,15 @@ export type PageBlock =
       eyebrow?: string;
       title?: string;
       lead?: string;
+      /**
+       * Centre the heading over the table.
+       *
+       * For a section that answers a switch: the control is centred, so a
+       * heading on the start edge below it reads as two unrelated things. The
+       * homepage's comparison table centres its head over a full-width table
+       * for the same reason. Default `start`.
+       */
+      align?: "start" | "center";
       head?: Cell[];
       rows: Cell[][];
       /** First column is a row header — `<th scope="row">`. Default true. */
@@ -199,7 +233,16 @@ export type PageBlock =
       eyebrow?: string;
       title?: string;
       lead?: string;
+      /** Centre the heading over the cards — see the note on `table`. */
+      align?: "start" | "center";
       recommendedLabel: string;
+      /**
+       * The monthly/yearly switch above the grid.
+       *
+       * Omitted when no plan in the block has an annual rate — a switch over
+       * four cards that all ignore it is a control that does nothing.
+       */
+      billing?: { label: string; monthly: string; annual: string };
       plans: PlanCard[];
       note?: string;
     }
@@ -214,6 +257,135 @@ export type PageBlock =
       note?: string;
       topic: string;
     }
+  /**
+   * Two audiences, one place on the page.
+   *
+   * Several pages say the same thing twice — once for studios and freelancers,
+   * once for companies — and stacking both made /pricing 10,700px tall, with
+   * four of its eleven sections being two parallel ladders and two parallel
+   * eleven-row comparison tables. A reader only ever wants one of them, and had
+   * to scroll past the other to reach the FAQ.
+   *
+   * So the two runs become one switch. Both panels are rendered into the HTML
+   * and only one is shown, which keeps the whole page crawlable and keeps the
+   * copy in one file; `options[0]` is what a reader without JavaScript sees.
+   *
+   * Each option's `id` doubles as a deep link: `/pricing#companies` opens on
+   * the companies panel. The blocks inside an option drop their own `id` and
+   * `eyebrow` — the switch is the eyebrow now, and an anchor into a hidden
+   * panel scrolls to nothing.
+   */
+  | {
+      kind: "audience";
+      /** The id the switch itself carries, for the nav and the hero's links. */
+      id?: string;
+      eyebrow?: string;
+      title?: string;
+      lead?: string;
+      /** Accessible name for the group — "who are you", not "pricing". */
+      label: string;
+      options: { id: string; label: string; blocks: PageBlock[] }[];
+    }
+  /*
+   * The feature, as it looks in the product.
+   *
+   * Every page under /solutions argues for one thing at length and, until
+   * now, showed it never. Six pictures of the product already existed and
+   * were used only on the homepage — where each feature gets a paragraph —
+   * while the page devoted to that same feature had two thousand words and
+   * no screen. This block puts the picture on the page that earned it.
+   *
+   * `mock` names a view in `components/mock/registry.tsx` rather than
+   * importing one, because a content file is data. Same indirection as
+   * `icon`, for the same reason.
+   *
+   * The head is centred and the frame is lifted over a pool of the brand's
+   * light, which is the one place these pages use the homepage's full
+   * vocabulary: a product shot is the thing a section is about, and §8 says
+   * that is what a light pool marks.
+   */
+  | {
+      kind: "showcase";
+      id?: string;
+      eyebrow?: string;
+      title: string;
+      lead?: string;
+      mock: MockName;
+      /** One line under the frame, naming what the picture is of. */
+      caption?: string;
+    }
+  /*
+   * Nine solutions, one at a time, with the product behind each.
+   *
+   * /solutions listed them in a three-column table — name, line, who it is
+   * for — which is the right *content* and the wrong object: a reader
+   * arriving at the hub is choosing, and a table is for comparing things you
+   * have already chosen between. Nine rows of text also meant the hub was
+   * the one page in this set that still showed nothing of the product.
+   *
+   * So the same nine rows are a control now. Pick one and its real screen
+   * appears beside it — the same `components/mock/` views the nine detail
+   * pages use, so the hub shows what the product looks like before asking
+   * anybody to click into it.
+   *
+   * Every panel is rendered on the server and all but one is `hidden`, the
+   * trade AudienceTabs makes and for the same reasons: the page stays
+   * crawlable, and without JavaScript it is the first solution plus nine
+   * links rather than a control that does nothing.
+   */
+  | {
+      kind: "explorer";
+      id?: string;
+      eyebrow?: string;
+      title: string;
+      lead?: string;
+      /** Names the control — "choose a solution", not "solutions". */
+      label: string;
+      items: {
+        title: string;
+        /** The one line the table carried in its second column. */
+        line: string;
+        /** Who it is for — the table's third column. */
+        audience: string;
+        icon: IconName;
+        mock: MockName;
+        cta: Cta;
+      }[];
+    }
+  /*
+   * Three kinds of people, one platform, nine solutions.
+   *
+   * /solutions opens on a headline and a paragraph and then asks the reader
+   * to choose, which is a lot of choosing to do from prose. This is the
+   * choice as a picture: the three audiences above, the mark at the waist,
+   * and the nine solutions fanning out below, with the rule between them
+   * drawing itself as the section arrives.
+   *
+   * ── Why it is boxes and not a drawing ────────────────────────────────
+   *
+   * The homepage's ecosystem funnel is inline SVG and had to be — six
+   * bezier curves that leave one node vertically and arrive at another
+   * vertically cannot be built from boxes, which is the exemption that file
+   * carries. This diagram's geometry is three straight runs and a row of
+   * stubs, so it needs no curve, no exemption, and no second way of drawing
+   * things on this site.
+   *
+   * ── Why it is `aria-hidden` ──────────────────────────────────────────
+   *
+   * Everything in it is said again, in order, immediately below: the three
+   * audiences are the three cards, and the nine solutions are the nine tabs
+   * of the explorer. A screen-reader user gets one clean pass through the
+   * page instead of twelve unlabelled nodes and then the same twelve as
+   * controls.
+   */
+  | {
+      kind: "web";
+      id?: string;
+      /** The three who make a brand or live with it. */
+      from: { label: string; icon: IconName }[];
+      /** The nine solutions, short enough to be a chip. */
+      to: string[];
+    }
   /** The closing call to action. One per page, last. */
   | {
       kind: "cta";
@@ -226,6 +398,24 @@ export type PageBlock =
     };
 
 export type Breadcrumb = { label: string; href: string };
+
+/**
+ * How a page sets its section headings.
+ *
+ * `start` is the site's default and what the thirty-odd pages were built
+ * with: a heading at the reading edge with its table or its cards beneath.
+ *
+ * `center` is what the nine pages under /solutions use. They are the longest
+ * pages here — five to eight thousand pixels of one argument — and every
+ * section opened the same way, at the same edge, in the same size, so a
+ * reader scrolling could not tell where one ended and the next began. A
+ * centred head is a full stop: it breaks the column, gives the eye something
+ * to land on, and it is what the design reference does on a page this long.
+ *
+ * It moves the *heading* only. Prose stays at the reading edge, because
+ * centred body copy at sixty characters gets harder to read with every line,
+ * and the FAQ keeps its own sticky two-column head.
+ */
 
 export type PageDoc = {
   /** Route below the locale segment, with a leading slash. */

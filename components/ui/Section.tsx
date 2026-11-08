@@ -10,6 +10,7 @@
  */
 
 import type { ReactNode } from "react";
+import { Words } from "@/components/ui/Words";
 
 export function Section({
   id,
@@ -17,6 +18,7 @@ export function Section({
   children,
   className = "",
   rule = false,
+  white = false,
 }: {
   id?: string;
   /** The id of the heading that names this section. */
@@ -26,21 +28,32 @@ export function Section({
   /**
    * A line across the top of the section.
    *
-   * In the reference these are not decoration and they are not on every
-   * section — they fall at exactly eight places, and each one opens a new
-   * chapter of the argument: the problem, the studio path, the company path,
-   * what holds it together, the AI stance, the roadmap, the price, the
-   * founder. Everything between two rules is one movement. Adding a ninth
-   * would not make the page tidier, it would tell the reader a new chapter
-   * had started where one has not.
+   * Superseded by `white`, and kept only for a caller that wants a hairline
+   * *inside* one band. The black site separated its chapters with eight rules;
+   * the light page separates every section by alternating ground and white,
+   * which says the same thing at a glance and does not ask a reader to notice
+   * a 1px line 200px above the heading it belongs to.
    *
    * Drawn on the container's own border-box, which is what makes it 28px
    * wider than the content on each side — see the note in .mk-container.
    */
   rule?: boolean;
+  /**
+   * The white band.
+   *
+   * Every other section, counting from the first one after the hero, which is
+   * how the homepage alternates for all fourteen of its sections. See
+   * `.mk-band` in globals.css for why the alternation is doing the work the
+   * rules used to.
+   */
+  white?: boolean;
 }) {
   return (
-    <section id={id} aria-labelledby={labelledBy} className={`mk-section ${className}`}>
+    <section
+      id={id}
+      aria-labelledby={labelledBy}
+      className={`mk-section${white ? " mk-band" : ""} ${className}`}
+    >
       <div className={`mk-container${rule ? " mk-rule pt-[clamp(3.5rem,8vw,7rem)]" : ""}`}>
         {children}
       </div>
@@ -62,16 +75,29 @@ export function Section({
 export function Eyebrow({
   children,
   accent = true,
+  bracket = false,
   className = "",
 }: {
   children: ReactNode;
   accent?: boolean;
+  /**
+   * Close the label off with brackets — `[ الحلول ]`.
+   *
+   * What the reference puts over a centred section heading, and what the
+   * `showcase` block uses. Two words of grey above a heading read as the
+   * heading's own first line; the same two words bracketed read as a tab.
+   * The punctuation is drawn by CSS, not typed into the string — see
+   * `.mk-eyebrow-bracket`.
+   */
+  bracket?: boolean;
   className?: string;
 }) {
   if (!children) return null;
   return (
     <p
-      className={`mk-bidi mk-eyebrow${accent ? " mk-eyebrow-accent" : ""} ${className}`}
+      className={`mk-bidi mk-eyebrow${accent ? " mk-eyebrow-accent" : ""}${
+        bracket ? " mk-eyebrow-bracket" : ""
+      } ${className}`}
     >
       {children}
     </p>
@@ -91,6 +117,12 @@ export function Eyebrow({
  *           would fight the grid.
  *   center  heading and lead centred on a narrow measure. Reserved for the
  *           four moments the page stops arguing and states something.
+ *
+ * All three carry `.mk-rise`, so every section on every data-driven page
+ * opens with its heading block arriving — one class here instead of one per
+ * caller. The grids and lists *below* a head are marked where they are built
+ * (`page/blocks.tsx`, the section components); see the motion block in
+ * globals.css for the two classes and where they may not go.
  */
 export function SectionHead({
   id,
@@ -145,7 +177,10 @@ export function SectionHead({
 }) {
   const heading = (
     <Tag id={id} className={size === "lg" ? "mk-h2-lg" : "mk-h2"}>
-      {title}
+      {/* A plain string gets its words resolved one at a time as the heading
+          arrives. Anything else — a <T>, a split clause, markup — is left
+          alone: <Words> splits text and cannot split an element. */}
+      {typeof title === "string" ? <Words>{title}</Words> : title}
     </Tag>
   );
 
@@ -168,45 +203,51 @@ export function SectionHead({
 
   if (align === "center") {
     return (
-      <div className="flex flex-col items-center text-center">
+      <div className="mk-rise flex flex-col items-center text-center">
         {eyebrow ? <Eyebrow className="mb-4">{eyebrow}</Eyebrow> : null}
         {heading}
         {lead ? (
-          <p className="mk-lead mk-bidi mt-5 max-w-[37.5rem]">{lead}</p>
+          <p className="mk-lead mk-bidi mt-4 max-w-[37.5rem]">{lead}</p>
         ) : null}
-        {children ? <div className="mt-7">{children}</div> : null}
+        {children ? <div className="mt-6">{children}</div> : null}
       </div>
     );
   }
 
   if (align === "start") {
     return (
-      <>
+      <div className="mk-rise">
         {row(
           <>
             {eyebrow ? <Eyebrow className="mb-4">{eyebrow}</Eyebrow> : null}
             {heading}
-            {lead ? <p className="mk-lead mk-bidi mt-5 max-w-[33rem]">{lead}</p> : null}
+            {lead ? <p className="mk-lead mk-bidi mt-4 max-w-[33rem]">{lead}</p> : null}
           </>,
         )}
-        {children ? <div className="mt-7">{children}</div> : null}
-      </>
+        {children ? <div className="mt-6">{children}</div> : null}
+      </div>
     );
   }
 
   return (
-    <div className="grid gap-y-8 md:grid-cols-2 md:gap-x-16">
-      <div className="flex flex-col">
+    <div className="mk-seq grid gap-y-6 md:grid-cols-2 md:gap-x-16">
+      <div className="mk-slide-start flex flex-col">
         {eyebrow ? <Eyebrow className="mb-4">{eyebrow}</Eyebrow> : null}
         {heading}
         {/* In the two-column head the action goes on the floor of the heading
             column rather than beside it: the facing column is already the
             end edge, and a button out there would land under a paragraph. */}
-        {action ? <div className="mt-7 md:mt-auto md:pt-7">{action}</div> : null}
+        {action ? <div className="mt-6 md:mt-auto md:pt-6">{action}</div> : null}
       </div>
 
       {body?.length ? (
-        <div className="space-y-4 self-start md:pt-1.5">
+        /* `mk-seq`: the explaining paragraphs arrive one after another as the
+           column slides in from its own edge, rather than the whole block
+           appearing at once. This is the page's default head layout, so it is
+           the single highest-leverage place on the site to put a cascade —
+           and the `:has()` rules in globals.css mean the column then carries
+           only the movement while the paragraphs carry the fade. */
+        <div className="mk-slide-end mk-seq space-y-4 self-start md:pt-1.5">
           {body.map((paragraph, i) => {
             const last = emphasiseLast && i === body.length - 1;
             return (
@@ -263,7 +304,7 @@ export function SectionFoot({
 }) {
   return (
     <div
-      className={`mt-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between sm:gap-10 ${className}`}
+      className={`mk-rise mt-9 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between sm:gap-10 ${className}`}
     >
       <div className="min-w-0 max-w-[38rem]">
         {title ? (
@@ -289,9 +330,15 @@ export function SectionFoot({
 /**
  * The bloom.
  *
- * Purely decorative, so it is aria-hidden and carries no content. Four places
- * in the reference use it; the sizing and placement differ each time, so they
- * are the caller's, and only the colour and the blur are shared.
+ * Purely decorative, so it is aria-hidden and carries no content. The sizing
+ * and placement differ at each use, so they are the caller's, and only the
+ * light itself is shared — see `.mk-glow`, which now also carries a default
+ * ratio, because four callers passed a width and no height and so painted a
+ * 0px-tall pool on every data-driven page since the light rebuild.
+ *
+ * To centre one on the inline axis, use `.mk-center-x` rather than
+ * `start-1/2 -translate-x-1/2`: the second half of that pair is physical and
+ * does not flip with the locale.
  */
 export function Glow({ className = "" }: { className?: string }) {
   return <span aria-hidden="true" className={`mk-glow ${className}`} />;

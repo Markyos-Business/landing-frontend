@@ -1,10 +1,18 @@
 import type { CollectionConfig } from "payload";
 import { revalidateDoc } from "../hooks/revalidate";
 import { hideUnlessSection, publishAccess, sectionAccess } from "../access";
-import { publishedAtField, richText, seoFields, slugField } from "../fields";
+import {
+  heroImageField,
+  ogImageField,
+  provisionalField,
+  publishedAtField,
+  richText,
+  seoFields,
+  slugField,
+} from "../fields";
 
 /*
- * Blog posts → /resources/blog
+ * Blog posts → /blog
  *
  * The shape every editorial collection follows, and the one to copy when
  * adding another.
@@ -22,16 +30,16 @@ export const Posts: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "publishedAt", "_status"],
-    group: "Content",
+    group: "Resources",
     description: "Writing about brand strategy, bilingual identity and running a studio.",
     hidden: hideUnlessSection("posts"),
     preview: (doc) =>
-      doc?.slug ? `/en/resources/blog/${doc.slug}?draft=true` : null,
+      doc?.slug ? `/en/blog/${doc.slug}?draft=true` : null,
   },
   // Section-scoped: see cms/access.ts. Enforced here as well as in
   // `admin.hidden` above, because hiding alone is cosmetic.
   access: sectionAccess("posts"),
-  hooks: { afterChange: [revalidateDoc("/resources/blog")] },
+  hooks: { afterChange: [revalidateDoc("/blog")] },
   versions: {
     drafts: true,
     maxPerDoc: 20,
@@ -54,15 +62,8 @@ export const Posts: CollectionConfig = {
           "One or two sentences. Shown on the blog index and used as the search description when no SEO override is set.",
       },
     },
-    {
-      name: "heroImage",
-      type: "upload",
-      relationTo: "media",
-      admin: {
-        position: "sidebar",
-        description: "Shared across both languages. Its alt text is localized on the image itself.",
-      },
-    },
+    heroImageField,
+    ogImageField,
     {
       name: "body",
       type: "richText",
@@ -92,6 +93,7 @@ export const Posts: CollectionConfig = {
       admin: { position: "sidebar" },
     },
     publishedAtField,
+    provisionalField,
     {
       name: "_status",
       type: "select",

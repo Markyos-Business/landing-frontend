@@ -2,9 +2,13 @@
 
 **For whoever is writing and editing — no code needed.**
 
-The admin panel is where blog posts, guides, help articles and comparison
-pages are written, and where the website's own text can be changed without a
-developer.
+The admin panel is where the four resources are written: blog posts, guides,
+help articles and comparison pages, each in Arabic and in English.
+
+It does **not** edit the website's own text. The homepage, the navigation and
+the announcement bar were editable here until 8 Nov 2026 and are now the
+codebase's, where they are reviewed in a diff and checked for Arabic parity on
+every build. Ask a developer for those.
 
 ```
 Local:       http://localhost:3000/admin
@@ -30,13 +34,20 @@ panel mirrors to right-to-left when you choose Arabic.
 
 The first screen after signing in. It shows:
 
-- **Your content** — how much is published in each section you can open, and
-  how many drafts are waiting.
+- **Resources** — one card per section you can open: how much exists, how much
+  of it is published, and how many drafts are waiting.
+
+  Each card carries **a row per language**, because a piece of content is one
+  record with an Arabic side and an English side, and "nine guides" can mean
+  nine in Arabic and four in English. The bar is how much of that section has
+  been written in that language, and clicking the row opens the list *in* that
+  language — where anything unwritten shows as `<No Title>`. That is the
+  quickest way to see what still needs translating.
 - **Traffic** (admins only) — page views and visitors for the last 30 days,
   each with the change against the 30 days before, a daily chart, the top
   pages, where people came from, and the split by language, device and country.
-- **The website itself** (admins only) — shortcuts into the homepage copy, the
-  navigation and the announcement bar.
+- **Library and taxonomy** — the images, authors, categories and tags the
+  resources are assembled from.
 
 Traffic is counted first-party: no cookies, no third-party script, and no IP
 address is stored. A visitor is recognised within a day by a hash that is
@@ -50,10 +61,39 @@ bots are excluded.
 
 | Group | What is in it |
 | :--- | :--- |
-| **Content** | Blog posts · Guides and templates · Help centre · Comparisons · Media |
-| **Website content** | Homepage · Navigation · Announcement bar |
+| **Resources** | Blog posts · Guides and templates · Help centre · Comparisons · What's new |
+| **Library** | Media |
 | **Taxonomy** | Authors · Categories · Tags |
-| **Settings** | Site settings · Redirects · Users |
+| **Settings** | Redirects · Page views · Users |
+
+Everything in **Resources** is a page on the site: `/blog`, `/guides`,
+`/help`, `/compare` and `/whats-new`. Media is in its own group because it is
+not one of those — it is what they are made of.
+
+**Everything on those four pages is in here.** Until 8 November 2026 it was
+not: the blog listed thirteen posts and this panel listed one, because
+thirty-one of the pieces were written into the code and only shown on the
+site. They are all documents now, so if you cannot find something a reader can
+see, that is a fault worth reporting rather than the way it works.
+
+---
+
+## Placeholder content
+
+Thirty-one of the pieces in Resources were written so the page designs could
+be reviewed against real text. They are real titles from the content plan with
+bodies that have not been through the review the rest of the site has, and
+they are marked: **Placeholder content**, a checkbox in the sidebar of every
+post, guide and help article.
+
+While it is ticked, the article carries a notice saying so, and the index it
+sits on is kept out of Google for as long as *every* piece on it is ticked.
+Placeholder writing that ranks is placeholder writing that gets quoted back at
+you.
+
+Clearing the tick is how a piece becomes finished writing. Rewrite the body,
+untick the box, save. Nothing else has to happen, and nobody has to deploy
+anything.
 
 ---
 
@@ -102,26 +142,18 @@ traffic.
 
 ---
 
-## Editing the website's own text
+## The website's own text is not edited here
 
-**Website content → Homepage.**
+The homepage copy, the navigation and the announcement bar used to be editable
+from **Website content**. They are not any more, as of 8 Nov 2026: that whole
+group is gone and the admin is the resources CMS.
 
-This is organised in tabs — Hero, Problem & shift, Paths, Tone checker, and so
-on — matching the order of the page as you scroll it.
+The copy lives in the codebase, in `content/`. Changing it is a developer task
+and a pull request, which is the point — every line of that copy traces back
+to a decision in the strategy document, so a change to it is a positioning
+decision rather than a typo fix:
 
-**Every field is optional.** Leave one empty and the site uses its built-in
-copy. Fill one and yours replaces it. So you can change one headline without
-touching anything else, and you can never accidentally blank the homepage by
-clearing a field.
-
-Same for **Navigation** and the **Announcement bar**.
-
-### Please read before changing homepage copy
-
-This copy is not placeholder text. Every line of it traces back to a decision
-in the strategy document:
-
-- The headline is **three verbs** because they are the three jobs — build
+- The headline is **three verbs** because they are the three jobs: build
   (the studio), hand it over (the moment of value), keep it alive (the
   company).
 - The two buttons have **equal visual weight** on purpose. Making one the
@@ -130,16 +162,18 @@ in the strategy document:
   nouns over adjectives, **no exclamation marks**, and never
   "revolutionary", "seamless", "leverage" or "unlock".
 - Where a section says something is coming later, that chip is generated from
-  the real build status. Do not write "coming soon" into the copy by hand.
+  the real build status. Nobody writes "coming soon" into the copy by hand.
 
-Changing a headline here is a positioning decision, not a typo fix. Fixing an
-actual typo is, of course, just a typo fix.
+Going through the codebase also means Arabic cannot quietly fall behind:
+`npm run check:locales` fails the build when an English line has no Arabic.
 
-### Previewing
+---
 
-The **Live Preview** tab shows the real page with your changes in it, at
-phone, tablet and desktop widths, updating as you type. Use it, particularly
-for Arabic, where the whole layout mirrors.
+## Previewing
+
+The **Live Preview** tab, on any resource, shows the real page with your
+changes in it at phone, tablet and desktop widths, updating as you type. Use
+it, particularly for Arabic, where the whole layout mirrors.
 
 ---
 
@@ -185,14 +219,14 @@ Sections: ☑ Blog posts   ☐ Guides   ☐ Help centre   ☐ Comparisons
 ```
 
 and that account can write and edit blog posts, upload images for them, and
-nothing else. No traffic figures, no homepage copy, no other sections, no
-ability to publish, and no way to delete anything.
+nothing else. No traffic figures, no other sections, no ability to publish,
+and no way to delete anything.
 
 ### What stays with admins, always
 
-The website's own copy, the navigation, the announcement bar, site settings,
-redirects, traffic, and the user list. A section gives somebody the blog; it
-never gives them the homepage.
+Publishing, deleting, traffic, redirects, the taxonomy and the user list. A
+section gives somebody the blog; it never gives them the ability to publish
+it.
 
 ---
 
@@ -216,6 +250,7 @@ CMS cannot be reached. So if a change does not appear:
 2. Were you editing the right **language**? The switcher is at the top.
 3. Give it a few seconds and reload.
 
-If the homepage has reverted to text you did not write, that is the fallback
-doing its job — the CMS is unreachable, and it is a developer question rather
-than a content one. The site stays up either way.
+If an article has reverted to text you did not write, that is the fallback
+doing its job: the CMS is unreachable and the site is serving its built-in
+copy. That is a developer question rather than a content one, and the site
+stays up either way.

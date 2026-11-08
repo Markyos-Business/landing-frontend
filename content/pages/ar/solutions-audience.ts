@@ -33,11 +33,40 @@ const hub: PageDoc = {
       lead: "ماركيوس يخدم ثلاثة أنواع من الناس، ولكل منهم طريقه. اختر ما يشبهك، وسنريك الحلول التي تهمّك أنت أولاً.",
     },
     {
+      /*
+       * The hero's picture. Nothing here is new information: the three are
+       * the cards below and the nine are the explorer's tabs, which is why
+       * the whole thing is hidden from the accessibility tree. The chips
+       * are shortened on purpose — a chip is a label, and the explorer
+       * carries each solution's full name a screen later.
+       */
+      kind: "web",
+      from: [
+        { label: "الاستوديوهات", icon: "layers" },
+        { label: "المستقلون", icon: "user" },
+        { label: "الشركات", icon: "building" },
+      ],
+      to: [
+        "المشاريع",
+        "الاستبيان",
+        "التحليل الذكي",
+        "مواقع الدليل",
+        "التسليم",
+        "مركز العلامة",
+        "مدقّق النبرة",
+        "صوت العلامة",
+        "رؤية القيادة",
+      ],
+    },
+    {
       kind: "cards",
+      eyebrow: "ابدأ من هنا",
+      title: "اختر ما يشبهك.",
       cols: 3,
       items: [
         {
           title: "الاستوديوهات والوكالات",
+          icon: "layers",
           body: "أدِر كل مشاريع عملائك وفريقك من مكان واحد.",
           bullets: [
             "مسار مشروع كامل",
@@ -49,6 +78,7 @@ const hub: PageDoc = {
         },
         {
           title: "المصممون المستقلون",
+          icon: "user",
           body: "اظهر كفريق كامل، حتى لو كنت تعمل وحدك.",
           bullets: [
             "قراءة استراتيجية لكل عميل",
@@ -59,6 +89,7 @@ const hub: PageDoc = {
         },
         {
           title: "الشركات",
+          icon: "building",
           body: "شركتك كلها على هوية واحدة، باللغتين.",
           bullets: [
             "بيت واحد لعلامتك",
@@ -71,39 +102,90 @@ const hub: PageDoc = {
       ],
     },
     {
-      kind: "table",
+      /*
+       * The nine solutions. Same nine names, same nine lines, same nine
+       * audiences the table carried — as something you can click through,
+       * with the real screen behind each one. See the block's note in
+       * `content/pages/types.ts` for why the table became a control.
+       */
+      kind: "explorer",
+      eyebrow: "الحلول",
       title: "أو ابدأ من الحل الذي تبحث عنه.",
-      head: ["الحل", "السطر", "لمن"],
-      rows: [
-        ["كل مشروع في مكان واحد", "مسار المشروع ولوحة المشاريع حسب مرحلتها.", "الاستوديوهات"],
-        [
-          "استبيان وتحليل ذكي",
-          "استبيانات باللغتين، وتقرير يقرأ ما بين السطور.",
-          "الاستوديوهات · المستقلون",
-        ],
-        [
-          "مواقع دليل تبني نفسها",
-          "من الملفات النهائية إلى موقع دليل كامل.",
-          "الاستوديوهات · المستقلون",
-        ],
-        [
-          "التسليم ومكافأة الشريك",
-          "سلّم مركزاً حيّاً، واكسب حين يكبر عميلك.",
-          "الاستوديوهات · المستقلون",
-        ],
-        ["بيت واحد لعلامتك", "الأصول والدليل والاستراتيجية في مركز واحد.", "الشركات"],
-        ["مدقّق النبرة", "هل يتحدث النص بصوت علامتك؟ اعرف خلال ثوانٍ.", "الشركات"],
-        [
-          "صوت واحد باللغتين",
-          "سمات الصوت، ومستوى العربية، وقاموس المصطلحات.",
-          "الشركات · الاستوديوهات",
-        ],
-        ["الشركة كلها، مجاناً", "مشاهدون بلا حدود، وروابط آمنة للشركاء.", "الشركات"],
-        [
-          "وحّد رؤية القيادة",
-          "استبيان واحد لقياداتك، وتقرير يكشف الخلاف قبل أن يكلّفك.",
-          "الشركات",
-        ],
+      lead: "اختر حلاً، وشاهد كيف يبدو داخل ماركيوس قبل أن تفتح صفحته.",
+      label: "اختر حلاً",
+      items: [
+        {
+          title: "كل مشروع في مكان واحد",
+          line: "مسار المشروع ولوحة المشاريع حسب مرحلتها.",
+          audience: "الاستوديوهات",
+          icon: "grid",
+          mock: "projects",
+          cta: LINK.projects,
+        },
+        {
+          title: "استبيان وتحليل ذكي",
+          line: "استبيانات باللغتين، وتقرير يقرأ ما بين السطور.",
+          audience: "الاستوديوهات · المستقلون",
+          icon: "form",
+          mock: "drafts",
+          cta: LINK.discovery,
+        },
+        {
+          title: "مواقع دليل تبني نفسها",
+          line: "من الملفات النهائية إلى موقع دليل كامل.",
+          audience: "الاستوديوهات · المستقلون",
+          icon: "book",
+          mock: "guidelines",
+          cta: LINK.guidelineSites,
+        },
+        {
+          title: "التسليم ومكافأة الشريك",
+          line: "سلّم مركزاً حيّاً، واكسب حين يكبر عميلك.",
+          audience: "الاستوديوهات · المستقلون",
+          icon: "exchange",
+          mock: "handoff",
+          cta: LINK.handoff,
+        },
+        {
+          title: "بيت واحد لعلامتك",
+          line: "الأصول والدليل والاستراتيجية في مركز واحد.",
+          audience: "الشركات",
+          icon: "folder",
+          mock: "brandHub",
+          cta: LINK.brandHub,
+        },
+        {
+          title: "مدقّق النبرة",
+          line: "هل يتحدث النص بصوت علامتك؟ اعرف خلال ثوانٍ.",
+          audience: "الشركات",
+          icon: "scan",
+          mock: "tone",
+          cta: LINK.toneChecker,
+        },
+        {
+          title: "صوت واحد باللغتين",
+          line: "سمات الصوت، ومستوى العربية، وقاموس المصطلحات.",
+          audience: "الشركات · الاستوديوهات",
+          icon: "commentDots",
+          mock: "voice",
+          cta: LINK.brandVoice,
+        },
+        {
+          title: "الشركة كلها، مجاناً",
+          line: "مشاهدون بلا حدود، وروابط آمنة للشركاء.",
+          audience: "الشركات",
+          icon: "users",
+          mock: "seats",
+          cta: LINK.rollout,
+        },
+        {
+          title: "وحّد رؤية القيادة",
+          line: "استبيان واحد لقياداتك، وتقرير يكشف الخلاف قبل أن يكلّفك.",
+          audience: "الشركات",
+          icon: "comments",
+          mock: "leadership",
+          cta: LINK.leadership,
+        },
       ],
     },
     {
@@ -113,7 +195,24 @@ const hub: PageDoc = {
         "القاعدة بسيطة: إن كانت العلامة لعملائك، فأنت استوديو. وإن كانت العلامة لشركتك أنت، فأنت شركة. ويمكن لحساب واحد أن يجمع الاثنين.",
       ],
     },
-    { kind: "cta", buttons: [CTA.startFree] },
+    /*
+     * The hub closed on an empty panel: the mark and one button on a
+     * full-width slab of blue, with nothing said. Every other page here
+     * closes on a line.
+     *
+     * The line is the approved one — MARKYOS-DESIGN-SYSTEM.md §11 lists
+     * «ابنِ الهوية. سلّمها. وأبقِها حيّة.» among the key lines to use
+     * verbatim — and it is the right one for this page in particular: the
+     * three clauses are the three audiences the page has just asked the
+     * reader to choose between, in order.
+     */
+    {
+      kind: "cta",
+      title: "ابنِ الهوية. سلّمها. وأبقِها حيّة.",
+      lead: "ابدأ بمشروع واحد كامل، مجاناً، وقرّر بعده.",
+      buttons: [CTA.startFree],
+      links: [LINK.pricing],
+    },
   ],
 };
 
@@ -144,6 +243,13 @@ const studios: PageDoc = {
         "ومع كل مشروع جديد، تبدأ من الصفر مرة أخرى.",
       ],
       emphasiseLast: true,
+    },
+    {
+      kind: "showcase",
+      eyebrow: "لوحة الاستوديو",
+      title: "كل مشاريع عملائك. في شاشة واحدة.",
+      mock: "projects",
+      caption: "المرحلة، ومن عليه الدور، ومتى تحرّك المشروع آخر مرة.",
     },
     {
       kind: "numbered",
@@ -235,8 +341,8 @@ const studios: PageDoc = {
         ["السعر", "مجاناً", "24 دولاراً شهرياً", { text: "59 دولاراً شهرياً", strong: true }],
         ["المشاريع النشطة", "1", "3", { text: "10", strong: true }],
         ["المقاعد", "1", "1", { text: "5 (والمقعد الإضافي 8 دولارات شهرياً)", strong: true }],
-        ["رصيد الذكاء الاصطناعي شهرياً", "—", "500", { text: "1500", strong: true }],
-        ["النطاق الخاص", "—", "—", { text: "نعم", strong: true }],
+        ["رصيد الذكاء الاصطناعي شهرياً", "لا", "500", { text: "1500", strong: true }],
+        ["النطاق الخاص", "لا", "لا", { text: "نعم", strong: true }],
       ],
       note: "الوكالات التي تدير أكثر من عشرة مشاريع في وقت واحد: خطة «الوكالة» قادمة خلال 2027، بثلاثين مشروعاً نشطاً وبوابة تحمل اسم استوديوك. وحتى ذلك الحين، أضف مشروعاً بتصريح مشروع بـ 19 دولاراً لمرة واحدة.",
     },
@@ -307,6 +413,13 @@ const freelancers: PageDoc = {
         "وفي النهاية، يُقارَن عملك بعمل استوديو لديه فريق كامل.",
       ],
       emphasiseLast: true,
+    },
+    {
+      kind: "showcase",
+      eyebrow: "موقع الدليل",
+      title: "دليل هوية كامل. دون أن تبنيه.",
+      mock: "guidelines",
+      caption: "اختر تصميماً، ويُبنى الموقع من محتوى مشروعك: الشعار، والألوان، والخطوط، والاستراتيجية.",
     },
     {
       kind: "numbered",
@@ -380,8 +493,8 @@ const freelancers: PageDoc = {
           "ثلاثة عملاء أو أكثر في وقت واحد",
         ],
         ["المشاريع النشطة", "1", "+1 حتى تسلّمه (أو 6 أشهر)", "3"],
-        ["كل التصاميم وإزالة الشارة", "—", { text: "نعم", strong: true }, "نعم"],
-        ["رصيد الذكاء الاصطناعي", "—", "100", "500 شهرياً"],
+        ["كل التصاميم وإزالة الشارة", "لا", { text: "نعم", strong: true }, "نعم"],
+        ["رصيد الذكاء الاصطناعي", "لا", "100", "500 شهرياً"],
       ],
     },
     {
@@ -440,6 +553,13 @@ const companies: PageDoc = {
         "المشكلة ليست في فريقك. المشكلة أن العلامة تعيش في ملف PDF لا يفتحه أحد.",
       ],
       emphasiseLast: true,
+    },
+    {
+      kind: "showcase",
+      eyebrow: "مركز العلامة",
+      title: "بيت واحد لعلامتك. يفتحه كل من يحتاجه.",
+      mock: "brandHub",
+      caption: "نسخة واحدة من كل شيء، يصل إليها فريقك ووكالتك من رابط واحد.",
     },
     {
       kind: "numbered",
@@ -536,7 +656,7 @@ const companies: PageDoc = {
         ["المحرّرون", "2", { text: "5", strong: true }, "15"],
         ["المشاهدون", "25", { text: "بلا حدود", strong: true }, "بلا حدود"],
         ["مراجعات النبرة السريعة شهرياً", "25", { text: "1000", strong: true }, "3000"],
-        ["النطاق الخاص ودون شارة", "—", { text: "نعم", strong: true }, "نعم (3 نطاقات)"],
+        ["النطاق الخاص ودون شارة", "لا", { text: "نعم", strong: true }, "نعم (3 نطاقات)"],
       ],
     },
     { kind: "prose", body: [], links: [LINK.pricing] },

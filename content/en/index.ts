@@ -17,18 +17,17 @@ import type { SiteCopy } from "../types";
 
 export const copy: SiteCopy = {
   meta: {
-    title: "Markyos — The bilingual brand hub, Arabic and English",
+    title: "Markyos · At home in both languages",
     description:
-      "Run brand projects from first brief to client handoff, and keep your company on brand in Arabic and English. Start free.",
-    ogTitle: "Build the brand. Hand it over. Keep it alive.",
+      "One platform for your brand in Arabic and English: discovery, strategy, a guideline site that builds itself, handoff, and an AI that knows your brand.",
+    ogTitle: "Studios build it. Companies live it.",
     ogDescription:
-      "The bilingual brand platform for studios that make brands and companies that run them.",
+      "One ecosystem that replaces seven tools, for the people who make brands and the people who run them.",
   },
 
   chips: {
-    comingSpring2027: "Coming spring 2027",
-    coming2027: "Coming 2027",
-    arrivingFeb2027: "Arriving February 2027",
+    comingSoon: "Coming soon",
+    arrivingSoon: "Arriving soon",
   },
 
   nav: {
@@ -45,6 +44,13 @@ export const copy: SiteCopy = {
       {
         label: "Solutions",
         href: "/solutions",
+        // The rail. Approved key line, §11, verbatim — and it happens to name
+        // the three columns under it in order: studios build, the handoff
+        // hands over, companies keep it alive.
+        intro: {
+          title: "Build the brand. Hand it over. Keep it alive.",
+          more: { label: "All solutions", href: "/solutions" },
+        },
         groups: [
           {
             heading: "Studios and agencies",
@@ -134,7 +140,111 @@ export const copy: SiteCopy = {
           { label: "Not sure? Help me choose", href: "/start" },
         ],
       },
-      { label: "Platform", href: "/platform" },
+      /*
+       * Platform, as a second mega menu — v2.2.
+       *
+       * It was a flat link to /platform. The copy deck's v2.2 change gives
+       * every module a feature page of its own and the header a second
+       * dropdown to reach them by, on the principle that Solutions is
+       * organised by *audience* and Platform by *feature*: a visitor who
+       * knows they want a guideline site should not have to decide whether
+       * they are a studio or a company first.
+       *
+       * The menu's own spec is in markyos_pages_ar_6_features.md §0.2, which
+       * is not in this repo. This is built from the one source that is —
+       * §1.6 of the homepage deck — so the three columns are the three
+       * stages, the nine items are the nine modules in their numbered order,
+       * and each line is that module's "replaces", which is the shortest
+       * true description of a feature anybody scanning a menu can use.
+       *
+       * No `more` link per column: a stage is not a destination, and three
+       * links all pointing at /platform would be the same link three times.
+       * The one overview link is in `strip`.
+       */
+      {
+        label: "Platform",
+        href: "/platform",
+        // Approved key line, §11, verbatim. "All the features" moved up here
+        // out of `strip`: it was the one link in that strip that was a way
+        // into the whole menu rather than a side door, and the rail is where
+        // a visitor looks for that. It is not repeated below.
+        intro: {
+          title: "Your brand deserves a better home than a PDF.",
+          more: { label: "All the features", href: "/platform" },
+        },
+        // Stages, not audiences, so the desktop panel does not label the
+        // columns — see `grouping` in content/types.ts.
+        grouping: "stage",
+        groups: [
+          {
+            heading: "Create",
+            line: "Discovery, strategy, inspiration, files and the guideline.",
+            items: [
+              {
+                title: "The discovery form",
+                line: "Replaces Google Forms and Typeform",
+                href: "/platform/discovery-forms",
+              },
+              {
+                title: "The strategy hub",
+                line: "Replaces Word files and decks",
+                href: "/platform/strategy-hub",
+              },
+              {
+                title: "Moodboards",
+                line: "Replaces Milanote and Pinterest",
+                href: "/platform/moodboards",
+              },
+              {
+                title: "The asset hub",
+                line: "Replaces Google Drive and Dropbox",
+                href: "/platform/asset-library",
+              },
+              {
+                title: "The guideline site",
+                line: "Replaces a PDF guideline and Guidelines.site",
+                href: "/platform/guideline-sites",
+              },
+              {
+                title: "The studio board",
+                line: "Replaces tracking spreadsheets and Trello",
+                href: "/platform/studio-board",
+              },
+            ],
+          },
+          {
+            heading: "Hand over",
+            line: "Ownership of the whole brand moves to the person who owns it.",
+            items: [
+              {
+                title: "Handoff",
+                line: "Replaces the zip file and the goodbye email",
+                href: "/platform/handoff",
+              },
+            ],
+          },
+          {
+            heading: "Manage",
+            line: "Voice, content review, employees and partners.",
+            items: [
+              {
+                title: "Brand voice and the tone checker",
+                line: "Replaces Grammarly and Writer",
+                href: "/platform/brand-voice",
+              },
+              {
+                title: "The whole company",
+                line: "Replaces shared folders and “where's the logo?”",
+                href: "/platform/team-and-sharing",
+              },
+            ],
+          },
+        ],
+        strip: [
+          { label: "Built in Arabic, not translated into it.", href: "/platform/arabic" },
+          { label: "Brand Brain", href: "/platform/brand-brain" },
+        ],
+      },
       { label: "Pricing", href: "/pricing" },
       {
         // A plain list, not a mega menu. The menu spec does not give Resources
@@ -162,7 +272,8 @@ export const copy: SiteCopy = {
       {
         heading: "Product",
         links: [
-          { label: "Platform", href: "/platform" },
+          { label: "All the features", href: "/platform" },
+          { label: "Brand Brain", href: "/platform/brand-brain" },
           { label: "Pricing", href: "/pricing" },
           { label: "Roadmap", href: "/roadmap" },
           { label: "What's new", href: "/whats-new" },
@@ -200,7 +311,7 @@ export const copy: SiteCopy = {
         ],
       },
     ],
-    line: "Markyos. Every asset. Every instruction. Both directions.",
+    line: "Markyos. At home in both languages.",
     legal: [
       { label: "Privacy", href: "/privacy" },
       { label: "Terms", href: "/terms" },
@@ -224,16 +335,32 @@ export const copy: SiteCopy = {
 
   home: {
     hero: {
-      eyebrow: "Every asset. Every instruction. Both directions.",
-      headline: "Build the brand. Hand it over. Keep it alive.",
+      /*
+       * §1.1 option A, the deck's recommended headline. B to E are in the
+       * copy deck and belong to ads and the audience pages; E is the v1.0
+       * line this one replaced, "Build the brand. Hand it over. Keep it
+       * alive.", which the deck keeps for the studios page.
+       */
+      eyebrow: "The brand platform, in Arabic and English",
+      headline: "Studios build it.",
+      headlineAccent: "Companies live it.",
       subheadline:
-        "Markyos is the bilingual brand platform for the studios that make brands and the companies that run them. Discovery, strategy, guidelines and voice live in one place, in Arabic and English, from the first question to the brand your whole company uses every day.",
+        "One home for your whole brand, from the first question to the last post. In Arabic and English, as equals.",
       studioCta: { label: "I make brands for clients", href: "/start?type=studio" },
       companyCta: { label: "I run my company's brand", href: "/start?type=company" },
-      // CONFIRM: "No card needed" — if a card is required on the free plan,
-      // this becomes "Free plan. Cancel anytime."
-      microcopy:
-        "Free plan. No card needed. Not sure? If it's your own brand, choose the second one.",
+      // CONFIRM in the deck: if a card is required on the free plan, this
+      // becomes "Free plan. Cancel anytime."
+      microcopy: "Start free. No card needed.",
+      /*
+       * The scroll story's two strings.
+       *
+       * The elements are the hub's own sidebar, in the hub's own order, so
+       * the names flying into the window are the names found inside it.
+       */
+      scene: {
+        elements: ["Logo", "Colour", "Type", "Tone", "Moodboard", "Strategy", "Icons"],
+        templatesLabel: "Three ready-made templates for the guideline site",
+      },
       // §6.3. The spot counts are the real beta sizes, and the locked price is
       // a commitment — do not change either without changing the offer.
       beta: {
@@ -246,10 +373,10 @@ export const copy: SiteCopy = {
 
     proofStrip: {
       facts: [
-        "Arabic and English, built in from line one",
-        "8 guideline looks, ready to use",
-        "16 guideline sections that build themselves",
-        "Your first AI brief analysis, free",
+        "7 tools in one platform",
+        "Arabic and English, from line one",
+        "A guideline site that builds itself in minutes",
+        "Your first AI analysis, free",
       ],
     },
 
@@ -269,28 +396,87 @@ export const copy: SiteCopy = {
     },
 
     problem: {
-      eyebrow: "The quiet problem",
-      headline: "Brands don't die. They decay.",
+      eyebrow: "How a brand gets built today",
+      headline: "Brands don't die. They drift.",
       body: [
-        "You spend months getting a brand right. The strategy, the logo, the colours, the voice. Then it goes out into the world as a PDF.",
-        "Six months later, sales is using the old logo. HR writes like a different company. The Arabic version says something the English never meant. And every “is this on-brand?” question lands on one person's desk.",
-        "Nobody did anything wrong. The brand just had nowhere to live.",
+        "Every part of the brand sits in a different tool, with a different person. The logo drifts in the sales deck, the Arabic says something the English never meant, and every question lands on one desk.",
       ],
+      /*
+       * ── `line` is what the picture says, not what the card says ───────
+       *
+       * Each of these three cards is a headline over a drawing of the
+       * problem, and `line` is the one string inside that drawing: the
+       * title on the sales slide, the marketing line in the locale row,
+       * the first question in the queue. The Arabic has always read that
+       * way — «عرض المبيعات · الشريحة 4» is a slide title, not a sentence.
+       *
+       * Copy v3 §2.3 writes the English three as prose, because a copy
+       * deck describes a card rather than filling in a mock. Rendered,
+       * that put a sentence where a slide title goes, prose in a row
+       * labelled `en-GB` beside an Arabic marketing line it did not
+       * disagree with, and a three-line paragraph in a chat bubble that
+       * pushed the third message out of the frame.
+       *
+       * So these match the Arabic: the same three slots, filled the same
+       * way. The deck's three sentences are not lost — each one says what
+       * its headline already says, which is why the headline is the part
+       * the reader sees.
+       */
       cards: [
+        { headline: "A file nobody opens.", line: "Sales deck · slide 4" },
+        { headline: "Two languages, drifting apart.", line: "Summer Sale, up to 40%" },
         {
-          headline: "The PDF nobody opens",
-          line: "Guidelines get emailed once, saved somewhere, and never seen again.",
-        },
-        {
-          headline: "Two languages, drifting apart",
-          line: "Arabic and English versions get written by different people, at different times, with different words.",
-        },
-        {
-          headline: "One person, every question",
-          line: "The marketing manager becomes the brand's help desk, and the bottleneck.",
+          headline: "One person, every question.",
+          line: "Where's the latest version of the logo?",
         },
       ],
       transition: "It's not a people problem. It's a home problem.",
+      lead: "Every brand project takes the same route, and every stop on it is a different tool:",
+      stationColumns: { station: "The stop", tool: "The usual tool", what: "What actually happens" },
+      stations: [
+        {
+          station: "Discovery",
+          tool: "Google Forms or Typeform",
+          what: "Answers arrive in a spreadsheet, and you retype them into something else",
+          icon: "form",
+        },
+        {
+          station: "Inspiration",
+          tool: "Milanote or Pinterest",
+          what: "The references live in one place and the decisions they led to live in another",
+          icon: "grid",
+        },
+        {
+          station: "Strategy",
+          tool: "Word, Notion or a deck",
+          what: "Presented in a meeting, then saved to a folder",
+          icon: "fileAlt",
+        },
+        {
+          station: "Files",
+          tool: "Google Drive or Dropbox",
+          what: "“logo_final_2_new.png”, and five versions of the logo",
+          icon: "folder",
+        },
+        {
+          station: "Guidelines",
+          tool: "A PDF or Guidelines.site",
+          what: "Built from scratch, away from the discovery and the strategy",
+          icon: "filePdf",
+        },
+        {
+          station: "Handoff",
+          tool: "A zip over WeTransfer",
+          what: "The link expires in days, and so does the relationship",
+          icon: "package",
+        },
+        {
+          station: "Everyday writing",
+          tool: "ChatGPT or Grammarly",
+          what: "Clever tools writing confidently, in a voice that isn't your brand's",
+          icon: "commentDots",
+        },
+      ],
     },
 
     shift: {
@@ -303,24 +489,31 @@ export const copy: SiteCopy = {
     },
 
     choosePath: {
-      headline: "Two ways in. One brand at the end.",
-      youGetLabel: "You get",
+      headline: "Three ways in. One brand.",
+      youGetLabel: "You start with",
       studio: {
-        label: "For studios",
+        label: "Studios",
         who: "Brand strategists, designers and agencies who make brands for clients",
-        headline: "Run the whole project here, then hand it over like it's worth what they paid.",
-        youGet:
-          "Discovery forms, an AI read on the answers, boards, a guideline site that builds itself, and a handoff your client remembers",
+        headline: "From the first question to the final handoff.",
+        youGet: "Modules 1 to 7",
         cta: { label: "I make brands for clients", href: "/start?type=studio" },
       },
       company: {
-        label: "For companies",
+        label: "Companies",
         who: "Marketing managers, brand leads and founders who run their own brand",
-        headline: "Keep your brand consistent in every department, every channel, both languages.",
-        youGet:
-          "Your strategy, assets and voice in one hub, a tone checker that knows your brand, and room for the whole company",
+        headline: "On brand. On time. In both languages.",
+        youGet: "The hub, the tone checker and the viewers",
         cta: { label: "I run my company's brand", href: "/start?type=company" },
       },
+      freelancer: {
+        label: "Freelancers",
+        who: "Independent designers and strategists working on their own",
+        headline: "Work alone. Show up as a team.",
+        youGet: "The AI analysis, the guideline site and the handoff",
+        cta: { label: "For freelancers", href: "/solutions/freelancers" },
+      },
+      closing:
+        "The studio builds it, the company runs it. When a studio hands a brand over, it moves across whole, from the discovery answers to the voice, into the client's own space.",
     },
 
     studioPath: {
@@ -341,7 +534,7 @@ export const copy: SiteCopy = {
           name: "Analyze",
           feature: "brief-analysis",
           headline: "Get a senior strategist's read on the answers. The first one's free.",
-          body: "Markyos reads the brief and your call notes and gives you a structured report: goals, audience, competitors, personality signals, and the two things a junior designer would miss — the contradictions in what the client said, and the questions you still need to ask. It ends with two or three strategic routes the brand could take. Every finding lands as a draft. You accept what's useful. Nothing goes into the strategy without you.",
+          body: "Markyos reads the brief and your call notes and gives you a structured report: goals, audience, competitors, personality signals, and the two things a junior designer would miss: the contradictions in what the client said, and the questions you still need to ask. It ends with two or three strategic routes the brand could take. Every finding lands as a draft. You accept what's useful. Nothing goes into the strategy without you.",
           smallPrint: "One free analysis in every project, on every plan. Re-runs use credits.",
         },
         {
@@ -368,7 +561,7 @@ export const copy: SiteCopy = {
           name: "Deliver",
           feature: "brand-kit-intake",
           headline: "Drop the zip. We'll sort it.",
-          body: "Drag in the final folder. Markyos opens it in your browser, finds the logos (and guesses which is primary, icon, mono or reversed), groups the fonts into families and checks which ones cover Arabic, pulls the colours, and files the rest. Then it shows you one screen — “We found 6 logo files, 2 font families and 9 colours” — so you can confirm and move on.",
+          body: "Drag in the final folder. Markyos opens it in your browser, finds the logos (and guesses which is primary, icon, mono or reversed), groups the fonts into families and checks which ones cover Arabic, pulls the colours, and files the rest. Then it shows you one screen that says “We found 6 logo files, 2 font families and 9 colours”, so you can confirm and move on.",
         },
         {
           name: "Build",
@@ -479,7 +672,7 @@ export const copy: SiteCopy = {
       body: "Paste any piece of content, pick the channel, and Markyos checks it against your voice, your department rules and your term base. Not a generic “friendly” or “formal” setting. Yours.",
       outputHeading: "What you get back",
       outputs: [
-        { term: "A score out of 100", line: "with a word — On brand, Close, or Off brand" },
+        { term: "A score out of 100", line: "with a word: On brand, Close, or Off brand" },
         { term: "A score for each voice trait", line: "with the reason in one line" },
         { term: "Flagged sentences", line: "with the rule or trait each one breaks" },
         { term: "Term problems", line: "a banned word, a product name translated wrong" },
@@ -531,8 +724,15 @@ export const copy: SiteCopy = {
 
     bilingual: {
       eyebrow: "Arabic and English",
-      headline: "Built in Arabic. Not translated into it.",
-      body: "Most brand tools were made in English and taught a little Arabic later. Markyos was built with both languages as equals from the first line of code. The whole layout mirrors. Arabic and Latin logos each get their own slot. Type specimens show both scripts side by side. And the words that matter (your discovery questions, your term base, your voice) are written for each language, not run through a translator.",
+      headline: "Right to left. Left to right. Always right.",
+      /*
+       * §2.8, and deliberately not the Arabic sentence translated. The
+       * deck's own review note: the Arabic says your words never go through
+       * a machine translator, which the tone checker's AI translation makes
+       * untrue — so the English claims what is actually true, that nothing
+       * in the platform was machine-translated.
+       */
+      body: "Markyos was built on Arabic and English together. The whole interface mirrors, each script gets its own logo and type, and nothing in the platform was machine-translated: the questions, templates and guideline copy were written in both languages.",
       points: [
         {
           term: "Mirrors properly",
@@ -553,6 +753,14 @@ export const copy: SiteCopy = {
       ],
       lineEn: "Every asset. Every instruction. Both directions.",
       lineAr: "كل الأصول. كل الإرشادات. في الاتجاهين.",
+      features: [
+        { term: "Real mirroring", line: "of every layout, menu and arrow", icon: "exchange" },
+        { term: "Arabic and Latin logos", line: "each with its own slot", icon: "copyright" },
+        { term: "Type in both scripts", line: "side by side", icon: "font" },
+        { term: "Arabic registers", line: "set per channel", icon: "comments" },
+        { term: "Terms that stay put", line: "in both languages", icon: "book" },
+      ],
+      link: { label: "Built in Arabic", href: "/platform/arabic" },
     },
 
     aiRules: {
@@ -585,26 +793,136 @@ export const copy: SiteCopy = {
      * `Markyos Homepage v2.dc.html`; the stance that used to open this part
      * of the page is still `aiRules`, now at /platform.
      */
-    aiAlongside: {
-      headline: "AI does the first draft. People make the call.",
-      cta: { label: "How we use AI", href: "/platform#ai" },
-      articles: [
+    ecosystem: {
+      headline: "Right here.",
+      headlineAccent: "Right everywhere.",
+      body: "Forms, strategy, files, guidelines and voice, in one place. Change a colour once, and it's right on every page that uses it.",
+      tools: [
+        { label: "Form", tool: "Google Forms", icon: "form" },
+        { label: "Board", tool: "Milanote", icon: "grid" },
+        { label: "Document", tool: "Word", icon: "fileAlt" },
+        { label: "Folder", tool: "Drive", icon: "folder" },
+        { label: "Guideline", tool: "PDF", icon: "filePdf" },
+        { label: "Chat", tool: "ChatGPT", icon: "commentDots" },
+      ],
+      brainLabel: "Brand Brain",
+      stages: [
         {
-          title: "Explore with your client, not just for them",
-          line: "Collect references on a moodboard and Markyos pulls the palette out of the real pixels. Put directions side by side and let the client pick in their own language.",
-          cta: { label: "Open a moodboard", href: "/platform#explore" },
+          name: "Create",
+          what: "Discover the brand. Build its guide.",
+          who: "Studios and freelancers, or the company's own team",
+          icon: "pencilRuler",
         },
         {
-          title: "Read the brief like a senior strategist",
-          line: "Send the same questions to your CEO, sales and service. AI compares the answers and shows where leadership disagrees about the brand. The first analysis in every project is free.",
-          cta: { label: "Run an analysis", href: "/platform#analysis" },
+          name: "Deliver",
+          what: "It moves, whole, to its owner.",
+          who: "The studio and the client",
+          icon: "key",
         },
         {
-          title: "Is this on brand? Know in seconds.",
-          line: "Paste any piece of content, pick the channel, and Markyos checks it against your voice, your key terms and the right Arabic dialect.",
-          cta: { label: "Check a caption", href: "/platform#tone" },
+          name: "Run",
+          what: "It lives in everything the company writes.",
+          who: "Companies",
+          icon: "sync",
         },
       ],
+      closing:
+        "And two things in the middle never change: one source of truth, so every logo, colour and rule has a single version that shows up wherever it's needed, and Brand Brain reading from it.",
+      link: { label: "All features", href: "/platform" },
+    },
+
+    /*
+     * §1.7, rewritten at copy v2.1.
+     *
+     * The capabilities, the costs and the full explanation moved to
+     * /platform/brand-brain. What is left here answers the question a buyer
+     * actually has — "will my brand come out better?" — once for a new brand
+     * and once for one that already exists.
+     */
+    aiAlongside: {
+      eyebrow: "Brand Brain",
+      headline: "It reads",
+      headlineAccent: "before it writes.",
+      /*
+       * §2.7. Four sentences where there were three paragraphs, and the
+       * three examples the old middle paragraph buried in a list are now a
+       * line of their own — they are the section's evidence, and a reader
+       * skimming should hit them, not wade to them.
+       */
+      body: [
+        "Brand Brain is the AI inside Markyos. It reads your brand, not the internet, so it sees what everyone else misses. It suggests. You decide.",
+        "A client who contradicts themselves. Leaders who don't agree. A post that drifted from your voice.",
+        "ChatGPT knows everything about the world. Brand Brain knows your brand.",
+      ],
+      effect: {
+        headline: "What it does to the result",
+        newBrand: "Building a new brand",
+        existingBrand: "Improving a brand you already have",
+        rows: [
+          {
+            label: "Starts from",
+            newBrand: "Discovery answers and call notes",
+            existingBrand: "Your leaders' answers, your current content, and your brand files",
+          },
+          {
+            label: "Shows you",
+            newBrand: "The contradictions and the missing questions, before you start designing",
+            existingBrand:
+              "Where leadership disagrees, and where the content has drifted from the voice, department by department",
+          },
+          {
+            label: "Suggests",
+            newBrand:
+              "Strategic directions, and drafts for audience and voice, built on the client's own words",
+            existingBrand:
+              "Rewrites that put a text back in its voice, and translations that hold to the approved terms",
+          },
+          {
+            label: "So you end up with",
+            newBrand: "A brand that is consistent from its first day, every decision traceable to a reason",
+            existingBrand:
+              "A clear list of what is decaying in your brand, instead of a feeling that something isn't right",
+          },
+        ],
+      },
+      seamsHeadline: "It guards consistency at the seams where brands come apart",
+      seams: [
+        {
+          title: "Between what the client says and what they mean",
+          line: "The AI brief analysis, and the first one in every project is free.",
+        },
+        {
+          title: "Between your leaders",
+          line: "The alignment report, and the first one for every brand is free.",
+        },
+        {
+          title: "Between your voice and everything written in it",
+          line: "The tone checker, with rewriting in your brand voice beside it.",
+        },
+        {
+          title: "Between the Arabic and the English",
+          line: "The term base, and translation in your brand voice.",
+        },
+        {
+          title: "Between the strategy and the visual direction",
+          line: "AI art direction, from your moodboards.",
+          chip: "board-shapes",
+        },
+        {
+          title: "Between your guideline and what people ask",
+          line: "“Ask the brand”, and a list of what the guideline is missing.",
+          chip: "ask-the-brand",
+        },
+      ],
+      limitsHeadline: "Clear limits",
+      limits: [
+        "It suggests, it does not decide. Everything it writes reaches you as a draft that shows where it came from, and nothing in your brand changes until you accept it. And it never draws a logo.",
+      ],
+      connector: {
+        line: "And your own AI tools, like ChatGPT and Claude, will read your brand before they write, through the AI Connector. They read only, and change nothing.",
+        chip: "ai-connector",
+      },
+      cta: { label: "How Brand Brain works", href: "/platform/brand-brain" },
     },
 
     /*
@@ -616,8 +934,341 @@ export const copy: SiteCopy = {
      * read rather than looked at.
      */
     platformGrid: {
-      headline: "Change it once. It changes everywhere.",
+      headline: "Everything a brand needs. And what's inside each part.",
       cta: { label: "See the platform", href: "/platform" },
+      subheadline:
+        "Every module works on its own, and works better with the rest. Start anywhere.",
+      stageLabels: {
+        create: "Stage one · Create",
+        handOver: "Stage two · Hand over",
+        manage: "Stage three · Manage",
+      },
+      replacesLabel: "Replaces:",
+      moduleLabel: "Module",
+      modules: [
+        {
+          n: 1,
+          stage: "create",
+          name: "The discovery form",
+          replaces: "Google Forms and Typeform",
+          promise: "Better questions, and answers that turn into work.",
+          icon: "form",
+          feats: [
+            {
+              name: "Ready-made templates",
+              line: "New brand, redesign, sub-brand, naming project, product launch.",
+            },
+            {
+              name: "A bilingual question library",
+              line: "Every question written by a brand strategist in Arabic and English. Add, remove, reorder.",
+            },
+            {
+              name: "Questions built for brands",
+              line: "Personality sliders, priority ranking, reference-image picking, and a current-logo upload.",
+            },
+            {
+              name: "A client link with no account",
+              line: "They answer in Arabic or English, and the form carries your studio's logo and colours.",
+            },
+            {
+              name: "Simple logic",
+              line: "Show or hide a question based on an earlier answer.",
+            },
+            {
+              name: "Call notes",
+              line: "Paste your notes or a Zoom transcript, so they feed the analysis alongside the answers.",
+            },
+            { name: "Free and unlimited", line: "On every plan." },
+          ],
+          link: { label: "The discovery form and AI analysis", href: "/platform/discovery-forms" },
+        },
+        {
+          n: 2,
+          stage: "create",
+          name: "The strategy hub",
+          replaces: "Word files and decks",
+          promise:
+            "Most strategies live in a file nobody opens after the meeting. Here it lives where it gets used.",
+          icon: "layers",
+          feats: [
+            { name: "Brand foundations", line: "Vision, mission, purpose and values." },
+            {
+              name: "Positioning and competitors",
+              line: "Where your brand stands, and who stands around it.",
+            },
+            {
+              name: "Audiences",
+              line: "Who you're speaking to, and what they need to hear.",
+            },
+            {
+              name: "Voice traits",
+              line: "“We are this, not that”. The basis for the tone checker later.",
+            },
+            {
+              name: "Both languages",
+              line: "Every field in Arabic and English, side by side.",
+            },
+            {
+              name: "From the analysis in one click",
+              line: "AI findings arrive as drafts; accept the ones that fit.",
+            },
+            {
+              name: "It carries itself across",
+              line: "Approved strategy shows up in the guideline site and the brand voice, with no copying.",
+            },
+            {
+              name: "A strategy assistant and brainstorm",
+              line: "Thinks with you about positioning, naming and lines.",
+              chip: "strategy-ai",
+            },
+          ],
+          link: { label: "The strategy hub", href: "/platform/strategy-hub" },
+        },
+        {
+          n: 3,
+          stage: "create",
+          name: "Moodboards",
+          replaces: "Milanote and Pinterest",
+          promise: "Your references don't stay images. They become decisions.",
+          icon: "grid",
+          feats: [
+            {
+              name: "An ordered board",
+              line: "Ready-made zones to group references by what they are.",
+            },
+            {
+              name: "Colour from your images",
+              line: "Markyos pulls the palette out of the real pixels in your images and proposes it as a draft.",
+            },
+            {
+              name: "Private until you approve it",
+              line: "Inspiration references never appear on a public page.",
+            },
+            {
+              name: "A live shared board",
+              line: "You, your team and your client on the same board at the same time, the client joining by link with no account.",
+              chip: "whiteboard",
+            },
+            {
+              name: "Live brand pieces",
+              line: "Your approved logo, colours and fonts as objects on the board, updating when they change.",
+              chip: "board-shapes",
+            },
+            {
+              name: "AI art direction",
+              line: "The brand brain reads the board and suggests mood words, colours, and Arabic/Latin font pairings.",
+              chip: "board-shapes",
+            },
+          ],
+          link: { label: "Moodboards", href: "/platform/moodboards" },
+        },
+        {
+          n: 4,
+          stage: "create",
+          name: "The asset hub",
+          replaces: "Google Drive and Dropbox",
+          promise: "Drop the folder. We'll do the sorting.",
+          icon: "folderOpen",
+          feats: [
+            {
+              name: "File intake",
+              line: "Drop a folder or a zip, and Markyos opens it in your browser.",
+            },
+            {
+              name: "Automatic sorting",
+              line: "It recognises logos and which kind each one is, groups fonts into families, and extracts colours.",
+            },
+            {
+              name: "Arabic fonts",
+              line: "It checks which fonts actually support Arabic.",
+            },
+            {
+              name: "One confirmation",
+              line: "“We found 6 logo files, 2 font families and 9 colours.” You confirm and move on.",
+            },
+            {
+              name: "One correct version",
+              line: "Every file in its place, and the approved version always in front.",
+            },
+            {
+              name: "Font licences",
+              line: "Fonts not licensed for distribution are shown but not downloadable.",
+            },
+          ],
+          link: { label: "The asset hub", href: "/platform/asset-library" },
+        },
+        {
+          n: 5,
+          stage: "create",
+          name: "The guideline site",
+          replaces: "A PDF guideline and Guidelines.site",
+          promise: "From the final files to a complete guideline site. In a few clicks.",
+          icon: "book",
+          feats: [
+            {
+              name: "8 ready-made looks",
+              line: "Pick one, and the site is built from what the project contains.",
+            },
+            {
+              name: "16 sections that build themselves",
+              line: "The logo system with clear space and misuse examples, colour with contrast checks, type, imagery, strategy.",
+            },
+            {
+              name: "A full editor",
+              line: "19 section layouts, blocks you add as you like, undo and redo.",
+            },
+            {
+              name: "Both languages",
+              line: "One guideline every visitor reads in their own language, not two guidelines.",
+            },
+            { name: "On every screen", line: "Review on desktop, tablet and phone." },
+            {
+              name: "It updates itself",
+              line: "Change a colour in the assets and it changes on every page of the guideline.",
+            },
+            {
+              name: "Safe publishing",
+              line: "A Markyos link, your own domain, or password protection.",
+            },
+          ],
+          link: { label: "The guideline site", href: "/platform/guideline-sites" },
+        },
+        {
+          n: 6,
+          stage: "create",
+          name: "The studio board",
+          replaces: "Tracking spreadsheets and Trello",
+          promise: "Every client, and every stage they're in, at a glance.",
+          icon: "scan",
+          feats: [
+            {
+              name: "A track per project",
+              line: "Discovery, analysis, strategy, exploration, design, intake, build, handoff. Skip what you don't need.",
+            },
+            {
+              name: "A board by stage",
+              line: "All your projects in columns, so you know what needs you today.",
+            },
+            { name: "Team and roles", line: "Owner, editor, viewer." },
+            {
+              name: "Clients as guests",
+              line: "On the form and the review, with no account and no limit.",
+            },
+            {
+              name: "Sign-off pins",
+              line: "Your client approves the core guideline sections, and every approval is kept with its date.",
+            },
+          ],
+          link: { label: "The studio board", href: "/platform/studio-board" },
+        },
+        {
+          n: 7,
+          stage: "handOver",
+          name: "Handoff",
+          replaces: "The zip file and the goodbye email",
+          promise:
+            "No zip. No “final_FINAL_v3.pdf”. A brand your client genuinely owns.",
+          icon: "key",
+          feats: [
+            {
+              name: "Ownership transfer",
+              line: "Invite your client, and the hub becomes theirs on their own account.",
+            },
+            { name: "You keep a role", line: "Editor or viewer, whichever you agreed." },
+            {
+              name: "Your slot frees up",
+              line: "The project stops counting against your plan the moment it's handed over.",
+            },
+            {
+              name: "Always free",
+              line: "Handoff is free on every plan, and the hub stays live on the client's free plan.",
+            },
+            {
+              name: "The partner reward",
+              line: "20% of what your client pays in their first year, as credit on your subscription.",
+            },
+            {
+              name: "Their first year up front",
+              line: "Pay their first year on the Brand plan at $190 instead of $228, and add it to your project's value.",
+            },
+          ],
+          link: { label: "Handoff and the partner reward", href: "/platform/handoff" },
+        },
+        {
+          n: 8,
+          stage: "manage",
+          name: "Brand voice and the tone checker",
+          replaces: "Grammarly and Writer, for everything to do with your brand's voice",
+          promise: "Does this text speak in your brand's voice? Know in seconds.",
+          icon: "penSquare",
+          feats: [
+            {
+              name: "Voice traits and examples",
+              line: "Write how your brand speaks once, with sample text that shows it.",
+            },
+            {
+              name: "An Arabic register per channel",
+              line: "Modern Standard, Gulf, Egyptian or Levantine, and British or American English.",
+            },
+            {
+              name: "A term base",
+              line: "Preferred, banned, do-not-translate, and the approved translation for every word.",
+            },
+            {
+              name: "The quick review",
+              line: "A score out of 100, the reason for every note, banned words, and register mismatches.",
+            },
+            {
+              name: "The deep review",
+              line: "An explanation for every note, and a suggested rewrite for each sentence.",
+            },
+            {
+              name: "Rewrite, or translate, in the brand's voice",
+              line: "Arabic to English and back, following your term base.",
+            },
+            { name: "Your text isn't stored", line: "We keep the score, not the words." },
+          ],
+          link: { label: "Brand voice", href: "/platform/brand-voice" },
+          link2: { label: "The tone checker", href: "/platform/tone-checker" },
+        },
+        {
+          n: 9,
+          stage: "manage",
+          name: "The whole company",
+          replaces: "Shared folders, and “where's the logo?” messages",
+          promise: "Editors change the brand. Everyone else uses it, free.",
+          icon: "building",
+          feats: [
+            {
+              name: "Unlimited viewers",
+              line: "On paid plans every employee gets into the hub free, downloads the right file, and checks their own writing.",
+            },
+            {
+              name: "Align the leadership",
+              line: "One workshop for your leaders, and a report showing where they agree and where they don't. The first report is free.",
+            },
+            {
+              name: "Partner links",
+              line: "Share approved files with your agency or printer over a link that expires on a date you set.",
+            },
+            {
+              name: "Invite the studio",
+              line: "Your studio works inside your brand without counting against your editors.",
+            },
+            {
+              name: "Department playbooks and email signatures",
+              line: "Voice and key messages per department, and a bilingual signature for every employee.",
+              chip: "department-playbooks",
+            },
+            {
+              name: "Templates, reviews and brand health",
+              line: "Posts and decks with your real assets, approvals before publishing, and a dashboard you show the board.",
+              chip: "brand-health",
+            },
+          ],
+          link: { label: "Viewers and sharing", href: "/platform/team-and-sharing" },
+        },
+      ],
       cells: [
         { name: "Discovery", href: "/platform#discovery" },
         {
@@ -653,45 +1304,112 @@ export const copy: SiteCopy = {
       ],
     },
     replaceStack: {
-      headline: "Retire the tools that were holding your brand together.",
-      columns: { job: "The job", usually: "What it usually takes", markyos: "In Markyos" },
+      headline: "Fewer files. A clearer brand.",
+      columns: {
+        job: "The job",
+        usually: "You use today",
+        markyos: "In Markyos",
+        change: "What actually changes",
+      },
       rows: [
         {
-          job: "Discovery",
-          usually: "A general form tool and a lot of copy-paste",
-          markyos: "Bilingual brand forms, and an AI read on the answers",
+          job: "The discovery form",
+          usually: "Google Forms · Typeform · Tally",
+          markyos: "Bilingual brand forms, with questions a strategist wrote",
+          change: "Answers become an analysis and strategy drafts, with no copy-paste",
         },
         {
-          job: "Exploring a direction",
-          usually: "A whiteboard tool that doesn't know your brand",
-          markyos: "A moodboard with your real palette (live whiteboard coming spring 2027)",
+          job: "Reading the answers",
+          usually: "Two hours of your time, or ChatGPT with no context",
+          markyos: "AI brief analysis: contradictions, missing questions, directions",
+          change: "The first one is free on every project",
         },
         {
-          job: "Guidelines",
-          usually: "A PDF that gets opened once",
-          markyos: "A live guideline site that builds itself",
+          job: "Strategy",
+          usually: "Word · Google Docs · Notion · a deck",
+          markyos: "A strategy hub built for brands, in both languages",
+          change: "It carries through to the guideline and the voice, instead of sitting in a folder",
+        },
+        {
+          job: "Moodboards",
+          usually: "Milanote · Pinterest · Miro",
+          markyos: "A moodboard that pulls the palette out of your real images",
+          change: "The board turns into decisions: colours and drafts. And a live board with your client",
+          changeChip: "whiteboard",
         },
         {
           job: "Files",
-          usually: "A shared folder with five versions of the logo",
-          markyos: "One asset library, always current",
+          usually: "Google Drive · Dropbox",
+          markyos: "An asset library that sorts your files for you",
+          change: "One correct version of every logo, font and colour",
         },
         {
-          job: "Voice",
-          usually: "A per-seat writing tool that doesn't know your strategy",
-          markyos: "A tone checker that checks against your voice, priced per company",
+          job: "The guideline",
+          usually: "A PDF out of InDesign · Guidelines.site",
+          markyos: "A guideline site built from the project's own files, in both languages",
+          change: "Minutes instead of days, and connected to everything before it",
         },
         {
           job: "Handoff",
-          usually: "A zip file and a goodbye email",
-          markyos: "Ownership of a live hub",
+          usually: "A zip over WeTransfer and an email",
+          markyos: "Ownership of a live brand hub, transferred",
+          change: "Your client owns their brand, and you earn when they upgrade",
+        },
+        {
+          job: "Brand voice",
+          usually: "Grammarly · Writer · ChatGPT",
+          markyos: "A tone checker that knows your voice and your terms",
+          change: "It understands Arabic and its registers, and it's priced per company, not per person",
+        },
+        {
+          job: "Tracking projects",
+          usually: "A spreadsheet · Trello",
+          markyos: "A studio board by the stage each project is in",
+          change: "You know where every client stands at a glance",
+        },
+        {
+          job: "Employee questions",
+          usually: "An endless thread to the marketing manager",
+          markyos: "“Ask the brand”",
+          chip: "ask-the-brand",
+          change: "The employee answers it themselves, from the hub",
+        },
+        {
+          job: "Your AI tools",
+          usually: "ChatGPT and Claude, with no idea what your brand is",
+          markyos: "The AI connector",
+          chip: "ai-connector",
+          change: "They read your actual brand before they write",
         },
       ],
       line: "Fewer tabs. One brand. Both languages.",
+      subheadline:
+        "An honest comparison, stop by stop. What matters isn't how many tools you drop. It's that everything left is connected.",
+      trademarkNote:
+        "The names above are trademarks of their owners, and are mentioned only to describe the tools people commonly use.",
+      link: { label: "The full comparison", href: "/compare/tool-stack" },
+      notReplacedHeadline: "What Markyos does not replace",
+      notReplaced: [
+        {
+          title: "Your design tool",
+          line: "Design in Figma or Illustrator exactly as you do today. Markyos takes the final files and surrounds them with everything they need.",
+          icon: "bezier",
+        },
+        {
+          title: "Sales and invoicing",
+          line: "Proposals and invoices stay in your own tools.",
+          icon: "invoice",
+        },
+        {
+          title: "The whiteboard for everything",
+          line: "If you use Miro for meetings that have nothing to do with the brand, it keeps its place. Our boards are built for brands.",
+          icon: "chalkboard",
+        },
+      ],
     },
 
     comingNext: {
-      headline: "Where Markyos is going.",
+      headline: "The ecosystem is growing. Here's what comes next.",
       subheadline: "We ship in the open. Here's what's next, in the order it's coming.",
       phases: [
         {
@@ -710,8 +1428,9 @@ export const copy: SiteCopy = {
           season: "Mid 2027",
           theme: "Think, ask, present",
           items: [
-            "A strategy assistant that follows a real brand method",
             "Ask the Brand for every employee",
+            "A strategy assistant and brainstorm",
+            "Connect ChatGPT or Claude to your brand",
             "Check whole Word and PDF documents",
             "Turn an old PDF guideline into a living hub",
             "Ready-made brand templates: social posts, slides, letterheads, business cards",
@@ -735,7 +1454,10 @@ export const copy: SiteCopy = {
     // CONFIRM: every price below is a hypothesis until the beta pricing test
     // closes on 1 Feb 2027. Update from the final pricing page before launch.
     pricingTeaser: {
-      headline: "Start free. Pay when it's working.",
+      headline: "Start free. Pay as you grow.",
+      // §2.9. The scope of the free plans, before the three cards spell
+      // them out — a reader who stops here still leaves with the offer.
+      body: "A full project free for studios. A full hub free for companies. Paid plans from $24 a month.",
       studioToggle: "For studios",
       companyToggle: "For companies",
       studioPlans: [
@@ -800,8 +1522,7 @@ export const copy: SiteCopy = {
         "Handed-off projects don't count. Your slot frees up the moment the client owns their hub.",
       companyNote:
         "Viewers are free on every paid plan. You pay for the people who change the brand, not the people who use it.",
-      underBoth:
-        "Save about 20% with annual billing. Need more? Agency, Business and Enterprise plans are coming in 2027.",
+      underBoth: "Save about 20% with annual billing.",
       link: { label: "Compare all plans", href: "/pricing" },
     },
 
@@ -810,83 +1531,62 @@ export const copy: SiteCopy = {
     founderNote: {
       headline: "Why we built this",
       body: [
-        "I've worked as a brand designer and strategist since 2019, across the Gulf and Southeast Asia. On almost every project, the same thing happened. We'd do our best thinking, hand over the brand as a PDF, and watch it fade within a year. The Arabic was always the weakest part, because every tool we used was built for English first.",
-        "Markyos is the tool I wanted on every one of those projects. A place to run the work properly, hand it over properly, and give the client a brand their whole company can actually use. In both languages, as equals.",
+        "I've worked as a brand designer and strategist since 2019. On every project I opened the same tools: a form in Google Forms, a board in Milanote, a strategy in a Word file, a folder in Drive, a guideline as a PDF. And every time, the brand faded within months of the handoff. And the Arabic was always the weakest part, because every one of those tools was built for English first.",
+        "Markyos is the place I wanted on every one of those projects: one ecosystem where a brand is made, handed over, and lives, in Arabic and English as equals.",
       ],
-      signature: "— Abdullah Saeedan, Co-founder",
+      signature: "Abdullah Saeedan, Founder",
     },
 
     faq: {
+      /*
+       * Three questions, not twelve. v3 folds the FAQ into the pricing
+       * section (§2.9) and sends the rest to /pricing#faq, where the deck
+       * gives all fourteen a home. The nine that left are not lost: every
+       * one of them is in Part D, Page 1 of the English deck.
+       *
+       * These three are the three the deck chose, in its order: what
+       * Markyos is not, who can start, and what the AI will never do.
+       */
       headline: "Questions, answered",
       items: [
         {
-          question: "Who is Markyos for?",
-          answer:
-            "Two kinds of people. Studios and freelance designers who make brands for clients, and companies (usually a marketing manager or brand lead) who run their own brand. You choose which one you are when you sign up.",
-        },
-        {
-          question:
-            "I'm a designer and I also run marketing at a company. Do I need two accounts?",
-          answer:
-            "No. One login can have both a studio workspace and a company workspace. Switch between them from the menu in the top corner.",
-        },
-        {
           question: "Is Markyos a design tool?",
           answer:
-            "No. Keep designing in Figma, Illustrator or whatever you use. Markyos is where everything around the design lives: the brief, the strategy, the exploration, the guideline site, and the brand after it's handed over.",
+            "No. Design in Figma or Illustrator. Markyos holds everything around the design.",
+        },
+        {
+          question: "Do I need a studio to use it?",
+          answer: "No. A company can start on its own, and so can a studio.",
         },
         {
           question: "Does the AI design logos?",
-          answer:
-            "Never. AI in Markyos reads, compares and drafts words. It doesn't draw logos or invent brand lettering, and everything it suggests waits for a person to accept it.",
-        },
-        {
-          question: "What happens to my client's hub if they never pay?",
-          answer:
-            "It stays live and editable on the free company plan, with up to 2 editors, a Markyos web address, and a small “Made with Markyos” badge. They upgrade when they want their whole team in, their own domain, and no badge.",
-        },
-        {
-          question: "What counts as an “active project”?",
-          answer:
-            "A project you can still edit. Once you hand it over to the client or archive it, it stops counting, and the slot is free again.",
-        },
-        {
-          question: "What's the difference between an editor and a viewer?",
-          answer:
-            "Editors can change the brand. Viewers can see it, download approved files and check their own writing. On paid company plans, viewers are free and unlimited.",
-        },
-        {
-          question: "How good is the Arabic, really?",
-          answer:
-            "Arabic isn't a translation layer in Markyos. The interface mirrors fully, both scripts have their own logo and font slots, and the tone checker understands the difference between Modern Standard, Gulf, Egyptian and Levantine Arabic. The discovery questions were written in both languages by a brand strategist.",
-        },
-        {
-          question: "I already have brand guidelines as a PDF. Can I bring them in?",
-          answer:
-            "Yes. Drop your brand files in and Markyos builds the hub from them. Soon, it will also read your old PDF and draft the guideline sections, voice and key terms from it.",
-          coming: "document-checks",
-        },
-        {
-          question: "Is my content safe?",
-          answer:
-            "Text you run through the tone checker isn't stored unless you choose to save it, and saved text is deleted after 30 days. Nothing in your workspace goes public until you publish it, and you can protect a published hub with a password.",
-        },
-        {
-          question: "Can I use my own domain?",
-          answer: "Yes, on paid plans. Password protection is available too.",
-        },
-        {
-          question: "How do I pay?",
-          answer:
-            "By card, through Stripe, in US dollars. Cards that only work on the Mada network aren't supported yet.",
+          answer: "Never. It reads and drafts words. The design is yours.",
         },
       ],
+      link: { label: "All questions", href: "/pricing#faq" },
     },
 
+    /*
+     * The close.
+     *
+     * "Built. Shared. Alive." is the English deck's §2.10, and it is back
+     * after being replaced here once before. The argument against it was
+     * that three passive verbs address nobody in the last place a visitor
+     * reads; the argument for it is that it is the three stages of the page
+     * said in three words, and it is the line the Arabic closes on too
+     * («تُبنى. تُشارك. تحيا.»), which is what keeps the two editions ending
+     * on the same beat.
+     *
+     * It disagrees with MARKYOS-DESIGN-SYSTEM.md §11, which lists "Build the
+     * brand. Hand it over. Keep it alive." among the approved verbatim
+     * lines. The copy deck is dated 8 Nov 2026 and the design system 20 Oct;
+     * the deck wins, and §11 is the thing that is now out of date. The
+     * older line is not retired — the deck keeps it for the studios page.
+     */
     finalCta: {
-      eyebrow: "",
-      headline: "Your brand deserves a better home than a PDF.",
-      subheadline: "Start free today. Build it, hand it over, or run it, in Arabic and English.",
+      eyebrow: "Start today",
+      headline: "Built. Shared. Alive.",
+      subheadline: "Start free, studio or company.",
       studioCta: { label: "I make brands for clients", href: "/start?type=studio" },
       companyCta: { label: "I run my company's brand", href: "/start?type=company" },
       // CONFIRM: same free-plan line as the hero. Keep the two in step.

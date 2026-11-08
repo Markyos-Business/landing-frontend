@@ -42,39 +42,56 @@ export const CTA = {
   security: { label: "تواصل بشأن الأمان", href: "/contact?topic=security" } satisfies Cta,
 } as const;
 
-/** Cross-links between pages, so a renamed route is one edit. */
+/*
+ * Cross-links between pages, so a renamed route is one edit.
+ *
+ * ── Why these say what happens and not where you land (7 Nov 2026) ───────
+ *
+ * Most of these were the destination's own name, and the pages that use them
+ * put the link directly under a card whose heading was that same name. On
+ * /solutions/companies five cards in a row read «بيت واحد لعلامتك» as the
+ * heading and «بيت واحد لعلامتك» again as the link, and /solutions/studios
+ * did it four times — the only thing the link added was that it was blue.
+ * A reader's question at that point is not "what is this section called",
+ * which they just read, but "what do I get if I press this".
+ *
+ * So each one is now an action: verb first, two or three words, and
+ * different from any heading it sits under (copy doc §11). The names that
+ * are genuinely destinations — the help centre, the legal pages, "من نحن" —
+ * stay names, because naming the place *is* the useful thing there.
+ */
 export const LINK = {
   pricing: { label: "قارن كل الخطط", href: "/pricing" } satisfies Cta,
   seePricing: { label: "شاهد الأسعار", href: "/pricing" } satisfies Cta,
-  arabic: { label: "بُنيت بالعربية", href: "/platform/arabic" } satisfies Cta,
-  security: { label: "الأمان", href: "/security" } satisfies Cta,
+  arabic: { label: "اقرأ عن العربية", href: "/platform/arabic" } satisfies Cta,
+  security: { label: "اطّلع على الأمان", href: "/security" } satisfies Cta,
   privacy: { label: "سياسة الخصوصية", href: "/privacy" } satisfies Cta,
   terms: { label: "الشروط", href: "/terms" } satisfies Cta,
-  roadmap: { label: "خريطة الطريق", href: "/roadmap" } satisfies Cta,
-  whatsNew: { label: "ما الجديد", href: "/whats-new" } satisfies Cta,
+  roadmap: { label: "شاهد خريطة الطريق", href: "/roadmap" } satisfies Cta,
+  whatsNew: { label: "اقرأ ما الجديد", href: "/whats-new" } satisfies Cta,
   help: { label: "مركز المساعدة", href: "/help" } satisfies Cta,
   about: { label: "من نحن", href: "/about" } satisfies Cta,
   contact: { label: "تواصل معنا", href: "/contact" } satisfies Cta,
 
-  projects: { label: "كل مشروع في مكان واحد", href: "/solutions/client-projects" } satisfies Cta,
-  discovery: { label: "الاستبيان والتحليل الذكي", href: "/solutions/discovery" } satisfies Cta,
-  analysis: { label: "التحليل الذكي", href: "/solutions/discovery#analysis" } satisfies Cta,
+  projects: { label: "نظّم مشاريع عملائك", href: "/solutions/client-projects" } satisfies Cta,
+  discovery: { label: "جرّب الاستبيان الذكي", href: "/solutions/discovery" } satisfies Cta,
+  analysis: { label: "شاهد التحليل الذكي", href: "/solutions/discovery#analysis" } satisfies Cta,
   guidelineSites: {
-    label: "مواقع دليل تبني نفسها",
+    label: "ابنِ دليلاً حيّاً",
     href: "/solutions/guideline-sites",
   } satisfies Cta,
-  handoff: { label: "التسليم ومكافأة الشريك", href: "/solutions/client-handoff" } satisfies Cta,
-  brandHub: { label: "بيت واحد لعلامتك", href: "/solutions/brand-hub" } satisfies Cta,
-  toneChecker: { label: "مدقّق النبرة", href: "/solutions/tone-checker" } satisfies Cta,
-  rollout: { label: "الشركة كلها، مجاناً", href: "/solutions/company-rollout" } satisfies Cta,
+  handoff: { label: "سلّم العلامة لعميلك", href: "/solutions/client-handoff" } satisfies Cta,
+  brandHub: { label: "ابنِ بيت علامتك", href: "/solutions/brand-hub" } satisfies Cta,
+  toneChecker: { label: "جرّب مدقّق النبرة", href: "/solutions/tone-checker" } satisfies Cta,
+  rollout: { label: "ضمّ الشركة كلها", href: "/solutions/company-rollout" } satisfies Cta,
   leadership: {
-    label: "وحّد رؤية القيادة",
+    label: "قارن إجابات قياداتك",
     href: "/solutions/leadership-alignment",
   } satisfies Cta,
-  brandVoice: { label: "صوت واحد باللغتين", href: "/solutions/brand-voice" } satisfies Cta,
-  studios: { label: "حلول الاستوديوهات", href: "/solutions/studios" } satisfies Cta,
-  freelancers: { label: "حلول المستقلين", href: "/solutions/freelancers" } satisfies Cta,
-  companies: { label: "حلول الشركات", href: "/solutions/companies" } satisfies Cta,
+  brandVoice: { label: "وحّد صوت علامتك", href: "/solutions/brand-voice" } satisfies Cta,
+  studios: { label: "استكشف حلول الاستوديوهات", href: "/solutions/studios" } satisfies Cta,
+  freelancers: { label: "استكشف حلول المستقلين", href: "/solutions/freelancers" } satisfies Cta,
+  companies: { label: "استكشف حلول الشركات", href: "/solutions/companies" } satisfies Cta,
 } as const;
 
 /**

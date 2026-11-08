@@ -1,385 +1,385 @@
-import type { AiAlongsideCopy } from "@/content/types";
-import { mockCopy, type MockCopy } from "@/content/mocks";
-import { Button } from "@/components/ui/Button";
-import { Section, SectionFoot, SectionHead } from "@/components/ui/Section";
 import type { Locale } from "@/lib/i18n/locales";
+import type { AiAlongsideCopy } from "@/content/types";
+import type { SiteCopy } from "@/content/types";
+import { Chip } from "@/components/ui/Chip";
+import { Icon } from "@/components/ui/Icon";
+import {
+  Accent,
+  TextLink,
+  Band,
+  BLUE_DEEP,
+  Display,
+  INK,
+  INK_62,
+  LIFT,
+  PANEL,
+  RING_6,
+} from "./landing";
 
 /*
- * What the AI actually does — shown first, explained second.
+ * The brand brain — §1.7, at copy v2.1.
  *
- * `Markyos Homepage v2.dc.html` §03. Three articles, each one a picture of
- * the product with a short title and two muted lines beneath it, and the way
- * out on the far edge of that same row. That is the reference's own figure /
- * caption arrangement (UI-UX Design Reference/17, 18), which this repo
- * already has as `SectionFoot` — so these articles compose it rather than
- * rebuilding it.
+ * ── What this section answers ────────────────────────────────────────────
  *
- * ── Why this replaced AiRules on the homepage ─────────────────────────────
+ * The question a buyer has about AI in a brand tool is not "what can it
+ * generate?" but "will my brand come out better?". v2.0's section answered
+ * the first: a claim, the list of sources the brain reads, and three
+ * articles showing the reading turn into work. The copy deck's note on the
+ * rewrite says the capabilities, the costs and the full explanation belong
+ * on `/platform/brand-brain`, and that the homepage should answer the second
+ * question instead — which it can only do twice, because there are two
+ * starting points and they are two different answers.
  *
- * `AiRules` is the stance: four promises about what the AI will never do.
- * It is the more important section and it is still in `content/`, rendered
- * at /platform. But a promise is unreadable before you know what the thing
- * is — "it won't draw your logo" means nothing to somebody who has not yet
- * been told the AI reads briefs. v2 shows the three capabilities here and
- * keeps the four promises where somebody who now cares can find them.
+ * So the shape of the section *is* the argument:
  *
- * The words inside the pictures come from `content/mocks.ts`, in both
- * languages. They used to be English literals here, which put 46 English
- * strings on the Arabic homepage — a section arguing that the AI reads
- * Arabic, illustrated by an interface that does not.
+ *   the parts a brand is made of, and that nobody sees them together
+ *     → what it does to the result, in two columns
+ *     → the six seams where the parts come apart
+ *     → what it will not do
  *
- * The Arabic *content* inside them stays Arabic in both editions: the sample
- * caption, and the key term being corrected. Those are the example, not the
- * interface.
+ * ── The two columns are a table, and are built as one ────────────────────
+ *
+ * Four rows against two headed columns is tabular data — "starts from",
+ * "shows you", "suggests", "so you end up with", each said once for a new
+ * brand and once for an existing one. A pair of card lists would lose the
+ * row pairing, which is the whole comparison: the value of the second column
+ * is that it sits beside the first.
+ *
+ * It collapses on a phone the way the comparison table does, into one block
+ * per row with the column name above each cell, because four columns of
+ * Arabic at 390px is not a table anybody reads.
+ *
+ * ── The ChatGPT line ─────────────────────────────────────────────────────
+ *
+ * It is a body paragraph now rather than the headline, but it still opens
+ * with a Latin product name inside an Arabic sentence, so it still needs the
+ * explicit `dir` — the bidi algorithm would otherwise drag the Arabic verb
+ * to the wrong side of the name, in the section claiming the product does
+ * not do that. `LatinLead` is what `HeadlineWithLatin` was.
  */
 
 export function AiAlongside({
   copy,
-  locale,
-}: {
-  copy: AiAlongsideCopy;
+  chips, locale }: {
   locale: Locale;
+  copy: AiAlongsideCopy;
+  chips: SiteCopy["chips"];
 }) {
-  const { t, dir, lang } = mockCopy(locale);
-  const visuals = [Explorations(t), BriefAnalysis(t, dir), ToneCheck(t)];
+  const effect = copy.effect;
 
   return (
-    <Section id="ai" labelledBy="ai-heading" rule>
-      <SectionHead
-        id="ai-heading"
-        title={copy.headline}
-        align="start"
-        action={<Button cta={copy.cta} locale={locale} variant="outline" size="sm" />}
-      />
+    <Band id="brain" labelledBy="brain-heading">
+      <div
+        className="mk-seq"
+        style={{ position: "relative", maxWidth: 1040, margin: "0 auto" }}
+      >
+        {/*
+         * Start-aligned, with the rest of the page.
+         *
+         * This head was centred and the 680px body column under it centred
+         * with it, over an effect table whose every row starts at the start
+         * edge — so the section opened in the middle of the page and then
+         * stepped back to the edge. Two further reasons it is the head that
+         * moves rather than the table: centred body copy at this measure
+         * gets harder to read with every line, which is the argument the
+         * `prose` block is already built around, and three paragraphs of
+         * Arabic is the longest run of body copy in any section here.
+         *
+         * `alignItems` is the cross axis of a column, which is the inline
+         * axis — `start` resolves to the right edge on the Arabic page and
+         * the left on the English one, which is why it is not `flex-start`
+         * spelled physically.
+         */}
+        <div
+          style={{
+            textAlign: "start",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "start",
+            marginBlockEnd: 64,
+          }}
+        >
+          {copy.eyebrow ? (
+            <p
+              className="mk-bidi"
+              style={{
+                margin: "0 0 14px",
+                fontSize: 14,
+                fontWeight: 500,
+                color: BLUE_DEEP,
+              }}
+            >
+              {copy.eyebrow}
+            </p>
+          ) : null}
 
-      <div className="mt-12 flex flex-col gap-5">
-        {copy.articles.map((article, i) => (
-          <article
-            key={article.title}
-            className="mk-feature overflow-hidden shadow-[0_0_0_1px_var(--hairline-strong)]"
+          <Display id="brain-heading" style={{ maxWidth: 860 }}>
+            <span className="mk-bidi">{copy.headline}</span>{" "}
+            {copy.headlineAccent ? (
+              <Accent>
+                <span className="mk-bidi">{copy.headlineAccent}</span>
+              </Accent>
+            ) : null}
+          </Display>
+
+          <div style={{ maxWidth: 680, marginBlockStart: 18 }}>
+            {copy.body.map((para, i) => (
+              <p
+                key={para}
+                className="mk-bidi"
+                style={{
+                  margin: i ? "14px 0 0" : 0,
+                  fontSize: 17,
+                  lineHeight: 1.9,
+                  /* The last paragraph is the section's sharpest line — the
+                     one that was the headline at v2.0 — so it is set in the
+                     ink the rest of the body is not. */
+                  color: i === copy.body.length - 1 ? INK : INK_62,
+                  fontWeight: i === copy.body.length - 1 ? 500 : 400,
+                }}
+              >
+                <LatinLead text={para} />
+              </p>
+            ))}
+          </div>
+        </div>
+
+        {/* What it does to the result. */}
+        {effect ? (
+          <div
+            className="mk-pop"
+            style={{
+              background: "#fff",
+              borderRadius: 28,
+              boxShadow: LIFT,
+              padding: "clamp(20px,3vw,34px)",
+            }}
           >
-            {/* The product's own direction, not the page's — on the Arabic
-                edition this is an Arabic interface, so it mirrors. */}
-            <div dir={dir} lang={lang}>
-              {visuals[i]}
-            </div>
+            <h3
+              className="mk-bidi"
+              style={{ margin: 0, fontWeight: 500, fontSize: 20, lineHeight: 1.4 }}
+            >
+              {effect.headline}
+            </h3>
 
-            {/*
-             * `mt-0`: SectionFoot's own top margin is for the gap between a
-             * section's grid and its floor. Inside a card the picture already
-             * ends where its own padding says it does.
-             */}
-            <SectionFoot
-              className="!mt-0 px-5 pb-7 sm:px-7"
-              title={article.title}
-              body={article.line}
-              action={<Button cta={article.cta} locale={locale} variant="link" />}
-            />
-          </article>
-        ))}
+            <ul
+              className="mk-seq"
+              style={{
+                display: "grid",
+                gap: 2,
+                margin: "20px 0 0",
+                padding: 0,
+                listStyle: "none",
+              }}
+            >
+              {/*
+               * The column names, once, for the width at which the row is a
+               * row. Below it the row stacks and each cell carries its own
+               * name instead — see `.mk-effect-head`. `aria-hidden`, because
+               * this is a presentation list rather than a real table and a
+               * screen reader has no way to associate a heading `<li>` with
+               * the cells below it; the per-cell names are the accessible
+               * version and they are in the DOM at every width.
+               */}
+              <li
+                aria-hidden="true"
+                className="mk-effect-row mk-effect-head-row mk-still"
+              >
+                <span />
+                <span className="mk-bidi mk-effect-col">{effect.newBrand}</span>
+                <span className="mk-bidi mk-effect-col">{effect.existingBrand}</span>
+              </li>
+
+              {effect.rows.map((row) => (
+                /* The row's layout is a class and not an inline style: it
+                   changes at 42rem, and an inline style cannot carry a media
+                   query. See `.mk-effect-row` in globals.css. */
+                <li key={row.label} className="mk-effect-row">
+                  <span
+                    className="mk-bidi mk-effect-label"
+                    style={{ fontSize: 14, fontWeight: 500, color: INK }}
+                  >
+                    {row.label}
+                  </span>
+                  <Cell head={effect.newBrand} body={row.newBrand} />
+                  <Cell head={effect.existingBrand} body={row.existingBrand} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {/* The seams. */}
+        {copy.seams?.length ? (
+          <div style={{ marginBlockStart: 64 }}>
+            {copy.seamsHeadline ? (
+              <h3
+                className="mk-bidi"
+                style={{
+                  margin: "0 0 20px",
+                  fontWeight: 500,
+                  fontSize: "clamp(20px,2.4vw,26px)",
+                  lineHeight: 1.45,
+                  textWrap: "pretty",
+                }}
+              >
+                {copy.seamsHeadline}
+              </h3>
+            ) : null}
+
+            <ul
+              className="mk-seq-pop"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,280px),1fr))",
+                gap: 14,
+                margin: 0,
+                padding: 0,
+                listStyle: "none",
+              }}
+            >
+              {copy.seams.map((seam) => (
+                <li
+                  key={seam.title}
+                  style={{
+                    padding: 20,
+                    borderRadius: 20,
+                    background: "#fff",
+                    boxShadow: RING_6,
+                  }}
+                >
+                  <div
+                    style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10 }}
+                  >
+                    <Icon name="exchange" size={16} style={{ color: BLUE_DEEP }} />
+                    {seam.chip ? <Chip feature={seam.chip} chips={chips} /> : null}
+                  </div>
+                  <p
+                    className="mk-bidi"
+                    style={{
+                      margin: "10px 0 0",
+                      fontSize: 16,
+                      fontWeight: 500,
+                      lineHeight: 1.5,
+                      textWrap: "pretty",
+                    }}
+                  >
+                    {seam.title}
+                  </p>
+                  <p
+                    className="mk-bidi"
+                    style={{ margin: "6px 0 0", fontSize: 14.5, lineHeight: 1.75, color: INK_62 }}
+                  >
+                    {seam.line}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {/* And what it will not do. */}
+        {copy.limits?.length || copy.connector ? (
+          <div
+            className="mk-rise"
+            style={{
+              marginBlockStart: 44,
+              padding: "clamp(18px,2.6vw,28px)",
+              borderRadius: 24,
+              background: PANEL,
+            }}
+          >
+            {copy.limitsHeadline ? (
+              <h3
+                className="mk-bidi"
+                style={{ margin: 0, fontWeight: 500, fontSize: 17, lineHeight: 1.4 }}
+              >
+                {copy.limitsHeadline}
+              </h3>
+            ) : null}
+
+            {copy.limits?.map((line) => (
+              <p
+                key={line}
+                className="mk-bidi"
+                style={{ margin: "10px 0 0", fontSize: 15.5, lineHeight: 1.85, color: INK_62 }}
+              >
+                {line}
+              </p>
+            ))}
+
+            {copy.connector ? (
+              <p
+                className="mk-bidi"
+                style={{ margin: "14px 0 0", fontSize: 15.5, lineHeight: 1.85, color: INK_62 }}
+              >
+                <span style={{ marginInlineEnd: 8, display: "inline-block" }}>
+                  <Chip feature={copy.connector.chip} chips={chips} />
+                </span>
+                {copy.connector.line}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+
+        <div style={{ marginBlockStart: 40 }}>
+          <TextLink locale={locale} href={copy.cta.href}>{copy.cta.label}</TextLink>
+        </div>
       </div>
-    </Section>
+    </Band>
   );
 }
 
-/* ── 1 · Three directions, side by side ──────────────────────────────────── */
-
-type Direction = {
-  letter: string;
-  lit: boolean;
-  bg: string;
-  ink: string;
-  font: string;
-  weight: number;
-  track: string;
-  swatches: string[];
-};
-
 /*
- * The client's palette, shown as the client's palette.
+ * One cell of the effect table, carrying its own column name.
  *
- * Only what is *design* lives here — the colour, the face, the weight. The
- * direction's name and the sentence under it are words on the page and come
- * from `content/mocks.ts`, matched by position.
- *
- * These hexes are content, not chrome — the same exemption
- * `components/mock/BrandHub.tsx` already holds (§7): a customer's brand
- * colours cannot come from our tokens, because the whole point of the
- * picture is that they are theirs. Tokenising them would make the mock
- * render our palette while claiming to show the client's, which is the one
- * thing this picture must not do.
- *
- * `npm run check:design` enforces the no-raw-hex rule, and this file is in
- * its EXEMPTIONS table (`raw-hex`) with that reasoning written out. If the
- * exploration mock ever moves, move the exemption with it — the table in
- * `scripts/check-design-rules.mjs` is the only place the carve-out is
- * recorded as a decision rather than a gap.
+ * The name is shown on a phone and hidden from 42rem up, where the row above
+ * carries it — `.mk-effect-head` in globals.css, because a media query cannot
+ * be written as an inline style. Hidden with `display: none` rather than
+ * visually-hidden: on a wide screen the column heading is the real one and
+ * repeating it in every cell would make a screen reader read it eight times.
  */
-const DIRECTIONS: Direction[] = [
-  {
-    letter: "A",
-    lit: true,
-    bg: "#F3E7C9",
-    ink: "#3F3D56",
-    font: "Georgia, serif",
-    weight: 500,
-    track: "0",
-    swatches: ["#3F3D56", "#F3E7C9", "#C8963E", "#6B4E3D"],
-  },
-  {
-    letter: "B",
-    lit: false,
-    bg: "#1B51E5",
-    ink: "#FFFFFF",
-    font: "var(--font-inter), sans-serif",
-    weight: 500,
-    track: "-0.04em",
-    swatches: ["#1B51E5", "#FFFFFF", "#7CE7AC", "#111111"],
-  },
-  {
-    letter: "C",
-    lit: false,
-    bg: "#111111",
-    ink: "#F4BE5E",
-    font: "var(--font-inter), sans-serif",
-    weight: 700,
-    track: "-0.05em",
-    swatches: ["#111111", "#F4BE5E", "#FF808B", "#FFFFFF"],
-  },
-];
-
-const Explorations = (t: MockCopy) => (
-  <div className="grid gap-6 bg-[var(--surface-1)] p-5 sm:p-10 lg:p-[4.5rem] lg:pb-14 [grid-template-columns:repeat(auto-fit,minmax(13.75rem,1fr))]">
-    {DIRECTIONS.map((d, i) => (
-      <div key={d.letter} className="flex flex-col gap-3">
-        <span
-          className={`text-[length:var(--fs-h3)] font-medium tracking-[-0.02em] ${
-            d.lit ? "text-[var(--mk-blue-edge)]" : "text-[var(--text-muted)]"
-          }`}
-        >
-          {t.ai.directions[i]?.title}
-        </span>
-        {/*
-         * The chosen direction carries the neon edge — §8's "one selected
-         * object per composition". The other two sit on a 35% version of the
-         * same edge so the row still reads as three of a kind.
-         */}
-        <div
-          className={`flex aspect-[4/5] flex-col gap-3.5 bg-[var(--canvas)] p-4.5 ${
-            d.lit
-              ? "border border-[var(--accent)] shadow-[var(--mk-glow-soft)]"
-              : "border border-[color-mix(in_srgb,var(--accent)_35%,transparent)]"
-          }`}
-        >
-          {/*
-           * Both labels in this card — the header row here and the note under
-           * the swatches — are at the 12px floor, not below it.
-           *
-           * They were 9px and 10px, which is how tight artwork gets built if
-           * nobody is checking: the card is a 4:5 box in a 13.75rem column, so
-           * every extra pixel of type has to come from somewhere, and shrinking
-           * the type is the move that costs nothing until somebody tries to
-           * read it. §13 has no exception for mock artwork and §9 says the same
-           * thing again — "nothing under 12px" — because a picture of the
-           * product is a picture of type people will have to read.
-           *
-           * Nothing had to be re-laid-out to pay for it. The header row holds
-           * "Nakhla" plus an 11-character tag, which is ~100px of the ~184px
-           * this column gives at its narrowest, and the preview block below is
-           * `flex-1`, so the few pixels the note gained come out of its
-           * whitespace rather than out of the frame.
-           */}
-          <div
-            dir="ltr"
-            className="flex justify-between text-[length:var(--fs-eyebrow)] text-[var(--text-faint)]"
-          >
-            <span>Nakhla</span>
-            <span>{t.ai.directions[i]?.tag}</span>
-          </div>
-          <div
-            className="flex flex-1 flex-col items-center justify-center gap-1 rounded-[var(--mk-r-chip)]"
-            style={{ background: d.bg, color: d.ink }}
-          >
-            <span
-              style={{
-                fontFamily: d.font,
-                fontWeight: d.weight,
-                letterSpacing: d.track,
-                fontSize: "1.875rem",
-              }}
-            >
-              Nakhla
-            </span>
-            <span
-              lang="ar"
-              dir="rtl"
-              style={{
-                fontFamily: "var(--font-arabic)",
-                fontWeight: d.weight,
-                fontSize: "1.625rem",
-              }}
-            >
-              نخلة
-            </span>
-          </div>
-          <div className="grid grid-cols-4 gap-1">
-            {d.swatches.map((hex, i) => (
-              <span
-                key={`${hex}-${i}`}
-                className="h-[1.125rem] rounded-[0.125rem]"
-                style={{ background: hex }}
-              />
-            ))}
-          </div>
-          <span className="text-[length:var(--fs-eyebrow)] leading-[1.5] text-[var(--text-muted)]">
-            {t.ai.directions[i]?.note}
-          </span>
-        </div>
-      </div>
-    ))}
-  </div>
-);
-
-/* ── 2 · The brief, read across four stakeholders ────────────────────────── */
-
-/* Which row is selected is layout; the words come from the mock copy. */
-const SELECTED_STAKEHOLDER = 1;
-const SELECTED_ANSWER = 0;
-
-const COLS = "[grid-template-columns:minmax(0,2.4fr)_4.375rem_minmax(0,1fr)]";
-
-/*
- * The panel takes the product's direction, not a fixed one.
- *
- * It used to be hard-coded `dir="ltr"`, on the reasoning that §9 says a mock
- * does not mirror. That read the rule too widely: §9 is about the *window* —
- * the browser chrome, the traffic lights — which stays where the operating
- * system puts it. The page inside the window is the product, and the product
- * has an Arabic edition. Pinning it to LTR meant the Arabic homepage showed
- * an English-only screen in the middle of a section claiming the AI reads
- * Arabic.
- *
- * Each answer still carries its own direction, because the table really is
- * mixed — that is the situation the screen is in.
- */
-const BriefAnalysis = (t: MockCopy, dir: "rtl" | "ltr") => (
-  <div
-    dir={dir}
-    className="grid h-[22.5rem] overflow-hidden px-5 pt-10 sm:px-10 lg:px-[4.5rem] [grid-template-columns:minmax(11.25rem,16.25rem)_minmax(0,1fr)] [mask-image:linear-gradient(#000_60%,transparent)] [-webkit-mask-image:linear-gradient(#000_60%,transparent)]"
-  >
-    <div className="flex flex-col gap-0.5 border-e border-[var(--hairline-strong)] pe-4 text-[length:var(--fs-ui)]">
-      <span className="px-2.5 py-2 text-[var(--text-muted)]">{t.ai.brief.group}</span>
-      {t.ai.brief.stakeholders.map((person, i) => (
-        <span
-          key={person.name}
-          className={`flex items-center gap-2.5 rounded-[var(--mk-r-button)] py-2 pe-2.5 ps-8 ${
-            i === SELECTED_STAKEHOLDER
-              ? "bg-[var(--mk-fill-2)] text-[var(--text)]"
-              : "text-[var(--text-secondary)]"
-          }`}
-        >
-          {person.name}
-          <span className="ms-auto text-[length:var(--fs-eyebrow)] text-[var(--text-faint)]">
-            {person.count}
-          </span>
-        </span>
-      ))}
-      <span className="px-2.5 py-2 text-[var(--text-faint)]">{t.ai.brief.invite}</span>
-    </div>
-
-    <div className="flex min-w-0 flex-col text-[length:var(--fs-ui)]">
-      <div
-        className={`grid gap-4 border-b border-[var(--hairline-strong)] px-5 py-2.5 text-[length:var(--fs-eyebrow)] text-[var(--text-faint)] ${COLS}`}
+function Cell({ head, body }: { head: string; body: string }) {
+  return (
+    <span style={{ display: "block", minInlineSize: 0 }}>
+      {/* No `display` here. It was `block` inline, which beat the media
+          query in globals.css that hides this from 42rem up — so every cell
+          on a desktop repeated its column's name, eight times, under a table
+          that had no column headings at all. */}
+      <span
+        className="mk-bidi mk-effect-head"
+        style={{ fontSize: 12, fontWeight: 500, color: BLUE_DEEP, marginBlockEnd: 2 }}
       >
-        <span>{t.ai.brief.columns.answer}</span>
-        <span>{t.ai.brief.columns.lang}</span>
-        <span>{t.ai.brief.columns.signal}</span>
-      </div>
-      {t.ai.brief.answers.map((a, i) => (
-        <div
-          key={a.text}
-          className={`grid items-center gap-4 border-b border-[var(--hairline)] px-5 py-3.5 ${COLS} ${
-            i === SELECTED_ANSWER
-              ? "bg-[var(--accent-soft)] shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--accent)_70%,transparent),inset_0_0_24px_color-mix(in_srgb,var(--accent)_18%,transparent)]"
-              : ""
-          }`}
-        >
-          <span
-            dir={a.ar ? "rtl" : "ltr"}
-            lang={a.ar ? "ar" : undefined}
-            className="truncate"
-            style={a.ar ? { fontFamily: "var(--font-arabic)" } : undefined}
-          >
-            {a.text}
-          </span>
-          {/* A locale code is always Latin and always reads left to right. */}
-          <span
-            dir="ltr"
-            className="text-[length:var(--fs-eyebrow)] text-[var(--text-muted)]"
-          >
-            {a.lang}
-          </span>
-          <span className="truncate text-[length:var(--fs-eyebrow)] text-[var(--text-muted)]">
-            {a.signal}
-          </span>
-        </div>
-      ))}
-    </div>
-  </div>
-);
+        {head}
+      </span>
+      <span
+        className="mk-bidi"
+        style={{ display: "block", fontSize: 14.5, lineHeight: 1.7, color: INK_62 }}
+      >
+        {body}
+      </span>
+    </span>
+  );
+}
 
-/* ── 3 · One caption, checked ────────────────────────────────────────────── */
+/*
+ * A paragraph whose first word is a Latin product name.
+ *
+ * Splits on a leading run of Latin characters and sets it `dir="ltr"` in
+ * Inter. Without this, "ChatGPT يعرف كل شيء" renders with the verb on the
+ * wrong side of the name in an RTL paragraph — the exact bug the section it
+ * sits in claims the product does not have.
+ */
+function LatinLead({ text }: { text: string }) {
+  const match = text.match(/^([A-Za-z][A-Za-z0-9.+-]*)\s*/);
+  if (!match) return <>{text}</>;
 
-/* The hue per check is a verdict, not a word, so it stays here. */
-const CHECK_DOTS = [
-  "var(--mk-state-approved)",
-  "var(--mk-state-approved)",
-  "var(--mk-state-review)",
-  "var(--mk-state-rejected)",
-];
-
-const ToneCheck = (t: MockCopy) => (
-  <div className="px-5 pt-10 sm:px-10 lg:px-[4.5rem]">
-    <div className="relative grid gap-8 border border-[color-mix(in_srgb,var(--mk-state-review)_55%,transparent)] bg-[image:radial-gradient(50%_60%_at_30%_50%,var(--accent-soft),transparent_70%)] p-6 sm:p-8 lg:p-12 [grid-template-columns:repeat(auto-fit,minmax(min(100%,18.75rem),1fr))]">
-      <div className="flex flex-col gap-3">
-        <span className="text-[length:var(--fs-eyebrow)] text-[var(--text-faint)]">
-          {t.ai.tone.channel}
-        </span>
-        <p
-          dir="rtl"
-          lang="ar"
-          className="m-0 text-[clamp(1.25rem,2.4vw,1.625rem)] leading-[1.6] text-[var(--text-secondary)]"
-          style={{ fontFamily: "var(--font-arabic)" }}
-        >
-          صباحك أحلى مع{" "}
-          {/* The key term that should have been Arabic — marked as light,
-              because the fix is a suggestion rather than an error. */}
-          <span className="border-b-2 border-[var(--accent)] text-[var(--text)] shadow-[0_6px_12px_-6px_color-mix(in_srgb,var(--accent)_80%,transparent)]">
-            Nakhla
-          </span>
-          . قهوتنا الجديدة وصلت، جرّبها اليوم من أقرب فرع
-          {/* The second exclamation mark — flagged, not lit (§7). */}
-          <span className="border-b-2 border-[var(--mk-state-rejected)] text-[var(--text)]">
-            !!
-          </span>
-        </p>
-      </div>
-      <div className="flex flex-col gap-2.5">
-        {t.ai.tone.checks.map((c, i) => (
-          <div
-            key={c.label}
-            className="flex items-center gap-3 rounded-[var(--radius-widget)] border border-[var(--hairline)] bg-[var(--surface-1)] px-3.5 py-3 text-[length:var(--fs-eyebrow)]"
-          >
-            <span
-              className="size-2 flex-none rounded-full"
-              style={{ background: CHECK_DOTS[i] }}
-            />
-            <span className="min-w-0">{c.label}</span>
-            <span className="ms-auto flex-none text-[var(--text-faint)]">{c.state}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-);
-
+  return (
+    <>
+      <span dir="ltr" style={{ fontFamily: "Inter, sans-serif" }}>
+        {match[1]}
+      </span>{" "}
+      {text.slice(match[0].length)}
+    </>
+  );
+}

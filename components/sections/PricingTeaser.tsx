@@ -1,198 +1,371 @@
 "use client";
 
-import { useId, useState } from "react";
-import type { PlanCopy, PricingTeaserCopy } from "@/content/types";
-import { Button } from "@/components/ui/Button";
-import { Section } from "@/components/ui/Section";
-import { Icon, type IconName } from "@/components/ui/Icon";
 import type { Locale } from "@/lib/i18n/locales";
+import { Words } from "@/components/ui/Words";
+import { useState } from "react";
+import type { PlanCopy, PricingTeaserCopy } from "@/content/types";
+import {
+  TextLink,
+  BLUE_DEEP,
+  Cta,
+  Display,
+  INK,
+  INK_55,
+  Lead,
+  Pool,
+  RING_6,
+  SELECTED,
+  TRACK,
+} from "./landing";
 
 /*
- * The pricing teaser.
+ * One subscription instead of seven. And start free.
  *
- * "Start free. Pay when it's working." is risk reversal in five words, and the
- * one explanatory line under each side answers the question that actually
- * stalls a decision: what counts as a project for a studio, and who counts as
- * a seat for a company.
+ * ── Two audiences, one grid ──────────────────────────────────────────────
  *
- * One recommended plan per side is lifted — the warm wash across the top of
- * the card and the only solid button in the row (Von Restorff). Exactly one:
- * two recommendations are none.
+ * Studios pay by active projects, companies pay by editors, and the two
+ * ladders happen to cost the same. Showing both at once would mean six cards
+ * and a reader working out which three are theirs; the toggle shows three.
  *
- * ── Two notes for whoever finishes this ─────────────────────────────────────
+ * It is a real radio group, not two buttons: the two options are mutually
+ * exclusive states of one control, so arrow keys move between them and a
+ * screen reader announces "1 of 2". The sliding knob is a separate
+ * absolutely-positioned element behind the labels — that way the labels
+ * never move, and only `transform` animates.
  *
- * 1. Every price here is a hypothesis until the beta pricing test closes on
- *    1 Feb 2027. Do not publish without updating content/en/index.ts from the
- *    final pricing page. See docs/BEFORE-PUBLISH.md.
- *
- * 2. The copy doc says this toggle "defaults to the path the visitor picked"
- *    earlier on the page. It defaults to studios today, because nothing yet
- *    records that choice. Wiring it means remembering the hero click — which
- *    is a decision about tracking, not about pricing, so it is deliberately
- *    not invented here. See docs/NEXT-STEPS.md.
+ * The recommended plan carries the lit ring and the badge. Exactly one, in
+ * both ladders, because a recommendation that applies to two of three cards
+ * is not one.
  */
 
-const PLAN_ICONS: IconName[] = ["user", "users", "rocket"];
+export function PricingTeaser({ copy, locale }: {
+  locale: Locale; copy: PricingTeaserCopy }) {
+  const [audience, setAudience] = useState<"studio" | "company">("studio");
+  const studio = audience === "studio";
+  const plans = studio ? copy.studioPlans : copy.companyPlans;
 
-export function PricingTeaser({
-  copy,
-  locale,
+  return (
+    <section
+      id="pricing"
+      aria-labelledby="pricing-heading"
+      style={{
+        position: "relative",
+        padding: "clamp(72px,10vw,120px) 24px",
+        background: "#fff",
+        boxShadow: "0 0 0 1px rgba(11,11,15,.04)",
+        /* clip, not hidden: `overflow: hidden` makes a scroll container, and
+           a scroll-driven `view()` timeline resolves against the nearest one
+           — so every reveal inside this section was pinned at full progress
+           and silently did nothing. `clip` clips the same pixels without
+           being scrollable, which is also closer to what this was for. */
+        overflow: "clip",
+        /* Centred heading, toggle and notes; the plan cards opt back out. */
+        textAlign: "center",
+      }}
+    >
+      <Pool
+        style={{
+          insetInlineStart: "50%",
+          top: 120,
+          inlineSize: 900,
+          blockSize: 520,
+          transform: "translateX(calc(-50% * var(--mk-dir)))",
+          background:
+            "radial-gradient(50% 50% at 50% 50%,rgba(0,153,255,.08),rgba(0,153,255,0) 70%)",
+        }}
+      />
+
+      <div className="mk-seq" style={{ position: "relative", maxWidth: 1040, margin: "0 auto" }}>
+        <div
+          style={{
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            marginBlockEnd: 60,
+          }}
+        >
+          <Display id="pricing-heading">
+            <span className="mk-bidi">
+              <Words>{copy.headline}</Words>
+            </span>
+          </Display>
+
+          {/* v3 §2.9. The offer in one line, before the toggle asks the
+              reader to choose a side and the cards spell out the limits. */}
+          {copy.body ? (
+            <Lead style={{ marginBlockStart: 20, maxWidth: "34em" }}>
+              {copy.body}
+            </Lead>
+          ) : null}
+
+          <div
+            role="radiogroup"
+            aria-label={copy.headline}
+            style={{
+              position: "relative",
+              display: "inline-grid",
+              gridTemplateColumns: "1fr 1fr",
+              marginBlockStart: 40,
+              padding: 4,
+              borderRadius: 999,
+              background: TRACK,
+              inlineSize: 300,
+            }}
+          >
+            {/*
+             * The knob. Placed at the start edge and moved by `--mk-knob`,
+             * which globals.css flips for RTL — so it starts at the right in
+             * Arabic and travels leftwards, and this component never has to
+             * know which locale it is in.
+             */}
+            <span
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                top: 4,
+                insetInlineStart: 4,
+                inlineSize: "calc(50% - 4px)",
+                blockSize: 44,
+                borderRadius: 999,
+                background: "#fff",
+                boxShadow: "0 1px 2px rgba(11,11,15,.08),0 6px 14px -6px rgba(11,20,60,.2)",
+                transition: "transform 420ms cubic-bezier(.32,.72,0,1)",
+                transform: studio ? "none" : "translateX(var(--mk-knob))",
+              }}
+            />
+            <Toggle
+              label={copy.studioToggle}
+              checked={studio}
+              onSelect={() => setAudience("studio")}
+            />
+            <Toggle
+              label={copy.companyToggle}
+              checked={!studio}
+              onSelect={() => setAudience("company")}
+            />
+          </div>
+        </div>
+
+        <ul
+          className="mk-still mk-seq-pop"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,280px),1fr))",
+            gap: 16,
+            alignItems: "stretch",
+            margin: 0,
+            padding: 0,
+            listStyle: "none",
+            textAlign: "start",
+          }}
+        >
+          {plans.map((plan) => (
+            <Plan
+              key={plan.name}
+              plan={plan}
+              recommendedLabel={copy.recommendedLabel}
+              locale={locale}
+            />
+          ))}
+        </ul>
+
+        {/* Capped: at 1040px these notes ran to 69–74em a line. Comfortable
+            reading is nearer 35em, and `em` is the right unit here because
+            Arabic sets more characters into the same width than Latin. */}
+        <Lead
+          style={{
+            marginBlockStart: 32,
+            marginInline: "auto",
+            maxWidth: "38em",
+            textAlign: "center",
+            fontSize: 15,
+            lineHeight: 1.7,
+          }}
+        >
+          {studio ? copy.studioNote : copy.companyNote}
+        </Lead>
+        <p
+          className="mk-bidi"
+          style={{
+            margin: "6px auto 0",
+            maxWidth: "40em",
+            textAlign: "center",
+            fontSize: 14,
+            color: INK_55,
+          }}
+        >
+          {copy.underBoth}{" "}
+          <TextLink locale={locale} href={copy.link.href} style={{ fontSize: 14 }}>
+            {copy.link.label}
+          </TextLink>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function Toggle({
+  label,
+  checked,
+  onSelect,
 }: {
-  copy: PricingTeaserCopy;
-  locale: Locale;
+  label: string;
+  checked: boolean;
+  onSelect: () => void;
 }) {
-  const [side, setSide] = useState<"studio" | "company">("studio");
-  const panelId = useId();
-
-  const plans = side === "studio" ? copy.studioPlans : copy.companyPlans;
-  const note = side === "studio" ? copy.studioNote : copy.companyNote;
-
-  const tab = (value: "studio" | "company", label: string) => (
+  return (
     <button
-      key={value}
       type="button"
-      role="tab"
-      aria-selected={side === value}
-      aria-controls={panelId}
-      onClick={() => setSide(value)}
-      className={
-        "mk-bidi min-h-[34px] rounded-[var(--radius-pill)] px-4 text-[length:var(--fs-ui)] font-medium transition-colors " +
-        (side === value
-          ? "border border-[var(--hairline-strong)] bg-[var(--surface-2)] text-[var(--text)]"
-          : "border border-transparent text-[var(--text-muted)] hover:text-[var(--text)]")
-      }
+      role="radio"
+      aria-checked={checked}
+      tabIndex={checked ? 0 : -1}
+      onClick={onSelect}
+      onKeyDown={(event) => {
+        if (["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(event.key)) {
+          event.preventDefault();
+          onSelect();
+        }
+      }}
+      className="mk-bidi"
+      style={{
+        position: "relative",
+        blockSize: 44,
+        border: 0,
+        background: "transparent",
+        borderRadius: 999,
+        cursor: "pointer",
+        fontSize: 15,
+        fontWeight: 500,
+        color: checked ? INK : INK_55,
+        transition: "color 200ms",
+      }}
     >
       {label}
     </button>
   );
-
-  return (
-    <Section id="pricing" labelledBy="pricing-heading" rule>
-      <h2 id="pricing-heading" className="mk-h2">
-        {copy.headline}
-      </h2>
-
-      <div className="mt-8 flex justify-center">
-        <div
-          role="tablist"
-          aria-label={copy.headline}
-          className="inline-flex gap-1 rounded-[var(--radius-pill)] border border-[var(--hairline)] p-1"
-        >
-          {tab("studio", copy.studioToggle)}
-          {tab("company", copy.companyToggle)}
-        </div>
-      </div>
-
-      <div id={panelId} role="tabpanel" className="mt-10">
-        <div className="mk-grid md:grid-cols-3">
-          {plans.map((plan, i) => (
-            <PlanCard
-              key={`${side}-${plan.name}`}
-              plan={plan}
-              locale={locale}
-              icon={PLAN_ICONS[i] ?? "user"}
-              recommendedLabel={copy.recommendedLabel}
-            />
-          ))}
-        </div>
-
-        <p className="mk-bidi mt-10 max-w-[34rem] text-[length:var(--fs-body)] font-medium text-[var(--text)]">
-          {note}
-        </p>
-      </div>
-
-      <div className="mt-6 flex flex-col items-start gap-3 text-start">
-        <p className="mk-bidi max-w-[40rem] text-[length:var(--fs-ui)] text-[var(--text-muted)]">
-          {copy.underBoth}
-        </p>
-        <Button cta={copy.link} locale={locale} variant="link" />
-      </div>
-    </Section>
-  );
 }
 
-function PlanCard({
+function Plan({
   plan,
-  locale,
-  icon,
   recommendedLabel,
+  locale,
 }: {
   plan: PlanCopy;
-  locale: Locale;
-  icon: IconName;
   recommendedLabel: string;
+  locale: Locale;
 }) {
-  /*
-   * "$24/month" is one approved string, and the reference sets the amount
-   * large with the period small beside it. Splitting on the slash gets that
-   * without asking content/ to hold the price twice — and a price with no
-   * slash ("$0") simply renders whole.
-   */
-  const [amount, period] = plan.price.split("/");
-
   return (
-    <div
-      className={`mk-card mk-card-pad relative flex flex-col${
-        plan.recommended ? " mk-neon" : ""
-      }`}
+    <li
+      /* A plan card is a card with one CTA in it, so the card answers the
+         pointer and the button inside it still does not move. */
+      className="mk-reach"
+      style={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        padding: 28,
+        borderRadius: 26,
+        background: "#fff",
+        boxShadow: plan.recommended ? SELECTED : RING_6,
+      }}
     >
-
-      <p className="flex items-center gap-2">
-        <Icon name={icon} size={16} className="flex-none text-[var(--text-muted)]" />
-        <span className="mk-bidi text-[length:var(--fs-lead)] font-medium text-[var(--text)]">
+      <div
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}
+      >
+        <h3 className="mk-bidi" style={{ margin: 0, fontWeight: 500, fontSize: 20 }}>
           {plan.name}
-        </span>
-      </p>
-
-      <p className="mk-bidi mt-2 text-[length:var(--fs-ui)] leading-[1.5] text-[var(--text-muted)]">
-        {plan.line}
-      </p>
-
-      <p className="mt-6 flex items-baseline gap-2">
-        <span className="mk-bidi text-[length:var(--fs-d3)] font-medium leading-none tracking-[-0.04em] text-[var(--text)]">
-          {amount}
-        </span>
-        {period ? (
-          <span className="mk-bidi text-[length:var(--fs-ui)] text-[var(--text-muted)]">/{period}</span>
-        ) : null}
-      </p>
-
-      {/* Reserved whether or not it is filled, so the three cards' buttons sit
-          on one line instead of the recommended one dropping a row. The tag
-          itself matches the one the `plans` block renders on the pricing page
-          — same concept, same ghost treatment. */}
-      <p className="mt-1.5 flex h-5 items-start">
+        </h3>
         {plan.recommended ? (
-          <span className="mk-bidi rounded-[var(--mk-r-status)] bg-[var(--accent-soft)] px-2 py-0.5 text-[length:var(--fs-eyebrow)] font-medium leading-none text-[var(--accent-on-soft)]">
+          <span
+            className="mk-bidi"
+            style={{
+              blockSize: 26,
+              paddingInline: 10,
+              borderRadius: 999,
+              /* The design file fills this with a #3DB0FF→#0077FF gradient.
+                 White on its top stop is 2.4:1 at 12px, so the badge takes
+                 the deep blue flat — 5.9:1, and the one gradient the page
+                 keeps is the one inside a headline. */
+              background: BLUE_DEEP,
+              color: "#fff",
+              fontSize: 12,
+              fontWeight: 500,
+              display: "inline-flex",
+              alignItems: "center",
+            }}
+          >
             {recommendedLabel}
           </span>
         ) : null}
-      </p>
-
-      <div className="mt-5">
-        <Button
-          cta={plan.cta}
-          locale={locale}
-          variant={plan.recommended ? "solid" : "outline"}
-          size="sm"
-          arrow={false}
-          className="w-full"
-        />
       </div>
 
-      <dl className="mt-6 space-y-2.5 border-t border-[var(--hairline)] pt-5">
+      {/* The number carries the weight, the unit does not — §11. */}
+      <p style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "18px 0 0" }}>
+        <span className="mk-bidi" style={{ fontSize: 44, fontWeight: 500, lineHeight: 1 }}>
+          {plan.price}
+        </span>
+      </p>
+
+      <dl style={{ display: "flex", flexDirection: "column", margin: "22px 0 0", flex: 1 }}>
         {plan.rows.map((row) => (
-          <div key={row.label} className="flex items-baseline justify-between gap-4">
-            <dt className="mk-bidi flex items-center gap-2 text-[length:var(--fs-ui)] text-[var(--text-muted)]">
-              <Icon name="check" size={13} className="flex-none text-[var(--accent-text)]" />
+          <div
+            key={row.label}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 16,
+              padding: "12px 0",
+              boxShadow: "0 -1px 0 rgba(11,11,15,.06)",
+              fontSize: 14,
+            }}
+          >
+            <dt className="mk-bidi" style={{ color: INK_55 }}>
               {row.label}
             </dt>
-            <dd className="mk-bidi text-[length:var(--fs-ui)] font-medium text-[var(--text)]">
+            <dd className="mk-bidi" style={{ margin: 0, fontWeight: 500 }}>
               {row.value}
             </dd>
           </div>
         ))}
       </dl>
-    </div>
+
+      <p className="mk-bidi" style={{ margin: "14px 0 0", fontSize: 14, color: INK_55 }}>
+        {plan.line}
+      </p>
+
+      {/*
+       * The recommended plan's button is the filled one and carries the
+       * cursor light; the other is quiet.
+       *
+       * Said with `tone` rather than by overriding `background` on a solid
+       * pill, which is how it used to be said and which stopped being
+       * harmless the day the filled pill grew a lit edge — a glowing ring
+       * around a transparent button is a button announcing itself as the ask
+       * when the whole point of it is that it is not.
+       *
+       * The 22px is on a wrapper and no longer on the pill, for the same
+       * reason: `Spark` draws its ring 4.5px outside its own box, and a
+       * margin on the pill inside it put 22px of empty space inside that box
+       * — so the ring was drawn around the gap as well as the button.
+       */}
+      <div style={{ marginBlockStart: 22, display: "flex" }}>
+        <Cta
+          locale={locale}
+          href={plan.cta.href}
+          size="sm"
+          tone={plan.recommended ? "solid" : "quiet"}
+          style={{
+            inlineSize: "100%",
+            blockSize: 46,
+            justifyContent: "center",
+            color: plan.recommended ? "#fff" : BLUE_DEEP,
+            boxShadow: plan.recommended ? undefined : "inset 0 0 0 1px rgba(0,85,255,.25)",
+          }}
+        >
+          {plan.cta.label}
+        </Cta>
+      </div>
+    </li>
   );
 }

@@ -72,12 +72,18 @@ editing one data file. If a page needs something the vocabulary cannot say,
 `lib/pages/registry.ts`. A page cannot be live and missing from the sitemap,
 or indexable and `noindex`, because both come off the same record.
 
-**4. Editorial content composes two sources, per slug.** `lib/content/` merges
-Payload with the placeholder seed in `lib/content/seed.ts` one slug at a time,
-so publishing one real post replaces that one placeholder. Index pages
-de-index themselves while *every* item is provisional — a condition about the
-content, not a flag anyone must remember. **Delete `content/editorial/ar.ts`
-when the real articles are written.**
+**4. Editorial content has one source: the CMS, across five sections.**
+`lib/content/` reads Payload and nothing else, for `/blog`, `/guides`,
+`/help`, `/compare` and `/whats-new` — one interface, one template
+(`components/page/editorial.tsx`), one pair of methods. It used to merge
+Payload with a placeholder seed per slug, which left thirty-one of thirty-two
+articles outside the admin panel; both the seed and the merge are gone, and so
+is the placeholder content.
+
+Forty real pieces are in, in both languages, with their own covers per
+language. An index de-indexes itself while *every* item on it is marked
+**Placeholder content** — a condition about the content, not a flag anyone
+must remember — and a section with nothing in it renders its empty state.
 
 **5. An untranslated page is a notice, not a 404.** The language switch sits in
 the header of every page, so a 404 there would read as a broken site.

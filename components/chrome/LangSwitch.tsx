@@ -50,7 +50,7 @@ export function LangSwitch({
       aria-label={`${label}: ${LOCALE_LABEL[other]}`}
       title={LOCALE_LABEL[other]}
       lang={other}
-      className="text-[length:var(--fs-ui)] font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+      className="mk-tap inline-block py-1 text-[length:var(--fs-ui)] font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
       // Arabic set in the Arabic face even on the English page, because "ع" in
       // a Latin font is not the same letterform.
       //

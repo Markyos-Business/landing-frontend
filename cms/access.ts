@@ -41,6 +41,7 @@ export const SECTIONS = [
   "guides",
   "helpArticles",
   "comparisons",
+  "updates",
 ] as const;
 
 export type Section = (typeof SECTIONS)[number];
@@ -50,6 +51,7 @@ export const SECTION_LABELS: Record<Section, string> = {
   guides: "Guides and templates",
   helpArticles: "Help centre",
   comparisons: "Comparisons",
+  updates: "What's new",
 };
 
 type MaybeUser =

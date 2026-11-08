@@ -160,13 +160,13 @@ production setup.
 Also: create the real admin accounts and **delete any test account**. The first
 account created on a fresh database is an Admin.
 
-### 16. Check the homepage globals are empty before launch
+### 16. ~~Check the homepage globals are empty before launch~~ — gone
 
-The `homepage` and `navigation` globals override the approved copy. Anything
-left in them from a demo or a test is what the world sees.
-
-Open **Website content → Homepage** and confirm the fields are empty unless
-somebody deliberately changed that copy.
+Closed on 8 Nov 2026 by removing the thing it guarded. The `homepage`,
+`navigation`, `announcement` and `siteSettings` globals let the panel override
+the approved copy, which meant a demo value left in one of them was what the
+world saw. They are no longer registered: the marketing copy is the
+codebase's, and the admin is the resources CMS.
 
 ### 17. The privacy policy must describe the analytics
 
@@ -267,17 +267,33 @@ tool — "more than $145 a month for five people". That figure is the whole
 argument, and competitor pricing moves. **Re-check it the week the page
 publishes**, and again whenever the page is edited, or drop the comparison.
 
-### 25. Placeholder editorial content must go or be replaced
+### 25. ~~Placeholder editorial content must go or be replaced~~ — replaced
 
-`content/editorial/ar.ts` holds twelve blog posts, five guides and fourteen
-help articles whose titles and angles are real and whose **bodies are
-placeholder prose**. Everything from it renders a visible notice and is
-`noindex`, and the index pages de-index themselves while every item on them is
-provisional — so nothing leaks silently.
+**Closed 8 Nov 2026.** The thirty-one placeholder pieces were deleted and the
+real writing imported in their place: forty pieces in both languages — ten
+blog posts, ten guides, ten comparison pages and nine release notes — from
+`Website/Resources`. Nothing on the site is placeholder prose any more, and
+the files the placeholders came from are gone with them.
 
-It is still placeholder text on a live domain. Either publish the real
-articles through the CMS (which replaces them one slug at a time, no code
-change) or delete the file and let the sections show their empty state.
+**Two things replace this item, and both are open.**
+
+**25a. Ninety-one unverified notes, on published pages.** The import removed
+every square-bracket instruction from the text and listed all of them in
+`docs/copy/RESOURCES-TODO.md` with the piece each came from. Most are
+`[CONFIRM: …]` — competitor pricing, ship dates, plan names, whether a
+feature exists at launch. These pages are live, so each one is a claim
+currently being made. Read that file before the domain is public.
+
+**25b. No guide has a download file.** All ten promise a template, a
+checklist or a worksheet. The source folders carry the article, a Word copy
+and the images, and no PDF. Upload one to each guide's `downloadFile`, or
+drop the promise — "Download the template" with nothing behind it is the
+kind of thing a visitor remembers.
+
+The mechanism this item described is worth keeping either way: any document
+can be ticked **Placeholder content** in the panel, and while it is, the page
+carries a notice and its index stays out of search as long as every piece on
+it is ticked.
 
 ### 26. The Arabic register claim appears on three more pages
 
@@ -286,15 +302,16 @@ on `/platform/arabic` (proof 5), `/solutions/companies` (FAQ) and
 `/solutions/tone-checker`. If the December Arabic test does not pass, all four
 come out together.
 
-### 27. A test post is live in the CMS, under an Arabic slug
+### 27. ~~A test post is live in the CMS, under an Arabic slug~~ — gone
 
-Payload has a published blog post titled `السلام عليكم ورحمة الله وبركاته`
-with the slug `السلام`. It is somebody's test record, and because it is
-*published* it appears on `/blog` ahead of the placeholder articles.
+Payload had a published blog post titled `السلام عليكم ورحمة الله وبركاته`
+with the slug `السلام`. It was somebody's test record, and because it was
+*published* it appeared on `/blog` ahead of the placeholder articles.
 
-Delete it, or give it a real title and an English slug.
-
-Two things came out of finding it, and both are already fixed in code:
+**It is no longer in the database (8 Nov 2026), and not by anyone's
+decision** — see "Dev schema push can empty a table" in `docs/DESIGN.md`. The
+record is kept here because both things it taught are still true and both are
+still load-bearing:
 
 - Its URL returned **404** while the index linked to it, because a dynamic
   route param arrives percent-encoded while `generateStaticParams` returns
@@ -367,7 +384,7 @@ NEXT_PUBLIC_APP_URL=https://app.markyos.com
 
 That one phase change swaps the announcement bar to "Markyos is open", swaps
 the hero and final CTAs back to the free-plan versions, drops
-`Arriving February 2027` from every MVP feature, and opens `robots.txt` to
+`Arriving soon` from every MVP feature, and opens `robots.txt` to
 crawlers with the sitemap attached.
 
 Verify after deploying: `curl https://markyos.com/robots.txt` should allow, and
@@ -400,3 +417,38 @@ To restore the login screen locally, delete the two `PAYLOAD_DEV_*` lines from
 `.env.local`. To get a password back instead, reset it from the admin's own
 account screen once you are inside, or with Payload's forgot-password flow
 once an email adapter exists (item 15).
+
+### 30. The English edition's own open items (8 Nov 2026)
+
+`/en` is a whole site now: twenty-five hand-written pages from Site Copy v3
+(English), plus the forty CMS pieces, all indexable with a full hreflang
+pair. What is *not* settled is what the deck itself marks, and none of it
+is a code change — these are decisions and facts.
+
+From the deck's own "open items" table, the ones that reach the English
+pages as published text:
+
+| Where | What is unresolved |
+| :--- | :--- |
+| `/en/contact` | Every address and reply time is a `[PLACEHOLDER]`. The page lists six topics and promises a reply; it names no inbox. |
+| `/en/security` | The storage region, the AI provider and the training line are all `[CONFIRM]`. The page claims what the server will enforce, and nobody has checked it against the server. |
+| `/en/about` | The founder's story is a draft in somebody else's voice, marked for Abdullah to rewrite. The second team member is a `[PLACEHOLDER: name]`. |
+| `/en/pricing` | Every figure is a hypothesis until 1 Feb 2027, and the refund policy is a `[PLACEHOLDER]` that is simply absent from the page. |
+| `/en/platform/arabic` | The dialect claims depend on the December Arabic test. |
+| Hero, both editions | "No card needed" is unconfirmed, and the demo brand "Nakhla" / "Naqsh Studio" needs checking against real studios in the Gulf. |
+
+Two the deck asks you to pick, which the site has answered one way and can
+be changed in one edit each:
+
+- **The AI Connector's URL.** The deck offers `/platform/ai-connector` or
+  `/solutions/ai-connector`. Neither page exists here; every mention is an
+  unlinked line with a status chip, which is the honest state until one is
+  built.
+- **The hero's button wording.** The deck's homepage says "I make brands
+  for clients"; its What's new entry says "I design identities for
+  clients". The site uses the first, in both languages, and the sign-up
+  fork has to match it word for word.
+
+Also carried: `/en/whats-new`'s entries and `/en/help` are CMS sections, so
+the help centre is still empty in both editions — ten articles are planned
+in the source README and none is written.

@@ -45,14 +45,22 @@ async function resolve(params: Props["params"]) {
   const { lang, slug } = await params;
   if (!isLocale(lang)) notFound();
   const path = `/${slug.join("/")}`;
-  const doc = getPage(path);
-  if (!doc) notFound();
-  return { locale: lang, doc };
+  /*
+   * The Arabic edition decides whether the path is real; the locale's own
+   * edition is what renders. A path with no Arabic page is a 404 in every
+   * language, and a path with no *English* page is a notice, not a 404 —
+   * see the registry's header for why.
+   */
+  const canonical = getPage(path);
+  if (!canonical) notFound();
+  const doc = getPage(path, lang) ?? canonical;
+  return { locale: lang, doc, path };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, doc } = await resolve(params);
-  const translated = localesFor().includes(locale);
+  const { locale, doc, path } = await resolve(params);
+  const available = localesFor(path);
+  const translated = available.includes(locale);
 
   return pageMetadata({
     locale,
@@ -60,7 +68,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: translated ? doc.title : `${doc.shortTitle ?? doc.title} — Markyos`,
     description: doc.description,
     ogTitle: doc.shortTitle ?? doc.title,
-    available: localesFor(),
+    available,
     // An untranslated edition is a notice, not a page. It must never be
     // indexed, or a crawler is told the English page exists and is thin.
     noindex: doc.noindex || !translated,
@@ -68,9 +76,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function RegistryPage({ params }: Props) {
-  const { locale, doc } = await resolve(params);
+  const { locale, doc, path } = await resolve(params);
 
-  if (!localesFor().includes(locale)) {
+  if (!localesFor(path).includes(locale)) {
     return <NotTranslated locale={locale} path={doc.path} name={doc.shortTitle ?? doc.title} />;
   }
 

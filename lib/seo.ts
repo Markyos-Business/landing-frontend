@@ -77,6 +77,13 @@ type PageMetaInput = {
   description: string;
   /** Open Graph title, when the social headline differs from the page title. */
   ogTitle?: string;
+  /**
+   * This page's own social card, absolute or site-relative.
+   *
+   * Overrides the site-wide one below. Articles set it from the image their
+   * writer made for them; everything else leaves it alone.
+   */
+  ogImage?: string;
   ogDescription?: string;
   /** Which locales this page exists in. See `alternates`. */
   available?: readonly Locale[];
@@ -94,6 +101,7 @@ export function pageMetadata({
   title,
   description,
   ogTitle,
+  ogImage,
   ogDescription,
   available,
   noindex,
@@ -117,10 +125,27 @@ export function pageMetadata({
       title: ogTitle ?? title,
       description: ogDescription ?? description,
       locale: locale === "ar" ? "ar_SA" : "en_US",
-      // PLACEHOLDER: replace with the real OG image once design lands.
-      // Do not ship the site without it — a link with no card is a link
-      // nobody clicks.
-      images: [{ url: `${SITE_URL}/brand/og-${locale}.png`, width: 1200, height: 630 }],
+      /*
+       * The page's own card where it has one, and the site-wide card
+       * otherwise.
+       *
+       * The fallback was marked PLACEHOLDER and "do not ship the site
+       * without it", and it is still one file per language for every page
+       * that is not an article. The forty written resources each shipped
+       * their own at 1200x630, in both languages, so those now share a link
+       * preview with the piece rather than with the whole site.
+       */
+      images: [
+        {
+          url: ogImage
+            ? ogImage.startsWith("http")
+              ? ogImage
+              : `${SITE_URL}${ogImage}`
+            : `${SITE_URL}/brand/og-${locale}.png`,
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",

@@ -62,7 +62,47 @@ export type IconName =
   | "globe"
   | "plus"
   | "minus"
-  | "arrowUp";
+  | "arrowUp"
+  /*
+   * Added for the landing design. Every one is a glyph Line Awesome 1.3.0
+   * already ships, named in this site's language — the same indirection as
+   * the block above, not a drawn icon.
+   */
+  | "magic"
+  | "gift"
+  | "pencilRuler"
+  | "key"
+  | "sync"
+  | "exchange"
+  | "copyright"
+  | "font"
+  | "comments"
+  | "commentDots"
+  | "book"
+  | "history"
+  | "coins"
+  | "redo"
+  | "quote"
+  | "bezier"
+  | "invoice"
+  | "chalkboard"
+  | "building"
+  | "astronaut"
+  | "fileAlt"
+  | "filePdf"
+  | "longArrow"
+  /*
+   * Added for the editorial templates, 6 Nov 2026. `help` is a solid glyph
+   * like everything above it; the three below are *brand* marks, which Line
+   * Awesome ships in a second family — see `BRAND`.
+   */
+  | "help"
+  /* The note block's glyph — `info-circle`, another name added to the
+     indirection rather than a drawn icon. */
+  | "info"
+  | "twitter"
+  | "linkedin"
+  | "whatsapp";
 
 /*
  * Our names → Line Awesome's.
@@ -97,7 +137,47 @@ const LA: Record<IconName, string> = {
   plus: "plus",
   minus: "minus",
   arrowUp: "arrow-up",
+  magic: "magic",
+  gift: "gift",
+  pencilRuler: "pencil-ruler",
+  key: "key",
+  sync: "sync",
+  exchange: "exchange-alt",
+  copyright: "copyright",
+  font: "font",
+  comments: "comments",
+  commentDots: "comment-dots",
+  book: "book",
+  history: "history",
+  coins: "coins",
+  redo: "redo-alt",
+  quote: "quote-right",
+  bezier: "bezier-curve",
+  invoice: "file-invoice-dollar",
+  chalkboard: "chalkboard",
+  building: "building",
+  astronaut: "user-astronaut",
+  fileAlt: "file-alt",
+  filePdf: "file-pdf",
+  longArrow: "long-arrow-alt-right",
+  help: "question-circle",
+  info: "info-circle",
+  twitter: "twitter",
+  linkedin: "linkedin-in",
+  whatsapp: "whatsapp",
 };
+
+/*
+ * The brand marks, which live in Line Awesome's second family.
+ *
+ * `las` is the solid interface set; a logo is not in it, because a logo is
+ * not an interface glyph. §6 of MARKYOS-DESIGN-SYSTEM.md already sanctions
+ * the family — "brand marks for integrations: `lab la-figma`, `la-dribbble`,
+ * `la-behance`" — so this is the rule arriving rather than an exception to
+ * it. Listed by name rather than inferred, so adding a solid glyph can never
+ * silently pick the wrong family.
+ */
+const BRAND = new Set<IconName>(["twitter", "linkedin", "whatsapp"]);
 
 export function Icon({
   name,
@@ -114,7 +194,7 @@ export function Icon({
   return (
     <i
       {...props}
-      className={`las la-${LA[name]}${className ? ` ${className}` : ""}`}
+      className={`${BRAND.has(name) ? "lab" : "las"} la-${LA[name]}${className ? ` ${className}` : ""}`}
       style={{
         fontSize: size,
         lineHeight: 1,
@@ -137,12 +217,12 @@ export function Icon({
 }
 
 /*
- * The arrow that follows a CTA label.
+ * There is no `Arrow` here any more.
  *
- * It points the way the page reads, so in Arabic it points the other way.
- * `.mk-arrow` does the flip in CSS — one rule, and no component can forget
- * it. There is no hover nudge: states, not choreography.
+ * It was `<Icon name="arrow" className="mk-arrow" />`, and `.mk-arrow` flipped
+ * it in RTL so no component had to remember to. Arrows came off the whole site
+ * on 6 Nov 2026 — a label that says where it goes does not need a picture
+ * saying "forward", and the flip was one more thing that could be wrong on an
+ * Arabic page. The two glyph names stay in the map below: `Icon` is also used
+ * by the product mocks, where a real arrow is sometimes part of the product.
  */
-export function Arrow({ size = 16 }: { size?: number }) {
-  return <Icon name="arrow" size={size} className="mk-arrow" />;
-}

@@ -80,7 +80,7 @@ export function StudioPath({
        * frame reading as a frame. Past about 150% the far corner is gone
        * entirely and the panel reads as a surface continuing past the edge.
        */}
-      <ol className="mk-bento mt-14 sm:grid-cols-3">
+      <ol className="mk-pop mk-bento mt-14 sm:grid-cols-3">
         {VISUAL_STEPS.map(({ at, visual }) => {
           const step = copy.steps[at];
           if (!step) return null;
@@ -102,7 +102,7 @@ export function StudioPath({
        * The section's one light, on the promise.
        *
        * `min(...,100%)` and not a bare 24rem: it used to live inside a card
-       * with `overflow-hidden`, and out here a fixed width ran 404px wide on
+       * with `overflow-clip`, and out here a fixed width ran 404px wide on
        * a 390px phone and gave the whole page a sideways scrollbar. Every
        * other bloom on the site is capped the same way.
        */}
@@ -180,7 +180,7 @@ const TemplateGrid = (
         <li
           key={i}
           className={
-            "aspect-[4/3] overflow-hidden rounded-[var(--mk-r-button)] border p-2 " +
+            "aspect-[4/3] overflow-clip rounded-[var(--mk-r-button)] border p-2 " +
             (picked
               ? "border-[var(--accent)] bg-[var(--accent)]"
               : "border-[var(--hairline-strong)] bg-[var(--surface-1)]")

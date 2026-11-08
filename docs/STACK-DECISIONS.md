@@ -168,10 +168,16 @@ with `fallback: true`, so an empty Arabic field returns the English one. For an
 article that is right. For page copy it was actively wrong: editing the English
 headline in the admin replaced the *approved Arabic transcreation* on the
 Arabic page with an English line in Latin script — on the page whose argument
-is that Arabic is not an afterthought. `getSiteCopy` now reads page-copy
-globals with `fallbackLocale: false`, so the layering is
+is that Arabic is not an afterthought. `getSiteCopy` read the page-copy
+globals with `fallbackLocale: false` after that, so the layering was
 `CMS Arabic → git Arabic → git English`. Article reads keep the fallback,
 where it is the behaviour you want.
+
+**The page-copy layer was removed on 8 Nov 2026** and with it this whole class
+of bug: the globals are unregistered, `getSiteCopy` is gone, and the two pages
+that called it read the dictionary directly. Marketing copy is the codebase's.
+The note stays because the trap it describes is a property of `fallback: true`
+and still applies to anything localized that is edited in the panel.
 
 ---
 
@@ -392,13 +398,13 @@ shown and refused.
 to anyone who types the URL. A permission system that only hides is one that
 does not hold, and this one was tested against that: a writer scoped to the
 blog is refused on create for guides, help articles and comparisons (403), is
-refused the analytics and the homepage global (403), cannot delete, cannot
+refused the analytics (403), cannot delete, cannot
 publish, and cannot promote themselves by editing their own profile — the
 `role` and `sections` fields carry their own admin-only field access, which is
 what closes the self-edit loophole.
 
-The website's own copy, navigation, redirects, traffic and the user list stay
-with admins in every case.
+Redirects, traffic, the taxonomy and the user list stay with admins in every
+case.
 
 ### The dashboard
 
@@ -407,6 +413,18 @@ replacement at `cms/views/Dashboard.tsx` answers what someone actually opens
 the admin to find out: what is waiting to be published, how the site is doing,
 and where to go next. It scopes itself to the viewer's sections and shows
 traffic to admins only.
+
+**One card per resource, split by language.** A Payload document is a single
+record with a column per locale, so a section's count hides the only question
+a bilingual site has: fourteen guides, but how many of them in English? Each
+card carries a row per configured locale — written against total, as a bar —
+and each row links into that collection's list *at that locale*, where Payload
+prints `<No Title>` against anything unwritten. The locale list is read off
+`payload.config.localization` rather than written out again, so a third
+language would add a third row and nothing else.
+
+It costs five count queries per section instead of two. That is the price of
+the only figure on the screen that tells somebody what to do next.
 
 ### Analytics: first-party, cookieless, no vendor
 

@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fontVariables } from "../fonts";
-import { AnnouncementBar } from "@/components/chrome/AnnouncementBar";
 import { Header } from "@/components/chrome/Header";
 import { Footer } from "@/components/chrome/Footer";
 import { Analytics } from "@/components/chrome/Analytics";
 import { getCopyFor } from "@/lib/i18n/dictionary";
-import { getSiteCopy } from "@/lib/content";
 import { isLocale, LOCALES, LOCALE_DIR } from "@/lib/i18n/locales";
 import { pageMetadata } from "@/lib/seo";
 import "../globals.css";
@@ -64,10 +62,12 @@ export default async function RootLayout({
   // not exist instead of being served English under a German URL.
   if (!isLocale(lang)) notFound();
 
-  // CMS overrides on top of the approved copy, so nav labels and the
-  // announcement bar can be edited without a deploy. Falls back to the
-  // codebase copy if the CMS is unreachable.
-  const copy = await getSiteCopy(lang);
+  // The approved copy, straight from `content/`. There used to be a CMS layer
+  // over this — the `navigation` and `announcement` globals — which was
+  // removed on 8 Nov 2026 when the admin became the resources CMS. The same
+  // call `generateMetadata` above already makes, so the chrome and the
+  // metadata can no longer disagree about what the nav says.
+  const copy = await getCopyFor(lang);
 
   return (
     <html lang={lang} dir={LOCALE_DIR[lang]} className={fontVariables}>
@@ -79,7 +79,6 @@ export default async function RootLayout({
           {copy.nav.skipToContent}
         </a>
 
-        <AnnouncementBar copy={copy.announcement} locale={lang} />
         <Header copy={copy.nav} locale={lang} />
 
         <main id="main">{children}</main>

@@ -1,80 +1,104 @@
 import type { CollectionConfig } from "payload";
 import { revalidateDoc } from "../hooks/revalidate";
 import { hideUnlessSection, publishAccess, sectionAccess } from "../access";
-import { richText, seoFields, slugField } from "../fields";
+import {
+  heroImageField,
+  ogImageField,
+  provisionalField,
+  publishedAtField,
+  richText,
+  seoFields,
+  slugField,
+} from "../fields";
 
 /*
- * Comparison pages → /resources/compare/[slug]
+ * Comparison pages → /compare/[slug]
  *
- * The one collection that benefits from structured fields rather than free
- * rich text. The comparison table has to render identically on every page, and
- * a hand-built HTML table inside a rich text field would be rebuilt slightly
- * differently every time — different column counts, a missing header, a row
- * that does not wrap on a phone.
+ * Markyos against the tools studios use today, one page per tool.
  *
- * As structured rows, the table is data, the template owns the rendering, and
- * a fairness review can read the rows rather than the markup.
+ * Copy doc §4.14: competitors are never named on the homepage. They are
+ * named here, where there is room to be fair and specific.
  *
- * Copy doc §4.14: competitors are never named on the homepage. They are named
- * here, where there is room to be fair and specific.
+ * ── This used to be a structured table, and the writing did not fit ───────
+ *
+ * The collection was built around `comparisonRows` (feature / competitor /
+ * markyos) and `objectionHandling` (question / answer), on the reasoning
+ * that a comparison table has to render identically on every page and that a
+ * fairness review should be able to read rows rather than markup. Both are
+ * good arguments and neither survived contact with the ten comparison pages
+ * that were actually written.
+ *
+ * A real one is an article: a lead, a capability table, "when they suit you
+ * better", "when we suit you better", how to switch, and a dated line saying
+ * when their pricing was last checked. The table is one section of it, and
+ * the sections around it are not objections with answers — they are the part
+ * that makes the page fair.
+ *
+ * So this is shaped like Posts now, and the capability table is a table in
+ * the body: `richText()` has the table feature on, which is most of why it
+ * is on. Nothing was lost in the change because the collection was empty.
+ *
+ * The fairness argument still holds, and it moved rather than went away:
+ * every page carries the date its facts were checked, in its own last line,
+ * because competitor pricing moves and a comparison that quietly goes stale
+ * is worse than no comparison. See BEFORE-PUBLISH item 24.
  */
 
 export const Comparisons: CollectionConfig = {
   slug: "comparisons",
   labels: { singular: "Comparison", plural: "Comparisons" },
   admin: {
-    useAsTitle: "competitorName",
-    defaultColumns: ["competitorName", "slug", "_status"],
-    group: "Content",
+    useAsTitle: "title",
+    defaultColumns: ["title", "competitorName", "publishedAt", "_status"],
+    group: "Resources",
     description: "Markyos versus the tools studios use today.",
     hidden: hideUnlessSection("comparisons"),
-    preview: (doc) => (doc?.slug ? `/en/resources/compare/${doc.slug}?draft=true` : null),
+    preview: (doc) => (doc?.slug ? `/en/compare/${doc.slug}?draft=true` : null),
   },
-  // Section-scoped: see cms/access.ts. Enforced here as well as in
-  // `admin.hidden` above, because hiding alone is cosmetic.
   access: sectionAccess("comparisons"),
-  hooks: { afterChange: [revalidateDoc("/resources/compare")] },
+  hooks: { afterChange: [revalidateDoc("/compare")] },
   versions: { drafts: true, maxPerDoc: 20 },
   fields: [
     {
-      name: "competitorName",
+      name: "title",
       type: "text",
       required: true,
-      admin: { description: "Not localized — a product name is a product name." },
+      localized: true,
+      admin: {
+        description: 'The page heading, for example "Markyos vs Endform".',
+      },
     },
-    slugField("competitorName"),
+    slugField("title"),
     {
-      name: "intro",
+      name: "competitorName",
+      type: "text",
+      admin: {
+        position: "sidebar",
+        description:
+          "Not localized — a product name is a product name. Used in the admin list, not printed on the page.",
+      },
+    },
+    {
+      name: "excerpt",
+      type: "textarea",
+      localized: true,
+      maxLength: 300,
+      admin: { description: "Shown on the /compare index." },
+    },
+    heroImageField,
+    ogImageField,
+    {
+      name: "body",
       type: "richText",
       localized: true,
       editor: richText(),
-      admin: { description: "The positioning copy above the table." },
-    },
-    {
-      name: "comparisonRows",
-      type: "array",
-      localized: true,
-      labels: { singular: "Row", plural: "Rows" },
       admin: {
         description:
-          "One row per capability. State their side accurately — a comparison that overstates is the kind of thing that gets quoted back at you.",
+          "The comparison. Headings start at H2 — the page supplies the H1. The capability table is a table here.",
       },
-      fields: [
-        { name: "feature", type: "text", required: true },
-        { name: "competitor", type: "text", required: true },
-        { name: "markyos", type: "text", required: true },
-      ],
     },
-    {
-      name: "objectionHandling",
-      type: "array",
-      localized: true,
-      labels: { singular: "Objection", plural: "Objections" },
-      fields: [
-        { name: "question", type: "text", required: true },
-        { name: "answer", type: "richText", editor: richText() },
-      ],
-    },
+    publishedAtField,
+    provisionalField,
     {
       name: "_status",
       type: "select",

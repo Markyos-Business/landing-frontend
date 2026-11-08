@@ -1,11 +1,5 @@
 import "server-only";
-import type {
-  Article,
-  ArticleSummary,
-  Comparison,
-  ContentRef,
-  ContentSource,
-} from "./adapter";
+import type { Article, ArticleSummary, Collection, ContentSource } from "./adapter";
 import type { Locale } from "@/lib/i18n/locales";
 import { payloadClient, safeRead } from "./payloadClient";
 
@@ -47,12 +41,25 @@ const media = (v: unknown): { url?: string; alt?: string } => {
  * Reading time.
  *
  * Counted from the Lexical tree rather than stored, so it cannot go stale
- * after an edit. 200 words a minute for English; Arabic is slower per word but
- * uses fewer of them, which cancels out closely enough for a hint that only
- * ever needs to be roughly right.
+ * after an edit.
+ *
+ * ── Why the rate is per language ──────────────────────────────────────────
+ *
+ * This used to be a flat 200 a minute, on the reasoning that Arabic is slower
+ * per word but uses fewer of them and the two cancel out. They do not cancel
+ * at the sizes this site publishes. A 271-word Arabic post is 1.36 minutes at
+ * 200 and rounds to "one minute"; so does a 90-word help article. When the
+ * editorial moved into the CMS on 8 Nov 2026 and every piece started coming
+ * through here, that rounding flattened the whole blog index to the same
+ * label, which is a hint that has stopped hinting.
+ *
+ * 180 for Arabic is the figure the editorial seed was already using to
+ * compute exactly these numbers before the move, so the published values did
+ * not change when the content did.
  */
-function readingMinutes(body: unknown): number | undefined {
-  if (!body || typeof body !== "object") return undefined;
+const WORDS_PER_MINUTE: Record<Locale, number> = { ar: 180, en: 200 };
+function countWords(body: unknown): number {
+  if (!body || typeof body !== "object") return 0;
   let words = 0;
   const walk = (node: unknown): void => {
     if (Array.isArray(node)) return node.forEach(walk);
@@ -63,11 +70,18 @@ function readingMinutes(body: unknown): number | undefined {
     if (n.root) walk(n.root);
   };
   walk(body);
-  return words > 0 ? Math.max(1, Math.round(words / 200)) : undefined;
+  return words;
 }
 
-const toSummary = (doc: Doc): ArticleSummary => {
+function readingMinutes(body: unknown, locale: Locale): number | undefined {
+  const words = countWords(body);
+  if (words === 0) return undefined;
+  return Math.max(1, Math.round(words / WORDS_PER_MINUTE[locale]));
+}
+
+const toSummary = (doc: Doc, locale: Locale): ArticleSummary => {
   const hero = media(doc.heroImage);
+  const og = media(doc.ogImage);
   return {
     slug: str(doc.slug),
     title: str(doc.title),
@@ -75,15 +89,20 @@ const toSummary = (doc: Doc): ArticleSummary => {
     publishedAt: str(doc.publishedAt) || str(doc.createdAt),
     heroImage: hero.url,
     heroImageAlt: hero.alt,
+    ogImage: og.url,
     category:
       doc.category && typeof doc.category === "object"
         ? str((doc.category as Doc).label)
         : undefined,
-    readingMinutes: readingMinutes(doc.body),
+    readingMinutes: readingMinutes(doc.body, locale),
+    // A document ticked "Placeholder content" in the panel. Absent rather
+    // than false when it is finished writing, so the flag stays optional on
+    // the type and a missing field never reads as provisional.
+    provisional: doc.provisional === true ? true : undefined,
   };
 };
 
-const toArticle = (doc: Doc): Article => {
+const toArticle = (doc: Doc, locale: Locale): Article => {
   const author =
     doc.author && typeof doc.author === "object"
       ? {
@@ -94,7 +113,7 @@ const toArticle = (doc: Doc): Article => {
       : undefined;
 
   return {
-    ...toSummary(doc),
+    ...toSummary(doc, locale),
     // The editor state, passed straight through. See Article.body.
     body: doc.body ?? null,
     author,
@@ -122,6 +141,7 @@ const toArticle = (doc: Doc): Article => {
  */
 const translated = (doc: Doc): boolean => str(doc.title).trim().length > 0;
 
+
 /*
  * Locale fallback is off for every public read.
  *
@@ -138,11 +158,13 @@ const translated = (doc: Doc): boolean => str(doc.title).trim().length > 0;
  */
 const NO_FALLBACK = false;
 /** The CMS collection behind each public section. */
-const COLLECTION = {
+const COLLECTION: Record<Collection, "posts" | "guides" | "helpArticles" | "comparisons" | "updates"> = {
   blog: "posts",
   guides: "guides",
   help: "helpArticles",
-} as const;
+  compare: "comparisons",
+  whatsNew: "updates",
+};
 
 export const payloadContent: ContentSource = {
   async listArticles({ locale, collection, limit = 50 }) {
@@ -162,7 +184,9 @@ export const payloadContent: ContentSource = {
           where: { _status: { equals: "published" } },
           fallbackLocale: NO_FALLBACK,
         });
-        return asDocs(result.docs).filter(translated).map(toSummary);
+        return asDocs(result.docs)
+          .filter(translated)
+          .map((doc) => toSummary(doc, locale));
       },
       [],
     );
@@ -185,68 +209,10 @@ export const payloadContent: ContentSource = {
           fallbackLocale: NO_FALLBACK,
         });
         const doc = asDocs(result.docs)[0];
-        return doc && translated(doc) ? toArticle(doc) : null;
-      },
-      null,
-    );
-  },
-
-  async listComparisons(locale: Locale) {
-    return safeRead(
-      "list comparisons",
-      async () => {
-        const payload = await payloadClient();
-        const result = await payload.find({
-          collection: "comparisons",
-          locale,
-          limit: 50,
-          depth: 1,
-          where: { _status: { equals: "published" } },
-        });
-        return asDocs(result.docs).map(toComparison);
-      },
-      [],
-    );
-  },
-
-  async getComparison({ locale, slug }: ContentRef) {
-    return safeRead(
-      `get comparison/${slug}`,
-      async () => {
-        const payload = await payloadClient();
-        const result = await payload.find({
-          collection: "comparisons",
-          locale,
-          limit: 1,
-          depth: 1,
-          where: { slug: { equals: slug }, _status: { equals: "published" } },
-        });
-        const doc = asDocs(result.docs)[0];
-        return doc ? toComparison(doc) : null;
+        return doc && translated(doc) ? toArticle(doc, locale) : null;
       },
       null,
     );
   },
 };
 
-function toComparison(doc: Doc): Comparison {
-  const rows = Array.isArray(doc.comparisonRows) ? (doc.comparisonRows as Doc[]) : [];
-  const objections = Array.isArray(doc.objectionHandling)
-    ? (doc.objectionHandling as Doc[])
-    : [];
-
-  return {
-    slug: str(doc.slug),
-    competitorName: str(doc.competitorName),
-    intro: doc.intro ?? null,
-    rows: rows.map((r) => ({
-      feature: str(r.feature),
-      competitor: str(r.competitor),
-      markyos: str(r.markyos),
-    })),
-    objections: objections.map((o) => ({
-      question: str(o.question),
-      answer: o.answer ?? null,
-    })),
-  };
-}

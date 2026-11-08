@@ -144,7 +144,16 @@ const terms: PageDoc = {
         ["16", "التغييرات على الشروط"],
       ],
     },
-    { kind: "prose", body: [], links: [LINK.privacy, LINK.security, LINK.contact] },
+    /* A heading and a line, because a row of three blue links under nothing
+        is not a sign-off — it is three links somebody forgot to introduce. */
+    {
+      kind: "prose",
+      title: "سؤال عن الشروط؟",
+      body: [
+        "اكتب لنا قبل أن توافق على شيء لا يبدو واضحاً. وصفحة الخصوصية تشرح ما نجمعه من بيانات ولماذا، وصفحة الأمان تشرح أين تُحفظ ملفاتك ومن يصل إليها.",
+      ],
+      links: [LINK.privacy, LINK.security, LINK.contact],
+    },
   ],
 };
 
@@ -185,7 +194,14 @@ const cookies: PageDoc = {
       // which is why there is no banner on it today.
       note: "قياس الزيارات على هذا الموقع يعمل دون ملفات تعريف ارتباط ودون حفظ عنوان IP، ولهذا لا يظهر لك شريط موافقة عليه.",
     },
-    { kind: "prose", body: [], links: [LINK.privacy, LINK.terms] },
+    {
+      kind: "prose",
+      title: "سؤال عن ملفاتنا؟",
+      body: [
+        "تجد في صفحة الخصوصية ما نجمعه من بيانات ولماذا، وفي الشروط ما تتفق عليه معنا حين تفتح حساباً.",
+      ],
+      links: [LINK.privacy, LINK.terms],
+    },
   ],
 };
 

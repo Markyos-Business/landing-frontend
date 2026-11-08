@@ -23,7 +23,7 @@ export function AiRules({ copy }: { copy: AiRulesCopy }) {
     <Section id="ai" labelledBy="ai-heading" rule>
       <SectionHead id="ai-heading" title={copy.headline} lead={copy.body} align="start" />
 
-      <ul className="mk-bento mt-12 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="mk-pop mk-bento mt-12 sm:grid-cols-2 lg:grid-cols-4">
         {copy.promises.map((promise, i) => (
           <li key={promise.term} className="flex min-h-[12rem] flex-col justify-between gap-8">
             <div>

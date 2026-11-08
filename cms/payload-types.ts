@@ -71,6 +71,7 @@ export interface Config {
     guides: Guide;
     helpArticles: HelpArticle;
     comparisons: Comparison;
+    updates: Update;
     media: Media;
     authors: Author;
     categories: Category;
@@ -89,6 +90,7 @@ export interface Config {
     guides: GuidesSelect<false> | GuidesSelect<true>;
     helpArticles: HelpArticlesSelect<false> | HelpArticlesSelect<true>;
     comparisons: ComparisonsSelect<false> | ComparisonsSelect<true>;
+    updates: UpdatesSelect<false> | UpdatesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
@@ -104,20 +106,10 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'ar') | ('en' | 'ar')[];
-  globals: {
-    homepage: Homepage;
-    navigation: Navigation;
-    announcement: Announcement;
-    siteSettings: SiteSetting;
-  };
-  globalsSelect: {
-    homepage: HomepageSelect<false> | HomepageSelect<true>;
-    navigation: NavigationSelect<false> | NavigationSelect<true>;
-    announcement: AnnouncementSelect<false> | AnnouncementSelect<true>;
-    siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
-  };
-  locale: 'en' | 'ar';
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('ar' | 'en') | ('ar' | 'en')[];
+  globals: {};
+  globalsSelect: {};
+  locale: 'ar' | 'en';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -163,9 +155,13 @@ export interface Post {
    */
   excerpt?: string | null;
   /**
-   * Shared across both languages. Its alt text is localized on the image itself.
+   * 1600x900. Set one per language: the Arabic cover is typeset in Arabic, so it is a different file rather than a translation.
    */
   heroImage?: (number | null) | Media;
+  /**
+   * 1200x630, shown when the page is shared. Leave empty to use the site-wide card.
+   */
+  ogImage?: (number | null) | Media;
   /**
    * The article. Headings start at H2 — the page supplies the H1.
    */
@@ -192,7 +188,11 @@ export interface Post {
    */
   publishedAt?: string | null;
   /**
-   * Overrides the browser tab and search result title. Aim for 60 characters. Leave empty to use the title above.
+   * Tick while this is written to fill a layout. The page shows a notice and the index stays out of search. Clear it when the real piece is written.
+   */
+  provisional?: boolean | null;
+  /**
+   * Overrides the browser tab and search result title. Aim for 60 characters — search results cut off past roughly 60, so a longer one is not wrong but will not be read in full. Leave empty to use the title above.
    */
   seoTitle?: string | null;
   /**
@@ -328,12 +328,24 @@ export interface Guide {
    * Shown on the guides index.
    */
   excerpt?: string | null;
+  author?: (number | null) | Author;
+  /**
+   * Who the guide is for. Shown as the cover word and the pill on the index, the same as on a blog post.
+   */
+  category?: (number | null) | Category;
   guideType?: ('checklist' | 'template' | 'worksheet') | null;
   /**
    * The PDF or template the reader came for.
    */
   downloadFile?: (number | null) | Media;
+  /**
+   * 1600x900. Set one per language: the Arabic cover is typeset in Arabic, so it is a different file rather than a translation.
+   */
   heroImage?: (number | null) | Media;
+  /**
+   * 1200x630, shown when the page is shared. Leave empty to use the site-wide card.
+   */
+  ogImage?: (number | null) | Media;
   body?: {
     root: {
       type: string;
@@ -354,7 +366,11 @@ export interface Guide {
    */
   publishedAt?: string | null;
   /**
-   * Overrides the browser tab and search result title. Aim for 60 characters. Leave empty to use the title above.
+   * Tick while this is written to fill a layout. The page shows a notice and the index stays out of search. Clear it when the real piece is written.
+   */
+  provisional?: boolean | null;
+  /**
+   * Overrides the browser tab and search result title. Aim for 60 characters — search results cut off past roughly 60, so a longer one is not wrong but will not be read in full. Leave empty to use the title above.
    */
   seoTitle?: string | null;
   /**
@@ -379,6 +395,10 @@ export interface HelpArticle {
    */
   slug: string;
   /**
+   * One or two sentences. Shown under the heading on the article, and used as the search description when no SEO override is set.
+   */
+  excerpt?: string | null;
+  /**
    * Getting started, Billing, RTL setup, and so on.
    */
   category?: (number | null) | Category;
@@ -398,7 +418,19 @@ export interface HelpArticle {
     [k: string]: unknown;
   } | null;
   /**
-   * Overrides the browser tab and search result title. Aim for 60 characters. Leave empty to use the title above.
+   * 1200x630, shown when the page is shared. Leave empty to use the site-wide card.
+   */
+  ogImage?: (number | null) | Media;
+  /**
+   * Used for ordering and shown on the article.
+   */
+  publishedAt?: string | null;
+  /**
+   * Tick while this is written to fill a layout. The page shows a notice and the index stays out of search. Clear it when the real piece is written.
+   */
+  provisional?: boolean | null;
+  /**
+   * Overrides the browser tab and search result title. Aim for 60 characters — search results cut off past roughly 60, so a longer one is not wrong but will not be read in full. Leave empty to use the title above.
    */
   seoTitle?: string | null;
   /**
@@ -418,17 +450,33 @@ export interface HelpArticle {
 export interface Comparison {
   id: number;
   /**
-   * Not localized — a product name is a product name.
+   * The page heading, for example "Markyos vs Endform".
    */
-  competitorName: string;
+  title: string;
   /**
    * The URL segment. Shared across both languages. Changing it on a published page breaks every existing link — add a redirect if you do.
    */
   slug: string;
   /**
-   * The positioning copy above the table.
+   * Not localized — a product name is a product name. Used in the admin list, not printed on the page.
    */
-  intro?: {
+  competitorName?: string | null;
+  /**
+   * Shown on the /compare index.
+   */
+  excerpt?: string | null;
+  /**
+   * 1600x900. Set one per language: the Arabic cover is typeset in Arabic, so it is a different file rather than a translation.
+   */
+  heroImage?: (number | null) | Media;
+  /**
+   * 1200x630, shown when the page is shared. Leave empty to use the site-wide card.
+   */
+  ogImage?: (number | null) | Media;
+  /**
+   * The comparison. Headings start at H2 — the page supplies the H1. The capability table is a table here.
+   */
+  body?: {
     root: {
       type: string;
       children: {
@@ -444,39 +492,82 @@ export interface Comparison {
     [k: string]: unknown;
   } | null;
   /**
-   * One row per capability. State their side accurately — a comparison that overstates is the kind of thing that gets quoted back at you.
+   * Used for ordering and shown on the article.
    */
-  comparisonRows?:
-    | {
-        feature: string;
-        competitor: string;
-        markyos: string;
-        id?: string | null;
-      }[]
-    | null;
-  objectionHandling?:
-    | {
-        question: string;
-        answer?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        id?: string | null;
-      }[]
-    | null;
+  publishedAt?: string | null;
   /**
-   * Overrides the browser tab and search result title. Aim for 60 characters. Leave empty to use the title above.
+   * Tick while this is written to fill a layout. The page shows a notice and the index stays out of search. Clear it when the real piece is written.
+   */
+  provisional?: boolean | null;
+  /**
+   * Overrides the browser tab and search result title. Aim for 60 characters — search results cut off past roughly 60, so a longer one is not wrong but will not be read in full. Leave empty to use the title above.
+   */
+  seoTitle?: string | null;
+  /**
+   * The grey line under the search result. Aim for 155 characters. Leave empty to use the excerpt.
+   */
+  seoDescription?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Release notes: what shipped, when, and what it means.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "updates".
+ */
+export interface Update {
+  id: number;
+  title: string;
+  /**
+   * The URL segment. Shared across both languages. Changing it on a published page breaks every existing link — add a redirect if you do.
+   */
+  slug: string;
+  /**
+   * One or two sentences. Shown on the What's new index and used as the search description when no SEO override is set.
+   */
+  excerpt?: string | null;
+  /**
+   * 1600x900. Set one per language: the Arabic cover is typeset in Arabic, so it is a different file rather than a translation.
+   */
+  heroImage?: (number | null) | Media;
+  /**
+   * 1200x630, shown when the page is shared. Leave empty to use the site-wide card.
+   */
+  ogImage?: (number | null) | Media;
+  /**
+   * The note. Headings start at H2 — the page supplies the H1.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional. The release, or the area it touches.
+   */
+  category?: (number | null) | Category;
+  /**
+   * Used for ordering and shown on the article.
+   */
+  publishedAt?: string | null;
+  /**
+   * Tick while this is written to fill a layout. The page shows a notice and the index stays out of search. Clear it when the real piece is written.
+   */
+  provisional?: boolean | null;
+  /**
+   * Overrides the browser tab and search result title. Aim for 60 characters — search results cut off past roughly 60, so a longer one is not wrong but will not be read in full. Leave empty to use the title above.
    */
   seoTitle?: string | null;
   /**
@@ -553,7 +644,7 @@ export interface User {
   /**
    * What this person can open. Anything not ticked is hidden from their sidebar and refused if they reach for it directly. Leave empty and they see no content at all. Admins ignore this and see everything.
    */
-  sections?: ('posts' | 'guides' | 'helpArticles' | 'comparisons')[] | null;
+  sections?: ('posts' | 'guides' | 'helpArticles' | 'comparisons' | 'updates')[] | null;
   /**
    * Private. Why this person has access and who arranged it — useful a year later when nobody remembers who the freelancer was.
    */
@@ -617,6 +708,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'comparisons';
         value: number | Comparison;
+      } | null)
+    | ({
+        relationTo: 'updates';
+        value: number | Update;
       } | null)
     | ({
         relationTo: 'media';
@@ -697,11 +792,13 @@ export interface PostsSelect<T extends boolean = true> {
   slug?: T;
   excerpt?: T;
   heroImage?: T;
+  ogImage?: T;
   body?: T;
   author?: T;
   category?: T;
   tags?: T;
   publishedAt?: T;
+  provisional?: T;
   seoTitle?: T;
   seoDescription?: T;
   updatedAt?: T;
@@ -716,11 +813,15 @@ export interface GuidesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   excerpt?: T;
+  author?: T;
+  category?: T;
   guideType?: T;
   downloadFile?: T;
   heroImage?: T;
+  ogImage?: T;
   body?: T;
   publishedAt?: T;
+  provisional?: T;
   seoTitle?: T;
   seoDescription?: T;
   updatedAt?: T;
@@ -734,8 +835,12 @@ export interface GuidesSelect<T extends boolean = true> {
 export interface HelpArticlesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  excerpt?: T;
   category?: T;
   body?: T;
+  ogImage?: T;
+  publishedAt?: T;
+  provisional?: T;
   seoTitle?: T;
   seoDescription?: T;
   updatedAt?: T;
@@ -747,24 +852,35 @@ export interface HelpArticlesSelect<T extends boolean = true> {
  * via the `definition` "comparisons_select".
  */
 export interface ComparisonsSelect<T extends boolean = true> {
-  competitorName?: T;
+  title?: T;
   slug?: T;
-  intro?: T;
-  comparisonRows?:
-    | T
-    | {
-        feature?: T;
-        competitor?: T;
-        markyos?: T;
-        id?: T;
-      };
-  objectionHandling?:
-    | T
-    | {
-        question?: T;
-        answer?: T;
-        id?: T;
-      };
+  competitorName?: T;
+  excerpt?: T;
+  heroImage?: T;
+  ogImage?: T;
+  body?: T;
+  publishedAt?: T;
+  provisional?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "updates_select".
+ */
+export interface UpdatesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  excerpt?: T;
+  heroImage?: T;
+  ogImage?: T;
+  body?: T;
+  category?: T;
+  publishedAt?: T;
+  provisional?: T;
   seoTitle?: T;
   seoDescription?: T;
   updatedAt?: T;
@@ -957,665 +1073,6 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * Overrides the homepage copy. Every field is optional — leave one empty and the approved copy from the codebase is used. Fill one and it replaces it.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "homepage".
- */
-export interface Homepage {
-  id: number;
-  hero?: {
-    eyebrow?: string | null;
-    headline?: string | null;
-    subheadline?: string | null;
-  };
-  /**
-   * Two doors, equal weight. The labels match the sign-up fork, so clicking feels like continuing a decision rather than starting one.
-   */
-  heroCtas?: {
-    studioLabel?: string | null;
-    companyLabel?: string | null;
-    /**
-     * The line under the buttons. If a card IS required on the free plan, this must say "Free plan. Cancel anytime." — see docs/BEFORE-PUBLISH.md item 1.
-     */
-    microcopy?: string | null;
-  };
-  /**
-   * Four short facts, each one checkable against the product as it is today. Concrete numbers read as true; adjectives read as marketing. Do not add a fifth.
-   */
-  proofStrip?:
-    | {
-        fact: string;
-        id?: string | null;
-      }[]
-    | null;
-  productGlimpse?: {
-    headline?: string | null;
-    body?:
-      | {
-          text: string;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  problem?: {
-    eyebrow?: string | null;
-    headline?: string | null;
-    body?:
-      | {
-          text: string;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  /**
-   * Exactly three. Each is a scene the reader has lived through — the old logo in the sales deck, not 'inconsistent brand assets'.
-   */
-  problemCards?:
-    | {
-        headline: string;
-        line: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Reframes the problem so the solution can only be a place. Load-bearing — the next section depends on it.
-   */
-  problemTransition?: string | null;
-  shift?: {
-    headline?: string | null;
-    body?:
-      | {
-          text: string;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  choosePath?: {
-    headline?: string | null;
-  };
-  studioPath?: {
-    eyebrow?: string | null;
-    headline?: string | null;
-    subheadline?: string | null;
-  };
-  /**
-   * Numbers are generated from the order here, so reordering or removing a step renumbers the rest automatically.
-   */
-  studioSteps?:
-    | {
-        name: string;
-        headline: string;
-        body: string;
-        smallPrint?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  handoffLoop?: {
-    headline?: string | null;
-    body?:
-      | {
-          text: string;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  company?: {
-    eyebrow?: string | null;
-    headline?: string | null;
-    subheadline?: string | null;
-  };
-  toneChecker?: {
-    eyebrow?: string | null;
-    headline?: string | null;
-  };
-  toneCheckerBody?: string | null;
-  /**
-   * This list mirrors the product's actual output, field for field. The Arabic register line is the proof of difference on the whole page — keep it.
-   */
-  toneCheckerOutputs?:
-    | {
-        term: string;
-        line: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Answers the question a careful buyer asks before pasting their unreleased copy into someone else's text box. It must stay accurate to what the product does.
-   */
-  toneCheckerPrivacy?: string | null;
-  pillars?: {
-    headline?: string | null;
-  };
-  pillarsBody?: string | null;
-  pillarItems?:
-    | {
-        name: string;
-        headline: string;
-        line: string;
-        id?: string | null;
-      }[]
-    | null;
-  bilingual?: {
-    eyebrow?: string | null;
-    headline?: string | null;
-  };
-  bilingualBody?: string | null;
-  bilingualPoints?:
-    | {
-        term: string;
-        line: string;
-        id?: string | null;
-      }[]
-    | null;
-  aiRules?: {
-    headline?: string | null;
-  };
-  aiRulesBody?: string | null;
-  /**
-   * Every one of these is something the product actually enforces. Do not add a fifth that it does not keep.
-   */
-  aiPromises?:
-    | {
-        term: string;
-        line: string;
-        id?: string | null;
-      }[]
-    | null;
-  replaceStack?: {
-    headline?: string | null;
-  };
-  /**
-   * Competitors are never named here. Name them on a /resources/compare page, where there is room to be fair.
-   */
-  replaceStackRows?:
-    | {
-        job: string;
-        usually: string;
-        markyos: string;
-        id?: string | null;
-      }[]
-    | null;
-  replaceStackLine?: string | null;
-  comingNext?: {
-    headline?: string | null;
-    subheadline?: string | null;
-  };
-  /**
-   * Seasons, never dates. If a phase slips, 'spring 2027' is still true and '12 March' is a broken promise on a page about not breaking promises.
-   */
-  roadmapPhases?:
-    | {
-        season: string;
-        theme: string;
-        items?:
-          | {
-              text: string;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  pricingTeaser?: {
-    headline?: string | null;
-  };
-  /**
-   * Prices themselves stay in the codebase until the beta pricing test closes on 1 Feb 2027 — see docs/BEFORE-PUBLISH.md item 3.
-   */
-  pricingNotes?: {
-    studioNote?: string | null;
-    companyNote?: string | null;
-    underBoth?: string | null;
-  };
-  founderNote?: {
-    headline?: string | null;
-    body?:
-      | {
-          text: string;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  founderSignature?: string | null;
-  faq?: {
-    headline?: string | null;
-  };
-  /**
-   * If an answer mentions something that has not shipped yet, say so in the answer — the FAQ must not become the one place on the site that over-promises.
-   */
-  faqItems?:
-    | {
-        question: string;
-        answer: string;
-        id?: string | null;
-      }[]
-    | null;
-  finalCta?: {
-    headline?: string | null;
-    subheadline?: string | null;
-  };
-  finalCtaButtons?: {
-    studioLabel?: string | null;
-    companyLabel?: string | null;
-    microcopy?: string | null;
-  };
-  _status?: ('draft' | 'published') | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * Header and footer links. Leave empty to use the built-in navigation.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "navigation".
- */
-export interface Navigation {
-  id: number;
-  /**
-   * Audiences first — the first question a visitor to a two-audience site has is 'is this for me?'.
-   */
-  header?:
-    | {
-        label: string;
-        /**
-         * A path without the language, like /studios. The language is added automatically.
-         */
-        href: string;
-        id?: string | null;
-      }[]
-    | null;
-  footerColumns?:
-    | {
-        heading: string;
-        links?:
-          | {
-              label: string;
-              href: string;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * The closing line. It repeats the hero's eyebrow on purpose, so the page ends on a claim rather than a sitemap.
-   */
-  footerLine?: string | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * The strip above the header. Leave empty to use the built-in copy. Which version shows is set by the launch phase, not here.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "announcement".
- */
-export interface Announcement {
-  id: number;
-  /**
-   * Uncheck to hide the bar entirely.
-   */
-  enabled?: boolean | null;
-  beta?: {
-    text?: string | null;
-    ctaLabel?: string | null;
-    ctaHref?: string | null;
-  };
-  live?: {
-    text?: string | null;
-    ctaLabel?: string | null;
-    ctaHref?: string | null;
-  };
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * Search and social metadata. Leave empty to use the built-in values.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "siteSettings".
- */
-export interface SiteSetting {
-  id: number;
-  /**
-   * Aim for 60 characters. Shown in the browser tab and search results.
-   */
-  metaTitle?: string | null;
-  /**
-   * Aim for 155 characters. The grey line under the search result.
-   */
-  metaDescription?: string | null;
-  /**
-   * The headline on a shared link. May differ from the page title.
-   */
-  ogTitle?: string | null;
-  ogDescription?: string | null;
-  /**
-   * 1200x630. Localized, because the card should be in the reader's language. Without one, every share of this link renders a blank card.
-   */
-  ogImage?: (number | null) | Media;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "homepage_select".
- */
-export interface HomepageSelect<T extends boolean = true> {
-  hero?:
-    | T
-    | {
-        eyebrow?: T;
-        headline?: T;
-        subheadline?: T;
-      };
-  heroCtas?:
-    | T
-    | {
-        studioLabel?: T;
-        companyLabel?: T;
-        microcopy?: T;
-      };
-  proofStrip?:
-    | T
-    | {
-        fact?: T;
-        id?: T;
-      };
-  productGlimpse?:
-    | T
-    | {
-        headline?: T;
-        body?:
-          | T
-          | {
-              text?: T;
-              id?: T;
-            };
-      };
-  problem?:
-    | T
-    | {
-        eyebrow?: T;
-        headline?: T;
-        body?:
-          | T
-          | {
-              text?: T;
-              id?: T;
-            };
-      };
-  problemCards?:
-    | T
-    | {
-        headline?: T;
-        line?: T;
-        id?: T;
-      };
-  problemTransition?: T;
-  shift?:
-    | T
-    | {
-        headline?: T;
-        body?:
-          | T
-          | {
-              text?: T;
-              id?: T;
-            };
-      };
-  choosePath?:
-    | T
-    | {
-        headline?: T;
-      };
-  studioPath?:
-    | T
-    | {
-        eyebrow?: T;
-        headline?: T;
-        subheadline?: T;
-      };
-  studioSteps?:
-    | T
-    | {
-        name?: T;
-        headline?: T;
-        body?: T;
-        smallPrint?: T;
-        id?: T;
-      };
-  handoffLoop?:
-    | T
-    | {
-        headline?: T;
-        body?:
-          | T
-          | {
-              text?: T;
-              id?: T;
-            };
-      };
-  company?:
-    | T
-    | {
-        eyebrow?: T;
-        headline?: T;
-        subheadline?: T;
-      };
-  toneChecker?:
-    | T
-    | {
-        eyebrow?: T;
-        headline?: T;
-      };
-  toneCheckerBody?: T;
-  toneCheckerOutputs?:
-    | T
-    | {
-        term?: T;
-        line?: T;
-        id?: T;
-      };
-  toneCheckerPrivacy?: T;
-  pillars?:
-    | T
-    | {
-        headline?: T;
-      };
-  pillarsBody?: T;
-  pillarItems?:
-    | T
-    | {
-        name?: T;
-        headline?: T;
-        line?: T;
-        id?: T;
-      };
-  bilingual?:
-    | T
-    | {
-        eyebrow?: T;
-        headline?: T;
-      };
-  bilingualBody?: T;
-  bilingualPoints?:
-    | T
-    | {
-        term?: T;
-        line?: T;
-        id?: T;
-      };
-  aiRules?:
-    | T
-    | {
-        headline?: T;
-      };
-  aiRulesBody?: T;
-  aiPromises?:
-    | T
-    | {
-        term?: T;
-        line?: T;
-        id?: T;
-      };
-  replaceStack?:
-    | T
-    | {
-        headline?: T;
-      };
-  replaceStackRows?:
-    | T
-    | {
-        job?: T;
-        usually?: T;
-        markyos?: T;
-        id?: T;
-      };
-  replaceStackLine?: T;
-  comingNext?:
-    | T
-    | {
-        headline?: T;
-        subheadline?: T;
-      };
-  roadmapPhases?:
-    | T
-    | {
-        season?: T;
-        theme?: T;
-        items?:
-          | T
-          | {
-              text?: T;
-              id?: T;
-            };
-        id?: T;
-      };
-  pricingTeaser?:
-    | T
-    | {
-        headline?: T;
-      };
-  pricingNotes?:
-    | T
-    | {
-        studioNote?: T;
-        companyNote?: T;
-        underBoth?: T;
-      };
-  founderNote?:
-    | T
-    | {
-        headline?: T;
-        body?:
-          | T
-          | {
-              text?: T;
-              id?: T;
-            };
-      };
-  founderSignature?: T;
-  faq?:
-    | T
-    | {
-        headline?: T;
-      };
-  faqItems?:
-    | T
-    | {
-        question?: T;
-        answer?: T;
-        id?: T;
-      };
-  finalCta?:
-    | T
-    | {
-        headline?: T;
-        subheadline?: T;
-      };
-  finalCtaButtons?:
-    | T
-    | {
-        studioLabel?: T;
-        companyLabel?: T;
-        microcopy?: T;
-      };
-  _status?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "navigation_select".
- */
-export interface NavigationSelect<T extends boolean = true> {
-  header?:
-    | T
-    | {
-        label?: T;
-        href?: T;
-        id?: T;
-      };
-  footerColumns?:
-    | T
-    | {
-        heading?: T;
-        links?:
-          | T
-          | {
-              label?: T;
-              href?: T;
-              id?: T;
-            };
-        id?: T;
-      };
-  footerLine?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "announcement_select".
- */
-export interface AnnouncementSelect<T extends boolean = true> {
-  enabled?: T;
-  beta?:
-    | T
-    | {
-        text?: T;
-        ctaLabel?: T;
-        ctaHref?: T;
-      };
-  live?:
-    | T
-    | {
-        text?: T;
-        ctaLabel?: T;
-        ctaHref?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "siteSettings_select".
- */
-export interface SiteSettingsSelect<T extends boolean = true> {
-  metaTitle?: T;
-  metaDescription?: T;
-  ogTitle?: T;
-  ogDescription?: T;
-  ogImage?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

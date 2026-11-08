@@ -16,14 +16,10 @@ import { Posts } from "./cms/collections/Posts";
 import { Guides } from "./cms/collections/Guides";
 import { HelpArticles } from "./cms/collections/HelpArticles";
 import { Comparisons } from "./cms/collections/Comparisons";
+import { Updates } from "./cms/collections/Updates";
 import { Authors, Categories, Tags } from "./cms/collections/Taxonomy";
 import { Redirects } from "./cms/collections/Redirects";
 import { Pageviews } from "./cms/collections/Pageviews";
-
-import { HomePage } from "./cms/globals/HomePage";
-import { Navigation } from "./cms/globals/Navigation";
-import { Announcement } from "./cms/globals/Announcement";
-import { SiteSettings } from "./cms/globals/SiteSettings";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -142,16 +138,21 @@ export default buildConfig({
       titleSuffix: " · Markyos CMS",
     },
     /*
-     * Dark only.
+     * Light only.
      *
-     * "Black is the brand" (§1.1), and the skin in app/(payload)/custom.css
-     * re-points Payload's theme variables to the one palette. Leaving the
-     * light/dark switch on would offer a theme that no longer exists: the
-     * variables are defined once, so "light" would render white type on a
-     * light ground. One palette, defined once, is also the reason there is no
-     * second set of values to keep in step.
+     * markyos.com is a light page — paper ground, white cards, near-black
+     * ink — and the admin is the surface a person reaches from it, usually in
+     * the next tab. The skin in app/(payload)/custom.css re-points Payload's
+     * theme variables onto that one palette, so there is no second set of
+     * values to keep in step and nothing for a theme switch to switch to:
+     * leaving it on would offer a theme that does not exist.
+     *
+     * This was "dark" until 8 Nov 2026, which was correct while the site was
+     * black. The skin states the palette under the dark selector too, so a
+     * stored preference from before the flip cannot strand anyone on a theme
+     * whose values were deleted.
      */
-    theme: "dark",
+    theme: "light",
     /*
      * Walk straight into the admin with no login screen.
      *
@@ -189,6 +190,13 @@ export default buildConfig({
         : false,
     components: {
       /*
+       * Inter and Thmanya Sans, the website's two faces. The admin is a
+       * separate root layout, so `app/fonts.ts` does not reach it and every
+       * Arabic string in the panel rendered in a system fallback — see
+       * cms/views/AdminFonts.tsx.
+       */
+      providers: ["/cms/views/AdminFonts#AdminFonts"],
+      /*
        * The real brand files, not Payload's mark. `Logo` is the login
        * screen's, `Icon` the sidebar's — see cms/views/BrandLogo.tsx.
        */
@@ -215,8 +223,7 @@ export default buildConfig({
     // guessing from a text field.
     livePreview: {
       url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-      collections: ["posts", "guides", "helpArticles", "comparisons"],
-      globals: ["homepage"],
+      collections: ["posts", "guides", "helpArticles", "comparisons", "updates"],
       breakpoints: [
         { label: "Phone", name: "phone", width: 390, height: 844 },
         { label: "Tablet", name: "tablet", width: 834, height: 1112 },
@@ -245,9 +252,17 @@ export default buildConfig({
    * public site uses — see docs/BEFORE-PUBLISH.md item 29.
    */
   localization: {
+    /*
+     * Arabic first, because the site is.
+     *
+     * The order here is the order of the locale switcher in the panel and of
+     * the language rows on the dashboard. It was English first from when the
+     * two were equals, which put the primary language second in every list
+     * somebody reads. Order is not `defaultLocale` and does not change it.
+     */
     locales: [
-      { label: "English", code: "en" },
       { label: "العربية", code: "ar" },
+      { label: "English", code: "en" },
     ],
     defaultLocale: "en",
     fallback: true,
@@ -273,6 +288,7 @@ export default buildConfig({
     Guides,
     HelpArticles,
     Comparisons,
+    Updates,
     Media,
     Authors,
     Categories,
@@ -282,7 +298,19 @@ export default buildConfig({
     Users,
   ],
 
-  globals: [HomePage, Navigation, Announcement, SiteSettings],
+  /*
+   * No globals.
+   *
+   * There were four — homepage, navigation, announcement bar, site settings —
+   * and they let an editor override the website's own copy from the panel.
+   * That is out of scope as of 8 Nov 2026: the admin is the resources CMS and
+   * the numbers, and the marketing copy is the codebase's, where it is
+   * reviewed in a diff and transcreated against `npm run check:locales`.
+   *
+   * The schemas are in git (`git show HEAD~1 -- cms/globals/`) and the read
+   * path that merged them over the dictionary was `lib/content/pageCopy.ts`.
+   * Bringing them back means restoring both and re-registering them here.
+   */
 
   editor: richText(),
 

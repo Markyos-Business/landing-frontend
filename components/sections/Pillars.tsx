@@ -29,7 +29,7 @@ export function Pillars({ copy }: { copy: PillarsCopy }) {
        * baseline however unevenly their copy runs. `justify-between` plus a
        * min height does that without a fixed cell height to fight at 375px.
        */}
-      <ul className="mk-bento mt-12 md:grid-cols-3">
+      <ul className="mk-pop mk-bento mt-12 md:grid-cols-3">
         {copy.pillars.map((pillar, i) => (
           <li key={pillar.name} className="flex min-h-[13rem] flex-col justify-between gap-8">
             <div>

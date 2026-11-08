@@ -5,7 +5,9 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { NavCopy } from "@/content/types";
 import { localeHref } from "@/lib/i18n/href";
 import type { Locale } from "@/lib/i18n/locales";
-import { Arrow, Icon } from "@/components/ui/Icon";
+import { Icon } from "@/components/ui/Icon";
+import { LangSwitch } from "./LangSwitch";
+import { Spark } from "@/components/ui/Spark";
 
 /*
  * The navigation, on a phone.
@@ -95,7 +97,7 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
          * minimum but is small for the one control that dismisses a
          * full-screen overlay.
          */
-        className="relative z-50 -me-1 grid size-9 place-items-center rounded-[var(--mk-r-button)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)] [@media(pointer:coarse)]:size-11 md:hidden"
+        className="relative z-50 -me-1 grid size-9 place-items-center rounded-[var(--mk-r-button)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)] [@media(pointer:coarse)]:size-11 lg:hidden"
       >
         <Icon name={open ? "close" : "menu"} size={20} label={copy.menuLabel} />
       </button>
@@ -110,7 +112,7 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
          * announcement bar is absent.
          */
         style={panelTop === null ? undefined : { insetBlockStart: `${panelTop}px` }}
-        className="fixed inset-x-0 bottom-0 top-[var(--mk-header-h)] z-40 overflow-y-auto overscroll-contain border-t border-[var(--hairline)] bg-[var(--canvas)] md:hidden"
+        className="fixed inset-x-0 bottom-0 top-[var(--mk-header-h)] z-40 overflow-y-auto overscroll-contain border-t border-[var(--hairline)] bg-[var(--canvas)] lg:hidden"
         /*
          * Following a link closes the panel.
          *
@@ -158,6 +160,28 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
                     </summary>
 
                     <div className="pb-4">
+                      {/*
+                       * The desktop rail's way in, which on a phone is just a
+                       * link — there is no room for the claim above it, and a
+                       * 22px line of display type at the top of an accordion
+                       * would read as a second heading for the item that is
+                       * already open.
+                       *
+                       * It is here and not only on the desktop because the
+                       * Platform menu's overview link lives in `intro` now
+                       * rather than in `strip`. Without this the phone menu
+                       * would have nine modules under «المنصة» and no way to
+                       * reach /platform itself.
+                       */}
+                      {item.intro ? (
+                        <Link
+                          href={localeHref(locale, item.intro.more.href)}
+                          className="inline-flex items-center gap-1.5 pb-3 text-[0.75rem] font-medium text-[var(--accent-text)]"
+                        >
+                          <span className="mk-bidi">{item.intro.more.label}</span>
+                        </Link>
+                      ) : null}
+
                       {item.groups?.map((group) => (
                         <details key={group.heading} className="group/g border-t border-[var(--hairline)]">
                           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-3">
@@ -182,15 +206,16 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
                                 </Link>
                               </li>
                             ))}
-                            <li>
-                              <Link
-                                href={localeHref(locale, group.more.href)}
-                                className="inline-flex items-center gap-1.5 py-2 text-[0.75rem] font-medium text-[var(--accent-text)]"
-                              >
-                                <span className="mk-bidi">{group.more.label}</span>
-                                <Arrow size={12} />
-                              </Link>
-                            </li>
+                            {group.more ? (
+                              <li>
+                                <Link
+                                  href={localeHref(locale, group.more.href)}
+                                  className="inline-flex items-center gap-1.5 py-2 text-[0.75rem] font-medium text-[var(--accent-text)]"
+                                >
+                                  <span className="mk-bidi">{group.more.label}</span>
+                                </Link>
+                              </li>
+                            ) : null}
                           </ul>
                         </details>
                       ))}
@@ -224,7 +249,6 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
                                 }
                               >
                                 <span className="mk-bidi">{link.label}</span>
-                                {i === 0 ? null : <Arrow size={12} />}
                               </Link>
                             </li>
                           ))}
@@ -245,11 +269,33 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
                 {copy.login}
               </Link>
             </li>
+
+            {/*
+             * The language, in the menu.
+             *
+             * It was only ever in the header bar, which is fine until the bar
+             * runs out of room: at 352px and below the English header laid the
+             * lockup, the switch, "Start free" and this button into more than
+             * the viewport. Something had to leave the bar, and this is the one
+             * control that can, because a menu is where a phone keeps its
+             * secondary navigation — but only once the menu actually has it.
+             * Log in is here for the same reason.
+             */}
+            <li className="flex items-center justify-between gap-4 py-4">
+              <span className="mk-bidi text-[0.9375rem] font-medium text-[var(--text)]">
+                {copy.languageLabel}
+              </span>
+              <LangSwitch locale={locale} label={copy.languageLabel} />
+            </li>
           </ul>
 
-          <Link href="/start" prefetch={false} className="mk-btn mk-solid mt-6 w-full">
-            <span className="mk-bidi">{copy.startFree}</span>
-          </Link>
+          {/* The margin and the width belong to the wrapper now — it is the
+              flex item — and the pill fills it from `.mk-spark > a`. */}
+          <Spark full>
+            <Link href="/start" prefetch={false} className="mk-btn mk-solid mt-6 w-full">
+              <span className="mk-bidi">{copy.startFree}</span>
+            </Link>
+          </Spark>
         </nav>
       </div>
     </>

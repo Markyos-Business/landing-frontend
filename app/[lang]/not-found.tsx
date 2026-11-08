@@ -3,7 +3,6 @@ import { getLocale } from "@/lib/i18n/dictionary";
 import { localeHref } from "@/lib/i18n/href";
 import type { Locale } from "@/lib/i18n/locales";
 import { Eyebrow, Glow, Section } from "@/components/ui/Section";
-import { Arrow } from "@/components/ui/Icon";
 
 /*
  * 404, inside the locale.
@@ -50,8 +49,8 @@ export default async function NotFound() {
   const copy = COPY[locale];
 
   return (
-    <Section id="not-found" labelledBy="not-found-heading" className="relative overflow-hidden">
-      <Glow className="start-1/2 top-0 w-[min(44rem,100%)] -translate-x-1/2 opacity-50" />
+    <Section id="not-found" labelledBy="not-found-heading" className="relative overflow-clip">
+      <Glow className="mk-center-x -top-24 w-[min(48rem,110%)]" />
       <div className="mk-measure relative py-12">
         <Eyebrow>404</Eyebrow>
         <h1 id="not-found-heading" className="mk-h2 mk-bidi mt-4">
@@ -62,7 +61,6 @@ export default async function NotFound() {
         <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3">
           <Link href={localeHref(locale, "/")} className="mk-btn mk-solid">
             <span className="mk-bidi">{copy.home}</span>
-            <Arrow size={16} />
           </Link>
 
           {copy.links.map((link) => (

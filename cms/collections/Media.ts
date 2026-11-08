@@ -16,7 +16,15 @@ import { supportingAccess } from "../access";
 export const Media: CollectionConfig = {
   slug: "media",
   admin: {
-    group: "Content",
+    /*
+     * Its own group, not "Resources".
+     *
+     * The four things in Resources each render as a page on the site and each
+     * map to one card on the dashboard. Media renders inside them. Filed
+     * together, the sidebar read as five peers and the one that is not a
+     * resource sat in the middle of them.
+     */
+    group: "Library",
     description: "Images and files used across the site.",
   },
   // Anyone with a section can upload: an article without an image is not a

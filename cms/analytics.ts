@@ -153,26 +153,91 @@ export async function getAnalytics(payload: Payload, days = 30): Promise<Analyti
   };
 }
 
+/**
+ * The field that says a document exists in a given language.
+ *
+ * A Payload document is one row with a column per locale per localized field,
+ * so "does this guide exist in English?" is not a flag on the document — it is
+ * whether the English side of its fields was ever filled in. One field per
+ * collection answers that, and it has to be a localized one.
+ *
+ * All five use `title`, which is `required` on every editorial collection and
+ * therefore present in exactly the languages somebody has written.
+ *
+ * Comparisons used to be the exception and asked about `intro`, because the
+ * collection had no localized title — `competitorName` was the title and is
+ * deliberately not localized ("a product name is a product name"), so asking
+ * about it would have reported every comparison complete in both languages.
+ * That collection was reshaped on 8 Nov 2026 and has a real localized title
+ * now, and this map kept asking for a field that no longer exists: every
+ * dashboard load answered `QueryError: The following path cannot be queried:
+ * intro`, and the whole admin home 500ed. Worth remembering that a field
+ * named in a string is not a field the type checker watches.
+ */
+const LOCALE_FIELD: Record<string, string> = {
+  posts: "title",
+  guides: "title",
+  helpArticles: "title",
+  comparisons: "title",
+  updates: "title",
+};
+
+export type LocaleCoverage = {
+  code: string;
+  label: string;
+  /** Documents that have been written in this language. */
+  written: number;
+};
+
 export type ContentStats = {
   label: string;
   slug: string;
   published: number;
   drafts: number;
+  total: number;
+  locales: LocaleCoverage[];
 }[];
 
 /**
- * How much content exists, and how much of it is sitting unpublished.
+ * The locales the CMS is configured for, in the order the config lists them.
+ *
+ * Read off the running config rather than written out again, so the dashboard
+ * cannot drift from `payload.config.ts` — adding a third language should make
+ * a third row appear and nothing else.
+ */
+function configuredLocales(payload: Payload): { code: string; label: string }[] {
+  const localization = payload.config.localization;
+  if (!localization) return [];
+  return localization.locales.map((locale) => ({
+    code: locale.code,
+    // A label may be given per admin language; the config uses plain strings.
+    label: typeof locale.label === "string" ? locale.label : locale.code,
+  }));
+}
+
+/**
+ * How much content exists, how much is sitting unpublished, and how much of
+ * it has been written in each language.
  *
  * Scoped to the sections the viewer can actually open, so a writer with only
  * the blog does not get a count of comparison pages they cannot see.
+ *
+ * The language counts are the reason this is five queries per section rather
+ * than two. They are what the dashboard is for on a bilingual site: "fourteen
+ * guides, nine of them in English" is the sentence somebody needs, and it is
+ * not derivable from a total.
  */
 export async function getContentStats(
   payload: Payload,
   sections: { slug: string; label: string }[],
 ): Promise<ContentStats> {
+  const locales = configuredLocales(payload);
+
   return Promise.all(
     sections.map(async ({ slug, label }) => {
-      const [published, drafts] = await Promise.all([
+      const field = LOCALE_FIELD[slug];
+
+      const [published, drafts, ...written] = await Promise.all([
         payload.count({
           collection: slug as "posts",
           where: { _status: { equals: "published" } },
@@ -181,8 +246,26 @@ export async function getContentStats(
           collection: slug as "posts",
           where: { _status: { not_equals: "published" } },
         }),
+        ...locales.map((locale) =>
+          payload.count({
+            collection: slug as "posts",
+            locale: locale.code as "en",
+            where: { [field]: { exists: true } },
+          }),
+        ),
       ]);
-      return { label, slug, published: published.totalDocs, drafts: drafts.totalDocs };
+
+      return {
+        label,
+        slug,
+        published: published.totalDocs,
+        drafts: drafts.totalDocs,
+        total: published.totalDocs + drafts.totalDocs,
+        locales: locales.map((locale, i) => ({
+          ...locale,
+          written: written[i]?.totalDocs ?? 0,
+        })),
+      };
     }),
   );
 }

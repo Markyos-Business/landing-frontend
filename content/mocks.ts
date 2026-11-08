@@ -81,6 +81,18 @@ export type MockCopy = {
     sources: string;
     personaLabel: string;
     personaLine: string;
+    /*
+     * The two controls under the draft.
+     *
+     * They were English string literals in the component, which is the one
+     * thing the note at the top of this file exists to stop — and they got
+     * away with it for as long as this mock was a 300px card halfway down
+     * the English homepage. It is now full width on an Arabic solution
+     * page, where "Accept / Dismiss" under four lines of Arabic is the
+     * first thing you see.
+     */
+    accept: string;
+    dismiss: string;
   };
 
   /** components/mock/LeadershipMock.tsx */
@@ -139,6 +151,80 @@ export type MockCopy = {
     health: { heading: string; stats: { label: string; value: string }[] };
   };
 
+  /*
+   * components/mock/ProjectBoard.tsx — the studio board.
+   *
+   * Four of one studio's projects, each at a different stage, which is the
+   * whole claim of /solutions/client-projects in one picture: you can see
+   * where everything stands without opening anything. The client names are
+   * invented and stay as they are in both editions — a Gulf studio's book
+   * has Arabic and Latin names in it either way.
+   */
+  board: {
+    heading: string;
+    /** The filter chip above the list, showing what is being counted. */
+    filter: string;
+    /** Column heads: client, stage, who is waiting, when it moved. */
+    columns: { client: string; stage: string; waiting: string; moved: string };
+    rows: {
+      client: string;
+      /** Arabic script in the client name, so the row sets its own `lang`. */
+      clientAr?: boolean;
+      stage: string;
+      /** One of the five, which decides the dot's hue. */
+      tone: "live" | "review" | "waiting" | "done";
+      waiting: string;
+      moved: string;
+    }[];
+  };
+
+  /*
+   * components/mock/HandoffCard.tsx — the moment of handoff.
+   *
+   * Ownership moves to the client, the studio keeps the role it agreed, the
+   * project's seat comes back, and the reward starts. Four facts that are a
+   * paragraph on the page and a receipt in the product.
+   */
+  handoff: {
+    heading: string;
+    /** The hub being handed over, and its address. */
+    hub: string;
+    hubUrl: string;
+    /** The ownership row, before and after. */
+    ownerLabel: string;
+    ownerFrom: string;
+    ownerTo: string;
+    /** What the studio keeps. */
+    rows: { label: string; value: string; good?: boolean }[];
+    /** The reward line at the foot, which is the part nobody believes. */
+    rewardLabel: string;
+    rewardValue: string;
+    rewardNote: string;
+  };
+
+  /*
+   * components/mock/SeatsPanel.tsx — who is paid for.
+   *
+   * The company plans charge for editors and not for viewers, which is the
+   * one thing about the pricing that sounds too good and so has to be shown
+   * rather than claimed. The partner link underneath is the same idea from
+   * outside the company.
+   */
+  seats: {
+    heading: string;
+    groups: {
+      label: string;
+      count: string;
+      price: string;
+      /** The one that costs nothing is marked, not just priced. */
+      free?: boolean;
+      line: string;
+    }[];
+    partnerLabel: string;
+    partnerValue: string;
+    partnerExpiry: string;
+  };
+
   /** components/sections/AiAlongside.tsx — the three article fragments. */
   ai: {
     /**
@@ -168,6 +254,114 @@ export type MockCopy = {
     tone: {
       channel: string;
       checks: { label: string; state: string }[];
+    };
+  };
+
+  /*
+   * components/mock/BrandHub.tsx — the hub in the hero.
+   *
+   * This one was a set of Arabic string literals inside the component,
+   * with a comment arguing that it should stay Arabic on the English page:
+   * the hub belongs to a fictional Gulf client, and showing it in Arabic
+   * told an English-reading studio owner "this is what your client's brand
+   * hub looks like, and it is not an afterthought".
+   *
+   * Site Copy v3, Part A §3, decides otherwise — "Window content: the demo
+   * brand's published hub, in English" — and the hero is the first thing an
+   * English reader sees. A picture of the product they cannot read is a
+   * worse first impression than the point it was making.
+   *
+   * The brand is the same brand in both editions. Nakhla is a coffee
+   * roaster either way; only the script it writes in changes, which is
+   * exactly what the product does.
+   */
+  hub: {
+    /** The fictional client. `initial` is the avatar's single glyph. */
+    name: string;
+    initial: string;
+    url: string;
+    /** The sidebar, and which item is open. */
+    nav: string[];
+    activeNav: string;
+    breadcrumb: string;
+    title: string;
+    lead: string;
+    /** The four specimen tiles, in the order the reference shows them. */
+    captions: { lockup: string; symbol: string; colour: string; type: string };
+    /** The type specimen: two letters, and a line set in the brand's face. */
+    specimenGlyph: string;
+    specimenLine: string;
+  };
+
+  /*
+   * components/mock/GuidelinesBuilder.tsx — the second pane in the hero.
+   *
+   * Pinned to Arabic until 8 Nov 2026, with the same argument the hub
+   * carried and the same answer: Part A §3 asks for the English window in
+   * English, and the first picture of the product should be one the reader
+   * can read.
+   *
+   * The three template *names* are not here. "Vault", "Docs" and "Studio"
+   * are product nouns and stay in Latin in both editions, exactly as they
+   * do in the product — a studio picking a template is picking "Docs", not
+   * a translation of it.
+   */
+  builder: {
+    name: string;
+    initial: string;
+    url: string;
+    /** The cover's two lines, each its own line in the artwork. */
+    coverTitle: [string, string];
+    /** The rail's tab strip, and which one is open. */
+    tabs: string[];
+    activeTab: string;
+    railLead: string;
+    railNote: string;
+    /** One line per template, keyed by the kind it describes. */
+    notes: { vault: string; docs: string; studio: string };
+    canvasLabel: string;
+    assets: string;
+    preview: string;
+    unpublished: string;
+    allGood: string;
+    publish: string;
+  };
+
+  /*
+   * components/sections/Problem.tsx — the two pictures in the problem cards.
+   *
+   * The queue is the one that mattered: three questions landing on one
+   * desk, hard-coded in Arabic, so the English homepage showed an Arabic
+   * chat under an English heading. The first question is the card's own
+   * copy and comes from the dictionary; these are the two under it.
+   *
+   * Initials, not names. A name in a picture of a product is a person to
+   * invent, and these are three colleagues in a queue, not characters.
+   */
+  problem: {
+    /** The chip on the old logo in the drifting-asset card. */
+    oldLogo: string;
+    /** Who asked the first question, and how long ago. */
+    firstWho: string;
+    firstWhen: string;
+    /** The two questions under it. */
+    queue: { who: string; q: string; when: string }[];
+    /*
+     * The two locale rows in the "two languages, drifting apart" card.
+     *
+     * `code` labels the row carrying the card's own line, which is in the
+     * page's language. `other` is the row beside it, and it is always the
+     * *other* language, because the whole picture is two locales saying
+     * different things — one row of each is the evidence.
+     *
+     * Until 8 Nov 2026 the first row was hard-coded `dir="rtl" lang="ar"`
+     * in both editions, so the English page put an English sentence in an
+     * Arabic row: the full stop jumped to the front, the `ar-SA` chip was
+     * squeezed onto two lines, and the text ran over it.
+     */
+    drift: {
+      code: string;
+      other: { code: string; text: string; accent: string };
     };
   };
 };
@@ -209,6 +403,8 @@ const EN: MockCopy = {
     sources: "Sources: Brief, question 7 · Call notes, 12 October",
     personaLabel: "Persona · The early commuter",
     personaLine: "Buys on the way in, wants it fast, notices when the cup looks cheap.",
+    accept: "Accept",
+    dismiss: "Dismiss",
   },
 
   leadership: {
@@ -296,21 +492,72 @@ const EN: MockCopy = {
     },
   },
 
+  board: {
+    heading: "Studio board",
+    filter: "Active projects · 4 of 10",
+    columns: { client: "Client", stage: "Stage", waiting: "Waiting on", moved: "Moved" },
+    rows: [
+      { client: "Nakhla Coffee", stage: "Design", tone: "live", waiting: "You", moved: "2d" },
+      { client: "مجموعة الواحة", clientAr: true, stage: "Discovery", tone: "waiting", waiting: "Client", moved: "6d" },
+      { client: "Harbour Dental", stage: "Guideline", tone: "review", waiting: "Client sign-off", moved: "1d" },
+      { client: "Tilal Realty", stage: "Handed over", tone: "done", waiting: "Nobody", moved: "12 Sep" },
+    ],
+  },
+
+  handoff: {
+    heading: "Hand over",
+    hub: "Nakhla Coffee",
+    hubUrl: "brand.nakhla.sa",
+    ownerLabel: "Owner",
+    ownerFrom: "Mirkaz Studio",
+    ownerTo: "Nakhla Coffee",
+    rows: [
+      { label: "Your role after handover", value: "Editor" },
+      { label: "Active project freed", value: "1 of 3 back on your plan", good: true },
+      { label: "Client plan", value: "Company Free" },
+    ],
+    rewardLabel: "Partner reward",
+    rewardValue: "20% back as credit",
+    rewardNote: "For 12 months, if they upgrade.",
+  },
+
+  seats: {
+    heading: "People",
+    groups: [
+      {
+        label: "Editors",
+        count: "6 of 10",
+        price: "Paid",
+        line: "Change the brand: assets, guideline, voice, pages.",
+      },
+      {
+        label: "Viewers",
+        count: "248",
+        price: "Free",
+        free: true,
+        line: "Open the hub, download approved files, check their writing.",
+      },
+    ],
+    partnerLabel: "Partner link",
+    partnerValue: "Print house · view and download",
+    partnerExpiry: "Expires 31 Dec 2026",
+  },
+
   ai: {
     directions: [
       {
         tag: "Direction A",
-        title: "Direction A — Heritage",
+        title: "Direction A: Heritage",
         note: "Calligraphic warmth. Serif Latin paired with a soft naskh.",
       },
       {
         tag: "Direction B",
-        title: "Direction B — Modern",
+        title: "Direction B: Modern",
         note: "Clean geometric sans. Bright blue for delivery and digital.",
       },
       {
         tag: "Direction C",
-        title: "Direction C — Bold",
+        title: "Direction C: Bold",
         note: "Heavy type on black. Saffron for packaging and signage.",
       },
     ],
@@ -341,6 +588,70 @@ const EN: MockCopy = {
         { label: "Key term: «قهوة نخلة»", state: "Fix" },
         { label: "Punctuation: one exclamation mark", state: "Fix" },
       ],
+    },
+  },
+  hub: {
+    name: "Nakhla",
+    initial: "N",
+    url: "nakhla.markyos.com",
+    nav: ["Overview", "Strategy", "Logo", "Colour", "Type", "Voice"],
+    activeNav: "Logo",
+    breadcrumb: "Guidelines / Logo",
+    title: "The logo system",
+    lead: "The primary lockup and the symbol, and the space each one needs.",
+    captions: {
+      lockup: "Primary lockup · clear space",
+      symbol: "The symbol",
+      colour: "Colour",
+      type: "Type",
+    },
+    specimenGlyph: "Aa",
+    specimenLine: "Coffee, grown slowly.",
+  },
+
+  builder: {
+    name: "Nakhla",
+    initial: "N",
+    url: "nakhla.markyos.com/guidelines",
+    coverTitle: ["Brand", "guidelines"],
+    tabs: ["Layers", "Insert", "Template", "Site"],
+    activeTab: "Template",
+    railLead: "Guideline editor",
+    railNote:
+      "The template the client's guideline site is built on. All three read the colours, the logo and the type from the workspace itself.",
+    notes: {
+      vault: "An editorial archive. Dark ground, numbered chapters.",
+      docs: "A technical manual. Light paper, comfortable lines.",
+      studio: "A showcase. Big images, text to the side.",
+    },
+    canvasLabel: "Desktop",
+    assets: "Assets",
+    preview: "Preview",
+    unpublished: "Not published",
+    allGood: "Everything checks out",
+    publish: "Publish",
+  },
+
+  problem: {
+    oldLogo: "Old logo",
+    firstWho: "S",
+    firstWhen: "10m",
+    queue: [
+      { who: "L", q: "Do we have this in Arabic?", when: "1h" },
+      { who: "A", q: "Which font do we use for headings?", when: "2d" },
+    ],
+    drift: {
+      code: "en-GB",
+      /*
+       * 30 against the English row's 40. The two numbers are the whole
+       * picture: the Arabic is not a translation of the English, and it
+       * never was — it is a different offer that nobody noticed.
+       */
+      other: {
+        code: "ar-SA",
+        text: "تخفيضات الصيف، حتى 30%",
+        accent: "30%",
+      },
     },
   },
 };
@@ -416,6 +727,8 @@ const AR: MockCopy = {
     sources: "المصادر: الموجز، السؤال 7 · ملاحظات المكالمة، 12 أكتوبر",
     personaLabel: "شخصية · المتنقّل الباكر",
     personaLine: "يشتري في طريقه، يريدها سريعة، ويلاحظ حين يبدو الكوب رخيصاً.",
+    accept: "اعتمد",
+    dismiss: "تجاهل",
   },
 
   leadership: {
@@ -498,11 +811,62 @@ const AR: MockCopy = {
     },
   },
 
+  board: {
+    heading: "لوحة الاستوديو",
+    filter: "المشاريع النشطة · 4 من 10",
+    columns: { client: "العميل", stage: "المرحلة", waiting: "بانتظار", moved: "آخر تحديث" },
+    rows: [
+      { client: "قهوة نخلة", clientAr: true, stage: "التصميم", tone: "live", waiting: "أنت", moved: "يومان" },
+      { client: "مجموعة الواحة", clientAr: true, stage: "الاكتشاف", tone: "waiting", waiting: "العميل", moved: "6 أيام" },
+      { client: "Harbour Dental", stage: "الدليل", tone: "review", waiting: "اعتماد العميل", moved: "يوم" },
+      { client: "عقارات تلال", clientAr: true, stage: "سُلّم", tone: "done", waiting: "لا أحد", moved: "12 سبتمبر" },
+    ],
+  },
+
+  handoff: {
+    heading: "التسليم",
+    hub: "قهوة نخلة",
+    hubUrl: "brand.nakhla.sa",
+    ownerLabel: "المالك",
+    ownerFrom: "استوديو مركز",
+    ownerTo: "قهوة نخلة",
+    rows: [
+      { label: "دورك بعد التسليم", value: "محرّر" },
+      { label: "حصة المشروع", value: "عاد 1 من 3 إلى خطتك", good: true },
+      { label: "خطة العميل", value: "الشركات، المجانية" },
+    ],
+    rewardLabel: "مكافأة الشريك",
+    rewardValue: "20% رصيداً لك",
+    rewardNote: "لمدة 12 شهراً، إن رقّى خطته.",
+  },
+
+  seats: {
+    heading: "الأشخاص",
+    groups: [
+      {
+        label: "المحرّرون",
+        count: "6 من 10",
+        price: "مدفوع",
+        line: "يغيّرون العلامة: الأصول، والدليل، والصوت، والصفحات.",
+      },
+      {
+        label: "المشاهدون",
+        count: "248",
+        price: "مجاني",
+        free: true,
+        line: "يفتحون المركز، وينزّلون الملفات المعتمدة، ويراجعون كتاباتهم.",
+      },
+    ],
+    partnerLabel: "رابط شريك",
+    partnerValue: "مطبعة · عرض وتنزيل",
+    partnerExpiry: "ينتهي في 31 ديسمبر 2026",
+  },
+
   ai: {
     directions: [
-      { tag: "اتجاه A", title: "اتجاه A — تراثي", note: "دفء الخط العربي. لاتيني مذيّل مع نسخ ليّن." },
-      { tag: "اتجاه B", title: "اتجاه B — حديث", note: "خط هندسي نظيف. أزرق ساطع للتوصيل والرقمي." },
-      { tag: "اتجاه C", title: "اتجاه C — جريء", note: "خط ثقيل على أسود. زعفراني للتغليف واللافتات." },
+      { tag: "اتجاه A", title: "اتجاه A: تراثي", note: "دفء الخط العربي. لاتيني مذيّل مع نسخ ليّن." },
+      { tag: "اتجاه B", title: "اتجاه B: حديث", note: "خط هندسي نظيف. أزرق ساطع للتوصيل والرقمي." },
+      { tag: "اتجاه C", title: "اتجاه C: جريء", note: "خط ثقيل على أسود. زعفراني للتغليف واللافتات." },
     ],
     brief: {
       group: "الاستكشاف",
@@ -551,6 +915,68 @@ const AR: MockCopy = {
         { label: "مصطلح أساسي: «قهوة نخلة»", state: "صحّح" },
         { label: "الترقيم: علامة تعجب واحدة", state: "صحّح" },
       ],
+    },
+  },
+  hub: {
+    name: "نخلة",
+    initial: "ن",
+    url: "nakhla.markyos.com",
+    nav: [
+      "نظرة عامة",
+      "الاستراتيجية",
+      "الشعار",
+      "الألوان",
+      "الخطوط",
+      "النبرة",
+    ],
+    activeNav: "الشعار",
+    breadcrumb: "الإرشادات / الشعار",
+    title: "نظام الشعار",
+    lead: "الشعار الأساسي والأيقونة، والمساحة التي يحتاجها كل منهما.",
+    captions: {
+      lockup: "الشعار الأساسي · المساحة الآمنة",
+      symbol: "الأيقونة",
+      colour: "الألوان",
+      type: "الخطوط",
+    },
+    specimenGlyph: "أب",
+    specimenLine: "قهوة، تُزرع على مهل.",
+  },
+
+  builder: {
+    name: "نخلة",
+    initial: "ن",
+    url: "nakhla.markyos.com/guidelines",
+    coverTitle: ["إرشادات", "العلامة"],
+    tabs: ["طبقات", "إدراج", "القالب", "الموقع"],
+    activeTab: "القالب",
+    railLead: "محرر الإرشادات",
+    railNote:
+      "القالب الذي يُبنى عليه موقع إرشادات العميل. الثلاثة تقرأ الألوان والشعار والخطوط من مساحة العمل نفسها.",
+    notes: {
+      vault: "أرشيف تحريري. أرضية داكنة، وفصول مرقّمة.",
+      docs: "دليل تقني. ورقٌ فاتح، وسطور مريحة.",
+      studio: "عرضٌ للعمل. الصور كبيرة، والنص جانباً.",
+    },
+    canvasLabel: "سطح المكتب",
+    assets: "الأصول",
+    preview: "معاينة",
+    unpublished: "غير منشور",
+    allGood: "كل شيء سليم",
+    publish: "نشر",
+  },
+
+  problem: {
+    oldLogo: "الشعار القديم",
+    firstWho: "س",
+    firstWhen: "10د",
+    queue: [
+      { who: "ل", q: "هل عندنا هذا بالعربية؟", when: "1س" },
+      { who: "ع", q: "أي خط نستخدم للعناوين؟", when: "2ي" },
+    ],
+    drift: {
+      code: "ar-SA",
+      other: { code: "en-US", text: "Summer Sale, up to 40%", accent: "40%" },
     },
   },
 };

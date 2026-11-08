@@ -2,7 +2,6 @@ import Link from "next/link";
 import { localeHref } from "@/lib/i18n/href";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { Section } from "@/components/ui/Section";
-import { Arrow } from "@/components/ui/Icon";
 
 /*
  * The English edition of something written only in Arabic.
@@ -69,25 +68,22 @@ export function NotTranslated({
             <span style={{ fontFamily: "var(--font-arabic)" }} dir="rtl">
               اقرأ الصفحة بالعربية
             </span>
-            <Arrow size={16} />
           </Link>
 
           {fallback ? (
             <Link
               href={localeHref(locale, fallback.href)}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent-text)] underline-offset-4 hover:underline"
+              className="mk-tap inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent-text)] underline-offset-4 hover:underline"
             >
               {fallback.label}
-              <Arrow size={14} />
             </Link>
           ) : null}
 
           <Link
             href={localeHref(locale, "/")}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent-text)] underline-offset-4 hover:underline"
+            className="mk-tap inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent-text)] underline-offset-4 hover:underline"
           >
             English homepage
-            <Arrow size={14} />
           </Link>
         </div>
       </div>

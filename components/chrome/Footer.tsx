@@ -25,13 +25,13 @@ export function Footer({ copy, locale }: { copy: FooterCopy; locale: Locale }) {
   return (
     <footer>
       <div className="mk-container mk-rule py-14">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mk-seq mk-seq-end grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <Link
             href={localeHref(locale, "/")}
             aria-label="Markyos"
             className="flex items-start"
           >
-            <Logo className="h-4 w-auto text-[var(--text)]" />
+            <Logo locale={locale} height={22} className="text-[var(--text)]" title="" />
           </Link>
 
           {copy.columns.map((column) => (
@@ -42,12 +42,17 @@ export function Footer({ copy, locale }: { copy: FooterCopy; locale: Locale }) {
               >
                 {column.heading}
               </h2>
-              <ul className="space-y-3.5">
+              {/* The padding below adds 14px to each link and the spacing
+                  drops by the same, so the column looks identical and every
+                  link is a 33px target instead of a 19px one. A 44px target
+                  would overlap its neighbour on this pitch — see `.mk-tap`
+                  in globals.css. */}
+              <ul className="space-y-0">
                 {column.links.map((link) => (
                   <li key={`${column.heading}-${link.label}`}>
                     <Link
                       href={localeHref(locale, link.href)}
-                      className="mk-bidi text-[length:var(--fs-ui)] font-medium text-[var(--text)] transition-colors hover:text-[var(--accent-text)]"
+                      className="mk-bidi block py-[0.4375rem] text-[length:var(--fs-ui)] font-medium text-[var(--text)] transition-colors hover:text-[var(--accent-text)]"
                     >
                       {link.label}
                     </Link>
@@ -58,14 +63,18 @@ export function Footer({ copy, locale }: { copy: FooterCopy; locale: Locale }) {
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col gap-4 border-t border-[var(--hairline)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mk-rise mk-rise-end mt-14 flex flex-col gap-4 border-t border-[var(--hairline)] pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="mk-bidi text-[length:var(--fs-eyebrow)] text-[var(--text-muted)]">{copy.line}</p>
-          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+          {/* 24px apart and 24px tall, so the legal row satisfies WCAG
+              2.5.8 with a mouse too — `.mk-tap` only grows the hit area on a
+              coarse pointer, and at 16px tall with a 20px gap these were the
+              page's only remaining target failure at desktop. */}
+          <ul className="flex flex-wrap gap-x-6 gap-y-1">
             {copy.legal.map((link) => (
               <li key={link.href}>
                 <Link
                   href={localeHref(locale, link.href)}
-                  className="mk-bidi text-[length:var(--fs-eyebrow)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+                  className="mk-bidi mk-tap block py-1 text-[length:var(--fs-eyebrow)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
                 >
                   {link.label}
                 </Link>

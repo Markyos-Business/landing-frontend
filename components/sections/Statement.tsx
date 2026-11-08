@@ -50,7 +50,7 @@ export function Statement({
          */}
         <SectionHead id={headingId} eyebrow={copy.eyebrow} title={copy.headline} />
 
-        <div className="mt-14 grid items-start gap-10 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-12">
+        <div className="mk-seq mt-14 grid items-start gap-10 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-12">
           {copy.flow?.length ? (
             <ol className="space-y-1">
               {copy.flow.map((stage, i) => (
@@ -108,7 +108,7 @@ export function Statement({
   const [lead, ...rest] = copy.body;
 
   return (
-    <Section id={id} labelledBy={headingId} className="relative overflow-hidden">
+    <Section id={id} labelledBy={headingId} className="relative overflow-clip">
       {/*
        * The light pool.
        *
@@ -127,7 +127,7 @@ export function Statement({
        * the sentence it was meant to be behind. A negative inline offset
        * flips on its own.
        *
-       * `overflow-hidden` on the section: the pool reaches past the gutter
+       * `overflow-clip` on the section: the pool reaches past the gutter
        * and a 390px phone would otherwise scroll sideways.
        */}
       <Glow className="start-[-10rem] top-[-3rem] h-[22rem] w-[min(38rem,100%)] opacity-70" />

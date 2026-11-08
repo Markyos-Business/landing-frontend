@@ -5,24 +5,29 @@ import { Logo, Mark } from "@/components/brand/Logo";
  * The Markyos mark inside the Payload admin.
  *
  * Payload takes two graphics: `Logo` for the login screen and `Icon` for the
- * sidebar header. Both reuse `components/brand/Logo.tsx` — the same inline
- * lockup the marketing header renders — rather than pointing an <img> at the
- * file in public/brand/.
+ * sidebar header. Both reuse `components/brand/Logo.tsx` — the same component
+ * the marketing header renders — rather than pointing an <img> at the file in
+ * public/brand/.
  *
- * Three reasons, and the first is the one that decided it. The source asset
- * declares no fill, so every path defaults to black; an <img> cannot inherit
- * colour, which on this near-black panel would render the wordmark invisible.
- * That is the same trap the marketing component's own header note records,
- * and it is why that component exists. Second, one copy of the artwork:
- * nothing to keep in step when the brand asset changes. Third, `<img>` on a
- * local SVG trips the lint rule the build runs with `--max-warnings=0`.
+ * Three reasons, and the first is the one that decided it. The source assets
+ * declare no fill, so every path defaults to black; an <img> cannot inherit
+ * colour, and the panel's ground has now been both near-black and paper
+ * within a week. That component masks `currentColor` through the file
+ * instead, so the mark follows the panel's ink whichever way it goes and
+ * nothing had to change here when the admin turned light (§12 — the file is
+ * never recoloured; `currentColor` is the file being used as a mask, not a
+ * colour decision). Second, one source of truth: the
+ * shape is the file in public/brand/, so replacing the brand asset reaches
+ * the admin too. Third, `<img>` on a local SVG trips the lint rule the build
+ * runs with `--max-warnings=0`.
  *
  * Sizing lives in app/(payload)/custom.css, so nothing about the artwork is
  * decided here (§12: files only, never retyped, redrawn or recoloured).
  */
 
 export function BrandLogo() {
-  return <Logo className="mk-admin-logo" />;
+  /* The admin is English-only, so the Latin lockup. */
+  return <Logo locale="en" height={28} className="mk-admin-logo" />;
 }
 
 /*
@@ -31,7 +36,7 @@ export function BrandLogo() {
  * right, in RTL it showed the tail of the wordmark (§12).
  */
 export function BrandIcon() {
-  return <Mark className="mk-admin-icon" />;
+  return <Mark size={24} className="mk-admin-icon" title="Markyos" />;
 }
 
 export default BrandLogo;

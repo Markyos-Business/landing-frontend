@@ -19,8 +19,11 @@ function Breadcrumbs({ doc, locale }: { doc: PageDoc; locale: Locale }) {
   if (!doc.breadcrumbs?.length) return null;
 
   return (
-    <nav aria-label="Breadcrumb" className="mk-container pt-7">
-      <ol className="flex flex-wrap items-center gap-x-1 gap-y-1.5 text-[0.75rem] text-[var(--text-muted)]">
+    <nav aria-label="Breadcrumb" className="mk-load mk-container pt-7">
+      {/* The separators were `--hairline-strong` — rgba(11,11,15,.07), which is
+          a line colour, not an ink: at 1.1:1 on this ground the trail rendered
+          as a row of crumbs with nothing between them. */}
+      <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 text-[length:var(--fs-eyebrow)] text-[var(--text-muted)]">
         {doc.breadcrumbs.map((crumb, i) => (
           <li key={crumb.href} className="flex items-center gap-1">
             {i > 0 ? (
@@ -29,12 +32,12 @@ function Breadcrumbs({ doc, locale }: { doc: PageDoc; locale: Locale }) {
               <Icon
                 name="chevron"
                 size={12}
-                className="flex-none -rotate-90 text-[var(--hairline-strong)] rtl:rotate-90"
+                className="flex-none -rotate-90 text-[var(--text-faint)] rtl:rotate-90"
               />
             ) : null}
             <Link
               href={localeHref(locale, crumb.href)}
-              className="mk-bidi rounded px-0.5 transition-colors hover:text-[var(--text)]"
+              className="mk-bidi mk-tap rounded px-0.5 transition-colors hover:text-[var(--text)]"
             >
               {crumb.label}
             </Link>
@@ -46,13 +49,52 @@ function Breadcrumbs({ doc, locale }: { doc: PageDoc; locale: Locale }) {
           <Icon
             name="chevron"
             size={12}
-            className="flex-none -rotate-90 text-[var(--hairline-strong)] rtl:rotate-90"
+            className="flex-none -rotate-90 text-[var(--text-faint)] rtl:rotate-90"
           />
           <span className="mk-bidi text-[var(--text)]">{doc.shortTitle ?? doc.title}</span>
         </li>
       </ol>
     </nav>
   );
+}
+
+/**
+ * Which sections sit on the white band.
+ *
+ * The light page alternates ground and white every section — the homepage does
+ * it fourteen times in a row — and that alternation is what makes the 120px
+ * between two sections read as a chapter break. These pages were one flat field
+ * with a 1px rule at each boundary and 200px of nothing above it, which reads
+ * as a hole rather than as a break.
+ *
+ * The first content section is the white one, so the change happens straight
+ * under the hero. That is where these pages read worst: the hero ends, 180px of
+ * identical ground follows, and the next heading arrives with nothing to say a
+ * section began.
+ *
+ * Two kinds of block are skipped rather than counted. A `hero` and a `cta` sit
+ * on their own light and take the ground either way, and counting them would
+ * swallow a turn and leave two white sections touching. And a heading-less,
+ * copy-less `prose` block is one row of links out of the section above it — see
+ * `signpost` in blocks.tsx — so it continues that section's band instead of
+ * spending one, or six pages would turn a colour for a single line of text.
+ *
+ * A plain function rather than a reduce inside the JSX: the band depends on
+ * every block before it, and a counter closed over by a `map` callback is
+ * exactly the mutation React's compiler refuses to guarantee.
+ */
+function bandRhythm(blocks: PageDoc["blocks"]): boolean[] {
+  const out: boolean[] = [];
+  let band = 0;
+  let previous = false;
+  for (const block of blocks) {
+    const signpost = block.kind === "prose" && !block.title && !block.body?.length;
+    const banded = block.kind !== "hero" && block.kind !== "cta" && !signpost;
+    const white: boolean = signpost ? previous : banded && band++ % 2 === 0;
+    if (banded || signpost) previous = white;
+    out.push(white);
+  }
+  return out;
 }
 
 export function PageView({
@@ -65,6 +107,7 @@ export function PageView({
   chips: SiteCopy["chips"];
 }) {
   const ctx = { locale, chips };
+  const bands = bandRhythm(doc.blocks);
 
   const faq = doc.blocks.find((b) => b.kind === "faq");
 
@@ -130,26 +173,7 @@ export function PageView({
       <Breadcrumbs doc={doc} locale={locale} />
 
       {doc.blocks.map((block, i) => (
-        <Block
-          key={i}
-          block={block}
-          ctx={ctx}
-          index={i}
-          /*
-           * A rule above every section except the first content section and
-           * the ones that draw their own edge. The hero and the closing CTA
-           * sit on a glow and a card draws its own border, so a rule there
-           * would be a second line beside an existing one.
-           */
-          rule={
-            i > 1 &&
-            block.kind !== "hero" &&
-            block.kind !== "cta" &&
-            block.kind !== "callout" &&
-            block.kind !== "signup" &&
-            doc.blocks[i - 1]?.kind !== "hero"
-          }
-        />
+        <Block key={i} block={block} ctx={ctx} index={i} white={bands[i]} />
       ))}
     </>
   );

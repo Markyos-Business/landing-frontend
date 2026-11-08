@@ -1,6 +1,5 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { mockCopy } from "@/content/mocks";
-import { Arrow } from "@/components/ui/Icon";
 
 /*
  * The voice profile: traits, the register each channel uses, and one term.
@@ -65,7 +64,13 @@ export function VoiceMock({ locale }: { locale: Locale }) {
         <p className="text-[0.75rem] text-[var(--text-muted)]">{v.termHeading}</p>
         <div className="mt-3 flex items-center gap-4">
           <span className="text-[length:var(--fs-ui)] text-[var(--text)]">{v.termEn}</span>
-          <Arrow size={14} />
+          {/* "becomes": a rule, not an arrow. The site carries no arrows,
+              and this one was pointing the wrong way in English anyway — the
+              pair reads right-to-left in the Arabic edition of the mock. */}
+          <span
+            aria-hidden="true"
+            className="h-px w-4 flex-none bg-[var(--hairline-strong)]"
+          />
           <span lang="ar" dir="rtl" className="text-[length:var(--fs-ui)] text-[var(--text)]">
             {v.termAr}
           </span>

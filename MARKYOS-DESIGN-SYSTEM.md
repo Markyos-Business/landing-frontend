@@ -13,6 +13,38 @@
 
 ---
 
+> ## ⚠ This file no longer describes the homepage
+>
+> **3 Nov 2026.** markyos.com was rebuilt to
+> `Landing Copy/Markyos Landing AR (readable).html`, which is a **light**
+> page: `#F7F8FA` canvas, `#0B0B0F` ink, white cards lifted on soft
+> blue-grey drop shadows, 22–28px radii, pill CTAs, and a blue gradient
+> inside headlines. Sections §1 (ten lines), §4 (`theme.css`), §5
+> (vocabulary), §8 (light) and §13 (Don't) describe the black site that
+> preceded it and are **superseded for the website**.
+>
+> What is still true and still enforced:
+>
+> - **§2 fonts** — Inter + Thmanya Sans, weight 500 maximum, Arabic never
+>   tracked. `npm run check:design` still fails a weight above 500.
+> - **§6 icons** — Line Awesome 1.3.0 is the one icon system. A missing
+>   glyph is still a question, not a drawing.
+> - **§11 copy and locale** — voice, sentence case, dates, numerals, no
+>   emoji, Arabic transcreated. Unchanged, and the approved key lines still
+>   apply.
+> - **§12 logos** — files only, from `public/brand/`, never mirrored.
+> - The 12px type floor, logical properties, `.mk-bidi`, `<Link>` CTAs,
+>   explicit `dir` on mocks, and `lib/status.ts` chips.
+>
+> `app/markyos-ds.css` still holds the blue-light scale, which the light
+> page uses unchanged (`#0099FF` core, `#0055FF` falloff). Its canvas, panel
+> and text ramps now describe a site that does not exist and nothing reads
+> them. `app/theme.css` carries the light palette directly — see its header.
+>
+> **Replace this file** with a light-page export when the design system
+> catches up; until then `docs/DESIGN.md` is the accurate description of
+> what ships.
+
 ## 0. Precedence
 
 1. **This file** decides every visual value: colour, type, weight, size, radius, border, light, motion, icons.

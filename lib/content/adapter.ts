@@ -39,15 +39,27 @@ export type ArticleSummary = {
   /** Resolved to an absolute URL by the adapter, wherever the file lives. */
   heroImage?: string;
   heroImageAlt?: string;
+  /**
+   * The social card, 1200x630, for this piece in this language.
+   *
+   * Absent on most things, which is correct — `lib/seo.ts` falls back to the
+   * site-wide card. Only the written resources ship one of their own.
+   */
+  ogImage?: string;
   category?: string;
   readingMinutes?: number;
   /**
    * The piece is placeholder content, not finished writing.
    *
-   * Set only by the seed source (lib/content/seed.ts). The templates render a
-   * notice from it and keep the page out of the index, because placeholder
-   * prose that ranks is placeholder prose that gets cited. Anything from the
-   * CMS leaves it unset.
+   * The "Placeholder content" checkbox on the document (`provisionalField` in
+   * cms/fields.ts). The templates render a notice from it and keep the page
+   * out of the index, because placeholder prose that ranks is placeholder
+   * prose that gets cited.
+   *
+   * It was a constant in a second, code-level content source until 8 Nov
+   * 2026, which meant promoting a piece to finished writing meant editing
+   * code. Optional rather than `boolean` so a finished piece simply has no
+   * flag, and a collection that never grows one cannot read as provisional.
    */
   provisional?: boolean;
 };
@@ -68,20 +80,19 @@ export type Article = ArticleSummary & {
   seoDescription?: string;
 };
 
-export type ComparisonRow = {
-  feature: string;
-  competitor: string;
-  markyos: string;
-};
-
-export type Comparison = {
-  slug: string;
-  competitorName: string;
-  /** Editor state, as with Article.body. */
-  intro: unknown;
-  rows: ComparisonRow[];
-  objections: { question: string; answer: unknown }[];
-};
+/*
+ * The five editorial sections, each a route under the locale.
+ *
+ * `compare` and `whatsNew` joined the other three on 8 Nov 2026, when the
+ * real writing arrived for them. Comparisons had been modelled as a separate
+ * structured shape — a table of rows plus objections — which no comparison
+ * page that was actually written turned out to be; see
+ * cms/collections/Comparisons.ts. They are articles, so they are read
+ * through the same two methods as the rest and rendered by the same
+ * template, and this interface lost a pair of methods rather than gaining
+ * any.
+ */
+export type Collection = "blog" | "guides" | "help" | "compare" | "whatsNew";
 
 /**
  * What any content source must provide.
@@ -91,8 +102,10 @@ export type Comparison = {
  * reach for something only one of the two implementations can do.
  */
 export type ContentSource = {
-  listArticles(opts: { locale: Locale; collection: "blog" | "guides" | "help"; limit?: number }): Promise<ArticleSummary[]>;
-  getArticle(opts: ContentRef & { collection: "blog" | "guides" | "help" }): Promise<Article | null>;
-  listComparisons(locale: Locale): Promise<Comparison[]>;
-  getComparison(ref: ContentRef): Promise<Comparison | null>;
+  listArticles(opts: {
+    locale: Locale;
+    collection: Collection;
+    limit?: number;
+  }): Promise<ArticleSummary[]>;
+  getArticle(opts: ContentRef & { collection: Collection }): Promise<Article | null>;
 };

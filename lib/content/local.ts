@@ -1,6 +1,5 @@
 import "server-only";
-import type { Article, ArticleSummary, Comparison, ContentRef, ContentSource } from "./adapter";
-import type { Locale } from "@/lib/i18n/locales";
+import type { Article, ArticleSummary, ContentRef, ContentSource } from "./adapter";
 
 /*
  * Phase 1 content source: nothing.
@@ -21,14 +20,6 @@ export const localContent: ContentSource = {
   },
 
   async getArticle(_ref: ContentRef & { collection: string }): Promise<Article | null> {
-    return null;
-  },
-
-  async listComparisons(_locale: Locale): Promise<Comparison[]> {
-    return [];
-  },
-
-  async getComparison(_ref: ContentRef): Promise<Comparison | null> {
     return null;
   },
 };

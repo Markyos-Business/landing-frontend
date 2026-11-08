@@ -47,9 +47,11 @@ section, in the order that document sets.
 
 ```bash
 npm run dev            # dev server
-npm run build          # 106 static pages — every route, both locales
+npm run build          # 147 static pages — every route, both locales
 npm run check          # tsc · eslint · token drift · design rules · Arabic parity
 npm run cms:types      # regenerate CMS types after a schema change
+npm run cms:import -- <dir>   # load the written resources into the CMS;
+                       # matched on slug, never overwrites, --replace to redo
 npm run cms:importmap  # regenerate the admin import map
 npm run sync:tokens    # pull brand tokens from the platform app
 npm run check:design   # the design system’s §14 rules — add --list for the
@@ -65,8 +67,8 @@ npm run build && npx next start -p 3210
 npm run check:live     # every article answers, every page drives clean
 ```
 
-`check:articles` asks for every article both index pages link to, in both
-languages. `check:pages` drives all 71 routes at desktop, tablet and phone
+`check:articles` asks for every article the five index pages link to, in
+both languages. `check:pages` drives all 106 routes at desktop, tablet and phone
 widths and fails on a console error, a failed request, sideways overflow, a
 missing or duplicated `<h1>`, or the wrong `dir`. Four bugs reached review
 with `npm run check` green and were caught here — see the header of
@@ -143,10 +145,23 @@ translated yet; `/en/<any of them>` serves a short `noindex` notice linking to
 the Arabic page, and `hreflang` on those pages declares Arabic alone. When the
 translation is written it is a content file, not a build — see `docs/PAGES.md`.
 
-**The blog, guides and help centre are full of placeholder prose.** It was
-asked for so those designs could be reviewed against real-length Arabic. Every
-piece says so on the page, all of it is `noindex`, and the CMS replaces it one
-slug at a time. `content/editorial/ar.ts` goes when the real articles land.
+**The resources are written, in both languages.** Ten blog posts, ten guides,
+ten comparison pages and nine release notes — forty pieces, each written twice
+rather than translated, with their own covers. All of it is in the CMS
+(`npm run cms:import`), published, and rendered by one template across five
+sections: `/blog`, `/guides`, `/compare`, `/whats-new` and `/help`.
+
+**The help centre is the one section still empty.** Its ten articles are
+planned and not written.
+
+Two things to read before trusting the pages: `docs/copy/RESOURCES-TODO.md`
+lists the ninety-one unresolved notes the import took out of the text — mostly
+facts nobody has verified yet, on pages that are live — and no guide has a
+download file behind its "Download the template" promise.
+
+Anything published can be marked **Placeholder content** in the panel, which
+renders a notice on the page and keeps the index out of search while every
+piece on it is ticked.
 
 **The admin dashboard is built.** Traffic and content stats on the home
 screen, per-section permissions (a writer can be scoped to the blog alone and

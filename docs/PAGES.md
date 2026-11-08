@@ -96,7 +96,7 @@ A block names a **feature id** from `lib/status.ts`, never a chip label:
 ```
 
 The label is resolved per locale, and the chip disappears on its own when the
-feature ships. A hard-coded "قريباً · ربيع 2027" would still be there in 2028.
+feature ships. A hard-coded "قريباً" would still be there in 2028.
 
 ### Direction
 
@@ -119,12 +119,17 @@ The composition is **per slug**: publishing one real post replaces that one
 placeholder and leaves the rest standing, so the section migrates an article
 at a time. Nobody flips a flag and nothing has to be deleted on a deadline.
 
-Everything from the seed carries `provisional: true`, which renders a notice
-on the page and keeps it out of the index. The index pages de-index themselves
-too, while *every* item on them is provisional — the condition is about the
-content, not a flag somebody has to remember.
+A document ticked **Placeholder content** in the panel renders a notice on
+the page and stays out of the index. The index pages de-index themselves too,
+while *every* item on them is ticked — the condition is about the content, not
+a flag somebody has to remember.
 
-**Delete `content/editorial/ar.ts` when the real articles are written.**
+**The real writing landed on 8 Nov 2026.** Forty pieces in both languages —
+ten blog posts, ten guides, ten comparison pages and nine release notes — are
+in the CMS and published. `/compare` and `/whats-new` became CMS sections
+with their own routes in the same change: `/compare` had been two
+hand-written pages under `content/pages/ar/`, and `/whats-new` had nothing at
+all. The help centre is the one section still empty.
 
 ---
 
