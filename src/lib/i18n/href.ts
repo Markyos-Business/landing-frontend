@@ -57,10 +57,23 @@ export function localePrefix(locale: Locale): string {
   return locale === DEFAULT_LOCALE ? "" : `/${locale}`;
 }
 
+/**
+ * A hand-off into the app, told which language the reader was in.
+ *
+ * The app opens in Arabic unless told otherwise, so a reader on /en pressing
+ * "Get started" used to land on an Arabic sign-up. `?lang=` is what the app
+ * reads before its first paint, and next.config.ts's redirect carries the
+ * query string through. A link that already says `lang=` keeps its own.
+ */
+export function withAppLang(locale: Locale, href: string): string {
+  if (/[?&]lang=/.test(href)) return href;
+  return `${href}${href.includes("?") ? "&" : "?"}lang=${locale}`;
+}
+
 export function localeHref(locale: Locale, href: string): string {
   if (/^[a-z]+:/i.test(href)) return href; // http:, https:, mailto:, tel:
   if (href.startsWith("#")) return href;
-  if (isAppHandoff(href)) return href;
+  if (isAppHandoff(href)) return withAppLang(locale, href);
 
   const prefix = localePrefix(locale);
   // "/" under the unprefixed locale is "/" and not the empty string, which is
