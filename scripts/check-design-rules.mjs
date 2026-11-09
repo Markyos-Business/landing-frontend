@@ -96,32 +96,32 @@ const EXEMPTIONS = [
   },
   {
     rule: "raw-hex",
-    path: "src/components/brand/",
+    path: "src/components/ui/brand/",
     why: "§12: the logo is its files. Logo.tsx is `public/brand/*.svg` inlined so the mark can inherit `currentColor`, and the SVG's own path data and fills are the brand asset, not a colour decision made here. §14's grep excludes this folder for the same reason.",
   },
   {
     rule: "inline-svg",
-    path: "src/components/brand/",
+    path: "src/components/ui/brand/",
     why: "§6 ends by saying it outright: `components/brand/Logo.tsx` is the logo, not an icon, and it stays SVG. This is the carve-out the `<svg>` rule is defined against rather than an exception to it.",
   },
   {
     rule: "raw-hex",
-    path: "src/components/mock/BrandHub.tsx",
+    path: "src/components/public/mock/BrandHub.tsx",
     why: "§7 names this file: \"the client palette in `mock/BrandHub.tsx` is the customer's brand shown as content and stays\". A customer's green cannot come from our tokens — the picture's entire claim is that the colours are theirs.",
   },
   {
     rule: "raw-hex",
-    path: "src/components/mock/GuidelinesBuilder.tsx",
+    path: "src/components/public/mock/GuidelinesBuilder.tsx",
     why: "The same carve-out §7 grants BrandHub, for the same reason one step along: the client palette is the customer's brand shown as content, and the three grounds here are the product's three guideline templates shown as content. A template whose entire description is \"editorial archive, dark ground\" cannot be composed from a light site's tokens — re-pointing it to `--surface-1` would make all three the same template, which is the one thing the picture must not say. The site's own chrome in this file is tokens throughout; only `GROUND` and the client's two brand colours are literal.",
   },
   {
     rule: "raw-hex",
-    path: "src/components/sections/",
+    path: "src/components/public/home/",
     why: "The homepage is a literal trace of `Landing Copy/Markyos Landing AR (readable).html`, which is a design-tool export: every value in it is an inline style, and the point of tracing rather than re-deriving is that the numbers arrive unchanged. The design file is also a LIGHT page (#F7F8FA ground, #0B0B0F ink, white cards on blue-grey shadows) where MARKYOS-DESIGN-SYSTEM.md §1 describes a black one, so there is no token to compose from for most of these values — `theme.css` now carries the light palette for the chrome and the data-driven pages, and the traced sections carry the design file's own numbers. Repeated values are in `components/sections/landing.tsx`; a value used once stays at its use site, where it can be checked against the design file by reading one line. Revisit if the design system is re-exported to describe the light page, at which point most of this becomes tokens again.",
   },
   {
     rule: "inline-svg",
-    path: "src/components/sections/ecosystem/",
+    path: "src/components/public/home/ecosystem/",
     why: "A drawn diagram, not an icon: the ecosystem funnel (six bezier curves converging on the mark, plus the two fan-outs under it). §6 and §13 forbid hand-drawn *icons* — Line Awesome is the one icon system, and a missing glyph is a question. A curve that leaves one node vertically and arrives at another vertically cannot be built from boxes: a `border-radius` corner is a quarter circle. The geometry is the content, and the graphic is aria-hidden with everything it says also said in the copy beside it. Narrowed from the whole folder on 9 Nov 2026, when the handoff loop and the platform grid chart — the other two diagrams — were deleted",
   },
 ];

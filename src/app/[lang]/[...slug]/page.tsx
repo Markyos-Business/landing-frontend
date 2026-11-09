@@ -4,8 +4,8 @@ import { getPage, ALL_PATHS, localesFor } from "@/lib/pages/registry";
 import { getCopyFor } from "@/lib/i18n/dictionary";
 import { isLocale, LOCALES } from "@/lib/i18n/locales";
 import { pageMetadata } from "@/lib/seo";
-import { PageView } from "@/components/page/PageView";
-import { NotTranslated } from "@/components/page/NotTranslated";
+import { PageView } from "@/components/public/pages/PageView";
+import { NotTranslated } from "@/components/public/pages/NotTranslated";
 
 /*
  * Every page in the registry, from one route.

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fontVariables } from "../fonts";
-import { Header } from "@/components/chrome/Header";
-import { Footer } from "@/components/chrome/Footer";
-import { Analytics } from "@/components/chrome/Analytics";
+import { Header } from "@/components/navbar";
+import { Footer } from "@/components/public/Footer";
+import { Analytics } from "@/components/public/Analytics";
 import { getCopyFor } from "@/lib/i18n/dictionary";
 import { isLocale, LOCALES, LOCALE_DIR } from "@/lib/i18n/locales";
 import { pageMetadata } from "@/lib/seo";

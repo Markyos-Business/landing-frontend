@@ -1,7 +1,7 @@
 import type { Cta } from "../types";
 import type { FeatureId } from "@/lib/status";
-import type { IconName } from "@/components/ui/Icon";
-import type { MockName } from "@/components/mock/registry";
+import type { IconName } from "@/components/ui";
+import type { MockName } from "@/components/public/mock/registry";
 
 /*
  * The page contract.

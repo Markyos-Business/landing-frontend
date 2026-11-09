@@ -4,8 +4,8 @@ import { articleLocales, content } from "@/lib/content";
 import { DEFAULT_LOCALE, isLocale, LOCALES } from "@/lib/i18n/locales";
 import { routeSlug } from "@/lib/pages/params";
 import { pageMetadata } from "@/lib/seo";
-import { ArticleView } from "@/components/page/editorial";
-import { NotTranslated } from "@/components/page/NotTranslated";
+import { ArticleView } from "@/components/public/editorial";
+import { NotTranslated } from "@/components/public/pages/NotTranslated";
 
 export const revalidate = 3600;
 

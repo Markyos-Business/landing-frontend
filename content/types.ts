@@ -1,5 +1,5 @@
 import type { ChipKey, FeatureId } from "@/lib/status";
-import type { IconName } from "@/components/ui/Icon";
+import type { IconName } from "@/components/ui";
 
 /*
  * The copy contract.

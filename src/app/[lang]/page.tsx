@@ -1,13 +1,13 @@
 import { getCopyFor, getLocale } from "@/lib/i18n/dictionary";
-import { Hero } from "@/components/sections/Hero";
-import { Problem } from "@/components/sections/problem";
-import { Ecosystem } from "@/components/sections/ecosystem";
-import { ReplaceStack } from "@/components/sections/ReplaceStack";
-import { AiAlongside } from "@/components/sections/ai-alongside";
-import { ChoosePath } from "@/components/sections/ChoosePath";
-import { Bilingual } from "@/components/sections/bilingual";
-import { PricingTeaser } from "@/components/sections/pricing-teaser";
-import { Faq } from "@/components/sections/Faq";
+import { Hero } from "@/components/public/home/Hero";
+import { Problem } from "@/components/public/home/problem";
+import { Ecosystem } from "@/components/public/home/ecosystem";
+import { ReplaceStack } from "@/components/public/home/ReplaceStack";
+import { AiAlongside } from "@/components/public/home/ai-alongside";
+import { ChoosePath } from "@/components/public/home/ChoosePath";
+import { Bilingual } from "@/components/public/home/bilingual";
+import { PricingTeaser } from "@/components/public/home/pricing-teaser";
+import { Faq } from "@/components/public/home/Faq";
 
 /*
  * The homepage — `Landing Copy/Markyos Landing AR (readable).html`.

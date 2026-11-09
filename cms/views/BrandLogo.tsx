@@ -1,5 +1,5 @@
 import React from "react";
-import { Logo, Mark } from "@/components/brand/Logo";
+import { Logo, Mark } from "@/components/ui";
 
 /*
  * The Markyos mark inside the Payload admin.

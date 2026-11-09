@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { content } from "@/lib/content";
 import { isLocale } from "@/lib/i18n/locales";
 import { pageMetadata } from "@/lib/seo";
-import { ArticleIndex, COLLECTIONS } from "@/components/page/editorial";
+import { ArticleIndex, COLLECTIONS } from "@/components/public/editorial";
 
 /*
  * Guides and templates — the index.

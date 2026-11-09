@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getLocale } from "@/lib/i18n/dictionary";
 import { localeHref } from "@/lib/i18n/href";
 import type { Locale } from "@/lib/i18n/locales";
-import { Eyebrow, Glow, Section } from "@/components/ui/Section";
+import { Eyebrow, Glow, Section } from "@/components/ui";
 
 /*
  * 404, inside the locale.
