@@ -241,7 +241,7 @@ if (total > 0) {
       "  `.mk-bidi` on an inline child of a block that is already plaintext,\n" +
       "  or an `inline-flex` wrapper, which is atomic whatever its\n" +
       "  `unicode-bidi` says. See the rules under `.mk-bidi` in\n" +
-      "  app/globals.css, and `.mk-atomic` for the flex case.\n",
+      "  src/app/globals.css, and `.mk-atomic` for the flex case.\n",
   );
   process.exit(1);
 }

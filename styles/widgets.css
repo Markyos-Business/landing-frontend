@@ -1,11 +1,11 @@
-/* Spark, the station dial and the switch. Imported by app/globals.css, in order. */
+/* Spark, the station dial and the switch. Imported by src/app/globals.css, in order. */
 
 @layer components {
 /*
  * The cursor light on a primary CTA.
  *
  * The mechanism and all three of the resting values live in
- * `components/ui/Spark.tsx`; this is what they paint. Three custom properties
+ * `src/components/ui/primitives/Spark.tsx`; this is what they paint. Three custom properties
  * arrive from there and nothing else does:
  *
  *   --mk-spark-x       the light's offset from the pill's centre, in px, on
@@ -252,7 +252,7 @@
  * Seven stops stacked as display words with one lit, its tool and its
  * breakage beside it, and a fine tick rail down each edge. What it replaced
  * and what it declines to take from the reference are in
- * `components/sections/StationDial.tsx`; this is the paint.
+ * `src/components/public/home/StationDial.tsx`; this is the paint.
  *
  * ── The ghosted stops are darker than the reference's ─────────────────────
  *

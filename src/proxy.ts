@@ -4,17 +4,17 @@ import type { NextRequest } from "next/server";
 /*
  * Locale routing.
  *
- * In Next 16 this file is `proxy.ts`, not `middleware.ts` — the middleware
+ * In Next 16 this file is `src/proxy.ts`, not `middleware.ts` — the middleware
  * convention is deprecated and renamed. Proxy is deployed to the edge and must
  * not rely on shared module state, so the two locale segments are written out
  * literally here rather than imported: this file *is* the mapping between the
- * public URL shape and the `app/[lang]` route, and a constant that could drift
+ * public URL shape and the `src/app/[lang]` route, and a constant that could drift
  * from it would be the bug, not the fix.
  *
  * ── The shape ─────────────────────────────────────────────────────────────
  *
  * Arabic is the site. It is served from the root — `/`, `/pricing` — and
- * English lives under `/en`. Every page renders from `app/[lang]`, so an
+ * English lives under `/en`. Every page renders from `src/app/[lang]`, so an
  * unprefixed path has no route to match and is **rewritten** onto `/ar/...`.
  * A rewrite, not a redirect: the reader's URL stays clean, and the page that
  * answers it is the same statically generated one.

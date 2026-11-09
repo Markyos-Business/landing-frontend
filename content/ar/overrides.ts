@@ -7,7 +7,7 @@ import type { DeepPartial, SiteCopy } from "../types";
  * translation of the English document: it is the homepage written in Arabic,
  * with the same argument and the same section numbers, transcreated rather
  * than translated. Arabic is the language the site is published in — see
- * lib/i18n/locales.ts, where it is the default locale and therefore the one
+ * src/lib/i18n/locales.ts, where it is the default locale and therefore the one
  * served from the root.
  *
  * ── Why this file is still "overrides" ────────────────────────────────────
@@ -51,7 +51,7 @@ export const overrides: DeepPartial<SiteCopy> = {
       "منظومة واحدة تغنيك عن سبع أدوات، لمن يصنع العلامات ولمن يديرها.",
   },
 
-  // §0.4. Resolved per locale from lib/status.ts, so a feature that ships
+  // §0.4. Resolved per locale from src/lib/status.ts, so a feature that ships
   // stops being chipped in both languages on the same day.
   chips: {
     comingSoon: "قريباً",
@@ -178,7 +178,7 @@ export const overrides: DeepPartial<SiteCopy> = {
        * English menu: the nine module names and their «بديل عن» lines are
        * already transcreated there. The whole `items` array is given because
        * deepMerge replaces arrays rather than merging them element-wise —
-       * see lib/i18n/merge.ts.
+       * see src/lib/i18n/merge.ts.
        */
       {
         label: "المنصة",

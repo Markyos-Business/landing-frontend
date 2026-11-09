@@ -10,7 +10,7 @@ import { adminOnly, hideUnlessAdmin } from "../access";
  * which is the moment they are thinking about the slug, not about the twelve
  * places the old one is linked from.
  *
- * Read by proxy.ts on a 404, so an editor can fix a broken link without a
+ * Read by src/proxy.ts on a 404, so an editor can fix a broken link without a
  * deploy.
  */
 
@@ -23,7 +23,7 @@ export const Redirects: CollectionConfig = {
     description: "Send an old URL to a new one. Add one whenever you change a slug.",
     hidden: hideUnlessAdmin,
   },
-  // Read stays open: proxy.ts resolves redirects for anonymous visitors.
+  // Read stays open: src/proxy.ts resolves redirects for anonymous visitors.
   access: { ...adminOnly, read: () => true },
   fields: [
     {

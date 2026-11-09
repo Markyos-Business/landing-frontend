@@ -142,7 +142,7 @@ export default buildConfig({
      *
      * markyos.com is a light page — paper ground, white cards, near-black
      * ink — and the admin is the surface a person reaches from it, usually in
-     * the next tab. The skin in app/(payload)/custom.css re-points Payload's
+     * the next tab. The skin in src/app/(payload)/custom.css re-points Payload's
      * theme variables onto that one palette, so there is no second set of
      * values to keep in step and nothing for a theme switch to switch to:
      * leaving it on would offer a theme that does not exist.
@@ -191,7 +191,7 @@ export default buildConfig({
     components: {
       /*
        * Inter and Thmanya Sans, the website's two faces. The admin is a
-       * separate root layout, so `app/fonts.ts` does not reach it and every
+       * separate root layout, so `src/app/fonts.ts` does not reach it and every
        * Arabic string in the panel rendered in a system fallback — see
        * cms/views/AdminFonts.tsx.
        */
@@ -240,7 +240,7 @@ export default buildConfig({
    * source text in front of them instead of an empty box.
    *
    * It is deliberately **not** how the public site reads. Every editorial
-   * read in `lib/content/payload.ts` passes `fallbackLocale: false`, because
+   * read in `src/lib/content/payload.ts` passes `fallbackLocale: false`, because
    * with Arabic primary a fallback is wrong in both directions: it would
    * print English body copy under an Arabic URL, and the other way round it
    * leaves a blank page rather than an absent one. Off, a piece exists in

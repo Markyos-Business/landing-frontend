@@ -3,7 +3,7 @@
 **Written for whoever picks this up next — a developer or a designer.**
 
 The homepage was built to `UI-UX Design Reference/`, twenty-one section
-mockups named 1:1 with `components/sections/`. This file says which file
+mockups named 1:1 with `src/components/public/home/`. This file says which file
 renders which mockup, where the design language is defined, and — the part
 worth reading — the five places the build deliberately departs from the
 reference and why.
@@ -14,15 +14,15 @@ reference and why.
 > blue-grey shadows, 22–28px radii, pill CTAs, and a blue gradient inside the
 > second clause of each headline. `MARKYOS-DESIGN-SYSTEM.md` still describes
 > a black site and **no longer describes this one** — see the note at the top
-> of `app/theme.css`, which now carries the light palette directly instead of
-> mapping onto `app/markyos-ds.css`.
+> of `src/app/theme.css`, which now carries the light palette directly instead of
+> mapping onto `src/app/markyos-ds.css`.
 >
-> The homepage sections under `components/sections/` are a *literal trace* of
+> The homepage sections under `src/components/public/home/` are a *literal trace* of
 > that file and carry its values as inline styles;
-> `components/sections/landing.tsx` holds the ones it repeats. Everything
+> `src/components/public/home/landing.tsx` holds the ones it repeats. Everything
 > else — the chrome, the blog, every page under `content/pages/` — still
 > reads tokens and turned light from `theme.css` alone.
-> `scripts/check-design-rules.mjs` exempts `components/sections/` from
+> `scripts/check-design-rules.mjs` exempts `src/components/public/home/` from
 > `raw-hex` and `inline-svg`, with the reasons in its own table; the other
 > seven rules still pass everywhere, and the type floor is still 12px.
 >
@@ -40,7 +40,7 @@ reference and why.
 > of the journey — stage, usual tool, what actually happens. It is a `<dl>`
 > drawn as a vertical dial now: the seven stages as display words with one at
 > full ink and the rest ghosted, its tool and its breakage beside it, and a
-> fine tick rail down each edge. `components/sections/StationDial.tsx` and
+> fine tick rail down each edge. `src/components/public/home/StationDial.tsx` and
 > `.mk-dial` in globals.css.
 >
 > The table's own note argued it had to be a table, and the part of that
@@ -83,9 +83,9 @@ reference and why.
 > **The primary CTA was lit on 4 Nov 2026.** A specular highlight rides inside
 > the filled pill under the pointer and the edge it is nearest lights up, both
 > driven by one spring, so the light lags the cursor and overshoots when it
-> stops. `components/ui/Spark.tsx` is the mechanism and `.mk-spark*` in
+> stops. `src/components/ui/primitives/Spark.tsx` is the mechanism and `.mk-spark*` in
 > `globals.css` is what it paints. It wraps the solid variant only — in
-> `components/ui/Button.tsx`, in `landing.tsx`'s `Cta`, and on the header and
+> `src/components/ui/buttons/Button.tsx`, in `landing.tsx`'s `Cta`, and on the header and
 > phone-menu "Start free" — because it marks the one ask per section, and an
 > effect that marks everything marks nothing.
 >
@@ -239,7 +239,7 @@ reference and why.
 >
 > The vocabulary gained one block, `audience`, which holds named options and a
 > list of blocks each — so the two runs stay in one content file and the switch
-> is a data shape, not a component per page. `components/page/AudienceTabs.tsx`
+> is a data shape, not a component per page. `src/components/public/pages/AudienceTabs.tsx`
 > renders it.
 >
 > `content/pages/ar/pricing.ts` carried a long comment arguing *against* exactly
@@ -268,7 +268,7 @@ reference and why.
 > given the design's *language*; the thirty-one data-driven pages were a flat
 > #F7F8FA field from the breadcrumb to the footer, separated by a 1px rule with
 > about 200px of nothing above it. Seven shared changes brought them across, all
-> of them in `components/page/blocks/`, `components/ui/` and the token layer,
+> of them in `src/components/public/pages/blocks/`, `src/components/ui/` and the token layer,
 > so no content file changed:
 >
 > - **The band rhythm.** Sections alternate ground and white, counted in
@@ -353,17 +353,17 @@ reference and why.
 > right, and the defect only exists after the cascade and the bidi algorithm
 > have both run.
 >
-> Two rules under `.mk-bidi` in `app/globals.css` fix it, and
+> Two rules under `.mk-bidi` in `src/app/globals.css` fix it, and
 > `npm run check:bidi` keeps it fixed.
 
 > **The admin was branded on 24 Oct 2026.** `/admin` shipped in Payload's
 > default light theme. It is now dark and on the Markyos palette:
-> `app/(payload)/custom.css` re-points Payload's ~30 theme variables the way
-> `app/theme.css` re-points the site's own, so no Payload component had to
+> `src/app/(payload)/custom.css` re-points Payload's ~30 theme variables the way
+> `src/app/theme.css` re-points the site's own, so no Payload component had to
 > be restyled and their next release cannot break a selector we wrote.
 >
 > The admin follows the **platform app's** palette, not the website's. It
-> maps Payload's variables onto `app/tokens.generated.css` — the file
+> maps Payload's variables onto `src/app/tokens.generated.css` — the file
 > `sync:tokens` copies out of the platform and `check:tokens` guards — so
 > the skin holds no colour literals at all and tracks the platform when it
 > moves. That matters because the two sit side by side in one person's day:
@@ -392,10 +392,10 @@ Four files, and nothing else should be inventing values.
 | File | Holds |
 | :--- | :--- |
 | `MARKYOS-DESIGN-SYSTEM.md` | **The source of truth for every visual value** — colour, type, weight, size, radius, border, light, motion, icons. Exported from the Markyos Design System project. |
-| `app/tokens.generated.css` | The **product's** tokens, copied from the platform app. Never edited here; `npm run check:tokens` fails if it drifts. |
-| `app/markyos-ds.css` | The design system's marketing identity layer (`--mk-*`). Values come from the file above and are not decided here. |
-| `app/theme.css` | The **marketing site's** own token names, re-pointed onto `--mk-*`. A mapping, not a palette — which is what lets the whole site change look from one file. |
-| `app/globals.css` | The vocabulary built from those tokens — `.mk-card`, `.mk-btn`, `.mk-display`, the grid and the light. |
+| `src/app/tokens.generated.css` | The **product's** tokens, copied from the platform app. Never edited here; `npm run check:tokens` fails if it drifts. |
+| `src/app/markyos-ds.css` | The design system's marketing identity layer (`--mk-*`). Values come from the file above and are not decided here. |
+| `src/app/theme.css` | The **marketing site's** own token names, re-pointed onto `--mk-*`. A mapping, not a palette — which is what lets the whole site change look from one file. |
+| `src/app/globals.css` | The vocabulary built from those tokens — `.mk-card`, `.mk-btn`, `.mk-display`, the grid and the light. |
 
 **What the reference PNGs still decide:** layout, section order, composition
 and content structure. They no longer decide colour, type or shape — the
@@ -478,7 +478,7 @@ than needing new vocabulary.
 
 **What v2 changed structurally.** Ten sections, not sixteen. It leads with the
 product rather than the problem, and shows what the AI does before promising
-what it will not do. `app/[lang]/page.tsx` lists what stopped rendering on the
+what it will not do. `src/app/[lang]/page.tsx` lists what stopped rendering on the
 homepage and where each piece still reads — none of it was deleted, and
 `npm run check:locales` still counts all of it.
 
@@ -516,7 +516,7 @@ tone checker *is* the thing being flagged as needing to be «قهوة نخلة»
 > and `.mk-deep-rule`. Mentions of them elsewhere in this file are history.
 
 `components/sections/PlatformGrid.tsx` contains the repo's only `<svg>`
-outside `components/brand/`, which trips the §14 "definition of done" rule.
+outside `src/components/ui/brand/`, which trips the §14 "definition of done" rule.
 It is a two-series line chart, not an icon or an illustration — §8 sanctions
 chart fills, and v2 draws it the same way. §6 and §13 ban hand-drawn SVG so
 that nobody draws a magnifying glass when `las la-search` exists; Line Awesome
@@ -528,7 +528,7 @@ and nothing failed. They are a script now — `npm run check:design`, inside
 `npm run check` — so the departure had to become a decision somebody wrote
 down rather than a line in this file. It is the `inline-svg` entry in the
 EXEMPTIONS table at the top of `scripts/check-design-rules.mjs`, with that
-reasoning, beside the two hex exemptions (`mock/BrandHub.tsx` and
+reasoning, beside the two hex exemptions (`src/components/public/mock/BrandHub.tsx` and
 `sections/AiAlongside.tsx` — both showing a customer's brand as content).
 **That table is where an exemption is recorded; this file explains it.** If
 the chart moves, move the exemption with it, and note that the exemption is
@@ -562,27 +562,27 @@ solid. There is no logical gradient keyword; two declarations is the fix.
 
 | Reference | Renders from |
 | :--- | :--- |
-| `00-header.png` | `components/chrome/Header.tsx`, with `Nav.tsx` (the two dropdowns) and `MobileNav.tsx` (the phone menu) |
-| `01-hero.png` | `components/sections/Hero.tsx` + `components/mock/BrandHub.tsx` |
+| `00-header.png` | `src/components/navbar/Header.tsx`, with `Nav.tsx` (the two dropdowns) and `MobileNav.tsx` (the phone menu) |
+| `01-hero.png` | `src/components/public/home/Hero.tsx` + `src/components/public/mock/BrandHub.tsx` |
 | `02-proof-strip.png` | — (deleted 9 Nov 2026; in git history) |
-| `03-product-glimpse.png` | `mock/DraftsPanel.tsx` (via the page registry); the section — (deleted 9 Nov 2026; in git history) |
-| `04-problem.png` | `components/sections/Problem.tsx` |
+| `03-product-glimpse.png` | `src/components/public/mock/DraftsPanel.tsx` (via the page registry); the section — (deleted 9 Nov 2026; in git history) |
+| `04-problem.png` | `src/components/public/home/Problem.tsx` |
 | `05-the-shift.png` | — (deleted 9 Nov 2026; in git history) |
-| `06-choose-path.png` | `components/sections/ChoosePath.tsx` |
+| `06-choose-path.png` | `src/components/public/home/ChoosePath.tsx` |
 | `07-for-studios.png` | — (deleted 9 Nov 2026; in git history) |
 | `08-handoff-loop.png` | — (deleted 9 Nov 2026; in git history) |
-| `09-for-companies.png` | `mock/LeadershipMock.tsx` + `mock/VoiceMock.tsx` (via the page registry); the section — (deleted 9 Nov 2026; in git history) |
-| `10-tone-checker.png` | `mock/ToneResult.tsx` (via the page registry); the section — (deleted 9 Nov 2026; in git history) |
+| `09-for-companies.png` | `src/components/public/mock/LeadershipMock.tsx` + `src/components/public/mock/VoiceMock.tsx` (via the page registry); the section — (deleted 9 Nov 2026; in git history) |
+| `10-tone-checker.png` | `src/components/public/mock/ToneResult.tsx` (via the page registry); the section — (deleted 9 Nov 2026; in git history) |
 | `11-source-of-truth.png` | — (deleted 9 Nov 2026; in git history) |
-| `12-bilingual.png` | `components/sections/Bilingual.tsx` |
+| `12-bilingual.png` | `src/components/public/home/Bilingual.tsx` |
 | `13-ai-drafts.png` | — (deleted 9 Nov 2026; in git history) |
-| `14-replace-stack.png` | `components/sections/ReplaceStack.tsx` |
+| `14-replace-stack.png` | `src/components/public/home/ReplaceStack.tsx` |
 | `15-roadmap.png` | — (deleted 9 Nov 2026; in git history) |
 | `16-pricing.png` | `components/sections/PricingTeaser.tsx` |
 | `17-founder-note.png` | — (deleted 9 Nov 2026; in git history) |
-| `18-faq.png` | `components/sections/Faq.tsx` |
-| `19-final-cta.png` | `components/sections/Hero.tsx` (`variant="final"`) |
-| `20-footer.png` | `components/chrome/Footer.tsx` |
+| `18-faq.png` | `src/components/public/home/Faq.tsx` |
+| `19-final-cta.png` | `src/components/public/home/Hero.tsx` (`variant="final"`) |
+| `20-footer.png` | `src/components/public/Footer.tsx` |
 
 The announcement bar above the header is not in the reference. It is launch-phase
 copy that disappears on 15 Feb 2027; it is styled to match and sits above the
@@ -638,7 +638,7 @@ a click to disprove. Give the eyebrow an href and the arrow goes back.
 
 The reference shows the post-launch page. The site is in `LAUNCH_PHASE=beta`,
 so every feature that has not shipped carries an "Arriving soon" chip,
-generated from `lib/status.ts`. They disappear on their own when each phase
+generated from `src/lib/status.ts`. They disappear on their own when each phase
 ships — that is the whole point of the honesty layer, and suppressing them to
 match the mockups would make the page claim things the product cannot do.
 
@@ -681,7 +681,7 @@ instead. Same information, one less thing to break in translation.
 - **The Arabic pages have no locale segment in their URL.** `/pricing` is
   Arabic; `/en/pricing` is English. Arabic is the site, not one of two equal
   editions — `docs/OPEN-DECISIONS.md` §6. One helper knows this
-  (`lib/i18n/href.ts`) and one file maps it onto the routes (`proxy.ts`).
+  (`src/lib/i18n/href.ts`) and one file maps it onto the routes (`src/proxy.ts`).
 - **`/en` on any page below the homepage is a short notice, not the page.**
   Those twenty-seven pages are written in Arabic and not yet translated. A
   404 would be one click from the header of every page, and Arabic under an
@@ -701,7 +701,7 @@ scroll and to the navigation, and never to itself.
 **Sections reveal as they arrive.** `.mk-rise` reveals the element it is on;
 `.mk-seq` reveals its direct children, staggered three deep. Twenty pixels of
 rise and a fade, nothing else: no scale, no blur, no lift on hover, nothing
-that moves a control you are aiming at. The vocabulary is in `app/globals.css`
+that moves a control you are aiming at. The vocabulary is in `src/app/globals.css`
 and the classes are placed by hand, section by section, because what a section
 *is* already names the right units — a heading block, a picture, a grid, the
 row that closes it.
@@ -727,7 +727,7 @@ describes the first version, a crossfade with a 16px lift; the depth push
 that replaced it is at the end of this document.) React's `<ViewTransition>` over the
 browser's View Transitions API, which is what the Next docs shipped in
 `node_modules` prescribe for this version. One file —
-`app/[lang]/template.tsx` — not nine `page.tsx` wrappers: the guide says to
+`src/app/[lang]/template.tsx` — not nine `page.tsx` wrappers: the guide says to
 avoid a layout because a layout persists and so its enter and exit never fire,
 and a template is the third thing, rendered between layout and page and keyed
 per route. It carries the reasoning, including why it is keyed on the pathname
@@ -767,7 +767,7 @@ than from preference — scroll-driven reveals and kinetic type are the two
 motion patterns 2026 writing agrees on, and the advice that comes with them is
 restraint: animate the message hierarchy, not every character.
 
-**Headlines resolve word by word.** `<Words>` in `components/ui/Words.tsx`
+**Headlines resolve word by word.** `<Words>` in `src/components/ui/primitives/Words.tsx`
 splits a display line on whitespace and gives each word its own slice of the
 scroll range — 1.4% of `cover` apart, about 14px of scroll, so a line arrives
 in reading order rather than all at once. It is on display headings and
@@ -853,7 +853,7 @@ rather than as arriving. `:has(.mk-words, .mk-seq, .mk-rise)` says it for the
 scroll-driven classes and for the load cascade alike.
 
 Page transitions were already in place from the first pass and are unchanged
-in mechanism: `app/[lang]/template.tsx`, React's `<ViewTransition>`, keyed on
+in mechanism: `src/app/[lang]/template.tsx`, React's `<ViewTransition>`, keyed on
 the pathname, crossfading upward. The lift went from 10px to 16px and the
 enter from 220ms to 240ms, because at the original values the transition was
 doing its job and nobody could tell.
@@ -1137,7 +1137,7 @@ window at 1040ms — and all of it is inside the same
 gets the settled composition. Which is also what §3.5 asks for under reduced
 motion, and what `@media print` now gets too.
 
-**The window is `components/mock/BrandHub.tsx`**, which has been in the repo
+**The window is `src/components/public/mock/BrandHub.tsx`**, which has been in the repo
 unrendered since it was written; its own first line calls it "the product
 shot in the hero". That is what lets §3.5's "real product only, no invented
 UI" hold without a screenshot pipeline — it is markup, so it is text, in the
@@ -1694,7 +1694,7 @@ names a quarter is a promise with a deadline attached, and the one thing
 certain about a five-release roadmap is that some of it moves. When it moves,
 every chip on the site is wrong on the same day — forty-odd of them, across
 the homepage, the platform grid, the comparison tables, the solution pages and
-the pricing matrix — and the honesty layer `lib/status.ts` exists to be is
+the pricing matrix — and the honesty layer `src/lib/status.ts` exists to be is
 doing the exact opposite of its job. "Coming soon" cannot go stale.
 
 The dates were never only in the chip, which is why nothing is lost. Each
@@ -1710,7 +1710,7 @@ strings changed — so it is now `comingSoon | arrivingSoon`. And with both
 "coming" chips collapsed into one, `chip:` on each of the twenty-three coming
 features held the same value in every row, so the field is gone from
 `Feature`; `chipFor` returns the key from the status. Nothing outside
-`lib/status.ts` read that field, and `Chip.tsx`, the sections and the content
+`src/lib/status.ts` read that field, and `Chip.tsx`, the sections and the content
 files are untouched apart from the two dictionaries.
 
 ## Six fixes across the sub-pages (7 Nov 2026)
@@ -1890,7 +1890,7 @@ frame is `.mk-showcase`, and the picture is a component that was already
 written. The reference supplied the rhythm; none of the values are its.
 
 Content names a view rather than importing one — `mock: "tone"` — resolved
-through `components/mock/registry.tsx`. A content file is data; this is the
+through `src/components/public/mock/registry.tsx`. A content file is data; this is the
 same indirection `Icon.tsx` uses for glyphs, for the same reason.
 
 Twelve pages carry one now: the nine feature pages and the three audience
@@ -1973,7 +1973,7 @@ it all gained a picture.
 
 Same nine rows, as a control. The name and the audience are a tab; the line
 and the real product screen are its panel. Pick one and its screen appears
-beside it — the same `components/mock/` views the nine detail pages use, so
+beside it — the same `src/components/public/mock/` views the nine detail pages use, so
 the hub now shows what the product looks like before asking anybody to click
 into it.
 
@@ -2096,7 +2096,7 @@ reader to choose between, in order.
 
 ### A NUL byte, twice, and now a rule
 
-The bracket rule's non-breaking space put a literal NUL in `app/globals.css`
+The bracket rule's non-breaking space put a literal NUL in `src/app/globals.css`
 on 7 Nov. It was fixed, and the comment written to explain the fix put a
 second one in — in the sentence describing the trap. A CSS unicode escape
 written with four hex digits reads as an octal escape for zero in most other
@@ -2393,7 +2393,7 @@ exists.
 
 ### It was the platform's dark panel, and the site stopped being dark
 
-`app/(payload)/custom.css` imported `app/tokens.generated.css` and pointed
+`src/app/(payload)/custom.css` imported `src/app/tokens.generated.css` and pointed
 Payload's thirty theme variables at the platform app's dark palette — #060607
 ground, #16161a cards, a white-opacity text ramp — with a comment arguing the
 case: the admin is product UI, it sits beside the platform in somebody's day,
@@ -2404,7 +2404,7 @@ landing design on 3 Nov, and the relationship inverted: the admin is the
 surface a person reaches *from* markyos.com, usually in the next tab, and it
 was the near-black panel next to a paper site.
 
-So it follows the site now, and `app/theme.css` is imported directly — the
+So it follows the site now, and `src/app/theme.css` is imported directly — the
 same file the chrome, the blog and every page under `content/pages/` read.
 There are no literals in the skin and no second palette to keep in step.
 
@@ -2456,7 +2456,7 @@ grey was.
 ### Five fixes
 
 **1. Every Arabic string in the panel was Arial.** The admin is a separate
-root layout, so `app/fonts.ts` never reached it and `custom.css` named
+root layout, so `src/app/fonts.ts` never reached it and `custom.css` named
 "Thmanya Sans" as if it were an installed family. `cms/views/AdminFonts.tsx`
 declares the three font variables through `admin.components.providers` —
 Payload's own extension point, since the generated layout carries a
@@ -2529,7 +2529,7 @@ It scans `cms` too: 1026 file reads, up from 851.
 Two things surfaced immediately, and one of them is about the checker rather
 than the code. `AdminFonts.tsx` names `--font-plex-arabic`, which is right —
 it is where the chain is declared for this layout, the same carve-out
-`app/theme.css` has — so it is an exemption with that reason. The other was a
+`src/app/theme.css` has — so it is an exemption with that reason. The other was a
 false positive of the documented kind: the script strips comments before
 matching, but a CSS comment inside a template literal is a *string* to a
 `.tsx` parser, so the physical-properties rule matched the prose in a comment
@@ -2570,7 +2570,7 @@ them over the dictionary: `lib/content/pageCopy.ts`, 350 lines whose entire
 job was mapping global fields onto `SiteCopy`. `getSiteCopy` is gone; the two
 pages that called it call `getCopyFor` directly.
 
-That last part is a small improvement in its own right. `app/[lang]/layout.tsx`
+That last part is a small improvement in its own right. `src/app/[lang]/layout.tsx`
 was already importing **both** — `getCopyFor` for `generateMetadata` and
 `getSiteCopy` for the chrome — so the page title and the nav were reading from
 two different sources and could disagree about what the site said.
@@ -2631,14 +2631,14 @@ rather than one of them. `Website content` is gone with its globals.
 
 Every resource declared `revalidateDoc("/resources/<thing>")`, which is where
 these sit in the site's information architecture and is **not** where they
-render. The routes are `app/[lang]/blog`, `/guides`, `/help` and the
+render. The routes are `src/app/[lang]/blog`, `/guides`, `/help` and the
 comparison pages under `/compare`; `/resources/blog` is a 301 to `/blog`. So
 publishing a post revalidated two redirects and left the real index cached —
 on a statically rendered site, that is the edit never appearing.
 
 `next dev` re-renders on every request either way, which is most of why it
 survived a year of being looked at. The hook's doc comment now says to check
-`indexPath` against `app/[lang]/` rather than against the navigation.
+`indexPath` against `src/app/[lang]/` rather than against the navigation.
 
 ### The motion check was reading one stop behind
 
@@ -2687,7 +2687,7 @@ separately. And don't mix between them."
 ### One article in the panel, thirteen on the site
 
 Both numbers were right. The blog served thirteen posts and the panel listed
-one, because `lib/content/index.ts` composed two sources: Payload, and a
+one, because `src/lib/content/index.ts` composed two sources: Payload, and a
 code-level source (`lib/content/seed.ts`) reading `content/editorial/ar.ts`,
 which filled in per slug wherever the CMS had nothing. Twelve posts, five
 guides and fourteen help articles — thirty-one of the site's thirty-two
@@ -2873,7 +2873,7 @@ edit.
 the site offers.
 
 Both are CMS sections now, with the same two routes the blog has, rendered by
-the same `components/page/editorial/`. Five collections read through one
+the same `src/components/public/editorial/`. Five collections read through one
 pair of methods.
 
 ### The comparison schema did not survive contact with the writing
@@ -2902,7 +2902,7 @@ be a table, which is worse for a screen reader and worse to read.
 Rendering them needed a converter. Payload's default writes
 `border:1px solid #ccc; padding:8px` **inline on every cell**: a raw hex, a
 mid grey chosen for neither of the site's grounds, and inline styles that beat
-anything `.mk-prose` says. `components/content/RichText.tsx` maps the three
+anything `.mk-prose` says. `src/components/ui/composites/RichText.tsx` maps the three
 table nodes itself, with no style attribute and a `scope` on the header cells,
 and globals.css styles them in hairlines like every other table on the site.
 The wrapper scrolls, because a three-column comparison is the one thing in an
@@ -2973,7 +2973,7 @@ section keeps the order its folders are numbered in.
 
 ### The social cards closed an open "do not ship without it"
 
-`lib/seo.ts` had carried one placeholder card for the whole site since the
+`src/lib/seo.ts` had carried one placeholder card for the whole site since the
 beginning — `/brand/og-{locale}.png` on every page — under a comment saying
 not to ship without the real thing, because a link with no card is a link
 nobody clicks.
@@ -3210,7 +3210,7 @@ above `.mk-atomic` before adding any link into an otherwise empty block.
 
 **The hero's product mock stays Arabic on the English page.** The deck's §3
 English notes say the window shows "the demo brand's published hub, in
-English". `components/mock/BrandHub.tsx` argues the opposite at length: the
+English". `src/components/public/mock/BrandHub.tsx` argues the opposite at length: the
 hub belongs to a fictional Gulf client, and what it shows an English-reading
 studio owner is "this is what your client's brand hub looks like, and it is
 not an afterthought". The deck's own §2.1 note agrees with the component —
@@ -3230,7 +3230,7 @@ fix and a piece of work of its own.
 
 Before this, `/en` was one page. Every other English route — twenty-five of
 them — served a `noindex` notice with a link to the Arabic page, because
-`lib/pages/registry.ts` held the fact "only Arabic is written" as a
+`src/lib/pages/registry.ts` held the fact "only Arabic is written" as a
 constant:
 
 ```ts
@@ -3267,7 +3267,7 @@ the page that answers the question.
 
 ### Every English article was `noindex`, with ten of them published
 
-`app/[lang]/blog/[slug]/page.tsx` and its two siblings asked the *page*
+`src/app/[lang]/blog/[slug]/page.tsx` and its two siblings asked the *page*
 registry which locales existed:
 
 ```ts
@@ -3309,7 +3309,7 @@ confrontation.
 
 ### Seven CTAs on /en went to the Arabic site
 
-`TextLink` and `Cta` in `components/sections/landing.tsx` rendered
+`TextLink` and `Cta` in `src/components/public/home/landing.tsx` rendered
 `href={href}` directly. Every other link primitive on the site goes through
 `localeHref`; these two did not, and nobody noticed because every button on
 the homepage points at `/start`, which is an app handoff and exempt. The

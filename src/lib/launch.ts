@@ -23,11 +23,11 @@
  * The quote is the copy doc's, and the chip it names has since lost its
  * date: the beta chip reads "Arriving soon" / «يصل قريباً», because a chip
  * with a quarter in it is wrong for the whole site the moment one release
- * slips. See the ChipKey note in `lib/status.ts`. What this flag does is
+ * slips. See the ChipKey note in `src/lib/status.ts`. What this flag does is
  * unchanged — it decides whether MVP features carry that chip at all.
  *
  * Note that this flag never affects the "coming soon" chips. Those come from
- * `lib/status.ts` per feature, so a feature that has not shipped is marked
+ * `src/lib/status.ts` per feature, so a feature that has not shipped is marked
  * whichever phase the site is in.
  */
 

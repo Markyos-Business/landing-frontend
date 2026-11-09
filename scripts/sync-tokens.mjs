@@ -13,7 +13,7 @@
  * So the tokens are generated, never authored here. `lib/theme.ts` and
  * `app/globals.css` in the platform app remain the only place a brand value is
  * decided; this script lifts the three token blocks out and writes them to
- * `app/tokens.generated.css`, which `app/globals.css` imports and no one edits.
+ * `src/app/tokens.generated.css`, which `src/app/globals.css` imports and no one edits.
  *
  * ── The two modes ───────────────────────────────────────────────────────────
  *
@@ -139,7 +139,7 @@ if (checkOnly) {
   if (current !== next) {
     console.error(
       "✗ Design tokens are out of date.\n" +
-        "  The platform app's tokens have changed since app/tokens.generated.css was written.\n" +
+        "  The platform app's tokens have changed since src/app/tokens.generated.css was written.\n" +
         "  Run `npm run sync:tokens` and commit the result.",
     );
     process.exit(1);
@@ -152,5 +152,5 @@ writeFileSync(TARGET, next, "utf8");
 
 const tokenCount = (next.match(/^\s{2}--[\w-]+:/gm) ?? []).length;
 console.log(
-  `✓ Wrote app/tokens.generated.css — ${tokenCount} declarations from ${BLOCKS.length} blocks.`,
+  `✓ Wrote src/app/tokens.generated.css — ${tokenCount} declarations from ${BLOCKS.length} blocks.`,
 );

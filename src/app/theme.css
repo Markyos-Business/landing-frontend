@@ -10,7 +10,7 @@
  * Both cannot be true, and the page that ships is the light one.
  *
  * So the values below are the design file's own, read off its markup, rather
- * than mapped onto the `--mk-*` identity layer. `app/markyos-ds.css` is still
+ * than mapped onto the `--mk-*` identity layer. `src/app/markyos-ds.css` is still
  * imported and still holds the blue-light scale, which the design file uses
  * unchanged (#0099FF core, #0055FF falloff) — but its canvas, panel and text
  * ramps now describe a site that does not exist, and nothing here reads them.
@@ -20,11 +20,11 @@
  * Forty-two components read names like `var(--text-muted)` and
  * `var(--surface-1)`. Keeping those names and re-pointing them means the
  * chrome, the blog, and every data-driven page under `content/pages/` turn
- * light from this one file. The homepage sections under `components/sections/`
+ * light from this one file. The homepage sections under `src/components/public/home/`
  * are a literal trace of the design file and carry their own values inline;
  * everything else still comes through here.
  *
- * `app/tokens.generated.css` is generated from the platform app and is never
+ * `src/app/tokens.generated.css` is generated from the platform app and is never
  * edited. Where a product token name needs a different value here, it is
  * re-pointed below rather than changed at the source.
  *
@@ -54,7 +54,7 @@
   --text-secondary: rgba(11, 11, 15, 0.72); /* long-form prose */
   --text-muted: rgba(11, 11, 15, 0.64); /* body copy under a heading */
   /* .55 measures 4.34:1 on this ground — under AA for text below 24px.
-     See the note on INK_55 in components/sections/landing.tsx. */
+     See the note on INK_55 in src/components/public/home/landing.tsx. */
   --text-faint: rgba(11, 11, 15, 0.62); /* meta, captions, column heads */
 
   /* accent */

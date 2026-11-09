@@ -276,7 +276,7 @@ an RTL page, so all six lines crossed. Each pair is now mirrored.
 ### Every page fired six failed cross-origin requests
 
 `/start` and `/login` redirect to `app.markyos.com`, so Next prefetching them
-logs a CORS failure and caches nothing. `lib/i18n/href.ts` has had
+logs a CORS failure and caches nothing. `src/lib/i18n/href.ts` has had
 `isAppHandoff` for exactly this since the last time it happened; the new CTA
 components simply did not call it. They do now.
 
@@ -329,7 +329,7 @@ expensive thing a visitor can hit.
 `public/brand/` holds four superseded files — `markyos-wordmark.svg`,
 `markyos-wordmark-white.svg`, `markyos-mark-white.svg`,
 `markyos-lockup-white.svg`. Nothing references them; the masking approach in
-`components/brand/Logo.tsx` needs no white variants. They are previous
+`src/components/ui/brand/Logo.tsx` needs no white variants. They are previous
 artwork and should be deleted so nobody reaches for one.
 
 

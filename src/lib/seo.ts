@@ -52,7 +52,7 @@ export function alternates(
    * Defaults to all of them, which is right for the pages that are written
    * in both. The pages under /solutions are written in Arabic only so far,
    * and declaring an English alternate for them would promise a crawler a
-   * page that is a "not translated yet" notice — see lib/pages/registry.ts.
+   * page that is a "not translated yet" notice — see src/lib/pages/registry.ts.
    */
   available: readonly Locale[] = LOCALES,
 ): Metadata["alternates"] {

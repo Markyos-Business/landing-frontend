@@ -19,7 +19,7 @@
  * compares it to the floor, so there is nothing left to enumerate.
  *
  * The other lesson from §14 is the opposite failure. Its physical-properties
- * grep reports `app/globals.css:28` and `components/chrome/Header.tsx:63`,
+ * grep reports `src/app/globals.css:28` and `src/components/navbar/Header.tsx:63`,
  * both of which are *comments explaining the rule* — the first says "`margin-
  * inline-start` and never `margin-left`", the second says "`ms-auto` and not
  * `ml-auto`". A gate that cries wolf on its own documentation gets ignored,
@@ -92,7 +92,7 @@ const EXEMPTIONS = [
   {
     rule: "arabic-face",
     path: "cms/views/AdminFonts.tsx",
-    why: "The admin is a separate root layout, so `app/fonts.ts` never reaches it and the font variables have to be declared for it somewhere — this is that somewhere, and it declares all three by name the way `app/theme.css` declares the stack for the site. It does not *set* type in Plex: the panel's stack in `app/(payload)/custom.css` names Thmanya and stops, and `:lang(ar)` there reaches Plex only through `--font-arabic`.",
+    why: "The admin is a separate root layout, so `src/app/fonts.ts` never reaches it and the font variables have to be declared for it somewhere — this is that somewhere, and it declares all three by name the way `src/app/theme.css` declares the stack for the site. It does not *set* type in Plex: the panel's stack in `src/app/(payload)/custom.css` names Thmanya and stops, and `:lang(ar)` there reaches Plex only through `--font-arabic`.",
   },
   {
     rule: "raw-hex",
@@ -102,12 +102,12 @@ const EXEMPTIONS = [
   {
     rule: "inline-svg",
     path: "src/components/ui/brand/",
-    why: "§6 ends by saying it outright: `components/brand/Logo.tsx` is the logo, not an icon, and it stays SVG. This is the carve-out the `<svg>` rule is defined against rather than an exception to it.",
+    why: "§6 ends by saying it outright: `src/components/ui/brand/Logo.tsx` is the logo, not an icon, and it stays SVG. This is the carve-out the `<svg>` rule is defined against rather than an exception to it.",
   },
   {
     rule: "raw-hex",
     path: "src/components/public/mock/BrandHub.tsx",
-    why: "§7 names this file: \"the client palette in `mock/BrandHub.tsx` is the customer's brand shown as content and stays\". A customer's green cannot come from our tokens — the picture's entire claim is that the colours are theirs.",
+    why: "§7 names this file: \"the client palette in `src/components/public/mock/BrandHub.tsx` is the customer's brand shown as content and stays\". A customer's green cannot come from our tokens — the picture's entire claim is that the colours are theirs.",
   },
   {
     rule: "raw-hex",
@@ -117,7 +117,7 @@ const EXEMPTIONS = [
   {
     rule: "raw-hex",
     path: "src/components/public/home/",
-    why: "The homepage is a literal trace of `Landing Copy/Markyos Landing AR (readable).html`, which is a design-tool export: every value in it is an inline style, and the point of tracing rather than re-deriving is that the numbers arrive unchanged. The design file is also a LIGHT page (#F7F8FA ground, #0B0B0F ink, white cards on blue-grey shadows) where MARKYOS-DESIGN-SYSTEM.md §1 describes a black one, so there is no token to compose from for most of these values — `theme.css` now carries the light palette for the chrome and the data-driven pages, and the traced sections carry the design file's own numbers. Repeated values are in `components/sections/landing.tsx`; a value used once stays at its use site, where it can be checked against the design file by reading one line. Revisit if the design system is re-exported to describe the light page, at which point most of this becomes tokens again.",
+    why: "The homepage is a literal trace of `Landing Copy/Markyos Landing AR (readable).html`, which is a design-tool export: every value in it is an inline style, and the point of tracing rather than re-deriving is that the numbers arrive unchanged. The design file is also a LIGHT page (#F7F8FA ground, #0B0B0F ink, white cards on blue-grey shadows) where MARKYOS-DESIGN-SYSTEM.md §1 describes a black one, so there is no token to compose from for most of these values — `theme.css` now carries the light palette for the chrome and the data-driven pages, and the traced sections carry the design file's own numbers. Repeated values are in `src/components/public/home/landing.tsx`; a value used once stays at its use site, where it can be checked against the design file by reading one line. Revisit if the design system is re-exported to describe the light page, at which point most of this becomes tokens again.",
   },
   {
     rule: "inline-svg",
@@ -447,7 +447,7 @@ const RULES = [
      * untranslated-page notice. Each had a comment saying it was setting
      * "the Arabic face", and each was setting the fallback instead.
      *
-     * `app/theme.css` is exempt: that is where the fallback chain is
+     * `src/app/theme.css` is exempt: that is where the fallback chain is
      * declared, and the name has to appear somewhere.
      */
     find(text) {
@@ -515,7 +515,7 @@ const RULES = [
    * A CSS unicode escape written with four hex digits — the form for a
    * non-breaking space — reads as an octal escape for zero followed by some
    * digits in most other languages, including the ones these files get
-   * edited through. It has put a real NUL byte in `app/globals.css` twice:
+   * edited through. It has put a real NUL byte in `src/app/globals.css` twice:
    * once in the rule that wanted the space, and once in the comment written
    * to explain the first one. Nothing complains. The stylesheet still
    * compiles, the page still renders, and the only outward sign is `grep`

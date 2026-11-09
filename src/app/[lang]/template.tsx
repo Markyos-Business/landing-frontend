@@ -34,7 +34,7 @@ import { usePathname } from "next/navigation";
  * ── Why the key is the pathname ────────────────────────────────────────────
  *
  * Nine of this site's destinations — /pricing, /platform, /about, every
- * /solutions page — are the *same* `app/[lang]/[...slug]/page.tsx` with
+ * /solutions page — are the *same* `src/app/[lang]/[...slug]/page.tsx` with
  * different params. React sees one component in one position with new props,
  * which is an update, and an update is not an exit followed by an enter: with
  * no key the most common navigation on the site would be the one that did not

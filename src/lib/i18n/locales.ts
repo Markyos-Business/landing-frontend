@@ -1,7 +1,7 @@
 /*
  * The locale list, as plain data.
  *
- * Imported by `proxy.ts`, which runs at the edge and may not pull in shared
+ * Imported by `src/proxy.ts`, which runs at the edge and may not pull in shared
  * modules with side effects — so this file holds no React, no server-only
  * marker and no content. Everything that loads actual copy lives in
  * `dictionary.ts` next to it.
@@ -17,7 +17,7 @@ export type Locale = (typeof LOCALES)[number];
  * Arabic. markyos.com/ serves Arabic and English lives under /en — per the
  * Arabic copy document §0.5, which is the primary edition of the page rather
  * than a translation of it. Everything that builds a URL reads this, so the
- * default locale is the one with no prefix: see `localeHref` and `proxy.ts`.
+ * default locale is the one with no prefix: see `localeHref` and `src/proxy.ts`.
  */
 export const DEFAULT_LOCALE: Locale = "ar";
 

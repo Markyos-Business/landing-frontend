@@ -1,9 +1,9 @@
-/* The page transition. Imported by app/globals.css, in order. */
+/* The page transition. Imported by src/app/globals.css, in order. */
 
 @layer components {
 /* ── The page transition's paint ─────────────────────────────────────────────
  *
- * `app/[lang]/template.tsx` names the two halves — why it is a template, why
+ * `src/app/[lang]/template.tsx` names the two halves — why it is a template, why
  * it is keyed on the pathname, and why the motion is on the block axis rather
  * than the guide's forward/back slide. This is only what they look like.
  *
@@ -42,7 +42,7 @@
  * animate at all.
  *
  * It must not be done to the header, and the reason is already written in
- * `components/chrome/Header.tsx`: a named element is a containing block for
+ * `src/components/navbar/Header.tsx`: a named element is a containing block for
  * its absolutely and fixed positioned descendants, which is exactly what
  * `backdrop-filter` did to that element once before. The phone menu's panel
  * is `position: fixed` inside the header, and it was last seen collapsed to

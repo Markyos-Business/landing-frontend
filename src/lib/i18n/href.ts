@@ -13,8 +13,8 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from "./locales";
  * The default locale is Arabic and it lives at the root: `/pricing`, not
  * `/ar/pricing`. English carries its segment: `/en/pricing`. That asymmetry
  * is the whole of the Arabic copy document §0.5, and it exists in exactly two
- * places — here, and in `proxy.ts`, which maps the unprefixed URL onto the
- * `app/[lang]` route that actually renders it.
+ * places — here, and in `src/proxy.ts`, which maps the unprefixed URL onto the
+ * `src/app/[lang]` route that actually renders it.
  *
  * The slugs stay English in both languages, also per §0.5: they are easier to
  * share and to type, and Arabic slugs get percent-mangled by most apps.
@@ -74,7 +74,7 @@ export function localeHref(locale: Locale, href: string): string {
  * Split a public pathname into its locale and the route below it.
  *
  * Takes the path as the browser has it, which for Arabic has no locale in it
- * at all. An explicit "/ar/..." is still recognised — `proxy.ts` redirects it
+ * at all. An explicit "/ar/..." is still recognised — `src/proxy.ts` redirects it
  * to the canonical unprefixed form, but this runs on the client too and must
  * not mis-read a URL that is mid-redirect.
  */

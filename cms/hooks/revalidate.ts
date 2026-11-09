@@ -49,13 +49,13 @@ const localized = (path: string): string[] => LOCALES.map((l) => `/${l}${path}`)
  * name a path Next actually renders. All four collections passed
  * `/resources/<thing>` for a year, which is where these live in the site's
  * information architecture and is **not** where they render: the routes are
- * `app/[lang]/blog`, `/guides`, `/help` and the comparison pages under
+ * `src/app/[lang]/blog`, `/guides`, `/help` and the comparison pages under
  * `/compare`. `/resources/blog` is a 301 to `/blog`. So every publish
  * revalidated two redirects and left the real index cached.
  *
  * Nothing in dev shows this — `next dev` re-renders on every request either
  * way — which is most of why it survived. Check the path against
- * `app/[lang]/` rather than against the navigation.
+ * `src/app/[lang]/` rather than against the navigation.
  */
 export const revalidateDoc =
   (indexPath: string): CollectionAfterChangeHook =>

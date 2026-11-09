@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/seo";
 import "../globals.css";
 /*
  * Line Awesome 1.3.0 — the one icon system (MARKYOS-DESIGN-SYSTEM.md §1.10).
- * It supplies the `.la-*` class map that `components/ui/Icon.tsx` renders, and
+ * It supplies the `.la-*` class map that `src/components/ui/primitives/Icon.tsx` renders, and
  * the package carries its own woff2 files, so nothing is fetched from a CDN.
  */
 import "line-awesome/dist/line-awesome/css/line-awesome.min.css";
@@ -86,7 +86,7 @@ export default async function RootLayout({
         <Footer copy={copy.footer} locale={lang} />
 
         {/* Counts page views first-party: no cookie, no stored IP, no banner.
-            See app/api/track/route.ts. */}
+            See src/app/api/track/route.ts. */}
         <Analytics />
       </body>
     </html>

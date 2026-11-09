@@ -23,7 +23,7 @@ import { LOCALES, LOCALE_LABEL, type Locale } from "@/lib/i18n/locales";
  * discoverable alongside the hreflang tags, and the whole thing works before
  * any JavaScript arrives.
  *
- * The cookie is set on navigation by `proxy.ts`, which sees the locale in the
+ * The cookie is set on navigation by `src/proxy.ts`, which sees the locale in the
  * URL. Setting it here as well would mean the preference depends on
  * JavaScript, and it does not need to.
  */

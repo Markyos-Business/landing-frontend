@@ -10,7 +10,7 @@ import type { HTMLAttributes } from "react";
  * fifteenth glyph somebody would have drawn it in a slightly different hand.
  *
  * The font and its `.la-*` class map come from the `line-awesome` package,
- * imported once in app/[lang]/layout.tsx. The package carries its own woff2,
+ * imported once in src/app/[lang]/layout.tsx. The package carries its own woff2,
  * so nothing is fetched from a CDN at runtime.
  *
  * ── Why a wrapper rather than `<i class="las la-folder">` at call sites ───
@@ -28,7 +28,7 @@ import type { HTMLAttributes } from "react";
  *
  * If a glyph is missing from Line Awesome: ask. Do not draw one.
  *
- * The logo is not an icon. It lives in components/brand/Logo.tsx and renders
+ * The logo is not an icon. It lives in src/components/ui/brand/Logo.tsx and renders
  * the real files from public/brand/.
  */
 

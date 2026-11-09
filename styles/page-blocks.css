@@ -1,10 +1,10 @@
-/* Page blocks: showcase, note, deep panel, callout, table and accent. Imported by app/globals.css, in order. */
+/* Page blocks: showcase, note, deep panel, callout, table and accent. Imported by src/app/globals.css, in order. */
 
 @layer components {
 /*
  * The product, shown.
  *
- * A frame around one of the pictures in `components/mock/`, used by the
+ * A frame around one of the pictures in `src/components/public/mock/`, used by the
  * `showcase` block on the pages under /solutions. It adds three things and
  * nothing else, because the mock inside it is already a finished object with
  * its own card, its own padding and its own direction:

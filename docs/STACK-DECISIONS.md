@@ -16,7 +16,7 @@ reason is what tells you when the decision stops being right.
 | **Framework** | Next.js 16.4.2, App Router, Turbopack |
 | **Styling** | Tailwind CSS v4, consuming the platform's design tokens |
 | **CMS** | Payload 3.91, self-hosted — **in this app**, not the platform app. **Installed and running** |
-| **Bilingual** | Route-based `app/[lang]` with `en` and `ar`. No i18n library |
+| **Bilingual** | Route-based `src/app/[lang]` with `en` and `ar`. No i18n library |
 | **Database** | Postgres in production; SQLite locally so the admin runs with no setup |
 | **Media** | Cloudflare R2, same bucket as brand assets, separate key prefix |
 | **Hosting** | Vercel or Cloudflare Pages. Static by default |
@@ -40,11 +40,11 @@ the other.
 Two things about Next 16 worth knowing before writing code, because both differ
 from older Next and from most of what is written online:
 
-- **`proxy.ts`, not `middleware.ts`.** The middleware convention is deprecated
-  and renamed. The locale redirect lives in `proxy.ts` at the repo root.
+- **`src/proxy.ts`, not `middleware.ts`.** The middleware convention is deprecated
+  and renamed. The locale redirect lives in `src/proxy.ts` at the repo root.
 - **`params` is a Promise**, and the locale is reachable from any Server
   Component via `next/root-params` without being threaded through props. See
-  `lib/i18n/dictionary.ts`.
+  `src/lib/i18n/dictionary.ts`.
 
 The platform app carries a generated `AGENTS.md` that says to read
 `node_modules/next/dist/docs/` before writing code. That advice holds here, and
@@ -116,7 +116,7 @@ This was the open risk, and it is closed. `@payloadcms/next@3.91.0` declares
 `next: ">=16.3.3 <17.0.0"`. We run 16.4.2, which is inside that range, and the
 admin builds and runs.
 
-The content boundary in `lib/content/adapter.ts` stayed anyway. `index.ts`
+The content boundary in `src/lib/content/adapter.ts` stayed anyway. `index.ts`
 chooses the source in one line, and `local.ts` is kept as the reference
 implementation and as a way to run the site with no database at all. That is
 what made swapping the stub for Payload a one-line change, and it is what
@@ -183,7 +183,7 @@ and still applies to anything localized that is edited in the panel.
 
 ## 4. Bilingual: route-based locales, no library
 
-**`app/[lang]/` with `en` and `ar`, and no i18n package.**
+**`src/app/[lang]/` with `en` and `ar`, and no i18n package.**
 
 The site has two locales and a finite, known set of pages. What an i18n library
 adds over that — ICU plurals, date and number formatting, locale negotiation
@@ -198,17 +198,17 @@ What is implemented:
 
 | Concern | Where |
 | :--- | :--- |
-| Locale list, direction, labels | `lib/i18n/locales.ts` — plain data, importable from the edge |
-| Negotiation and redirect | `proxy.ts` — cookie first, then `Accept-Language`, 307 never 308 |
-| Copy loading | `lib/i18n/dictionary.ts` — dynamic import per locale, server-only |
-| Locale-aware links | `lib/i18n/href.ts` |
-| Arabic fallback to English | `lib/i18n/merge.ts` |
-| `hreflang` and canonicals | `lib/seo.ts` |
+| Locale list, direction, labels | `src/lib/i18n/locales.ts` — plain data, importable from the edge |
+| Negotiation and redirect | `src/proxy.ts` — cookie first, then `Accept-Language`, 307 never 308 |
+| Copy loading | `src/lib/i18n/dictionary.ts` — dynamic import per locale, server-only |
+| Locale-aware links | `src/lib/i18n/href.ts` |
+| Arabic fallback to English | `src/lib/i18n/merge.ts` |
+| `hreflang` and canonicals | `src/lib/seo.ts` |
 
 Two details that are easy to get wrong and are already handled:
 
 **`dir` is on `<html>`, set on the server.** This is why the root layout lives
-at `app/[lang]/layout.tsx` rather than `app/layout.tsx`. If direction were set
+at `src/app/[lang]/layout.tsx` rather than `app/layout.tsx`. If direction were set
 on the client, the Arabic page would load left-to-right and visibly flip — on
 the page claiming Arabic is not an afterthought.
 
@@ -279,7 +279,7 @@ shared package is what replaces it. Until then it is 150 lines and no tooling.
 
 Static by default. Every page prerenders for both locales — 39 static pages
 today — so the site can be served from a CDN with a near-empty origin. The only
-dynamic pieces are `proxy.ts` (edge) and `/api/waitlist`.
+dynamic pieces are `src/proxy.ts` (edge) and `/api/waitlist`.
 
 Either Vercel or Cloudflare Pages works. Vercel is the shorter path given
 `next/font`, `next/image` and proxy all being first-party there, and it is
@@ -328,7 +328,7 @@ Landing Page/
 ├── scripts/
 │   ├── sync-tokens.mjs      token sync + drift gate
 │   └── check-locale-parity.mjs   the Arabic transcreation brief
-└── proxy.ts                 locale negotiation
+└── src/proxy.ts                 locale negotiation
 ```
 
 ### Commands
@@ -350,7 +350,7 @@ npm run check:locales  # what still needs Arabic
 Both exist because the copy doc asks for something that is easy to promise and
 hard to keep.
 
-### `lib/status.ts` — the honesty layer
+### `src/lib/status.ts` — the honesty layer
 
 Copy doc §3 lists every feature the site names with its real build status, so
 "the chips are right on launch day". A table in a document and a chip in a
@@ -363,7 +363,7 @@ every mention of it across the site updates at once. Naming a feature that is
 not in the registry throws at render rather than quietly rendering an
 unchipped promise.
 
-### `lib/launch.ts` — the launch-day switch
+### `src/lib/launch.ts` — the launch-day switch
 
 §3 also says that before 15 Feb 2027 every primary CTA swaps to the beta
 version and everything marked MVP carries `Arriving February 2027`. That is a

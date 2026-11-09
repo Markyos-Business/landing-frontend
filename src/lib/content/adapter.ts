@@ -42,7 +42,7 @@ export type ArticleSummary = {
   /**
    * The social card, 1200x630, for this piece in this language.
    *
-   * Absent on most things, which is correct — `lib/seo.ts` falls back to the
+   * Absent on most things, which is correct — `src/lib/seo.ts` falls back to the
    * site-wide card. Only the written resources ship one of their own.
    */
   ogImage?: string;
@@ -72,7 +72,7 @@ export type Article = ArticleSummary & {
    * be injected with `dangerouslySetInnerHTML`, which is exactly as dangerous
    * as it sounds the first time an editor pastes from Word. Handing the tree
    * to a renderer that maps nodes to components keeps the output to elements
-   * we chose. `components/content/RichText.tsx` does the rendering.
+   * we chose. `src/components/ui/composites/RichText.tsx` does the rendering.
    */
   body: unknown;
   author?: { name: string; role?: string; avatar?: string };

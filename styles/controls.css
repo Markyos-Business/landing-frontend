@@ -1,4 +1,4 @@
-/* Controls: fills, bands, tables and the billing switch. Imported by app/globals.css, in order. */
+/* Controls: fills, bands, tables and the billing switch. Imported by src/app/globals.css, in order. */
 
 @layer components {
 /* ── Controls ────────────────────────────────────────────────────────────── */
@@ -127,7 +127,7 @@
 /*
  * Monthly or yearly, decided in CSS.
  *
- * Every paid plan renders both of its amounts — see `components/page/
+ * Every paid plan renders both of its amounts — see `src/components/public/pages/
  * BillingSwitch.tsx` for why they are both in the HTML — and the switch sets
  * one attribute on the wrapper around the head and the grid. These two rules
  * are the whole mechanism: no price is re-rendered, nothing is measured, and

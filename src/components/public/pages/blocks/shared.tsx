@@ -32,7 +32,7 @@ export function Buttons({
   /*
    * Passed straight through to each button. The variants are unchanged on the
    * closing panel — first loudest, second equal, the rest signposts — and only
-   * the fills invert; see the tone table in `components/ui/Button.tsx`.
+   * the fills invert; see the tone table in `src/components/ui/buttons/Button.tsx`.
    */
   tone?: "page" | "deep";
   align?: "start" | "center";

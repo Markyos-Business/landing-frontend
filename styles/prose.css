@@ -1,4 +1,4 @@
-/* The article body. Imported by app/globals.css, in order. */
+/* The article body. Imported by src/app/globals.css, in order. */
 
 @layer components {
 /* ── Article body ─────────────────────────────────────────────────────────
@@ -129,7 +129,7 @@
  *
  * Rows separated by hairlines, no vertical rules, no fill except on the
  * header — the same way every other table on the site is drawn, and the
- * reason `components/content/RichText.tsx` maps the three table nodes
+ * reason `src/components/ui/composites/RichText.tsx` maps the three table nodes
  * itself: Lexical's default converter writes `border:1px solid #ccc` inline
  * on every cell, which is a raw hex and beats anything written here.
  *

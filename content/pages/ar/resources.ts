@@ -8,7 +8,7 @@ import { CTA, FORK, HOME, LINK } from "./_shared";
  * The blog, the guides and the help centre are *not* here. They are editorial
  * content with their own routes and their own lifecycle: added weekly, by
  * whoever is writing that week, through the CMS. Page copy and editorial
- * content are kept apart deliberately — see lib/content/adapter.ts, which is
+ * content are kept apart deliberately — see src/lib/content/adapter.ts, which is
  * the boundary.
  *
  * Page 27 (the named competitor template) is also absent, and that is the
@@ -239,7 +239,7 @@ const contact: PageDoc = {
  * They were page copy because there was no comparison content and no route
  * for it. There are ten written comparisons now, in both languages, so the
  * section is a CMS collection with its own route like the blog and the
- * guides — `app/[lang]/compare/` — and `pdf-guidelines` and `tool-stack` are
+ * guides — `src/app/[lang]/compare/` — and `pdf-guidelines` and `tool-stack` are
  * two of the ten rather than two hand-written pages that would shadow them.
  *
  * `git show HEAD:content/pages/ar/resources.ts` has the copy they held.

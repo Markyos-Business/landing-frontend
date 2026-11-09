@@ -7,7 +7,7 @@
  *
  * Payload's admin is built on about thirty theme variables — `--theme-bg`,
  * `--theme-elevation-N`, `--theme-text` — and every one of its own components
- * reads them. Re-pointing those is the same move `app/theme.css` makes for
+ * reads them. Re-pointing those is the same move `src/app/theme.css` makes for
  * the marketing site: one file decides the look, and nothing has to know the
  * difference. Writing rules against Payload's internal class names instead
  * would break on their next release, and there are a lot of them.
@@ -19,7 +19,7 @@
  * ── Which palette, and why it changed ─────────────────────────────────────
  *
  * It used to be the platform app's dark one, read out of
- * `app/tokens.generated.css`: #060607 ground, #16161a cards, a white-opacity
+ * `src/app/tokens.generated.css`: #060607 ground, #16161a cards, a white-opacity
  * text ramp. The argument was that the admin is product UI and sits beside
  * the platform in somebody's day.
  *
@@ -34,12 +34,12 @@
  *   controls, Inter with the brand's character alternates, nothing heavier
  *   than 500.
  *
- * `app/theme.css` is imported above and is the only source of values here —
+ * `src/app/theme.css` is imported above and is the only source of values here —
  * the same file the website's chrome, blog and data-driven pages read. There
  * are no literals below and no second palette to keep in step: when the
  * landing design moves, the admin moves with it.
  *
- * `app/tokens.generated.css` is deliberately *not* imported any more. It
+ * `src/app/tokens.generated.css` is deliberately *not* imported any more. It
  * carries the platform's two palettes, and its `:root[data-theme="light"]`
  * block would outrank `theme.css`'s plain `:root` the moment Payload wrote
  * `data-theme="light"` onto <html> — the admin would have silently rendered
@@ -180,9 +180,9 @@ html[data-theme="dark"] {
  * Inter and Thmanya, the same two faces as the website.
  *
  * `--font-body` and `--font-serif` are Payload's names. The families
- * themselves are loaded by `app/fonts.ts` and reach this layout through
+ * themselves are loaded by `src/app/fonts.ts` and reach this layout through
  * `cms/views/AdminFonts.tsx`, which declares `--font-inter`, `--font-thmanya`
- * and `--font-plex-arabic` on `:root` for the admin the way `app/[lang]`
+ * and `--font-plex-arabic` on `:root` for the admin the way `src/app/[lang]`
  * declares them for the site. Before that existed, every Arabic string in the
  * panel — content locale labels, Arabic post titles, the Arabic UI — rendered
  * in a system fallback.

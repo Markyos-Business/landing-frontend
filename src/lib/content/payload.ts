@@ -154,7 +154,7 @@ const translated = (doc: Doc): boolean => str(doc.title).trim().length > 0;
  * Off, a piece exists in exactly the languages it is written in, and
  * everything else renders the same "not translated yet" notice the other
  * twenty-seven subpages use. That is the rule the rest of the site already
- * follows — see components/page/NotTranslated.tsx.
+ * follows — see src/components/public/pages/NotTranslated.tsx.
  */
 const NO_FALLBACK = false;
 /** The CMS collection behind each public section. */

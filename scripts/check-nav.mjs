@@ -201,7 +201,7 @@ try {
 if (problems.length > 0) {
   console.error(`\n✗ ${problems.length} navigation problem(s):\n`);
   for (const problem of problems) console.error(`  ${problem}`);
-  console.error("\n  See the header note in components/chrome/nav/Nav.tsx: opening is");
+  console.error("\n  See the header note in src/components/navbar/nav/Nav.tsx: opening is");
   console.error("  delayed, closing is delayed longer, and the close is cancelled by");
   console.error("  re-entering the nav — which is what makes the gap crossable.\n");
   process.exit(1);

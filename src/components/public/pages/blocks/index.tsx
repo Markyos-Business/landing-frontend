@@ -23,8 +23,8 @@ import { CtaBlock } from "./CtaBlock";
  *
  * Shared helpers (T, Buttons, AccentedTitle, Note, Ctx) are in `./shared`.
  *
- * Every one of these composes the vocabulary in `app/globals.css` and the
- * primitives in `components/ui` — none of them invents a value. That is the
+ * Every one of these composes the vocabulary in `src/app/globals.css` and the
+ * primitives in `src/components/ui/` — none of them invents a value. That is the
  * rule in `docs/DESIGN.md` and it is what keeps thirty-odd data-driven pages
  * looking like one site rather than like a template.
  *
@@ -37,7 +37,7 @@ import { CtaBlock } from "./CtaBlock";
  *     spacing is logical (`ps-`, `me-`, `start-`), never physical, so the
  *     whole page mirrors from the one `dir` on <html>.
  *   - **Status chips.** A block names a feature id; the chip label is
- *     resolved per locale from `lib/status.ts`. No page can hard-code
+ *     resolved per locale from `src/lib/status.ts`. No page can hard-code
  *     "coming spring 2027" and then go on saying it after it ships.
  *   - **Rhythm.** Sections alternate ground and white rather than carrying
  *     their own margins, so a page reads as a sequence instead of a stack of

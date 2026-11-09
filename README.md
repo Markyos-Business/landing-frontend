@@ -11,7 +11,7 @@ npm run dev        # site at / (Arabic), /en (English), admin at /admin
 
 Arabic has no locale segment: `/pricing` is Arabic and `/en/pricing` is
 English. That is `docs/OPEN-DECISIONS.md` §6, and two files implement it —
-`lib/i18n/href.ts` and `proxy.ts`.
+`src/lib/i18n/href.ts` and `src/proxy.ts`.
 
 The admin panel needs no database to run: with `DATABASE_URI` unset it uses a
 local SQLite file. Open `/admin` and create the first account.
@@ -77,8 +77,8 @@ with `npm run check` green and were caught here — see the header of
 ## Layout
 
 ```
-app/[lang]/        every route, under the locale. Root layout sets lang + dir
-app/(payload)/     the admin panel and its API (generated — do not hand-edit)
+src/app/[lang]/        every route, under the locale. Root layout sets lang + dir
+src/app/(payload)/     the admin panel and its API (generated — do not hand-edit)
 cms/               Payload: collections, globals, access control, fields,
                    the dashboard view, and analytics aggregation
 components/
@@ -99,12 +99,12 @@ lib/
   launch.ts        beta vs public — one env var drives the whole site
   seo.ts           canonicals, hreflang, Open Graph
 scripts/           token sync + drift gate, design-rule gate, Arabic parity
-proxy.ts           Arabic at the root, /en prefixed (Next 16: middleware → proxy)
+src/proxy.ts           Arabic at the root, /en prefixed (Next 16: middleware → proxy)
 ```
 
 ## Three things to know before editing
 
-**Brand values are never authored here.** `app/tokens.generated.css` is
+**Brand values are never authored here.** `src/app/tokens.generated.css` is
 generated from the platform app by `npm run sync:tokens`, and
 `npm run check:tokens` fails the build if it is stale. If you need a colour, a
 radius or a type size that does not exist, add it to the platform's
@@ -125,7 +125,7 @@ commented table at the top of `scripts/check-design-rules.mjs`, never as an
 ignore comment in the source: `npm run check:design --list` prints each one
 and the reason it exists.
 
-**A feature mention needs a `lib/status.ts` entry.** Sections name a feature id
+**A feature mention needs a `src/lib/status.ts` entry.** Sections name a feature id
 and ask for its chip; they never write a label. Naming an id that is not in the
 registry throws at render, on purpose — it is what stops the page promising
 something that has not shipped.

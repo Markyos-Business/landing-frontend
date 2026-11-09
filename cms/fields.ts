@@ -256,7 +256,7 @@ export const heroImageField: Field = {
 /**
  * The social card image.
  *
- * `lib/seo.ts` has carried a placeholder since the site was built — one
+ * `src/lib/seo.ts` has carried a placeholder since the site was built — one
  * `/brand/og-{locale}.png` for every page — under a comment saying not to
  * ship without the real thing, because a link with no card is a link nobody
  * clicks. The written resources arrived with one per piece per language at

@@ -24,7 +24,7 @@ things here depend on that path: the design-token sync and the browser checks.
 > writing any code. Heed deprecation notices.
 
 Next **16.4.2**, App Router, Turbopack. Concretely: `middleware.ts` is now
-`proxy.ts`, and that rename is not cosmetic — see the file.
+`src/proxy.ts`, and that rename is not cosmetic — see the file.
 
 Then `README.md` for the layout, `docs/PAGES.md` for how a page is built, and
 `docs/DESIGN.md` for the design vocabulary and the rule against one-off
@@ -58,24 +58,24 @@ npm run check:live                          # every article answers · every pag
 
 **1. Arabic is the site, not a translation of it.** `/` and `/pricing` are
 Arabic; English lives under `/en`. `x-default` points at Arabic and `/ar/...`
-301s to the clean URL. Two files own this — `lib/i18n/href.ts` and `proxy.ts`
+301s to the clean URL. Two files own this — `src/lib/i18n/href.ts` and `src/proxy.ts`
 — and `docs/OPEN-DECISIONS.md` §6 records why `Accept-Language` negotiation
 was deliberately removed.
 
 **2. Pages are data, not components.** The 28 content pages are block lists in
-`content/pages/ar/`, rendered by `components/page/blocks/` against the
+`content/pages/ar/`, rendered by `src/components/public/pages/blocks/` against the
 contract in `content/pages/types.ts`. Twelve block kinds. Adding a page means
 editing one data file. If a page needs something the vocabulary cannot say,
 **add a block** — do not reach for a one-off class.
 
 **3. One registry drives routing, the sitemap, hreflang and the 404.**
-`lib/pages/registry.ts`. A page cannot be live and missing from the sitemap,
+`src/lib/pages/registry.ts`. A page cannot be live and missing from the sitemap,
 or indexable and `noindex`, because both come off the same record.
 
 **4. Editorial content has one source: the CMS, across five sections.**
-`lib/content/` reads Payload and nothing else, for `/blog`, `/guides`,
+`src/lib/content/` reads Payload and nothing else, for `/blog`, `/guides`,
 `/help`, `/compare` and `/whats-new` — one interface, one template
-(`components/page/editorial/`), one pair of methods. It used to merge
+(`src/components/public/editorial/`), one pair of methods. It used to merge
 Payload with a placeholder seed per slug, which left thirty-one of thirty-two
 articles outside the admin panel; both the seed and the merge are gone, and so
 is the placeholder content.
@@ -87,9 +87,9 @@ must remember — and a section with nothing in it renders its empty state.
 
 **5. An untranslated page is a notice, not a 404.** The language switch sits in
 the header of every page, so a 404 there would read as a broken site.
-`components/page/NotTranslated.tsx`, always `noindex`, hreflang Arabic only.
+`src/components/public/pages/NotTranslated.tsx`, always `noindex`, hreflang Arabic only.
 
-Status chips come from `lib/status.ts` by feature id, never a hard-coded label,
+Status chips come from `src/lib/status.ts` by feature id, never a hard-coded label,
 so a chip disappears when the feature ships.
 
 ---
@@ -118,17 +118,17 @@ two were found only by asking for *every* article on a cold server. Run
 strings.
 
 **Route params arrive percent-encoded** while `generateStaticParams` returns
-slugs decoded — see `lib/pages/params.ts`. Non-obvious, and invisible until a
+slugs decoded — see `src/lib/pages/params.ts`. Non-obvious, and invisible until a
 non-ASCII slug exists.
 
 **Payload returns a record for any locale**, with only the *localized fields*
 varying, so an untranslated piece came back as a blank-titled article. Public
 reads pass `fallbackLocale: false` and treat a missing title as absent
-(`lib/content/payload.ts`). Fallback stays on in the admin.
+(`src/lib/content/payload.ts`). Fallback stays on in the admin.
 
 **Next normalises metadata URLs** and strips trailing slashes; it is not
 configurable. An attempt to give the Arabic root a trailing slash was reverted
-so the sitemap and the canonical agree — reasoning is in `lib/seo.ts`.
+so the sitemap and the canonical agree — reasoning is in `src/lib/seo.ts`.
 
 **Playwright is not a dependency here.** `scripts/browser-lib.mjs` resolves it
 from the sibling `markyosmvp`; `scripts/check-pages.mjs` launches it with
@@ -175,7 +175,7 @@ weights, and every component file.
 
 Two collisions to settle before implementing:
 
-1. **It reverses a documented font decision.** `app/fonts.ts` explains at
+1. **It reverses a documented font decision.** `src/app/fonts.ts` explains at
    length why Bricolage Grotesque was *dropped* as the display face in favour
    of Inter, judged against the reference crops. The kit ships seven Bricolage
    weights and five of Thmanyah Sans, an Arabic face that would displace IBM
@@ -183,7 +183,7 @@ Two collisions to settle before implementing:
    overrules that note, but it is a reversal, not a gap.
 
 2. **Tokens here are generated, not authored.** `scripts/sync-tokens.mjs` lifts
-   them from the sibling platform app into `app/tokens.generated.css`, and
+   them from the sibling platform app into `src/app/tokens.generated.css`, and
    `npm run check` fails on drift — deliberately, so the marketing site's blue
    cannot quietly stop being the product's blue. If the kit's tokens differ,
    either the kit becomes the platform app's source too, or that gate changes.

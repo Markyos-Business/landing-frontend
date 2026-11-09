@@ -2,7 +2,7 @@
  *
  * It is the root layout for the admin panel only. Next allows more than one
  * root layout when each lives in its own top-level branch, which is why this
- * sits in a (payload) route group alongside app/[lang]: the marketing site
+ * sits in a (payload) route group alongside src/app/[lang]: the marketing site
  * needs <html lang/dir> set per locale, and the admin needs Payload's own
  * shell. Neither can wrap the other.
  */

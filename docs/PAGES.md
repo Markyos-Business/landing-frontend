@@ -8,7 +8,7 @@ first thing to work out is which kind you are touching.
 
 | Kind | Example | Lives in | Changing it means |
 | :--- | :--- | :--- | :--- |
-| **The homepage** | `/` | `content/{locale}/` + `components/sections/` | Editing copy data, or a component |
+| **The homepage** | `/` | `content/{locale}/` + `src/components/public/home/` | Editing copy data, or a component |
 | **Everything else that is page copy** | `/pricing`, `/solutions/studios`, `/security` | `content/pages/ar/` | Editing a data file. No components. |
 | **Editorial content** | `/blog`, `/guides`, `/help` | The CMS, with a placeholder fallback | Publishing, not deploying |
 
@@ -17,10 +17,10 @@ first thing to work out is which kind you are touching.
 ## Where each URL comes from
 
 ```
-app/[lang]/page.tsx            →  the homepage
-app/[lang]/[...slug]/page.tsx  →  every page in content/pages/ar/
-app/[lang]/blog|guides|help    →  editorial content from lib/content
-app/[lang]/not-found.tsx       →  404
+src/app/[lang]/page.tsx            →  the homepage
+src/app/[lang]/[...slug]/page.tsx  →  every page in content/pages/ar/
+src/app/[lang]/blog|guides|help    →  editorial content from src/lib/content
+src/app/[lang]/not-found.tsx       →  404
 ```
 
 Next resolves static segments before a catch-all, so `/blog` wins over
@@ -28,7 +28,7 @@ Next resolves static segments before a catch-all, so `/blog` wins over
 404s at build time (`dynamicParams = false`).
 
 **Arabic has no locale segment.** `/pricing` is Arabic and `/en/pricing` is
-English — see `docs/OPEN-DECISIONS.md` §6, and `lib/i18n/href.ts`, which is
+English — see `docs/OPEN-DECISIONS.md` §6, and `src/lib/i18n/href.ts`, which is
 the only place that knows it.
 
 ---
@@ -39,7 +39,7 @@ the only place that knows it.
    to `content/pages/ar/index.ts`.
 2. That is the whole job.
 
-The registry (`lib/pages/registry.ts`) turns the list into the route, the
+The registry (`src/lib/pages/registry.ts`) turns the list into the route, the
 sitemap entry, the `hreflang` set and the 404 for everything else. There is no
 second place to remember, which is the point: a page cannot be live and
 missing from the sitemap, or indexable and `noindex`, because both come off
@@ -64,7 +64,7 @@ Set `noindex: true` and it leaves the sitemap in the same edit.
 ## The blocks
 
 A page is a list of blocks. `content/pages/types.ts` is the full contract;
-`components/page/blocks/` renders them. The vocabulary is deliberately
+`src/components/public/pages/blocks/` renders them. The vocabulary is deliberately
 small:
 
 | Block | For |
@@ -89,7 +89,7 @@ themselves is thirty pages that drift.
 
 ### Status chips
 
-A block names a **feature id** from `lib/status.ts`, never a chip label:
+A block names a **feature id** from `src/lib/status.ts`, never a chip label:
 
 ```ts
 { kind: "callout", body: ["…"], feature: "whiteboard" }
@@ -108,7 +108,7 @@ from the one `dir` on `<html>`.
 
 ## Editorial content
 
-`/blog`, `/guides` and `/help` read from `lib/content`, which composes two
+`/blog`, `/guides` and `/help` read from `src/lib/content`, which composes two
 sources:
 
 1. **Payload** — the real one.

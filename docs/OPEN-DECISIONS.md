@@ -240,8 +240,8 @@ it is a behaviour decision, not a plumbing one.
 > fill, and never heading, eyebrow or link ink. Text hierarchy is white
 > opacity, never hue.
 >
-> `app/theme.css` is still the whole of it, but it is now a *mapping* onto
-> `app/markyos-ds.css` rather than a set of measured values. See
+> `src/app/theme.css` is still the whole of it, but it is now a *mapping* onto
+> `src/app/markyos-ds.css` rather than a set of measured values. See
 > `MARKYOS-DESIGN-SYSTEM.md` §4.
 >
 > The original entry, kept for the record:
@@ -251,11 +251,11 @@ it is a behaviour decision, not a plumbing one.
 > sign-off, because it is a brand decision rather than a technical one — but
 > it is no longer blocking anything, and reversing it is one file.
 >
-> `app/theme.css` holds the whole of it: the marketing site's grounds, ink,
+> `src/app/theme.css` holds the whole of it: the marketing site's grounds, ink,
 > hairlines and accent, laid over the synced product tokens the way the
 > generated file's own light theme lays over its dark one. Every value in it
 > was measured out of the reference PNGs rather than picked by eye, and the
-> file says which. `app/tokens.generated.css` is untouched and
+> file says which. `src/app/tokens.generated.css` is untouched and
 > `npm run check:tokens` still passes.
 
 The product's accent is blue — `--accent: #0099ff` — and this repo currently
@@ -340,9 +340,9 @@ canvas.
 
    The site now sets headings in **Inter at 600 with -0.035em**, which is the
    closest neutral grotesque already in the build and costs no extra download.
-   Bricolage is no longer loaded (`app/fonts.ts`); the files stay in
+   Bricolage is no longer loaded (`src/app/fonts.ts`); the files stay in
    `public/fonts/`. If the brand actually wants a licensed grotesque —
-   Helvetica Now, Söhne — that is one line in `app/theme.css` plus the webfont
+   Helvetica Now, Söhne — that is one line in `src/app/theme.css` plus the webfont
    licence.
 
 ---
@@ -369,20 +369,20 @@ to type, and Arabic slugs get percent-mangled by most apps.
 
 ### Where that lives, and nowhere else
 
-- **`lib/i18n/locales.ts`** — `DEFAULT_LOCALE` is `"ar"`. Everything that
+- **`src/lib/i18n/locales.ts`** — `DEFAULT_LOCALE` is `"ar"`. Everything that
   builds a URL reads it; the default locale is by definition the unprefixed
   one.
-- **`lib/i18n/href.ts`** — `localeHref` adds `/en` and adds nothing for
+- **`src/lib/i18n/href.ts`** — `localeHref` adds `/en` and adds nothing for
   Arabic. Every link on the site goes through it.
-- **`proxy.ts`** — rewrites an unprefixed path onto the `app/[lang]` route
+- **`src/proxy.ts`** — rewrites an unprefixed path onto the `src/app/[lang]` route
   that renders it, and **301s `/ar/...` to the canonical unprefixed URL** so
   no Arabic page exists at two addresses.
-- **`lib/seo.ts`** — `pageUrl` builds canonicals, hreflang and sitemap
+- **`src/lib/seo.ts`** — `pageUrl` builds canonicals, hreflang and sitemap
   entries in that same shape, with `x-default` on Arabic.
 
 ### The one thing that was removed
 
-`proxy.ts` used to negotiate `Accept-Language` and send an English-speaking
+`src/proxy.ts` used to negotiate `Accept-Language` and send an English-speaking
 browser to `/en`. It does not any more, and that is deliberate: the two
 editions are no longer equals, so negotiation would route a visitor to the
 *less finished* half of the site on the strength of a header they never set.
@@ -420,7 +420,7 @@ hreflang exists to prevent.
 
 **When the translation is written** it is a content file, not a build:
 `content/pages/en/` with the same shape as `content/pages/ar/`, and
-`localesFor()` in `lib/pages/registry.ts` starts returning both. Every
+`localesFor()` in `src/lib/pages/registry.ts` starts returning both. Every
 hreflang pair, every sitemap entry and every route appears in that one edit.
 
 The homepage is already complete in both languages.
@@ -439,10 +439,10 @@ you disagree.
 | No i18n library | Two locales, finite pages. The library's value is unused here | §4 |
 | Page copy in git, editorial content in the CMS | Split by lifecycle. Lets `check:locales` prove Arabic parity | §3 |
 | Arabic falls back to English, never blank | Same rule as the CMS doc sets for Payload | §4 |
-| `robots.txt` blocks everything during the beta | A thin page ranking for the product's main term trains the index on the wrong content | `app/robots.ts` |
+| `robots.txt` blocks everything during the beta | A thin page ranking for the product's main term trains the index on the wrong content | `src/app/robots.ts` |
 | Secondary pages are `noindex` placeholders | They are linked from every footer; a 404 reachable from everywhere is worse. Indexing an empty page is worse still | `components/ui/Placeholder.tsx` |
-| Social proof section omitted entirely | Copy doc §4.18 — never invent quotes, logos or numbers | `app/[lang]/page.tsx` |
+| Social proof section omitted entirely | Copy doc §4.18 — never invent quotes, logos or numbers | `src/app/[lang]/page.tsx` |
 | Permission is a role **and** a section list | A role says how much, not what over. "A copywriter on the blog only" cannot be said with a role alone | `cms/access.ts` |
 | Restricted collections are hidden, not just refused | A sidebar full of things you cannot open is worse than a short one, and it leaks what exists. Both halves are enforced | `cms/access.ts` |
-| Analytics is first-party and cookieless | No banner, no vendor, and it keeps the privacy promise the page itself makes | `app/api/track/route.ts` |
+| Analytics is first-party and cookieless | No banner, no vendor, and it keeps the privacy promise the page itself makes | `src/app/api/track/route.ts` |
 | The admin panel speaks Arabic | The Arabic copy answers "is the admin in Arabic?" with yes; an English-only back office would make that false | `payload.config.ts` |

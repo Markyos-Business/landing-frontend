@@ -6,7 +6,7 @@ import { chipFor, type FeatureId } from "@/lib/status";
  *
  * This component is the honesty layer made visible, and it is built so that
  * the page cannot lie by omission: a section does not decide whether to show a
- * chip, it names the feature and asks. If `lib/status.ts` says that feature is
+ * chip, it names the feature and asks. If `src/lib/status.ts` says that feature is
  * not shipped, a chip appears — in every place the feature is mentioned, in
  * both languages, with no section able to forget.
  *

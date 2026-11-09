@@ -19,7 +19,7 @@ import type { IconName } from "@/components/ui";
  * Section numbers below map to markyos_landing_page_copy.md §4.
  */
 
-/** A feature mention that may carry a status chip. See lib/status.ts. */
+/** A feature mention that may carry a status chip. See src/lib/status.ts. */
 export type ChippedItem = {
   feature: FeatureId;
   headline: string;
@@ -217,7 +217,7 @@ export type HeroCopy = {
    * templates the guideline site can be built from.
    *
    * What is *not* here is the builder's own chrome and the covers' own type.
-   * Those belong to `components/mock/GuidelinesBuilder.tsx` for the reason
+   * Those belong to `src/components/public/mock/GuidelinesBuilder.tsx` for the reason
    * written at the top of `BrandHub.tsx`: a picture of a product with a
    * fictional client's brand inside it is not site copy to be transcreated.
    *
@@ -350,7 +350,7 @@ export type StepCopy = {
    * analysis does not exist until v2.0, so before launch the step carries
    * "Arriving soon"), while `coming` is an addition to a step that
    * already works. §3 requires the first of these during the beta, and both
-   * resolve through lib/status.ts so they disappear on their own when the
+   * resolve through src/lib/status.ts so they disappear on their own when the
    * phase ships.
    */
   feature?: FeatureId;
@@ -725,7 +725,7 @@ export type SiteCopy = {
     ogTitle: string;
     ogDescription: string;
   };
-  /** Status chip labels, resolved from lib/status.ts keys. */
+  /** Status chip labels, resolved from src/lib/status.ts keys. */
   chips: Record<ChipKey, string>;
   nav: NavCopy;
   footer: FooterCopy;

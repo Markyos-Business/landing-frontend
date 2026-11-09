@@ -34,12 +34,12 @@
 >   apply.
 > - **§12 logos** — files only, from `public/brand/`, never mirrored.
 > - The 12px type floor, logical properties, `.mk-bidi`, `<Link>` CTAs,
->   explicit `dir` on mocks, and `lib/status.ts` chips.
+>   explicit `dir` on mocks, and `src/lib/status.ts` chips.
 >
-> `app/markyos-ds.css` still holds the blue-light scale, which the light
+> `src/app/markyos-ds.css` still holds the blue-light scale, which the light
 > page uses unchanged (`#0099FF` core, `#0055FF` falloff). Its canvas, panel
 > and text ramps now describe a site that does not exist and nothing reads
-> them. `app/theme.css` carries the light palette directly — see its header.
+> them. `src/app/theme.css` carries the light palette directly — see its header.
 >
 > **Replace this file** with a light-page export when the design system
 > catches up; until then `docs/DESIGN.md` is the accurate description of
@@ -49,17 +49,17 @@
 
 1. **This file** decides every visual value: colour, type, weight, size, radius, border, light, motion, icons.
 2. **`UI-UX Design Reference/*.png`** still decides layout, section order, composition and content structure. It no longer decides colour, type or shape.
-3. **Comments in `app/theme.css`, `app/globals.css`, `app/fonts.ts`, `components/ui/Icon.tsx`, `docs/DESIGN.md`** that argue for the warm orange accent, gradient cards, gradient buttons, weight 600, pill CTAs, IBM Plex Arabic as the Arabic face or hand-drawn SVG icons are superseded. Rewrite those comments when you change the code they describe.
+3. **Comments in `src/app/theme.css`, `src/app/globals.css`, `src/app/fonts.ts`, `src/components/ui/primitives/Icon.tsx`, `docs/DESIGN.md`** that argue for the warm orange accent, gradient cards, gradient buttons, weight 600, pill CTAs, IBM Plex Arabic as the Arabic face or hand-drawn SVG icons are superseded. Rewrite those comments when you change the code they describe.
 4. **`AGENTS.md`** (Next.js 16 rules) applies to all code.
 
 Still binding, do not undo:
-- `app/tokens.generated.css` is never edited. The site re-points tokens in `app/theme.css`.
+- `src/app/tokens.generated.css` is never edited. The site re-points tokens in `src/app/theme.css`.
 - Everything in `globals.css` stays inside `@layer base` or `@layer components`.
 - Logical properties only (`margin-inline-start`, `inset-inline-end`, `text-align: start`). No `left`/`right`.
 - CTAs are `<Link>`s, never `<button>`s that navigate.
 - `.mk-bidi` on every standalone string that may be either language.
 - Product mocks keep their explicit `dir`; they do not mirror on `/ar`.
-- Launch-status chips from `lib/status.ts` stay.
+- Launch-status chips from `src/lib/status.ts` stay.
 - New tokens use the `--mk-` prefix. Never rename, remove or redefine a product token name except by re-pointing it in `theme.css`.
 
 ---
@@ -85,7 +85,7 @@ Copy from this package:
 
 | From | To |
 | :--- | :--- |
-| `fonts/thmanyahsans-Light.otf`, `-Regular`, `-Medium`, `-Bold`, `-Black` | `app/fonts/` |
+| `fonts/thmanyahsans-Light.otf`, `-Regular`, `-Medium`, `-Bold`, `-Black` | `src/app/fonts/` |
 | `brand/markyos-lockup.svg`, `-mark`, `-wordmark` and their `-white` versions | `public/brand/` (replace existing) |
 | `brand/markyos-pattern-white.png` | `public/brand/` |
 
@@ -93,7 +93,7 @@ Copy from this package:
 npm i line-awesome@1.3.0
 ```
 
-### 2.1 `app/fonts.ts`
+### 2.1 `src/app/fonts.ts`
 
 Add Thmanya Sans. Keep IBM Plex Sans Arabic loaded: it is the design system's last-resort fallback and `tokens.generated.css` still references `--font-plex-arabic`.
 
@@ -120,7 +120,7 @@ Bricolage Grotesque is the **wordmark's** typeface. It is never set as live text
 
 ### 2.2 Line Awesome
 
-In `app/[lang]/layout.tsx`:
+In `src/app/[lang]/layout.tsx`:
 
 ```ts
 import "line-awesome/dist/line-awesome/css/line-awesome.min.css";
@@ -130,9 +130,9 @@ import "line-awesome/dist/line-awesome/css/line-awesome.min.css";
 
 ---
 
-## 3. Token layer — new file `app/markyos-ds.css`
+## 3. Token layer — new file `src/app/markyos-ds.css`
 
-Import order in `app/globals.css`:
+Import order in `src/app/globals.css`:
 
 ```css
 @import "tailwindcss";
@@ -141,7 +141,7 @@ Import order in `app/globals.css`:
 @import "./theme.css";        /* maps the site's token names onto it */
 ```
 
-`app/markyos-ds.css` (values are the design system's; edit only when the design system changes):
+`src/app/markyos-ds.css` (values are the design system's; edit only when the design system changes):
 
 ```css
 /* Markyos Design System — marketing identity tokens ("Markyos Light").
@@ -238,7 +238,7 @@ Import order in `app/globals.css`:
 
 ---
 
-## 4. `app/theme.css` — re-point the site's tokens
+## 4. `src/app/theme.css` — re-point the site's tokens
 
 Same names, new values, so every component that reads `var(--text-muted)` keeps working. Replace the whole `:root` block with this and rewrite the header comment to say the values come from the Markyos Design System.
 
@@ -303,7 +303,7 @@ Same names, new values, so every component that reads `var(--text-muted)` keeps 
 
 ---
 
-## 5. `app/globals.css` — vocabulary changes
+## 5. `src/app/globals.css` — vocabulary changes
 
 Keep every rule in its layer. Change only what is listed.
 
@@ -427,7 +427,7 @@ body {
 
 ---
 
-## 6. Icons — rewrite `components/ui/Icon.tsx`
+## 6. Icons — rewrite `src/components/ui/primitives/Icon.tsx`
 
 Keep the exported `IconName` type, the `Icon` and `Arrow` exports and their current props, so no call site changes. Replace the SVG paths with Line Awesome glyphs.
 
@@ -455,13 +455,13 @@ const LA: Record<IconName, string> = {
 - Icon tiles: glyph centred on a 32–64px rounded square (8px radius) filled with its hue at ~14%.
 - Brand marks for integrations: `lab la-figma`, `la-dribbble`, `la-behance`.
 - Missing glyph: ask. Do not draw one.
-- `components/brand/Logo.tsx` is the logo, not an icon; it stays SVG (use the files in `public/brand/`).
+- `src/components/ui/brand/Logo.tsx` is the logo, not an icon; it stays SVG (use the files in `public/brand/`).
 
 ---
 
 ## 7. Component sweep
 
-Work file by file through `components/chrome`, `components/sections`, `components/page`, `components/ui`, `components/mock`.
+Work file by file through `src/components/navbar/`, `src/components/public/home/`, `src/components/public/pages/`, `src/components/ui/`, `src/components/public/mock/`.
 
 | Find | Replace with |
 | :--- | :--- |
@@ -479,15 +479,15 @@ Work file by file through `components/chrome`, `components/sections`, `component
 | `decoration-[var(--accent)]` and other "this is wrong/drifting/approved" markers | the matching state hue (`--mk-state-rejected`, `--mk-state-expiring`, `--mk-state-approved`) |
 | `hover:bg-[var(--surface-1)]` / `[--surface-2]` on rows and menu items | `hover:bg-[var(--surface-3)]` (#242424) |
 | `border-[var(--accent-edge)]` focus on inputs | `box-shadow: inset 0 0 0 1px var(--mk-blue), var(--mk-glow-soft)` |
-| Any hex in a component | a token. Exception: the client palette in `mock/BrandHub.tsx` is the customer's brand shown as content and stays. |
+| Any hex in a component | a token. Exception: the client palette in `src/components/public/mock/BrandHub.tsx` is the customer's brand shown as content and stays. |
 
-**Header** (`components/chrome/Header.tsx`): 64px tall, `#000`, bottom rule `box-shadow: inset 0 -1px 0 var(--hairline-strong)`, no `backdrop-filter`. Nav links 14px 400 at 80% white, white on hover. "Log in" = `.mk-btn .mk-btn-sm .mk-outline`; "Start free" = `.mk-btn .mk-btn-sm .mk-solid`.
+**Header** (`src/components/navbar/Header.tsx`): 64px tall, `#000`, bottom rule `box-shadow: inset 0 -1px 0 var(--hairline-strong)`, no `backdrop-filter`. Nav links 14px 400 at 80% white, white on hover. "Log in" = `.mk-btn .mk-btn-sm .mk-outline`; "Start free" = `.mk-btn .mk-btn-sm .mk-solid`.
 
 **Dropdowns** (`Nav.tsx`): panel `#111`, 15px radius, `box-shadow: var(--mk-shadow-raised)`. Items 8px radius, hover `#242424`. The disclosure pattern and keyboard behaviour stay as built.
 
 **Segmented controls and filter pills** (pricing toggle, voice-mock tabs): pill track with a 10% ring; active item `--mk-fill-2` + white label; inactive 60% white.
 
-**Chips** (`components/ui/Chip.tsx`): 6px radius, 12px 500, `--surface-2` fill + 60% label for neutral; state chips use the state hue's soft fill + the hue as a 6px dot.
+**Chips** (`src/components/ui/badges/Chip.tsx`): 6px radius, 12px 500, `--surface-2` fill + 60% label for neutral; state chips use the state hue's soft fill + the hue as a 6px dot.
 
 ---
 
@@ -504,7 +504,7 @@ Work file by file through `components/chrome`, `components/sections`, `component
 
 ---
 
-## 9. Product mocks (`components/mock/*`)
+## 9. Product mocks (`src/components/public/mock/*`)
 
 Mocks are pictures of the product, so they follow the product UI rules:
 - Window `#0B0B0B`–`#111` with a 12% ring, 15px top radius; title bar 52px with `#333` dots; sidebar items 8px radius, active `#1A1A1A`.
@@ -571,7 +571,7 @@ Approved key lines (use verbatim): "Build the brand. Hand it over. Keep it alive
 
 ## 13. Don't
 
-- Don't edit `app/tokens.generated.css`.
+- Don't edit `src/app/tokens.generated.css`.
 - Don't write rules outside a cascade layer in `globals.css`.
 - Don't use the warm orange palette, zinc greys or card/button gradients.
 - Don't use weights above 500 or text below 12px.
@@ -591,13 +591,13 @@ Approved key lines (use verbatim): "Build the brand. Hand it over. Keep it alive
 One commit per step. After each: `npm run check`, then look at `/` (Arabic) and `/en` at 375px and 1440px.
 
 1. **Assets and fonts** — §2.
-2. **Token layer** — add `app/markyos-ds.css`, fix the import order — §3.
+2. **Token layer** — add `src/app/markyos-ds.css`, fix the import order — §3.
 3. **Theme** — replace `theme.css` `:root` — §4. Most of the page changes here.
 4. **Vocabulary** — `globals.css` — §5.
 5. **Icons** — `Icon.tsx` — §6.
 6. **Sweep** — §7, one folder at a time.
 7. **Light** — §8: hero pool + beam, one neon edge per section that has a selected state, data bars in the tone checker.
-8. **Docs** — update `docs/DESIGN.md` ("Where the design language is defined" gains `app/markyos-ds.css`; departure §2 now agrees with the design system; note that the reference PNGs govern layout only) and the header comments of `theme.css`, `fonts.ts`, `Icon.tsx`.
+8. **Docs** — update `docs/DESIGN.md` ("Where the design language is defined" gains `src/app/markyos-ds.css`; departure §2 now agrees with the design system; note that the reference PNGs govern layout only) and the header comments of `theme.css`, `fonts.ts`, `Icon.tsx`.
 
 **This list is now enforced. Run `npm run check:design`.**
 
@@ -625,9 +625,9 @@ system's own words:
 ```bash
 rg -n "font-(semibold|bold)|font-weight:\s*(600|700|800|900)" app components
 rg -n "text-\[0\.(5|6)[0-9]*rem\]" components
-rg -n "#[0-9a-fA-F]{3,8}\b" components --glob '!components/mock/BrandHub.tsx' --glob '!components/brand/**'
+rg -n "#[0-9a-fA-F]{3,8}\b" components --glob '!src/components/public/mock/BrandHub.tsx' --glob '!src/components/ui/brand/**'
 rg -n "\b(margin|padding)-(left|right)\b|\b(left|right)\s*:|text-align:\s*(left|right)|\b(ml|mr|pl|pr)-" app components
-rg -n "<svg" components --glob '!components/brand/**'
+rg -n "<svg" components --glob '!src/components/ui/brand/**'
 rg -n "fb923c|fdba74|251, 146, 60|09090b|a1a1aa|fafafa" app components
 ```
 
@@ -635,10 +635,10 @@ Where a grep and the script disagree, the script is the gate: it is the one
 that runs. The hex grep's two `--glob` exclusions are in its exemption table
 alongside a third, `components/sections/AiAlongside.tsx`, whose exploration
 mock shows three client brand palettes — the same "customer's brand as
-content" carve-out §7 already grants `mock/BrandHub.tsx`.
+content" carve-out §7 already grants `src/components/public/mock/BrandHub.tsx`.
 
 ---
 
 ## Updating this file
 
-When the design system changes, a new export of this file replaces this one. Values change in §3 (`app/markyos-ds.css`) and §4 (`app/theme.css`); components should never need to change for a token update.
+When the design system changes, a new export of this file replaces this one. Values change in §3 (`src/app/markyos-ds.css`) and §4 (`src/app/theme.css`); components should never need to change for a token update.

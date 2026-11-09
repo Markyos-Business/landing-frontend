@@ -1,4 +1,4 @@
-/* Tap targets, the funnel, the door pair and the page-level custom properties. Imported by app/globals.css, in order. */
+/* Tap targets, the funnel, the door pair and the page-level custom properties. Imported by src/app/globals.css, in order. */
 
 @layer components {
 /*
@@ -17,7 +17,7 @@
  * whose links sit on a 33px pitch — a 44px target would overlap its
  * neighbours and a tap near the boundary would follow the wrong link, which
  * is worse than a small target. Those get real padding instead; see
- * `components/chrome/Footer.tsx`.
+ * `src/components/public/Footer.tsx`.
  *
  * ── Two sizes, because there are two requirements ────────────────────────
  *

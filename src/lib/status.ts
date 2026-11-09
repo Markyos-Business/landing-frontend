@@ -146,7 +146,7 @@ export function feature(id: FeatureId): Feature {
   // honesty layer exists to prevent, so it fails loudly at render rather than
   // quietly rendering an unchipped promise.
   if (!found) {
-    throw new Error(`Unknown feature id "${id}" — add it to FEATURES in lib/status.ts`);
+    throw new Error(`Unknown feature id "${id}" — add it to FEATURES in src/lib/status.ts`);
   }
   return found;
 }

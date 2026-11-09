@@ -21,7 +21,7 @@ import { isAppHandoff, localeHref } from "@/lib/i18n/href";
  * stays at its use site, where it can be checked against the design file by
  * reading one line.
  *
- * `components/sections/` is exempt from the `raw-hex`, `physical-props`,
+ * `src/components/public/home/` is exempt from the `raw-hex`, `physical-props`,
  * `inline-svg` and `type-floor` rules in `scripts/check-design-rules.mjs`
  * for exactly this reason; the exemption table there says so.
  */
@@ -279,7 +279,7 @@ export function Cta({
   /*
    * The filled pill carries the cursor light; the quiet one does not.
    *
-   * Same rule as `components/ui/Button.tsx`, and the same reason: one lit ask
+   * Same rule as `src/components/ui/buttons/Button.tsx`, and the same reason: one lit ask
    * per section. `tone="quiet"` is a transparent pill with ink type and
    * nothing to reflect, so it is left alone.
    */
