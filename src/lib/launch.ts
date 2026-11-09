@@ -40,3 +40,17 @@ export const LAUNCH_PHASE: LaunchPhase =
 export const PUBLIC_LAUNCH_DATE = "2027-02-15";
 
 export const isBeta = LAUNCH_PHASE === "beta";
+
+/*
+ * Whether search engines may index this deploy.
+ *
+ * Only the production deploy is a page anyone should find. Vercel builds every
+ * other branch — staging on release/staging-v1, and each preview — as the same
+ * public site, and an indexable copy of markyos.com on a staging domain would
+ * compete with the real one for its own headlines. `VERCEL_ENV` is set by
+ * Vercel on every build ("production", "preview" or "development"); off Vercel
+ * it is unset and only the launch phase decides. next.config.ts reads the same
+ * variable to send `X-Robots-Tag: noindex` on these deploys.
+ */
+export const isIndexable =
+  !isBeta && (!process.env.VERCEL_ENV || process.env.VERCEL_ENV === "production");

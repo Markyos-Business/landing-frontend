@@ -1,5 +1,6 @@
 import path from "path";
 import { mkdirSync } from "fs";
+import { tmpdir } from "os";
 import sharp from "sharp";
 import { fileURLToPath } from "url";
 import { buildConfig } from "payload";
@@ -90,9 +91,18 @@ const db = usePostgres
  * The cost is that `rm -rf node_modules` takes local CMS content with it.
  * That is acceptable for a scratch database — real content lives in Postgres,
  * and anything worth keeping locally should be seeded by a script.
+ *
+ * **On Vercel it goes to the system temp folder.** A Vercel function's
+ * filesystem is read-only except /tmp, and this runs at import — so a deploy
+ * without `DATABASE_URI` crashed on the import itself, before the CMS client's
+ * fallback to built-in content could catch anything: the hourly revalidations
+ * and every on-demand article URL failed instead of rendering the copy in
+ * content/. Throwaway is fine there for the same reason it is fine locally.
  */
 function sqliteFile(): string {
-  const dir = path.resolve(dirname, "node_modules/.cache/payload");
+  const dir = process.env.VERCEL
+    ? path.join(tmpdir(), "payload")
+    : path.resolve(dirname, "node_modules/.cache/payload");
   mkdirSync(dir, { recursive: true });
   return path.join(dir, "cms.db");
 }

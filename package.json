@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "sideEffects": ["*.css"],
+  "engines": {
+    "node": "22.x"
+  },
   "description": "markyos.com — the bilingual marketing site. Separate deploy from the platform app.",
   "scripts": {
     "dev": "next dev",

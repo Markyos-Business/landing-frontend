@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { isBeta } from "@/lib/launch";
+import { isIndexable } from "@/lib/launch";
 import { SITE_URL } from "@/lib/seo";
 
 /*
@@ -18,7 +18,7 @@ import { SITE_URL } from "@/lib/seo";
  */
 
 export default function robots(): MetadataRoute.Robots {
-  if (isBeta) {
+  if (!isIndexable) {
     return {
       rules: [{ userAgent: "*", disallow: "/" }],
     };

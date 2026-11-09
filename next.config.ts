@@ -1,7 +1,21 @@
 import type { NextConfig } from "next";
 import { withPayload } from "@payloadcms/next/withPayload";
 
+/*
+ * Every Vercel deploy that is not production — staging and each preview —
+ * tells search engines not to index it. robots.txt alone only stops crawling;
+ * a staging URL linked from anywhere could still be indexed without this
+ * header. See `isIndexable` in src/lib/launch.ts, which closes robots.txt on
+ * the same condition.
+ */
+const hiddenFromSearch = Boolean(process.env.VERCEL_ENV) && process.env.VERCEL_ENV !== "production";
+
 const nextConfig: NextConfig = {
+  async headers() {
+    return hiddenFromSearch
+      ? [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }]
+      : [];
+  },
   // The marketing site is almost entirely static. Keeping `trailingSlash` off
   // and the default output means one canonical URL per page, which is the
   // thing SEO cares about most here.
