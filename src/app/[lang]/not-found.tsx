@@ -67,7 +67,7 @@ export default async function NotFound() {
             <Link
               key={link.href}
               href={localeHref(locale, link.href)}
-              className="mk-bidi text-sm font-medium text-[var(--accent-text)] underline-offset-4 hover:underline"
+              className="mk-bidi text-sm font-medium text-[var(--accent-text)] mk-underline-reveal underline-offset-4"
             >
               {link.label}
             </Link>

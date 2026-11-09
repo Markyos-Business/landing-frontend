@@ -1,5 +1,5 @@
 export const navStyles = [
-  /* The navigation and its menus. Imported by tailwind/, in order. */
+  /* The navigation and its menus. Registered by tailwind.config.js, in order. */
   /* ── The navigation, and the one card behind its three menus ─────────────
    *
    * The header's menus used to be a full-container slab that appeared and
@@ -301,9 +301,17 @@ export const navStyles = [
     "font-weight": "500",
     "color": "var(--accent-text)",
   } },
-  { ".mk-nav-rail-link:hover, .mk-nav-more:hover": {
-    "text-decoration": "underline",
+  /* The underline is drawn at rest in transparent and fades in, so it eases
+     like every other hover here instead of snapping (see
+     `.mk-underline-reveal` in buttons.js, the same move). */
+  { ".mk-nav-rail-link, .mk-nav-more": {
+    "text-decoration-line": "underline",
+    "text-decoration-color": "transparent",
     "text-underline-offset": "0.25em",
+    "transition": "text-decoration-color var(--mk-dur-fast) var(--mk-ease)",
+  } },
+  { ".mk-nav-rail-link:hover, .mk-nav-more:hover": {
+    "text-decoration-color": "currentColor",
   } },
   /* Resources: four approved labels and no descriptions under them, so it is a
    list and not a third mega menu. It keeps the same frame. */

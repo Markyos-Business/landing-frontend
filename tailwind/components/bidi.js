@@ -1,5 +1,5 @@
 export const bidiStyles = [
-  /* Bidirectional text isolation. Imported by tailwind/, in order. */
+  /* Bidirectional text isolation. Registered by tailwind.config.js, in order. */
   /* ── Bidirectional text isolation ─────────────────────────────────────────
    *
    * Found by running the Arabic page and reading it.

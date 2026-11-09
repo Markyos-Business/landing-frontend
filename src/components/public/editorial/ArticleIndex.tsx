@@ -90,7 +90,7 @@ function BlogBody({
                     <Cover post={post} size="thumb" word={copy.back} />
                   </span>
                   <span className="min-w-0">
-                    <span className="mk-bidi block text-[length:var(--fs-ui)] leading-[1.5] font-medium text-[var(--text)] group-hover:underline">
+                    <span className="mk-bidi block text-[length:var(--fs-ui)] leading-[1.5] font-medium text-[var(--text)] mk-underline-reveal">
                       {post.title}
                     </span>
                     <span className="mk-bidi mt-1.5 block text-[length:var(--fs-eyebrow)] text-[var(--text-muted)]">
@@ -179,7 +179,7 @@ function FeaturePost({
 
       <span className="mk-feature-post-body">
         {post.category ? <CategoryPill name={post.category} /> : null}
-        <span className="mk-bidi mt-3.5 block text-[length:var(--fs-d3)] leading-[1.25] font-medium text-[var(--text)] group-hover:underline">
+        <span className="mk-bidi mt-3.5 block text-[length:var(--fs-d3)] leading-[1.25] font-medium text-[var(--text)] mk-underline-reveal">
           {post.title}
         </span>
         <span className="mk-bidi mt-2.5 block text-[length:var(--fs-eyebrow)] text-[var(--text-muted)]">
@@ -230,7 +230,7 @@ function PostGrid({
             <span className="flex flex-1 flex-col p-5">
               {post.category ? <CategoryPill name={post.category} /> : null}
 
-              <span className="mk-bidi mt-3 block text-[length:var(--fs-h3)] leading-[1.35] font-medium text-[var(--text)] group-hover:underline">
+              <span className="mk-bidi mt-3 block text-[length:var(--fs-h3)] leading-[1.35] font-medium text-[var(--text)] mk-underline-reveal">
                 {post.title}
               </span>
 

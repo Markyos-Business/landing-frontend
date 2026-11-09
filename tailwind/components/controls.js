@@ -1,5 +1,5 @@
 export const controlsStyles = [
-  /* Controls: fills, bands, tables and the billing switch. Imported by tailwind/, in order. */
+  /* Controls: fills, bands, tables and the billing switch. Registered by tailwind.config.js, in order. */
   /* ── Controls ────────────────────────────────────────────────────────────── */
   /*
    * The primary action: flat white, black label.

@@ -1,5 +1,5 @@
 export const typeStyles = [
-  /* Type. Imported by tailwind/, in order. */
+  /* Type. Registered by tailwind.config.js, in order. */
   /* ── Type ────────────────────────────────────────────────────────────────── */
   /*
    * Display type: one weight, one tracking.

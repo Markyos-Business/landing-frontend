@@ -1,5 +1,5 @@
 export const heroStyles = [
-  /* The hero stage. Imported by tailwind/, in order. */
+  /* The hero stage. Registered by tailwind.config.js, in order. */
   /* ── The hero stage ──────────────────────────────────────────────────────
    *
    * Copy deck v3 §3. The hero is the first frame of the product story rather

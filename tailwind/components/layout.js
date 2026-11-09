@@ -1,5 +1,5 @@
 export const layoutStyles = [
-  /* Layout primitives and the screen-reader-only utility. Imported by tailwind/, in order. */
+  /* Layout primitives and the screen-reader-only utility. Registered by tailwind.config.js, in order. */
   /* ── Layout primitives ───────────────────────────────────────────────────── */
   /*
    * The page gutter.

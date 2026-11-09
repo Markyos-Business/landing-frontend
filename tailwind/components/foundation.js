@@ -1,5 +1,5 @@
 export const foundationStyles = [
-  /* Tap targets, the funnel, the door pair and the page-level custom properties. Imported by tailwind/, in order. */
+  /* Tap targets, the funnel, the door pair and the page-level custom properties. Registered by tailwind.config.js, in order. */
   /*
    * A touch-sized hit area for a standalone inline link.
    *

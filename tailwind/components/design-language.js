@@ -1,5 +1,5 @@
 export const designLanguageStyles = [
-  /* The design language: cards, insets, bands and the light. Imported by tailwind/, in order. */
+  /* The design language: cards, insets, bands and the light. Registered by tailwind.config.js, in order. */
   /* ── The design language ──────────────────────────────────────────────────
    *
    * Everything from here down is the Markyos Design System's vocabulary,

@@ -1,5 +1,5 @@
 export const editorialStyles = [
-  /* Editorial: the blog, the guides and the help centre. Imported by tailwind/, in order. */
+  /* Editorial: the blog, the guides and the help centre. Registered by tailwind.config.js, in order. */
   /* ── Editorial: the blog, the guides and the help centre ─────────────────
    *
    * The three indexes and the article template. Written 6 Nov 2026 against

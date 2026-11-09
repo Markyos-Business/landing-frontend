@@ -1,5 +1,5 @@
 export const webExplorerStyles = [
-  /* The web block and the solution explorer. Imported by tailwind/, in order. */
+  /* The web block and the solution explorer. Registered by tailwind.config.js, in order. */
   /*
    * Three audiences, one mark, nine solutions.
    *
