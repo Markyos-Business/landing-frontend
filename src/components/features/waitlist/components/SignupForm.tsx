@@ -1,42 +1,17 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId } from "react";
 import type { Locale } from "@/lib/i18n/locales";
+import { useWaitlistSignup } from "../hooks/useWaitlistSignup";
 
 /*
  * Email capture — newsletter, beta waitlist, "tell me when it ships".
  *
- * It posts to `/api/waitlist`, which returns **501** on purpose: there is no
- * mailing list wired up yet, and a form that silently swallows an address is
- * worse than no form, because the visitor believes they subscribed. So the
- * 501 is caught and reported as what it is — "not connected yet" — rather
- * than as a generic failure.
- *
- * That is also why the form is a client island rather than a plain POST: a
- * native submit would navigate to a JSON 501 body, which is the worst version
- * of this. See docs/OPEN-DECISIONS.md §2, which is the decision this is
- * waiting on.
+ * The request and its deliberate 501 are in `services/waitlistService.ts`;
+ * the state is `useWaitlistSignup`. The form is a client island rather than a
+ * plain POST because a native submit would navigate to that JSON 501 body,
+ * which is the worst version of this.
  */
-
-const COPY: Record<Locale, { sent: string; pending: string; failed: string; label: string }> = {
-  ar: {
-    sent: "تم. وصلك بريد التأكيد.",
-    // Said plainly, because it is true and because the alternative is a
-    // visitor who thinks they are on a list that does not exist.
-    pending: "النموذج غير متصل بعد. حفظنا طلبك محلياً فقط، فراسلنا مباشرة في الوقت الحالي.",
-    failed: "لم نستطع إرسال الطلب. حاول مرة أخرى.",
-    label: "البريد الإلكتروني",
-  },
-  en: {
-    sent: "Done. Check your inbox for the confirmation.",
-    pending:
-      "This form is not connected yet, so nothing was stored. Email us directly in the meantime.",
-    failed: "That did not go through. Please try again.",
-    label: "Email address",
-  },
-};
-
-type State = "idle" | "sending" | "sent" | "pending" | "failed";
 
 export function SignupForm({
   placeholder,
@@ -52,40 +27,18 @@ export function SignupForm({
   topic: string;
   locale: Locale;
 }) {
-  const [state, setState] = useState<State>("idle");
-  const [email, setEmail] = useState("");
+  const { state, email, setEmail, message, label, onSubmit } = useWaitlistSignup(topic, locale);
   const fieldId = useId();
   const statusId = useId();
-  const copy = COPY[locale];
-
-  const message =
-    state === "sent" ? copy.sent : state === "pending" ? copy.pending : state === "failed" ? copy.failed : "";
 
   return (
-    <form
-      noValidate
-      onSubmit={async (event) => {
-        event.preventDefault();
-        if (!email.trim()) return;
-        setState("sending");
-        try {
-          const response = await fetch("/api/waitlist", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ email, topic }),
-          });
-          setState(response.ok ? "sent" : response.status === 501 ? "pending" : "failed");
-        } catch {
-          setState("failed");
-        }
-      }}
-    >
+    <form noValidate onSubmit={onSubmit}>
       <div className="flex flex-col gap-3 sm:flex-row">
         {/* A real label, visually hidden. A placeholder is not a label: it
             disappears the moment someone types and is never announced as the
             field's name. */}
         <label htmlFor={fieldId} className="mk-sr-only">
-          {copy.label}
+          {label}
         </label>
         <input
           id={fieldId}
