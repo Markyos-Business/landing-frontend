@@ -165,8 +165,3 @@ export function chipFor(id: FeatureId): ChipKey | null {
   if (f.status === "mvp" && isBeta) return "arrivingSoon";
   return null;
 }
-
-/** Everything in a given phase, for the roadmap page. */
-export function featuresByStatus(status: BuildStatus): readonly Feature[] {
-  return FEATURES.filter((f) => f.status === status) as readonly Feature[];
-}

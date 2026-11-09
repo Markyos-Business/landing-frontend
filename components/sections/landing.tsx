@@ -345,44 +345,6 @@ export function TextLink({
 }
 
 /*
- * A tool name in the "replaces" row.
- *
- * `dir="ltr"` on a Latin name inside an Arabic line, set explicitly rather
- * than left to the bidi algorithm: "Guidelines.site" in an RTL paragraph
- * otherwise renders with its dot in the wrong place.
- */
-export function ToolChip({
-  name,
-  latin,
-  style,
-}: {
-  name: string;
-  latin?: boolean;
-  style?: CSSProperties;
-}) {
-  return (
-    <span
-      dir={latin ? "ltr" : undefined}
-      style={{
-        minBlockSize: 34,
-        padding: "4px 14px",
-        borderRadius: 999,
-        background: "#fff",
-        boxShadow: "0 0 0 1px rgba(11,11,15,.06)",
-        display: "inline-flex",
-        alignItems: "center",
-        fontFamily: latin ? "Inter, sans-serif" : undefined,
-        fontSize: latin ? 13 : 14,
-        color: INK_55,
-        ...style,
-      }}
-    >
-      {name}
-    </span>
-  );
-}
-
-/*
  * The icon tile: a glyph centred on a tinted rounded square.
  *
  * One shape at three sizes across the page — 34px in a list row, 36–38px

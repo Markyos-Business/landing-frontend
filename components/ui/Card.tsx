@@ -79,19 +79,3 @@ export function Inset({
 }) {
   return <div className={`mk-inset ${className}`}>{children}</div>;
 }
-
-/**
- * The grey line under a card, below a rule.
- *
- * "Forms and responses are free and unlimited on every plan." It is the
- * card's terms, not its content, which is why the reference separates it with
- * a rule and pushes it to the bottom of the card rather than letting it
- * follow the body.
- */
-export function Footnote({ children }: { children: ReactNode }) {
-  return (
-    <p className="mk-bidi mt-auto border-t border-[var(--hairline)] pt-4 text-[length:var(--fs-ui)] leading-[1.5] text-[var(--text-muted)]">
-      {children}
-    </p>
-  );
-}

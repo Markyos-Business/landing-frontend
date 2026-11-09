@@ -44,12 +44,6 @@ export const LOCALE_LABEL: Record<Locale, string> = {
   ar: "العربية",
 };
 
-/** Short form for the compact toggle in the header. */
-export const LOCALE_SHORT: Record<Locale, string> = {
-  en: "EN",
-  ar: "ع",
-};
-
 /**
  * The `hreflang` value that goes in the alternates map.
  *

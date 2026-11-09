@@ -96,11 +96,6 @@ export function getPage(path: string, locale: Locale = DEFAULT_LOCALE): PageDoc 
   return BY_LOCALE[locale].get(path);
 }
 
-/** Whether this locale has its own edition of this page. */
-export function hasEdition(path: string, locale: Locale): boolean {
-  return BY_LOCALE[locale].has(path);
-}
-
 /**
  * Which locales to declare for a registered page.
  *

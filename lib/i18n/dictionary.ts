@@ -28,20 +28,6 @@ export function getCopyFor(locale: Locale): Promise<SiteCopy> {
   return dictionaries[locale]();
 }
 
-/**
- * Load copy for the locale of the current request.
- *
- * `lang` is a *root* param — every route sits under `app/[lang]` — so any
- * Server Component below the root layout can reach it without the locale
- * being threaded through props. Client Components cannot: they take it as a
- * prop from a server parent.
- */
-export async function getCopy(): Promise<SiteCopy> {
-  const locale = await lang();
-  if (!locale || !isLocale(locale)) notFound();
-  return dictionaries[locale]();
-}
-
 /** The current locale, for Server Components that need the value itself. */
 export async function getLocale(): Promise<Locale> {
   const locale = await lang();
