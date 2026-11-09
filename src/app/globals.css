@@ -65,21 +65,21 @@
  * than appending here.
  */
 
-@import "../styles/base.css";
-@import "../styles/foundation.css";
-@import "../styles/layout.css";
-@import "../styles/prose.css";
-@import "../styles/bidi.css";
-@import "../styles/design-language.css";
-@import "../styles/type.css";
-@import "../styles/controls.css";
-@import "../styles/web-explorer.css";
-@import "../styles/page-blocks.css";
-@import "../styles/widgets.css";
-@import "../styles/buttons.css";
-@import "../styles/nav.css";
-@import "../styles/hero.css";
-@import "../styles/disclosure.css";
-@import "../styles/editorial.css";
-@import "../styles/motion.css";
-@import "../styles/transition.css";
+@import "../../styles/base.css";
+@import "../../styles/foundation.css";
+@import "../../styles/layout.css";
+@import "../../styles/prose.css";
+@import "../../styles/bidi.css";
+@import "../../styles/design-language.css";
+@import "../../styles/type.css";
+@import "../../styles/controls.css";
+@import "../../styles/web-explorer.css";
+@import "../../styles/page-blocks.css";
+@import "../../styles/widgets.css";
+@import "../../styles/buttons.css";
+@import "../../styles/nav.css";
+@import "../../styles/hero.css";
+@import "../../styles/disclosure.css";
+@import "../../styles/editorial.css";
+@import "../../styles/motion.css";
+@import "../../styles/transition.css";

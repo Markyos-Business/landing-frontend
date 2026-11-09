@@ -24,10 +24,10 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { BrandIcon as BrandIcon_a642489cb0d6c9701b16cfbd14612bb4 } from '../../../cms/views/BrandLogo'
-import { BrandLogo as BrandLogo_a642489cb0d6c9701b16cfbd14612bb4 } from '../../../cms/views/BrandLogo'
-import { AdminFonts as AdminFonts_5c5d42f9fdfa1ef5f67510fda49e1133 } from '../../../cms/views/AdminFonts'
-import { Dashboard as Dashboard_58fe85c5ecac2cc0f0903e2e5a1717cf } from '../../../cms/views/Dashboard'
+import { BrandIcon as BrandIcon_a642489cb0d6c9701b16cfbd14612bb4 } from '../../../../cms/views/BrandLogo'
+import { BrandLogo as BrandLogo_a642489cb0d6c9701b16cfbd14612bb4 } from '../../../../cms/views/BrandLogo'
+import { AdminFonts as AdminFonts_5c5d42f9fdfa1ef5f67510fda49e1133 } from '../../../../cms/views/AdminFonts'
+import { Dashboard as Dashboard_58fe85c5ecac2cc0f0903e2e5a1717cf } from '../../../../cms/views/Dashboard'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */

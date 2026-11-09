@@ -50,7 +50,7 @@ const SOURCE =
   process.env.MARKYOS_PLATFORM_CSS ??
   resolve(root, "..", "markyosmvp", "app", "globals.css");
 
-const TARGET = resolve(root, "app", "tokens.generated.css");
+const TARGET = resolve(root, "src", "app", "tokens.generated.css");
 
 /** The blocks we lift, in the order they must appear. */
 const BLOCKS = [
