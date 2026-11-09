@@ -1,12 +1,12 @@
 import { getCopyFor, getLocale } from "@/lib/i18n/dictionary";
 import { Hero } from "@/components/sections/Hero";
-import { Problem } from "@/components/sections/Problem";
+import { Problem } from "@/components/sections/problem";
 import { Ecosystem } from "@/components/sections/Ecosystem";
 import { ReplaceStack } from "@/components/sections/ReplaceStack";
 import { AiAlongside } from "@/components/sections/AiAlongside";
 import { ChoosePath } from "@/components/sections/ChoosePath";
-import { Bilingual } from "@/components/sections/Bilingual";
-import { PricingTeaser } from "@/components/sections/PricingTeaser";
+import { Bilingual } from "@/components/sections/bilingual";
+import { PricingTeaser } from "@/components/sections/pricing-teaser";
 import { Faq } from "@/components/sections/Faq";
 
 /*
