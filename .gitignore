@@ -38,7 +38,15 @@ next-env.d.ts
 # The local SQLite database lives in node_modules/.cache/payload, which is
 # already ignored — see sqliteFile() in payload.config.ts for why.
 /media
+# …and a SQLite file anywhere else, for when DATABASE_URI points one into the
+# repo (`file:./cms.db`). A database is never source.
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
 
 # Claude Code agent worktrees. They live inside the repo so an agent can work
 # on an isolated checkout without a second clone; they are never part of it.
 /.claude/worktrees/
+# Claude Code's per-person settings (permissions granted on one machine).
+/.claude/settings.local.json
