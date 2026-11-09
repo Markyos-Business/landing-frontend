@@ -30,7 +30,7 @@ import {
  * ── Why it reuses the article template ────────────────────────────────────
  *
  * An update is an article with a date on it: a title, a lead, a body of
- * headings and lists, and a cover. `components/page/editorial.tsx` already
+ * headings and lists, and a cover. `components/page/editorial/` already
  * renders exactly that for the blog, the guides and the help centre, so this
  * collection is deliberately shaped like Posts rather than inventing fields
  * for itself. The one thing it does not have is an author — a release note

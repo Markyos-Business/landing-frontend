@@ -75,7 +75,7 @@ or indexable and `noindex`, because both come off the same record.
 **4. Editorial content has one source: the CMS, across five sections.**
 `lib/content/` reads Payload and nothing else, for `/blog`, `/guides`,
 `/help`, `/compare` and `/whats-new` — one interface, one template
-(`components/page/editorial.tsx`), one pair of methods. It used to merge
+(`components/page/editorial/`), one pair of methods. It used to merge
 Payload with a placeholder seed per slug, which left thirty-one of thirty-two
 articles outside the admin panel; both the seed and the merge are gone, and so
 is the placeholder content.

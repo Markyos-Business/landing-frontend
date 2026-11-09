@@ -2873,7 +2873,7 @@ edit.
 the site offers.
 
 Both are CMS sections now, with the same two routes the blog has, rendered by
-the same `components/page/editorial.tsx`. Five collections read through one
+the same `components/page/editorial/`. Five collections read through one
 pair of methods.
 
 ### The comparison schema did not survive contact with the writing
