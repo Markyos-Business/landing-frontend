@@ -32,7 +32,7 @@ import { Faq } from "@/components/sections/Faq";
  * and why they are adjacent.
  *
  * The four sub-pages those sections used to be the only home for are
- * data-driven through `content/pages/` and `components/page/blocks.tsx`, so
+ * data-driven through `content/pages/` and `components/page/blocks/`, so
  * none of them lost anything when these components came back to the homepage
  * — they never imported them.
  *

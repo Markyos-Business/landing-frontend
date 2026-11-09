@@ -63,7 +63,7 @@ Arabic; English lives under `/en`. `x-default` points at Arabic and `/ar/...`
 was deliberately removed.
 
 **2. Pages are data, not components.** The 28 content pages are block lists in
-`content/pages/ar/`, rendered by `components/page/blocks.tsx` against the
+`content/pages/ar/`, rendered by `components/page/blocks/` against the
 contract in `content/pages/types.ts`. Twelve block kinds. Adding a page means
 editing one data file. If a page needs something the vocabulary cannot say,
 **add a block** — do not reach for a one-off class.

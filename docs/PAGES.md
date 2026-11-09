@@ -64,7 +64,7 @@ Set `noindex: true` and it leaves the sitemap in the same edit.
 ## The blocks
 
 A page is a list of blocks. `content/pages/types.ts` is the full contract;
-`components/page/blocks.tsx` renders them. The vocabulary is deliberately
+`components/page/blocks/` renders them. The vocabulary is deliberately
 small:
 
 | Block | For |

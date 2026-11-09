@@ -121,7 +121,7 @@ export function Eyebrow({
  * All three carry `.mk-rise`, so every section on every data-driven page
  * opens with its heading block arriving — one class here instead of one per
  * caller. The grids and lists *below* a head are marked where they are built
- * (`page/blocks.tsx`, the section components); see the motion block in
+ * (`page/blocks/`, the section components); see the motion block in
  * globals.css for the two classes and where they may not go.
  */
 export function SectionHead({

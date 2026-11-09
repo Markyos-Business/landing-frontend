@@ -268,7 +268,7 @@ reference and why.
 > given the design's *language*; the thirty-one data-driven pages were a flat
 > #F7F8FA field from the breadcrumb to the footer, separated by a 1px rule with
 > about 200px of nothing above it. Seven shared changes brought them across, all
-> of them in `components/page/blocks.tsx`, `components/ui/` and the token layer,
+> of them in `components/page/blocks/`, `components/ui/` and the token layer,
 > so no content file changed:
 >
 > - **The band rhythm.** Sections alternate ground and white, counted in
