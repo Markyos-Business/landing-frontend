@@ -290,7 +290,7 @@ const RULES = [
     id: "weight",
     ref: "§1.5, §7, §13",
     title: "No weight above 500",
-    roots: ["app", "components", "content", "cms"],
+    roots: ["app", "styles", "components", "content", "cms"],
     find(text) {
       const hits = [];
 
@@ -330,7 +330,7 @@ const RULES = [
     id: "type-floor",
     ref: "§1.6, §13",
     title: `No type below ${TYPE_FLOOR_PX}px`,
-    roots: ["app", "components", "content", "cms"],
+    roots: ["app", "styles", "components", "content", "cms"],
     find(text) {
       const hits = [];
 
@@ -373,7 +373,7 @@ const RULES = [
     id: "physical-props",
     ref: "§5, §13",
     title: "Logical properties only",
-    roots: ["app", "components", "content", "cms"],
+    roots: ["app", "styles", "components", "content", "cms"],
     find(text) {
       const hits = [];
 
@@ -433,7 +433,7 @@ const RULES = [
     id: "arabic-face",
     ref: "§2.1, §9",
     title: "Arabic is set in the Arabic face",
-    roots: ["app", "components", "cms"],
+    roots: ["app", "styles", "components", "cms"],
     /*
      * `--font-plex-arabic` is the fallback, not the face.
      *
@@ -466,7 +466,7 @@ const RULES = [
     id: "size-token-hint",
     ref: "§4, §6",
     title: "Size tokens reach the page",
-    roots: ["app", "components", "cms"],
+    roots: ["app", "styles", "components", "cms"],
     /*
      * `text-[var(--fs-lead)]` silently does nothing.
      *
@@ -526,7 +526,7 @@ const RULES = [
     id: "control-bytes",
     ref: "—",
     title: "No stray control bytes in source",
-    roots: ["app", "components", "content", "cms", "lib", "scripts"],
+    roots: ["app", "styles", "components", "content", "cms", "lib", "scripts"],
     /*
      * The one rule that reads comments.
      *
@@ -576,7 +576,7 @@ const RULES = [
     id: "retired-palette",
     ref: "§13",
     title: "No warm orange, no zinc",
-    roots: ["app", "components", "content", "cms"],
+    roots: ["app", "styles", "components", "content", "cms"],
     find(text) {
       const hits = [];
 
@@ -613,7 +613,7 @@ const RULES = [
     id: "emoji",
     ref: "§11",
     title: "No emoji",
-    roots: ["app", "components", "content", "cms"],
+    roots: ["app", "styles", "components", "content", "cms"],
     comments: false,
     find(text) {
       const hits = [];
