@@ -30,7 +30,7 @@ import { useEffect, useRef, type ReactNode } from "react";
  * #0099FF core into #0055FF falloff, §8. The edge rings are transposed stop
  * for stop onto that ramp, so the filament and the bloom land where the
  * reference put them. The light *inside* the pill is not, and could not be:
- * see `.mk-spark-glint` in globals.css, where the arithmetic is.
+ * see `.mk-spark-glint` in tailwind/, where the arithmetic is.
  *
  * ── Four things it does that the reference does not ───────────────────────
  *
@@ -258,7 +258,7 @@ export function Spark({
       <span aria-hidden="true" className="mk-spark-edge mk-spark-edge-minus" />
       {/* The specular is a pseudo-element of the pill, not an element here:
           it has to sit between the pill's fill and its label. See
-          `.mk-spark-glint` in globals.css. */}
+          `.mk-spark-glint` in tailwind/. */}
       {children}
     </span>
   );

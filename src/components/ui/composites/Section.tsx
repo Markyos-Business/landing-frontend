@@ -43,7 +43,7 @@ export function Section({
    *
    * Every other section, counting from the first one after the hero, which is
    * how the homepage alternates for all fourteen of its sections. See
-   * `.mk-band` in globals.css for why the alternation is doing the work the
+   * `.mk-band` in tailwind/ for why the alternation is doing the work the
    * rules used to.
    */
   white?: boolean;
@@ -122,7 +122,7 @@ export function Eyebrow({
  * opens with its heading block arriving — one class here instead of one per
  * caller. The grids and lists *below* a head are marked where they are built
  * (`page/blocks/`, the section components); see the motion block in
- * globals.css for the two classes and where they may not go.
+ * tailwind/ for the two classes and where they may not go.
  */
 export function SectionHead({
   id,
@@ -245,7 +245,7 @@ export function SectionHead({
            column slides in from its own edge, rather than the whole block
            appearing at once. This is the page's default head layout, so it is
            the single highest-leverage place on the site to put a cascade —
-           and the `:has()` rules in globals.css mean the column then carries
+           and the `:has()` rules in tailwind/ mean the column then carries
            only the movement while the paragraphs carry the fade. */
         <div className="mk-slide-end mk-seq space-y-4 self-start md:pt-1.5">
           {body.map((paragraph, i) => {

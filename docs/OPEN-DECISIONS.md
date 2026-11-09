@@ -240,8 +240,8 @@ it is a behaviour decision, not a plumbing one.
 > fill, and never heading, eyebrow or link ink. Text hierarchy is white
 > opacity, never hue.
 >
-> `src/app/theme.css` is still the whole of it, but it is now a *mapping* onto
-> `src/app/markyos-ds.css` rather than a set of measured values. See
+> `tailwind/tokens.js` is still the whole of it, but it is now a *mapping* onto
+> `tailwind/tokens.js` rather than a set of measured values. See
 > `MARKYOS-DESIGN-SYSTEM.md` §4.
 >
 > The original entry, kept for the record:
@@ -251,11 +251,11 @@ it is a behaviour decision, not a plumbing one.
 > sign-off, because it is a brand decision rather than a technical one — but
 > it is no longer blocking anything, and reversing it is one file.
 >
-> `src/app/theme.css` holds the whole of it: the marketing site's grounds, ink,
+> `tailwind/tokens.js` holds the whole of it: the marketing site's grounds, ink,
 > hairlines and accent, laid over the synced product tokens the way the
 > generated file's own light theme lays over its dark one. Every value in it
 > was measured out of the reference PNGs rather than picked by eye, and the
-> file says which. `src/app/tokens.generated.css` is untouched and
+> file says which. `tailwind/tokens.generated.js` is untouched and
 > `npm run check:tokens` still passes.
 
 The product's accent is blue — `--accent: #0099ff` — and this repo currently
@@ -342,7 +342,7 @@ canvas.
    closest neutral grotesque already in the build and costs no extra download.
    Bricolage is no longer loaded (`src/app/fonts.ts`); the files stay in
    `public/fonts/`. If the brand actually wants a licensed grotesque —
-   Helvetica Now, Söhne — that is one line in `src/app/theme.css` plus the webfont
+   Helvetica Now, Söhne — that is one line in `tailwind/tokens.js` plus the webfont
    licence.
 
 ---

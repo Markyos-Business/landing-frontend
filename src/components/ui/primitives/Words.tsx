@@ -3,7 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 /*
  * A headline whose words resolve one after another as it arrives.
  *
- * `.mk-words` in globals.css is the paint and carries the reasoning; the two
+ * `.mk-words` in tailwind/ is the paint and carries the reasoning; the two
  * things worth knowing at a call site are here.
  *
  * ── It splits on whitespace and never inside a word ────────────────────────
@@ -22,7 +22,7 @@ import type { CSSProperties, ReactNode } from "react";
  * direction from the first strong character it can see, and an `inline-block`
  * is atomic to that scan — it would find a row of object replacement
  * characters and fall back to left-to-right. The long version is in
- * globals.css beside `.mk-words`. So the words only fade and sharpen, and the
+ * tailwind/ beside `.mk-words`. So the words only fade and sharpen, and the
  * movement belongs to the block around them.
  *
  * ── The whitespace stays outside the spans ─────────────────────────────────

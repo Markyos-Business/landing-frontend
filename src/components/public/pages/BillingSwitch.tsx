@@ -18,7 +18,7 @@ import { useRef, useState, type ReactNode } from "react";
  * page this site most needs indexed and half its figures existing only after
  * a click is worse than the markup weight — so every card renders both
  * amounts on the server and the switch only changes which is shown, through
- * one `data-billing` attribute and two rules in globals.css. Nothing in the
+ * one `data-billing` attribute and two rules in tailwind/. Nothing in the
  * cards is a client component, and without JavaScript the page is the
  * monthly page, which is the one it was before this existed.
  *

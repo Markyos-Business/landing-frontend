@@ -46,7 +46,7 @@ export function Footer({ copy, locale }: { copy: FooterCopy; locale: Locale }) {
                   drops by the same, so the column looks identical and every
                   link is a 33px target instead of a 19px one. A 44px target
                   would overlap its neighbour on this pitch — see `.mk-tap`
-                  in globals.css. */}
+                  in tailwind/. */}
               <ul className="space-y-0">
                 {column.links.map((link) => (
                   <li key={`${column.heading}-${link.label}`}>

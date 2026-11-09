@@ -55,7 +55,7 @@ stub stylesheet written to silence it would make the check lie.
 > before and after numbers and confirm the percentage is still 100%.
 >
 > Read `CLAUDE.md`, `AGENTS.md` and `MARKYOS-DESIGN-SYSTEM.md` first; they are
-> binding. Never edit `src/app/tokens.generated.css`. `npm run check`, `npm run
+> binding. Never edit `tailwind/tokens.generated.js`. `npm run check`, `npm run
 > build` and `npm run check:live` must all pass — start the server with
 > `npx next start -p 3210 &` before the last one. Open a pull request.
 

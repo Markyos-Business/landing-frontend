@@ -63,13 +63,13 @@ import { usePathname } from "next/navigation";
  * a logical property and CSS has no logical translate to reach for — the site
  * would need the sign of its own slide flipped for Arabic, the pairing that
  * has already caused three bugs on the homepage (see `--mk-dir` in
- * globals.css). The block axis has no such problem: up is up in both locales.
+ * tailwind/). The block axis has no such problem: up is up in both locales.
  * So a page arrives the way everything on it now arrives, which also means
  * one motion idea on the site rather than two.
  *
  * `default="none"` keeps this from animating on transitions it is not the
  * subject of. The paint is `::view-transition-*(.mk-page-in|out)` in
- * globals.css.
+ * tailwind/.
  */
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

@@ -245,11 +245,11 @@ from the product is brand decay, on the site about brand decay.
 So the tokens are generated, never authored here:
 
 ```
-markyosmvp/app/globals.css          ← the only place a brand value is decided
+markyosmvp/tailwind/          ← the only place a brand value is decided
           │
           │  npm run sync:tokens
           ▼
-Landing Page/app/tokens.generated.css   ← generated, committed, never edited
+Landing Page/tailwind/tokens.generated.js   ← generated, committed, never edited
 ```
 
 `scripts/sync-tokens.mjs` lifts the three token blocks — the dark theme, the
@@ -305,7 +305,7 @@ without knowing where the product is deployed.
 Landing Page/
 ├── app/
 │   ├── [lang]/              root layout (lang + dir), homepage, 16 placeholder routes
-│   ├── globals.css          base layer — rhythm, measure, focus. No brand values
+│   ├── tailwind/          base layer — rhythm, measure, focus. No brand values
 │   ├── tokens.generated.css GENERATED from the platform app
 │   ├── fonts.ts             Inter · IBM Plex Sans Arabic · Bricolage Grotesque
 │   ├── robots.ts            closed to crawlers during the beta

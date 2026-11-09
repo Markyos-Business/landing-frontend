@@ -142,7 +142,7 @@ export default buildConfig({
      *
      * markyos.com is a light page — paper ground, white cards, near-black
      * ink — and the admin is the surface a person reaches from it, usually in
-     * the next tab. The skin in src/app/(payload)/custom.css re-points Payload's
+     * the next tab. The skin in tailwind/admin.js re-points Payload's
      * theme variables onto that one palette, so there is no second set of
      * values to keep in step and nothing for a theme switch to switch to:
      * leaving it on would offer a theme that does not exist.

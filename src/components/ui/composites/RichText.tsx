@@ -51,7 +51,7 @@ const kids = (node: SerializedLexicalNode): SerializedLexicalNode[] =>
  * is a mid grey that was chosen for neither of the site's grounds.
  *
  * So the three table nodes are mapped like every other node, with no style
- * attribute, and globals.css styles `.mk-prose table` the way it styles the
+ * attribute, and tailwind/ styles `.mk-prose table` the way it styles the
  * rest of the prose. The horizontal scroll lives on the wrapper because a
  * comparison table is the one thing in an article that genuinely cannot
  * stack on a phone.

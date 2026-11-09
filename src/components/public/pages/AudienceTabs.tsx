@@ -141,7 +141,7 @@ export function AudienceTabs({
              * The knob sits behind the labels, placed with a logical inset and
              * moved with a physical translate — so its travel has to carry
              * `--mk-dir` or it leaves the track in Arabic. Same workaround as
-             * the homepage's toggle; see the token's note in globals.css.
+             * the homepage's toggle; see the token's note in tailwind/.
              */}
             <span
               aria-hidden="true"

@@ -6,7 +6,7 @@ import localFont from "next/font/local";
  *
  * Latin is **Inter**, loaded as its variable font so 400 and 500 — the only
  * two weights the website uses — come from one file. The character variants
- * `cv01 cv05 cv09 cv11` are always on (set in globals.css from
+ * `cv01 cv05 cv09 cv11` are always on (set in tailwind/ from
  * `--mk-features`): single-storey a, tailed l, alternate 1, flat-top 3. They
  * exist to warm Inter up where it sits beside Arabic.
  *
@@ -15,7 +15,7 @@ import localFont from "next/font/local";
  * tracked — tracking Arabic breaks the joins between letters.
  *
  * IBM Plex Sans Arabic stays loaded deliberately, as the last-resort fallback
- * in the stacks: `tokens.generated.css` still references
+ * in the stacks: `tailwind/tokens.generated.js` still references
  * `--font-plex-arabic`, and that file is generated and never edited here.
  *
  * ── Bricolage Grotesque ───────────────────────────────────────────────────

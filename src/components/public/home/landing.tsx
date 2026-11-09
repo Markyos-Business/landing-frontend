@@ -87,7 +87,7 @@ export const DOTS = "radial-gradient(rgba(11,11,15,.09) 1px,transparent 1.3px) 0
  * their own headlines and should not re-state it; and the design file's light
  * end was #0099FF, which is 2.82:1 on this ground — under the 3:1 that AA asks
  * of display text — so the figures belong somewhere they can be checked. See
- * `--mk-blue-ink` in theme.css.
+ * `--mk-blue-ink` in tailwind/tokens.js.
  */
 export function Accent({
   children,
@@ -132,7 +132,7 @@ export function Accent({
  * Arabic is never tracked — the design file sets `--mk-track-display-ar: 0`
  * and the reason is mechanical, not aesthetic: negative tracking breaks the
  * joins between Arabic letters. Since this site is published in Arabic, the
- * heading carries no tracking and `[dir=rtl]` in globals.css keeps it at 0
+ * heading carries no tracking and `[dir=rtl]` in tailwind/ keeps it at 0
  * for the Arabic face regardless.
  */
 export function Display({
@@ -151,7 +151,7 @@ export function Display({
   const fs = {
     /*
      * A token, not a value, because the two scripts do not take the same
-     * size. globals.css sets it per `lang`: see --mk-fs-hero.
+     * size. tailwind/ sets it per `lang`: see --mk-fs-hero.
      */
     hero: "var(--mk-fs-hero)",
     h2lg: "clamp(30px,4.6vw,56px)",
@@ -471,7 +471,7 @@ export function Band({
        * lead, a picture, a grid, a closing row. A child too tall to reveal as
        * one piece — a seven-stop dial, an eight-card grid — carries
        * `mk-still mk-seq` instead and passes the reveal down to its own
-       * children. See the motion block in globals.css for why half a viewport
+       * children. See the motion block in tailwind/ for why half a viewport
        * is the limit.
        */}
       <div className="mk-seq" style={{ position: "relative", maxWidth: width, margin: "0 auto" }}>

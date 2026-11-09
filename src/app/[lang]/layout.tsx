@@ -7,7 +7,7 @@ import { Analytics } from "@/components/public/Analytics";
 import { getCopyFor } from "@/lib/i18n/dictionary";
 import { isLocale, LOCALES, LOCALE_DIR } from "@/lib/i18n/locales";
 import { pageMetadata } from "@/lib/seo";
-import "../globals.css";
+import "../tailwind.css";
 /*
  * Line Awesome 1.3.0 — the one icon system (MARKYOS-DESIGN-SYSTEM.md §1.10).
  * It supplies the `.la-*` class map that `src/components/ui/primitives/Icon.tsx` renders, and

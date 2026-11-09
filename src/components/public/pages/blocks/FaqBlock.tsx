@@ -25,7 +25,7 @@ export function FaqBlock({
         {/*
           Native <details>, so every answer is in the DOM for a crawler and
           every question opens before any JavaScript arrives. `list-none` and
-          the marker rule in globals.css remove the browser's triangle, which
+          the marker rule in tailwind/ remove the browser's triangle, which
           cannot be positioned sensibly in a mirrored layout.
         */}
         <div className="mk-seq divide-y divide-[var(--hairline)] border-y border-[var(--hairline)]">

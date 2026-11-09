@@ -120,7 +120,7 @@ export function Button({
        * string *inside* the box, and the box is what the parent cannot see
        * into.
        *
-       * The class is inert anywhere else: its rule in globals.css only fires
+       * The class is inert anywhere else: its rule in tailwind/ only fires
        * on a parent that is itself a text element, so a button in the usual
        * flex row of buttons is unaffected.
        */

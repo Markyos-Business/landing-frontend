@@ -49,7 +49,7 @@ receives typed copy, so styling a section should not require touching its data.
   EN/ع pill currently in `src/components/navbar/LangSwitch.tsx`. The swap-the-path
   logic stays; only the presentation changes.
 - Add any brand value the design needs **to the platform app's
-  `globals.css`**, then `npm run sync:tokens`. Never add a hex here. A token
+  `tailwind/`**, then `npm run sync:tokens`. Never add a hex here. A token
   that only the marketing site knows about is how two deploys stop matching.
 - Port `scripts/no-physical-props.mjs` from the platform repo and add it to
   `npm run check` (`docs/BEFORE-PUBLISH.md` item 14). Do this *before* writing

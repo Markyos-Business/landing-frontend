@@ -23,7 +23,7 @@ import { CtaBlock } from "./CtaBlock";
  *
  * Shared helpers (T, Buttons, AccentedTitle, Note, Ctx) are in `./shared`.
  *
- * Every one of these composes the vocabulary in `src/app/globals.css` and the
+ * Every one of these composes the vocabulary in `tailwind/` and the
  * primitives in `src/components/ui/` — none of them invents a value. That is the
  * rule in `docs/DESIGN.md` and it is what keeps thirty-odd data-driven pages
  * looking like one site rather than like a template.

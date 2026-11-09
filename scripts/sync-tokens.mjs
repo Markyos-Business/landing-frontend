@@ -13,7 +13,7 @@
  * So the tokens are generated, never authored here. `lib/theme.ts` and
  * `app/globals.css` in the platform app remain the only place a brand value is
  * decided; this script lifts the three token blocks out and writes them to
- * `src/app/tokens.generated.css`, which `src/app/globals.css` imports and no one edits.
+ * `tailwind/tokens.generated.js`, which `tailwind/` imports and no one edits.
  *
  * ── The two modes ───────────────────────────────────────────────────────────
  *
@@ -37,6 +37,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { nodesToModule, postcss } from "./css-to-js.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -50,7 +51,7 @@ const SOURCE =
   process.env.MARKYOS_PLATFORM_CSS ??
   resolve(root, "..", "markyosmvp", "app", "globals.css");
 
-const TARGET = resolve(root, "src", "app", "tokens.generated.css");
+const TARGET = resolve(root, "tailwind", "tokens.generated.js");
 
 /** The blocks we lift, in the order they must appear. */
 const BLOCKS = [
@@ -83,6 +84,43 @@ function extractBlock(css, selector) {
   return null;
 }
 
+/*
+ * The `@theme inline` block, as `theme.extend` for tailwind.config.js.
+ *
+ * Each `--color-*`, `--font-*` and `--radius-*` variable becomes the matching
+ * key under `colors`, `fontFamily` and `borderRadius`, which is how the
+ * config names the same utilities. Comments stay beside the entry they
+ * describe.
+ */
+const THEME_GROUPS = [
+  ["--color-", "colors"],
+  ["--font-", "fontFamily"],
+  ["--radius-", "borderRadius"],
+];
+
+function themeModule(block) {
+  const groups = Object.fromEntries(THEME_GROUPS.map(([, name]) => [name, []]));
+  let pending = [];
+  for (const node of postcss.parse(block).nodes[0].nodes) {
+    if (node.type === "comment") {
+      pending.push(`/*${node.raws.left ?? " "}${node.text}${node.raws.right ?? " "}*/`);
+      continue;
+    }
+    const group = THEME_GROUPS.find(([prefix]) => node.prop.startsWith(prefix));
+    if (!group) {
+      console.error(`✗ No theme.extend key for ${node.prop} in the @theme block. Add it to THEME_GROUPS.`);
+      process.exit(1);
+    }
+    const name = node.prop.slice(group[0].length);
+    groups[group[1]].push(...pending.map((c) => c.replace(/\n\s*/g, "\n     ")), `${JSON.stringify(name)}: ${JSON.stringify(node.value)},`);
+    pending = [];
+  }
+  const body = Object.entries(groups)
+    .map(([name, lines]) => `  ${name}: {\n${lines.map((l) => "    " + l).join("\n")}\n  },`)
+    .join("\n");
+  return `/* The Tailwind theme mapping (\`@theme inline\` in the platform's stylesheet), for theme.extend. */\nexport const generatedTheme = {\n${body}\n};\n`;
+}
+
 function generate() {
   const css = readFileSync(SOURCE, "utf8");
   const parts = [];
@@ -99,7 +137,8 @@ function generate() {
     parts.push(block);
   }
 
-  return [
+  const [dark, light, theme] = parts;
+  const header = [
     "/*",
     " * GENERATED FILE — DO NOT EDIT.",
     " *",
@@ -111,11 +150,14 @@ function generate() {
     " * docs/token-contract.md. The two rules that matter to this site:",
     " *   - consume a token, never hardcode a hex, radius or type size;",
     " *   - a token may be added, never renamed, removed or redefined.",
+    " *",
+    " * `generatedTokens` is registered with addBase in tailwind.config.js;",
+    " * `generatedTheme` goes under theme.extend there.",
     " */",
     "",
-    ...parts,
     "",
   ].join("\n");
+  return nodesToModule(postcss.parse(`${dark}\n${light}`).nodes, "generatedTokens", { header }) + "\n" + themeModule(theme);
 }
 
 if (!existsSync(SOURCE)) {
@@ -139,7 +181,7 @@ if (checkOnly) {
   if (current !== next) {
     console.error(
       "✗ Design tokens are out of date.\n" +
-        "  The platform app's tokens have changed since src/app/tokens.generated.css was written.\n" +
+        "  The platform app's tokens have changed since tailwind/tokens.generated.js was written.\n" +
         "  Run `npm run sync:tokens` and commit the result.",
     );
     process.exit(1);
@@ -150,7 +192,7 @@ if (checkOnly) {
 
 writeFileSync(TARGET, next, "utf8");
 
-const tokenCount = (next.match(/^\s{2}--[\w-]+:/gm) ?? []).length;
+const tokenCount = (next.match(/^\s+"--[\w-]+":/gm) ?? []).length;
 console.log(
-  `✓ Wrote src/app/tokens.generated.css — ${tokenCount} declarations from ${BLOCKS.length} blocks.`,
+  `✓ Wrote tailwind/tokens.generated.js — ${tokenCount} declarations from ${BLOCKS.length} blocks.`,
 );

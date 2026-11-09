@@ -106,7 +106,7 @@ export function Hero({
              * note says "inline-block span"; that is the one thing this
              * cannot copy — an inline-block is atomic to the plaintext scan
              * and would send every Arabic headline to the wrong edge. See
-             * the note on `.mk-words` in globals.css.
+             * the note on `.mk-words` in tailwind/.
              */}
             {copy.headlineAccent ? (
               <>
@@ -405,7 +405,7 @@ function FinalCta({
  * difference between two buttons of deliberately equal weight reads as one of
  * them being the lesser ask. That is the opposite of what this pair is for, so
  * `.mk-doors` sizes both to the wider label and stacks them full-width on a
- * phone. See globals.css.
+ * phone. See tailwind/.
  */
 function Doors({
   ask,

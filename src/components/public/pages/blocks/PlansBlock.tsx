@@ -98,7 +98,7 @@ export function PlansBlock({
             {/* Both amounts render; `data-bill` says which cycle each one
                 belongs to and the switch above shows one of them. A plan with
                 no annual rate has no `data-bill` at all, so it is shown in
-                both — see BillingSwitch, and `[data-billing]` in globals.css. */}
+                both — see BillingSwitch, and `[data-billing]` in tailwind/. */}
             <p className="@container/plan mt-4 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
               <span
                 data-bill={plan.annual ? "monthly" : undefined}

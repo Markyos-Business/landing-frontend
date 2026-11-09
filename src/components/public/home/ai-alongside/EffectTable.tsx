@@ -53,7 +53,7 @@ export function EffectTable({ effect }: { effect: Effect }) {
         {effect.rows.map((row) => (
           /* The row's layout is a class and not an inline style: it
              changes at 42rem, and an inline style cannot carry a media
-             query. See `.mk-effect-row` in globals.css. */
+             query. See `.mk-effect-row` in tailwind/. */
           <li key={row.label} className="mk-effect-row">
             <span
               className="mk-bidi mk-effect-label"
@@ -74,7 +74,7 @@ export function EffectTable({ effect }: { effect: Effect }) {
  * One cell of the effect table, carrying its own column name.
  *
  * The name is shown on a phone and hidden from 42rem up, where the row above
- * carries it — `.mk-effect-head` in globals.css, because a media query cannot
+ * carries it — `.mk-effect-head` in tailwind/, because a media query cannot
  * be written as an inline style. Hidden with `display: none` rather than
  * visually-hidden: on a wide screen the column heading is the real one and
  * repeating it in every cell would make a screen reader read it eight times.
@@ -83,7 +83,7 @@ function Cell({ head, body }: { head: string; body: string }) {
   return (
     <span style={{ display: "block", minInlineSize: 0 }}>
       {/* No `display` here. It was `block` inline, which beat the media
-          query in globals.css that hides this from 42rem up — so every cell
+          query in tailwind/ that hides this from 42rem up — so every cell
           on a desktop repeated its column's name, eight times, under a table
           that had no column headings at all. */}
       <span

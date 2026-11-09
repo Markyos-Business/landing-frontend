@@ -52,7 +52,7 @@ export function Funnel({ tools }: { tools: EcosystemCopy["tools"] }) {
   return (
     <>
       {/* The funnel: tiles, and the lines leaving them. Tablet and up —
-          see `.mk-funnel-wide` in globals.css for why a phone gets the
+          see `.mk-funnel-wide` in tailwind/ for why a phone gets the
           chip row below instead. */}
       <div
         aria-hidden="true"
@@ -131,7 +131,7 @@ export function Funnel({ tools }: { tools: EcosystemCopy["tools"] }) {
               insetInlineStart: NODES[i].at,
               top: NODES[i].top,
               /* Centred on its anchor in both directions — see `--mk-dir`
-                 in globals.css. A bare `translateX(-50%)` moves the tile
+                 in tailwind/. A bare `translateX(-50%)` moves the tile
                  the wrong way in RTL and puts it a tile-width off. */
               transform: "translateX(calc(-50% * var(--mk-dir)))",
               inlineSize: "clamp(68px,10.5vw,116px)",

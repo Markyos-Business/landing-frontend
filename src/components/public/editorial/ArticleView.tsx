@@ -51,7 +51,7 @@ export function ArticleView({
               <dt>{ui.date}</dt>
               <dd>
                 {/* `mk-bidi` on the <time>, which looks backwards and is not.
-                    `time` is in the plaintext list in globals.css, so without
+                    `time` is in the plaintext list in tailwind/, so without
                     this it is an isolate: the <dd> around it scans for a
                     strong character, finds one object replacement character,
                     falls back to left-to-right and sends "2 أكتوبر 2026" to

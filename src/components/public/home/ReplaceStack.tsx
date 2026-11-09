@@ -82,7 +82,7 @@ export function ReplaceStack({
              — which pins every `view()` timeline inside it, including the
              rows'. Measured: without this the eleven rows sat at a fixed
              opacity each and never changed with the scroll. See
-             `.mk-table-shell` in globals.css, which carries the same fix and
+             `.mk-table-shell` in tailwind/, which carries the same fix and
              the long version of why. */
           overflowY: "clip",
         }}
@@ -124,7 +124,7 @@ export function ReplaceStack({
                   <span className="mk-bidi">{row.job}</span>
                 </th>
                 {/* `.mk-page-dir` — see the note in Problem.tsx and the rule in
-                    globals.css. Per-cell direction gave this column eleven
+                    tailwind/. Per-cell direction gave this column eleven
                     different alignments inside one 202px measure. */}
                 <td className="mk-page-dir" style={{ ...TD, fontSize: 14, color: INK_55 }}>
                   {row.usually}

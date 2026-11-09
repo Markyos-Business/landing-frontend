@@ -170,7 +170,7 @@ export function AccentedTitle({ title, load = false }: { title: string; load?: b
  * Seven blocks carry a `note` and each used to render it as a muted
  * paragraph with its own hand-set margin — four different margins between
  * them, which is how a shared vocabulary drifts. It is one object now; the
- * design is `.mk-note` in globals.css and the reasoning for it is there.
+ * design is `.mk-note` in tailwind/ and the reasoning for it is there.
  *
  * The glyph is a sibling of the paragraph rather than a child of it, for the
  * bidi reason given beside the CSS: an inline-flex box inside a <p> is

@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
  * Keeping them one component is the only reason a page of thirty cards lines
  * up — and the only reason changing the card changes all of them.
  *
- * The visual definition lives in src/app/globals.css under `.mk-card`, not here,
+ * The visual definition lives in tailwind/ under `.mk-card`, not here,
  * so that a card rendered by the CMS rich-text renderer or by a page outside
  * this component tree looks identical without importing React.
  */

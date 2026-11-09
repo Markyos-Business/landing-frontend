@@ -105,7 +105,7 @@ export function PricingTeaser({ copy, locale }: {
           >
             {/*
              * The knob. Placed at the start edge and moved by `--mk-knob`,
-             * which globals.css flips for RTL — so it starts at the right in
+             * which tailwind/ flips for RTL — so it starts at the right in
              * Arabic and travels leftwards, and this component never has to
              * know which locale it is in.
              */}

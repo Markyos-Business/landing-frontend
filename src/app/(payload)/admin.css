@@ -1,0 +1,5 @@
+/* The admin's only CSS entry: hand Tailwind the admin config, which holds the
+   website's tokens and the Markyos skin (see tailwind.admin.config.js). No
+   preflight and no utilities are imported, so Payload's UI is untouched
+   except by those rules. */
+@config "../../../tailwind.admin.config.js";

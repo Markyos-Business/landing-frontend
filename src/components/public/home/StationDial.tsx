@@ -99,7 +99,7 @@ export function StationDial({
    * The copy panel sits beside the lit word and has to start past every
    * word, in any language. That distance is a text measurement, which CSS
    * cannot make, so it is made here once and handed over as
-   * `--mk-dial-word`; globals.css does the arithmetic.
+   * `--mk-dial-word`; tailwind/ does the arithmetic.
    *
    * Re-measured when the list resizes — the type is a `clamp()` on the
    * viewport — and again when the webfonts land, because the first
@@ -174,7 +174,7 @@ export function StationDial({
               <Icon name={stop.icon} size={17} style={{ color: BLUE_DEEP, flex: "none" }} />
               {/* `.mk-page-dir`, not `dir="auto"`: "Google Forms أو Typeform"
                   begins with a Latin letter and would otherwise resolve its
-                  own direction and sit on the far edge. See globals.css. */}
+                  own direction and sit on the far edge. See tailwind/. */}
               <span className="mk-page-dir" style={{ color: INK_50 }}>
                 {stop.tool}
               </span>

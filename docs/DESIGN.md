@@ -14,14 +14,14 @@ reference and why.
 > blue-grey shadows, 22–28px radii, pill CTAs, and a blue gradient inside the
 > second clause of each headline. `MARKYOS-DESIGN-SYSTEM.md` still describes
 > a black site and **no longer describes this one** — see the note at the top
-> of `src/app/theme.css`, which now carries the light palette directly instead of
-> mapping onto `src/app/markyos-ds.css`.
+> of `tailwind/tokens.js`, which now carries the light palette directly instead of
+> mapping onto `tailwind/tokens.js`.
 >
 > The homepage sections under `src/components/public/home/` are a *literal trace* of
 > that file and carry its values as inline styles;
 > `src/components/public/home/landing.tsx` holds the ones it repeats. Everything
 > else — the chrome, the blog, every page under `content/pages/` — still
-> reads tokens and turned light from `theme.css` alone.
+> reads tokens and turned light from `tailwind/tokens.js` alone.
 > `scripts/check-design-rules.mjs` exempts `src/components/public/home/` from
 > `raw-hex` and `inline-svg`, with the reasons in its own table; the other
 > seven rules still pass everywhere, and the type floor is still 12px.
@@ -41,7 +41,7 @@ reference and why.
 > drawn as a vertical dial now: the seven stages as display words with one at
 > full ink and the rest ghosted, its tool and its breakage beside it, and a
 > fine tick rail down each edge. `src/components/public/home/StationDial.tsx` and
-> `.mk-dial` in globals.css.
+> `.mk-dial` in tailwind/.
 >
 > The table's own note argued it had to be a table, and the part of that
 > argument which is true is kept. What the section needs is the order and the
@@ -84,7 +84,7 @@ reference and why.
 > the filled pill under the pointer and the edge it is nearest lights up, both
 > driven by one spring, so the light lags the cursor and overshoots when it
 > stops. `src/components/ui/primitives/Spark.tsx` is the mechanism and `.mk-spark*` in
-> `globals.css` is what it paints. It wraps the solid variant only — in
+> `tailwind/` is what it paints. It wraps the solid variant only — in
 > `src/components/ui/buttons/Button.tsx`, in `landing.tsx`'s `Cta`, and on the header and
 > phone-menu "Start free" — because it marks the one ask per section, and an
 > effect that marks everything marks nothing.
@@ -147,7 +147,7 @@ reference and why.
 > reference's 121px light is 60% of its button and writing that as a
 > measurement washed the header's 92px pill corner to corner. The header still
 > takes 58% of the shared value on top of that — see `.mk-btn-sm` in
-> globals.css. Lowest measured ratio across 58 CTA labels: 5.75:1.
+> tailwind/. Lowest measured ratio across 58 CTA labels: 5.75:1.
 >
 > On the white pill inside `.mk-deep` there is no interior light at all, for
 > the same reason pointing the other way: there, the label is near-black and
@@ -184,7 +184,7 @@ reference and why.
 > AA for the 17px lead beneath it — so the ground behind the copy stops at
 > #0040E0 (7.5:1) and deepens to #0A1F8C (13.2:1) at the reading edge, and the
 > brighter blues appear only in the light on the far side where no copy goes.
-> The figures are in `--mk-deep-near`'s note in `theme.css`. Measured on the
+> The figures are in `--mk-deep-near`'s note in `tailwind/tokens.js`. Measured on the
 > rendered pixels rather than the declarations, because a gradient under two
 > blurred shapes has no computed background colour to check: the worst ground
 > any text meets is rgb(34,73,193) and the worst ratio on the page is 6.07:1.
@@ -264,7 +264,7 @@ reference and why.
 > eyebrows, so the only new string is the switch's accessible name.
 
 > **The rest of the site followed the homepage on 4 Nov 2026.** The light
-> rebuild turned every page light from `theme.css`, but only the homepage was
+> rebuild turned every page light from `tailwind/tokens.js`, but only the homepage was
 > given the design's *language*; the thirty-one data-driven pages were a flat
 > #F7F8FA field from the breadcrumb to the footer, separated by a 1px rule with
 > about 200px of nothing above it. Seven shared changes brought them across, all
@@ -353,17 +353,17 @@ reference and why.
 > right, and the defect only exists after the cascade and the bidi algorithm
 > have both run.
 >
-> Two rules under `.mk-bidi` in `src/app/globals.css` fix it, and
+> Two rules under `.mk-bidi` in `tailwind/` fix it, and
 > `npm run check:bidi` keeps it fixed.
 
 > **The admin was branded on 24 Oct 2026.** `/admin` shipped in Payload's
 > default light theme. It is now dark and on the Markyos palette:
-> `src/app/(payload)/custom.css` re-points Payload's ~30 theme variables the way
-> `src/app/theme.css` re-points the site's own, so no Payload component had to
+> `tailwind/admin.js` re-points Payload's ~30 theme variables the way
+> `tailwind/tokens.js` re-points the site's own, so no Payload component had to
 > be restyled and their next release cannot break a selector we wrote.
 >
 > The admin follows the **platform app's** palette, not the website's. It
-> maps Payload's variables onto `src/app/tokens.generated.css` — the file
+> maps Payload's variables onto `tailwind/tokens.generated.js` — the file
 > `sync:tokens` copies out of the platform and `check:tokens` guards — so
 > the skin holds no colour literals at all and tracks the platform when it
 > moves. That matters because the two sit side by side in one person's day:
@@ -393,9 +393,9 @@ Four files, and nothing else should be inventing values.
 | :--- | :--- |
 | `MARKYOS-DESIGN-SYSTEM.md` | **The source of truth for every visual value** — colour, type, weight, size, radius, border, light, motion, icons. Exported from the Markyos Design System project. |
 | `src/app/tokens.generated.css` | The **product's** tokens, copied from the platform app. Never edited here; `npm run check:tokens` fails if it drifts. |
-| `src/app/markyos-ds.css` | The design system's marketing identity layer (`--mk-*`). Values come from the file above and are not decided here. |
-| `src/app/theme.css` | The **marketing site's** own token names, re-pointed onto `--mk-*`. A mapping, not a palette — which is what lets the whole site change look from one file. |
-| `src/app/globals.css` | The vocabulary built from those tokens — `.mk-card`, `.mk-btn`, `.mk-display`, the grid and the light. |
+| `tailwind/tokens.js` | The design system's marketing identity layer (`--mk-*`). Values come from the file above and are not decided here. |
+| `tailwind/tokens.js` | The **marketing site's** own token names, re-pointed onto `--mk-*`. A mapping, not a palette — which is what lets the whole site change look from one file. |
+| `tailwind/` | The vocabulary built from those tokens — `.mk-card`, `.mk-btn`, `.mk-display`, the grid and the light. |
 
 **What the reference PNGs still decide:** layout, section order, composition
 and content structure. They no longer decide colour, type or shape — the
@@ -405,7 +405,7 @@ design system does, and where the two disagree the design system wins.
 section needs a card two pixels rounder, that is a design question, not a
 licence to write a one-off class.
 
-Everything in `globals.css` is inside a cascade layer (`base` or `components`),
+Everything in `tailwind/` is inside a cascade layer (`base` or `components`),
 and that is load-bearing rather than tidy — an unlayered rule beats every
 Tailwind utility regardless of specificity. There is a note in the file about
 the morning that cost.
@@ -624,7 +624,7 @@ SVGs in `public/brand/`.
 Two things did change with it. Display is **500 at -0.04em**, not 600 at
 -0.035em: no weight above 500 appears anywhere on this site. And Arabic is
 **Thmanya Sans**, not IBM Plex Sans Arabic — Plex stays loaded only as the
-last-resort fallback in the stacks, because `tokens.generated.css` still
+last-resort fallback in the stacks, because `tailwind/tokens.generated.js` still
 references it.
 
 ### 3. The hero's brand-line pill has no arrow
@@ -701,7 +701,7 @@ scroll and to the navigation, and never to itself.
 **Sections reveal as they arrive.** `.mk-rise` reveals the element it is on;
 `.mk-seq` reveals its direct children, staggered three deep. Twenty pixels of
 rise and a fade, nothing else: no scale, no blur, no lift on hover, nothing
-that moves a control you are aiming at. The vocabulary is in `src/app/globals.css`
+that moves a control you are aiming at. The vocabulary is in `tailwind/`
 and the classes are placed by hand, section by section, because what a section
 *is* already names the right units — a heading block, a picture, a grid, the
 row that closes it.
@@ -1121,7 +1121,7 @@ headline, which is the wider of the two.
 **Where this departs from the deck, and why.**
 
 §3.2 specifies a near-black canvas and a translucent dark window, copied from
-the reference. The site has shipped light since 3 November and `theme.css`
+the reference. The site has shipped light since 3 November and `tailwind/tokens.js`
 keeps exactly one dark object on it, so the page has something to close on. A
 dark hero would make two and the page would open and close on the same note.
 The composition is the deck's; the ground is the site's.
@@ -1343,7 +1343,7 @@ header's real bottom edge rather than naming a number, so the panel still
 opens in the right place with the bar gone.
 
 **Every arrow.** `Arrow` is gone from `Icon.tsx`, `.mk-arrow` from
-`globals.css`, the `arrow` prop from `Button`, the glyph from `Cta`, and
+`tailwind/`, the `arrow` prop from `Button`, the glyph from `Cta`, and
 `ArrowLink` is now `TextLink`. A label that says where it goes does not need
 a picture saying "forward", and on an RTL page the flip was one more thing
 that could be wrong — `[dir="rtl"] .mk-arrow` matched on *any* RTL ancestor,
@@ -1725,7 +1725,7 @@ category and the reading time beside it were flush. Measured: the cell ran
 911..1170 and the `<time>` inside it ran 911..998 — hard against the *end*.
 
 It is the isolate trap, in the one shape nothing had looked for. `time` is in
-the plaintext list in `globals.css`, so a `<dd>` whose only child is a
+the plaintext list in `tailwind/`, so a `<dd>` whose only child is a
 `<time>` scans for a strong character, finds a single object replacement
 character, and UAX9 P3 falls back to left-to-right; `text-align: start` then
 resolves to the left. The Arabic inside still reads correctly, which is what
@@ -1779,7 +1779,7 @@ one piece of arithmetic a pricing page is for.
 
 `PlanCard.annual` is `{ price, note }` now rather than prose, every card
 renders both amounts, and the switch sets one `data-billing` attribute on the
-wrapper around the head and the grid. Two rules in `globals.css` do the rest.
+wrapper around the head and the grid. Two rules in `tailwind/` do the rest.
 Nothing re-renders, no card leaves the server, both sets of figures are in
 the HTML for the crawler, and without JavaScript the page is the monthly
 page. The same trade AudienceTabs makes, for the same reason.
@@ -1936,7 +1936,7 @@ the field defaults to `start`.
 
 ### Two things found on the way
 
-**The brackets put a NUL byte in `globals.css`.** `content: "[\\00a0"` is
+**The brackets put a NUL byte in `tailwind/`.** `content: "[\\00a0"` is
 valid CSS — four hex digits and a terminator — but the four-digit form went
 through a tool that read `\\0` as the octal escape it is in most other
 languages, and `grep` started calling the stylesheet a binary file. The gap
@@ -2096,7 +2096,7 @@ reader to choose between, in order.
 
 ### A NUL byte, twice, and now a rule
 
-The bracket rule's non-breaking space put a literal NUL in `src/app/globals.css`
+The bracket rule's non-breaking space put a literal NUL in `tailwind/`
 on 7 Nov. It was fixed, and the comment written to explain the fix put a
 second one in — in the sentence describing the trap. A CSS unicode escape
 written with four hex digits reads as an octal escape for zero in most other
@@ -2393,7 +2393,7 @@ exists.
 
 ### It was the platform's dark panel, and the site stopped being dark
 
-`src/app/(payload)/custom.css` imported `src/app/tokens.generated.css` and pointed
+`tailwind/admin.js` imported `tailwind/tokens.generated.js` and pointed
 Payload's thirty theme variables at the platform app's dark palette — #060607
 ground, #16161a cards, a white-opacity text ramp — with a comment arguing the
 case: the admin is product UI, it sits beside the platform in somebody's day,
@@ -2404,13 +2404,13 @@ landing design on 3 Nov, and the relationship inverted: the admin is the
 surface a person reaches *from* markyos.com, usually in the next tab, and it
 was the near-black panel next to a paper site.
 
-So it follows the site now, and `src/app/theme.css` is imported directly — the
+So it follows the site now, and `tailwind/tokens.js` is imported directly — the
 same file the chrome, the blog and every page under `content/pages/` read.
 There are no literals in the skin and no second palette to keep in step.
 
-`tokens.generated.css` is deliberately **not** imported any more, and not only
+`tailwind/tokens.generated.js` is deliberately **not** imported any more, and not only
 because the admin stopped using it. It carries both platform palettes, and its
-`:root[data-theme="light"]` block is specificity (0,1,1) against `theme.css`'s
+`:root[data-theme="light"]` block is specificity (0,1,1) against `tailwind/tokens.js`'s
 plain `:root` — the moment Payload wrote `data-theme="light"` onto `<html>`,
 the admin would have silently rendered the *platform's* light theme (#eeeef2
 ground, #0062b8 accent) rather than the website's. The skin states its palette
@@ -2456,7 +2456,7 @@ grey was.
 ### Five fixes
 
 **1. Every Arabic string in the panel was Arial.** The admin is a separate
-root layout, so `src/app/fonts.ts` never reached it and `custom.css` named
+root layout, so `src/app/fonts.ts` never reached it and `tailwind/admin.js` named
 "Thmanya Sans" as if it were an installed family. `cms/views/AdminFonts.tsx`
 declares the three font variables through `admin.components.providers` —
 Payload's own extension point, since the generated layout carries a
@@ -2471,7 +2471,7 @@ Arial on Windows — which carries Arabic. Inter carries none, so the stack
 found Arabic one position before Thmanya. Measured with
 `CSS.getPlatformFontsForNode`, not read off the stack:
 **`Arial x23, Inter x4`** on a post title whose computed `font-family` named
-Thmanya the whole time. It is the same defect `globals.css` documents at
+Thmanya the whole time. It is the same defect `tailwind/` documents at
 `:lang(ar)`, and the admin was the one surface that sweep could not reach,
 because nothing imports it.
 
@@ -2481,7 +2481,7 @@ split off from its fallback, and the panel's stack leads with it. After:
 
 **2. The dashboard's type was 19% small, and under the floor.** Payload sets
 `html { font-size: 13px }` — 12px under its small breakpoint — so a rem in the
-admin is not the rem `theme.css` is written against. `--fs-eyebrow` (0.8125rem)
+admin is not the rem `tailwind/tokens.js` is written against. `--fs-eyebrow` (0.8125rem)
 resolved to **10.56px**, below the 12px floor §1.6 sets, and every size on the
 screen was short. The view's scale is stated in pixels now. Nothing is lost by
 it: the panel's root is a hard-coded pixel value, so rem in the admin already
@@ -2529,7 +2529,7 @@ It scans `cms` too: 1026 file reads, up from 851.
 Two things surfaced immediately, and one of them is about the checker rather
 than the code. `AdminFonts.tsx` names `--font-plex-arabic`, which is right —
 it is where the chain is declared for this layout, the same carve-out
-`src/app/theme.css` has — so it is an exemption with that reason. The other was a
+`tailwind/tokens.js` has — so it is an exemption with that reason. The other was a
 false positive of the documented kind: the script strips comments before
 matching, but a CSS comment inside a template literal is a *string* to a
 `.tsx` parser, so the physical-properties rule matched the prose in a comment
@@ -2904,7 +2904,7 @@ Rendering them needed a converter. Payload's default writes
 mid grey chosen for neither of the site's grounds, and inline styles that beat
 anything `.mk-prose` says. `src/components/ui/composites/RichText.tsx` maps the three
 table nodes itself, with no style attribute and a `scope` on the header cells,
-and globals.css styles them in hairlines like every other table on the site.
+and tailwind/ styles them in hairlines like every other table on the site.
 The wrapper scrolls, because a three-column comparison is the one thing in an
 article that genuinely cannot stack on a phone.
 
@@ -3200,7 +3200,7 @@ the parent sees one object replacement character and no text, so `plaintext`
 has nothing to resolve from and falls back to LTR forever. Adding `.mk-bidi`
 to the paragraph does not help, for the same reason.
 
-`.mk-atomic` is the repo's answer and was already in `globals.css` with the
+`.mk-atomic` is the repo's answer and was already in `tailwind/` with the
 explanation. Wrapping the link in `<span className="mk-atomic">` makes the
 paragraph use `unicode-bidi: isolate` and take the page's direction. This is
 the second time this trap has cost a build; it is worth reading the comment

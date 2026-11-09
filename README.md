@@ -104,11 +104,11 @@ src/proxy.ts           Arabic at the root, /en prefixed (Next 16: middleware →
 
 ## Three things to know before editing
 
-**Brand values are never authored here.** `src/app/tokens.generated.css` is
+**Brand values are never authored here.** `tailwind/tokens.generated.js` is
 generated from the platform app by `npm run sync:tokens`, and
 `npm run check:tokens` fails the build if it is stale. If you need a colour, a
 radius or a type size that does not exist, add it to the platform's
-`globals.css` and sync. A token only the marketing site knows about is how two
+`tailwind/` and sync. A token only the marketing site knows about is how two
 deploys stop matching — which is the exact problem this product sells against.
 
 **Logical CSS properties only.** `padding-inline`, `margin-inline-start`,

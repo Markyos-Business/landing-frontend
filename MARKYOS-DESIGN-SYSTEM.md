@@ -45,6 +45,14 @@
 > catches up; until then `docs/DESIGN.md` is the accurate description of
 > what ships.
 
+> **9 Nov 2026 — the site has no stylesheets any more.** Like markyos-frontend,
+> every value and rule lives in `tailwind.config.js` and `tailwind/*.js`
+> (tokens in `tailwind/tokens.js` and `tailwind/tokens.generated.js`, element
+> defaults in `tailwind/base.js`, the `.mk-*` vocabulary in
+> `tailwind/components/`), registered with `addBase`. Where the sections below
+> say to edit a `.css` file, edit the matching module instead; the values and
+> rules are unchanged.
+
 ## 0. Precedence
 
 1. **This file** decides every visual value: colour, type, weight, size, radius, border, light, motion, icons.

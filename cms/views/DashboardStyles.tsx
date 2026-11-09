@@ -13,8 +13,8 @@ import React from "react";
  * Every value here was a Payload theme variable — `--theme-elevation-50` for
  * a card, `--theme-success-500` for the blue. That was right while the admin
  * borrowed Payload's palette, and it is one level of indirection too many
- * now that `src/app/(payload)/custom.css` points those variables at
- * `src/app/theme.css` anyway. The dashboard is a Markyos screen, not a Payload
+ * now that `tailwind/admin.js` points those variables at
+ * `tailwind/tokens.js` anyway. The dashboard is a Markyos screen, not a Payload
  * one, so it reads the site's own tokens directly: `--surface-0`,
  * `--text-muted`, `--lift-card`, `--radius-card`. Nothing in here resolves
  * through a CMS vocabulary to arrive at a brand value.
@@ -33,7 +33,7 @@ import React from "react";
  * mirrors the whole panel when it does.
  *
  * The class prefix is `mkd-`, not the site's `mk-`. `.mk-card` and `.mk-note`
- * already mean something specific in `src/app/globals.css`; the admin is a
+ * already mean something specific in `tailwind/`; the admin is a
  * separate root layout so they never meet at runtime, but two different
  * definitions of `.mk-card` in one repository is a trap to walk into later.
  */
@@ -79,7 +79,7 @@ export function DashboardStyles() {
  * The site's headlines end in the brand blue, and this is the admin's one
  * headline. --mk-blue-ink rather than --accent-edge: #0099FF is 2.8:1 on
  * this ground and is defined as light, never as ink — the same reason
- * theme.css carries a separate ink blue at all.
+ * tailwind/tokens.js carries a separate ink blue at all.
  */
 .mkd-title-accent { color: var(--mk-blue-ink); }
 
@@ -185,7 +185,7 @@ export function DashboardStyles() {
  * The type scale, in pixels, and why it is not in rem.
  *
  * Payload sets html { font-size: 13px } — 12px under its small breakpoint —
- * so a rem here is not the rem src/app/theme.css is written against. Reading
+ * so a rem here is not the rem tailwind/tokens.js is written against. Reading
  * --fs-eyebrow (0.8125rem) through this root produced **10.56px**, under the
  * 12px floor §1.6 sets, and every size on the screen landed 19% small.
  *

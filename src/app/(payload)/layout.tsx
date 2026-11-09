@@ -18,7 +18,7 @@ import "@payloadcms/next/css";
  * Payload's theme variables and has to win. This import is the documented
  * place to add admin CSS, and is the only hand-edit in this file.
  */
-import "./custom.css";
+import "./admin.css";
 
 type Args = {
   children: React.ReactNode;
