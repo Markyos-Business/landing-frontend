@@ -138,7 +138,7 @@
  * system's §13 forbids and its own header marks as superseded for the
  * website; the part of that rule that was never about taste still holds, so
  * this is only ever on things nobody is reading — light pools, the closing
- * panel's two lens shapes, the art inside a cropped cell.
+ * panel's two lens shapes, the problem section's figures.
  */
 @keyframes mk-drift {
   from {
@@ -584,8 +584,8 @@
      * `.mk-drift` is the one class here that is not an arrival — see the
      * keyframe's note. It is applied in CSS rather than at call sites,
      * because its whole constraint is *what* it may be on: light pools, the
-     * closing panel's two lens shapes, and the art inside a cropped cell.
-     * Three selectors, so the rule and the list of things allowed to drift
+     * closing panel's two lens shapes, and the problem section's figures.
+     * Named selectors, so the rule and the list of things allowed to drift
      * are the same line of code and cannot drift apart.
      *
      * ── The inline axis has to survive it ────────────────────────────────
@@ -602,7 +602,6 @@
     .mk-drift,
     .mk-glow,
     .mk-deep-wave,
-    .mk-cell-art > *,
     .mk-pain-art {
       --mk-drift-y: 1.25rem;
       animation: mk-drift linear backwards;
@@ -637,19 +636,6 @@
     }
 
     /*
-     * Art inside a cropped cell, moving within its own frame.
-     *
-     * This is the only drift a reader looks straight at, and the only one
-     * where the frame is still: `.mk-cell-art` clips, the art inside it
-     * moves, so the window stays put and what is behind it does not. The
-     * art is already sized to overflow the cell (see `--mk-cell-art-w`), so
-     * there is nothing for 20px of travel to expose.
-     */
-    .mk-cell-art > * {
-      --mk-drift-y: 1.25rem;
-    }
-
-    /*
      * The three decay illustrations on the problem section.
      *
      * These were the last pictures on the homepage that never moved, and
@@ -661,8 +647,7 @@
      * They qualify under the constraint the keyframe sets — nobody reads
      * these, they are figures with their own captions underneath, and each
      * sits inside a clipped 200px frame whose dotted ground stays put while
-     * the art moves within it, which is the same arrangement as
-     * `.mk-cell-art`. Named here rather than given the generic `.mk-drift` at
+     * the art moves within it. Named here rather than given the generic `.mk-drift` at
      * the call site so that this rule stays the list of what may drift.
      *
      * The third one goes the other way, so three cards in a row are not one
@@ -789,7 +774,6 @@
   .mk-drift,
   .mk-glow,
   .mk-deep-wave,
-  .mk-cell-art > *,
   .mk-draw,
   .mk-hero-chip,
   .mk-hero-cover,

@@ -436,21 +436,6 @@
 }
 
 /*
- * The eyebrow's rule.
- *
- * The reference draws a dash before the overline, which is a typographic
- * device and not an icon — a 28px line, not an em dash typed into the copy,
- * so it cannot end up read aloud or stranded at a line break.
- */
-.mk-deep-rule {
-  flex: none;
-  inline-size: 1.75rem;
-  block-size: 1px;
-  background: var(--mk-on-deep-soft);
-  opacity: 0.55;
-}
-
-/*
  * The CTA inside the panel: the inverse of the page's primary.
  *
  * `.mk-solid` is near-black on paper; on this ground that is the one fill

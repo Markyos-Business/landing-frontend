@@ -60,93 +60,6 @@
   }
 }
 
-/* The large feature card: same surface, rounder. */
-.mk-feature {
-  border-radius: var(--mk-r-feature);
-}
-
-/*
- * Bento.
- *
- * A grid of parallel cards that should read as one object rather than as
- * several. 1px gaps over a 10% white ground draw every divider at once, so
- * there are no doubled edges where two cards meet and no gap for the page to
- * show through.
- */
-.mk-bento {
-  display: grid;
-  gap: 1px;
-  background: var(--hairline-strong);
-  border-radius: var(--mk-r-feature);
-  /* `clip` and not `hidden`, for the reason given on `.mk-card`. */
-  overflow: clip;
-  box-shadow: 0 0 0 1px var(--hairline-strong);
-}
-
-.mk-bento > * {
-  background: var(--surface-1);
-  padding: var(--mk-card-pad);
-}
-
-/*
- * The cell — a bento cell that a picture fills rather than sits inside.
- *
- * This is the reference's grid, and it is the one composition on that site
- * doing real work (UI-UX Design Reference/20, 21). Every cell there holds a
- * fragment of the product at full size, cropped by the cell's own edges,
- * with the cell's name on the floor beneath it: "Performance →", "CMS →",
- * "Localization →". You are not looking at a diagram of the feature, you are
- * looking through a window at the thing itself.
- *
- * What makes it work is the crop. A screenshot scaled down to fit its box
- * reads as a picture of software; the same screenshot at full size with its
- * edges cut off reads as software that continues past the frame. The second
- * is the claim this page is making, so the art is sized to overflow and the
- * cell clips it.
- *
- * The floor is where the fade earns itself. Without one the crop ends on a
- * hard horizontal line a few pixels above the label and the cell reads as
- * two stacked boxes; `--mk-fade-bottom` (§8 — product imagery fades into the
- * canvas rather than sitting in a hard-edged box) dissolves the art into the
- * ground the label stands on, so the cell reads as one surface.
- */
-.mk-bento > .mk-cell {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-}
-
-.mk-cell-art {
-  position: relative;
-  flex: 1;
-  /* `min-block-size: 0` so the art is what gets clipped when the row is
-     short, rather than the label being pushed off the floor. */
-  min-block-size: 0;
-  /* `clip` and not `hidden`, for the reason given on `.mk-card`. */
-  overflow: clip;
-  padding-block-start: var(--mk-card-pad);
-  padding-inline: var(--mk-card-pad);
-  -webkit-mask-image: var(--mk-fade-bottom);
-  mask-image: var(--mk-fade-bottom);
-}
-
-/*
- * Lets a caller oversize the art without it widening the grid column.
- *
- * The width is a variable rather than a class per size because the amount of
- * overflow is the caller's judgement — it depends on what the fragment is and
- * where it should be cut — and because a grid column that a child can widen
- * stops being a grid.
- */
-.mk-cell-art > * {
-  inline-size: var(--mk-cell-art-w, 100%);
-  max-inline-size: none;
-}
-
-.mk-cell-foot {
-  padding: 0 var(--mk-card-pad) var(--mk-card-pad);
-}
-
 /*
  * A panel inside a card.
  *
@@ -221,27 +134,5 @@
   box-shadow:
     0 0 0 1.5px var(--mk-blue),
     0 0 0 6px rgba(0, 153, 255, 0.08);
-}
-
-/* The beam: a vertical lit line framing the hero's product frame. Ends before
-   the bottom third — it is a light source, not a border. */
-.mk-beam {
-  inline-size: 2px;
-  background: var(--mk-blue);
-  box-shadow: var(--mk-beam);
-}
-
-/*
- * The pattern, built from the iconmark.
- *
- * White at 8%, fading out from the edges with a mask so it never ends on a
- * hard line, and never coloured. At most once per page, and never behind body
- * text.
- */
-.mk-pattern {
-  background: url("/brand/markyos-pattern-white.png") center / cover no-repeat;
-  opacity: 0.08;
-  pointer-events: none;
-  mask-image: radial-gradient(closest-side, #000 40%, transparent);
 }
 }

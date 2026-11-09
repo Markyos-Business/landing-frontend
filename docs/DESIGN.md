@@ -510,7 +510,10 @@ tone checker *is* the thing being flagged as needing to be «قهوة نخلة»
 
 > **9 Nov 2026:** `PlatformGrid.tsx` and the other ten unrendered homepage
 > sections were deleted, so the chart described below no longer ships. The
-> note stays as the reasoning to reuse if a chart comes back.
+> note stays as the reasoning to reuse if a chart comes back. The classes
+> nothing rendered after that went too: `.mk-bento`, `.mk-cell`,
+> `.mk-cell-art`, `.mk-cell-foot`, `.mk-feature`, `.mk-beam`, `.mk-pattern`
+> and `.mk-deep-rule`. Mentions of them elsewhere in this file are history.
 
 `components/sections/PlatformGrid.tsx` contains the repo's only `<svg>`
 outside `components/brand/`, which trips the §14 "definition of done" rule.
