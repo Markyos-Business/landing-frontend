@@ -508,6 +508,10 @@ tone checker *is* the thing being flagged as needing to be «قهوة نخلة»
 
 **Two departures worth knowing.**
 
+> **9 Nov 2026:** `PlatformGrid.tsx` and the other ten unrendered homepage
+> sections were deleted, so the chart described below no longer ships. The
+> note stays as the reasoning to reuse if a chart comes back.
+
 `components/sections/PlatformGrid.tsx` contains the repo's only `<svg>`
 outside `components/brand/`, which trips the §14 "definition of done" rule.
 It is a two-series line chart, not an icon or an illustration — §8 sanctions
@@ -557,22 +561,22 @@ solid. There is no logical gradient keyword; two declarations is the fix.
 | :--- | :--- |
 | `00-header.png` | `components/chrome/Header.tsx`, with `Nav.tsx` (the two dropdowns) and `MobileNav.tsx` (the phone menu) |
 | `01-hero.png` | `components/sections/Hero.tsx` + `components/mock/BrandHub.tsx` |
-| `02-proof-strip.png` | `components/sections/ProofStrip.tsx` |
-| `03-product-glimpse.png` | `components/sections/Statement.tsx` (`layout="split"`) + `mock/DraftsPanel.tsx` |
+| `02-proof-strip.png` | — (deleted 9 Nov 2026; in git history) |
+| `03-product-glimpse.png` | `mock/DraftsPanel.tsx` (via the page registry); the section — (deleted 9 Nov 2026; in git history) |
 | `04-problem.png` | `components/sections/Problem.tsx` |
-| `05-the-shift.png` | `components/sections/Statement.tsx` (`layout="center"`) |
+| `05-the-shift.png` | — (deleted 9 Nov 2026; in git history) |
 | `06-choose-path.png` | `components/sections/ChoosePath.tsx` |
-| `07-for-studios.png` | `components/sections/StudioPath.tsx` |
-| `08-handoff-loop.png` | `components/sections/HandoffLoop.tsx` |
-| `09-for-companies.png` | `components/sections/CompanyRun.tsx` + `mock/LeadershipMock.tsx` + `mock/VoiceMock.tsx` |
-| `10-tone-checker.png` | `components/sections/ToneChecker.tsx` + `mock/ToneResult.tsx` |
-| `11-source-of-truth.png` | `components/sections/Pillars.tsx` |
+| `07-for-studios.png` | — (deleted 9 Nov 2026; in git history) |
+| `08-handoff-loop.png` | — (deleted 9 Nov 2026; in git history) |
+| `09-for-companies.png` | `mock/LeadershipMock.tsx` + `mock/VoiceMock.tsx` (via the page registry); the section — (deleted 9 Nov 2026; in git history) |
+| `10-tone-checker.png` | `mock/ToneResult.tsx` (via the page registry); the section — (deleted 9 Nov 2026; in git history) |
+| `11-source-of-truth.png` | — (deleted 9 Nov 2026; in git history) |
 | `12-bilingual.png` | `components/sections/Bilingual.tsx` |
-| `13-ai-drafts.png` | `components/sections/AiRules.tsx` |
+| `13-ai-drafts.png` | — (deleted 9 Nov 2026; in git history) |
 | `14-replace-stack.png` | `components/sections/ReplaceStack.tsx` |
-| `15-roadmap.png` | `components/sections/ComingNext.tsx` |
+| `15-roadmap.png` | — (deleted 9 Nov 2026; in git history) |
 | `16-pricing.png` | `components/sections/PricingTeaser.tsx` |
-| `17-founder-note.png` | `components/sections/FounderNote.tsx` |
+| `17-founder-note.png` | — (deleted 9 Nov 2026; in git history) |
 | `18-faq.png` | `components/sections/Faq.tsx` |
 | `19-final-cta.png` | `components/sections/Hero.tsx` (`variant="final"`) |
 | `20-footer.png` | `components/chrome/Footer.tsx` |

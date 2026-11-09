@@ -38,7 +38,7 @@ import {
  * curve that leaves vertically and arrives vertically.
  *
  * `scripts/check-design-rules.mjs` exempts this file from the `inline-svg`
- * rule on those grounds, alongside the chart in PlatformGrid. §6's rule is
+ * rule on those grounds. §6's rule is
  * against hand-drawn *icons*, and this is a drawn diagram.
  *
  * The whole graphic is aria-hidden. Everything it says is said by the

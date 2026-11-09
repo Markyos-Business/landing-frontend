@@ -106,7 +106,7 @@ export type MockCopy = {
     unansweredLine: string;
   };
 
-  /** The three product fragments in components/sections/StudioPath.tsx */
+  /** The three product fragments of the studio path section (component deleted 9 Nov 2026; copy kept for its future page). */
   studio: {
     findings: { label: string; line: string }[];
     zip: {
@@ -120,7 +120,8 @@ export type MockCopy = {
   };
 
   /*
-   * components/sections/PlatformGrid.tsx — the seven cell fragments.
+   * The platform grid's seven cell fragments (component deleted 9 Nov 2026;
+   * copy kept for its future page).
    *
    * These are interface labels in a picture of the product, so the Arabic is
    * the *product's* Arabic, taken from the platform app's own `arLabel`

@@ -12,8 +12,8 @@ import { Faq } from "@/components/sections/Faq";
 /*
  * The homepage — `Landing Copy/Markyos Landing AR (readable).html`.
  *
- * Fourteen sections, in the design file's order, with the copy from
- * `Landing Copy/markyos_landing_page_copy_ar.md` (v2.0).
+ * Ten sections in copy deck v3 §2's order (see the note in the render
+ * below), with the copy from `Landing Copy/markyos_landing_page_copy_ar.md`.
  *
  * ── What changed from v2, and why ─────────────────────────────────────────
  *
@@ -41,12 +41,12 @@ import { Faq } from "@/components/sections/Faq";
  *   productGlimpse, shift      → /about
  *   studioPath, company        → /solutions/*, summarised by ChoosePath
  *   toneChecker                → /platform, and shown by AiAlongside's panel
- *   pillars                    → /platform, and shown by PlatformGrid
- *   aiRules                    → /platform
+ *   pillars, aiRules           → /platform
  *
- * Every one is still in `content/`, still transcreated, and still counted by
- * `npm run check:locales`. This file decides what the *homepage* renders, not
- * what exists.
+ * Their copy is still in `content/`, still transcreated, and still counted by
+ * `npm run check:locales`. Their homepage section components were deleted on
+ * 9 Nov 2026 because nothing rendered them; they are in git history if a
+ * page needs one back.
  */
 
 export default async function HomePage() {
@@ -66,10 +66,9 @@ export default async function HomePage() {
        * the founder's note — and the FAQ stopped being a section of its own
        * and became the three questions under pricing (§2.9).
        *
-       * Their components and their copy are still in the repo and still
-       * compile. They are not rendered anywhere until Parts B to E of the
-       * deck are built and each one has a page to belong to, which is the
-       * known cost of taking the cut now rather than after.
+       * Their copy is still in the repo; their components were deleted on
+       * 9 Nov 2026 and can be restored from git history when Parts B to E of
+       * the deck give each one a page to belong to.
        *
        * §2.2, the scroll story, is not here yet: it needs seven views of the
        * real product and the repo has five mocks. §3.5 forbids inventing the

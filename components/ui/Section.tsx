@@ -271,63 +271,6 @@ export function SectionHead({
 }
 
 /**
- * The row that closes a section, under the picture.
- *
- * The reference's other half of the header row, and the half this site did
- * not have (UI-UX Design Reference/17, 18). Where a section leads with a
- * product visual, the explanation does not sit above it — it sits beneath,
- * as a short title in white, two or three muted lines under that, and the
- * link out on the far edge of the same row: "Run your CMS with an agent …
- * Start with Agents →".
- *
- * The order is the argument. A paragraph above a screenshot is read as
- * instructions for what you are about to see, and most readers skip it to
- * get to the picture; the same paragraph below is read as the caption for
- * something they have already looked at, and they read it. That is why this
- * exists rather than another `lead` on the heading.
- *
- * It also retires the lone button. Three sections ended with a CTA floating
- * in its own 32px row under the grid, which is where a button goes when
- * nobody decided where it went.
- */
-export function SectionFoot({
-  title,
-  body,
-  action,
-  className = "",
-}: {
-  title?: ReactNode;
-  body?: ReactNode;
-  /** The link or button, on the end edge of the row. */
-  action?: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`mk-rise mt-9 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between sm:gap-10 ${className}`}
-    >
-      <div className="min-w-0 max-w-[38rem]">
-        {title ? (
-          <p className="mk-bidi text-[length:var(--fs-lead)] font-medium text-[var(--text)]">
-            {title}
-          </p>
-        ) : null}
-        {body ? (
-          <p
-            className={`mk-bidi text-[length:var(--fs-body)] leading-[1.6] text-[var(--text-muted)]${
-              title ? " mt-3" : ""
-            }`}
-          >
-            {body}
-          </p>
-        ) : null}
-      </div>
-      {action ? <div className="shrink-0">{action}</div> : null}
-    </div>
-  );
-}
-
-/**
  * The bloom.
  *
  * Purely decorative, so it is aria-hidden and carries no content. The sizing

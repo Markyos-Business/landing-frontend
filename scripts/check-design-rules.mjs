@@ -121,8 +121,8 @@ const EXEMPTIONS = [
   },
   {
     rule: "inline-svg",
-    path: "components/sections/",
-    why: "Three drawn diagrams, none of them icons: the ecosystem funnel (six bezier curves converging on the mark, plus the two fan-outs under it), the handoff loop (a dotted forward path and a lit arc returning over it), and the two-series `<polyline>` chart in the Brand health panel. §6 and §13 forbid hand-drawn *icons* — Line Awesome is the one icon system, and a missing glyph is a question — and §8 sanctions chart fills as light. A curve that leaves one node vertically and arrives at another vertically cannot be built from boxes: a `border-radius` corner is a quarter circle. In each case the geometry is the content, and each graphic is aria-hidden with everything it says also said in the copy beside it.",
+    path: "components/sections/Ecosystem.tsx",
+    why: "A drawn diagram, not an icon: the ecosystem funnel (six bezier curves converging on the mark, plus the two fan-outs under it). §6 and §13 forbid hand-drawn *icons* — Line Awesome is the one icon system, and a missing glyph is a question. A curve that leaves one node vertically and arrives at another vertically cannot be built from boxes: a `border-radius` corner is a quarter circle. The geometry is the content, and the graphic is aria-hidden with everything it says also said in the copy beside it. Narrowed from the whole folder on 9 Nov 2026, when the handoff loop and the platform grid chart — the other two diagrams — were deleted",
   },
 ];
 

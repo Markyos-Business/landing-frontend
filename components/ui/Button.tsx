@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Cta } from "@/content/types";
 import { isAppHandoff, localeHref } from "@/lib/i18n/href";
 import type { Locale } from "@/lib/i18n/locales";
-import { Icon } from "./Icon";
 import { Spark } from "./Spark";
 
 /*
@@ -148,26 +147,5 @@ export function Button({
     </Spark>
   ) : (
     button
-  );
-}
-
-/**
- * The hero's "See how it works for you" — a quiet pill with a downward
- * chevron that scrolls rather than navigates.
- *
- * Separate from Button because the affordance is different: the chevron says
- * "further down this page", where an arrow says "somewhere else".
- */
-export function ScrollCta({ cta, locale }: { cta: Cta; locale: Locale }) {
-  return (
-    <Link
-      href={localeHref(locale, cta.href)}
-      prefetch={isAppHandoff(cta.href) ? false : undefined}
-      /* `mk-atomic`: an inline-flex box, for the reason Button states. */
-      className="mk-atomic mk-btn mk-outline mk-btn-sm"
-    >
-      <span className="mk-bidi">{cta.label}</span>
-      <Icon name="chevron" size={14} className="flex-none" />
-    </Link>
   );
 }

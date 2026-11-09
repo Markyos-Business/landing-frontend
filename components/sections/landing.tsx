@@ -71,7 +71,6 @@ export const TRACK = "#F0F2F6";
 export const RING = "0 0 0 1px rgba(11,11,15,.05)";
 export const RING_6 = "0 0 0 1px rgba(11,11,15,.06)";
 export const LIFT = "0 0 0 1px rgba(11,11,15,.05),0 30px 70px -40px rgba(11,20,60,.28)";
-export const LIFT_BLUE = "0 0 0 1px rgba(11,11,15,.06),0 40px 80px -44px rgba(0,85,255,.4)";
 export const LIFT_CARD = "0 0 0 1px rgba(11,11,15,.06),0 24px 50px -30px rgba(0,85,255,.35)";
 /* The one selected object in a composition: a lit ring and a soft halo. */
 export const SELECTED = "0 0 0 1.5px #0099FF,0 0 0 6px rgba(0,153,255,.08)";
