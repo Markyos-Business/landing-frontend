@@ -4,7 +4,7 @@ import { localeHref } from "@/lib/i18n/href";
 import type { Locale } from "@/lib/i18n/locales";
 import { Logo } from "@/components/brand/Logo";
 import { LangSwitch } from "./LangSwitch";
-import { Nav } from "./Nav";
+import { Nav } from "./nav";
 import { MobileNav } from "./MobileNav";
 import { Spark } from "@/components/ui/Spark";
 

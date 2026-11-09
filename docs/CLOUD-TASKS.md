@@ -62,7 +62,7 @@ stub stylesheet written to silence it would make the check lie.
 ## Task 2 — the navigation is carrying too much
 
 > The header mega menu holds 18 destinations with two-line descriptions, which
-> is more than a visitor can scan. Audit it: read `components/chrome/Nav.tsx`
+> is more than a visitor can scan. Audit it: read `components/chrome/nav/`
 > and the `nav` section of `content/en/index.ts`, list every destination, and
 > work out which are genuinely top-level, which belong one level down, and
 > which are duplicates of each other.
