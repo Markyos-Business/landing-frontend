@@ -1,0 +1,127 @@
+/* The page transition. Imported by app/globals.css, in order. */
+
+@layer components {
+/* ── The page transition's paint ─────────────────────────────────────────────
+ *
+ * `app/[lang]/template.tsx` names the two halves — why it is a template, why
+ * it is keyed on the pathname, and why the motion is on the block axis rather
+ * than the guide's forward/back slide. This is only what they look like.
+ *
+ * ── What was wrong with the crossfade ──────────────────────────────────────
+ *
+ * The first version was a pure crossfade with a 16px lift on the arriving
+ * page, and the complaint it earned was fair: a crossfade between two pages
+ * that share a header, a footer and a background colour is a transition you
+ * have to be told is there. Nothing in it said *which way* the pages went,
+ * and nothing moved far enough to be seen moving — 16px over 420ms is 38px a
+ * second, below the speed at which motion registers as motion rather than as
+ * a page settling.
+ *
+ * What replaces it is a depth push, which is the one direction this site does
+ * have: the page you left recedes — it fades, shrinks 1.5% and blurs — and
+ * the page you asked for arrives from in front of you, 24px low and 1.2%
+ * over size, and resolves. The two halves are now separate keyframes rather
+ * than one run in reverse, because receding and arriving are not the same
+ * move backwards: the leaving page gets smaller and the arriving page gets
+ * *smaller too*, toward its own size, so the pair reads as one surface being
+ * replaced from the front rather than as a card being flipped.
+ *
+ * The timing stays asymmetric, which is the one thing worth keeping from the
+ * guide verbatim: the old page is gone in 150ms and the new one does not
+ * begin to resolve until it has left. Old content that lingers competes with
+ * new content for the same attention. The lift outlasts the fade by 240ms, so
+ * the page is readable well before it has finished arriving.
+ *
+ * ── Why the chrome is not named, although it looks like it should be ──────
+ *
+ * The header, the announcement bar and the footer are rendered by the layout
+ * rather than the template, so they are not in the named group: they fall
+ * into the root snapshot, which crossfades. The obvious tidy-up is to give
+ * each of them a `view-transition-name`, taking it out of root and into a
+ * group whose old and new geometry are identical — a group that does not
+ * animate at all.
+ *
+ * It must not be done to the header, and the reason is already written in
+ * `components/chrome/Header.tsx`: a named element is a containing block for
+ * its absolutely and fixed positioned descendants, which is exactly what
+ * `backdrop-filter` did to that element once before. The phone menu's panel
+ * is `position: fixed` inside the header, and it was last seen collapsed to
+ * nothing because it had been sized against a 56px-tall containing block
+ * instead of the viewport. A `view-transition-name` is the same bug by
+ * another spelling.
+ *
+ * And it buys nothing. The root snapshot holds only the chrome once the page
+ * is named, every page's chrome is identical, and a crossfade between two
+ * identical images is invisible — so naming it would trade a real regression
+ * for an effect nobody could see.
+ *
+ * `--mk-ease` resolves here. `::view-transition` is a child of the document
+ * root in the pseudo-element tree, so inherited properties — custom
+ * properties among them — reach it from `:root`. If that were wrong the
+ * `animation` shorthand would be invalid and no page would animate at all,
+ * which is the version of this mistake that cannot ship quietly.
+ */
+@keyframes mk-page-leave {
+  to {
+    opacity: 0;
+    scale: 0.985;
+    filter: blur(2px);
+  }
+}
+
+@keyframes mk-page-enter {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+  }
+}
+
+@keyframes mk-page-settle {
+  from {
+    translate: 0 1.5rem;
+    scale: 1.012;
+  }
+}
+
+::view-transition-old(.mk-page-out) {
+  animation: 150ms var(--mk-ease) both mk-page-leave;
+}
+
+::view-transition-new(.mk-page-in) {
+  animation:
+    260ms var(--mk-ease) 150ms both mk-page-enter,
+    500ms var(--mk-ease) both mk-page-settle;
+}
+
+/*
+ * A click during a transition still lands.
+ *
+ * The transition overlay sits above the live page and captures pointer
+ * events, so without this the half-second after every navigation is a window
+ * where a click on the page that has already arrived does nothing. Hit-testing
+ * still skips the named participants for the transition's duration, which is
+ * the other half of the reason to keep these short.
+ */
+::view-transition {
+  pointer-events: none;
+}
+
+/*
+ * Reduced motion.
+ *
+ * A page transition is the one piece of motion here that is *not* under the
+ * reader's hand — it runs because they followed a link, not because they
+ * scrolled — and it moves the whole viewport, which the guide names as the
+ * most common trigger for motion sensitivity. So it is removed entirely
+ * rather than softened, and what is left is the browser's own behaviour: the
+ * new page, instantly.
+ */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+}

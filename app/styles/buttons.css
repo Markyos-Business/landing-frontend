@@ -1,0 +1,190 @@
+/* Rules, buttons and pointer states. Imported by app/globals.css, in order. */
+
+@layer components {
+/* ── Rules ───────────────────────────────────────────────────────────────── */
+
+/* The line between sections. Full-bleed, drawn by the section rather than by
+   a card, so it survives a section having no card in it. */
+.mk-rule {
+  border-block-start: 1px solid var(--hairline);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+
+/*
+ * The button.
+ *
+ * 8px radius, not a pill: radius encodes size class in this system, and a
+ * button sits in the 8px class with inputs, tags and nav items.
+ *
+ * 38px tall for a hero or section CTA, 32px inside a card or the header.
+ * Neither clears the 44px that touch guidance asks for, so a coarse pointer
+ * gets the taller target. Keying off the pointer rather than the viewport is
+ * the honest test: it is a finger, not a narrow window, that needs the room.
+ *
+ * Weight 500 — the heaviest weight anywhere on this site.
+ */
+.mk-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  /* The landing design's CTAs are pills at 52px, with 32px in the header. */
+  border-radius: var(--radius-pill);
+  min-block-size: 3.25rem;
+  padding-inline: 1.625rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color var(--mk-dur-fast) var(--mk-ease),
+    color var(--mk-dur-fast) var(--mk-ease);
+}
+
+/*
+ * Hover and press, for every filled variant at once.
+ *
+ * One 35% black scrim over whatever the resting fill is. That is the whole
+ * state model: no lift, no shrink, no nudge, and no variant needing its own
+ * hover colour — which is what kept the white CTA and the grey one in step
+ * when the white one stopped being a gradient.
+ */
+.mk-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.14);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--mk-dur-fast) var(--mk-ease);
+}
+
+.mk-btn:hover::after,
+.mk-btn:active::after {
+  opacity: 1;
+}
+
+/* Inside a card or the header. Same type size — 14px is the UI size and there
+   is nothing below it but meta. */
+.mk-btn-sm {
+  min-block-size: 2.5rem;
+  padding-inline: 1.125rem;
+  font-size: var(--fs-ui);
+}
+
+@media (pointer: coarse) {
+  .mk-btn,
+  .mk-btn-sm {
+    min-block-size: 2.75rem;
+  }
+}
+
+/* ── Pointer states ─────────────────────────────────────────────────────────
+ *
+ * The design system's §1 line 9 allows "one 35% black scrim" on hover and
+ * nothing else — no lift, no nudge, no choreography — and this file used to
+ * carry a comment at exactly this spot saying so, and saying that the arrow
+ * therefore had no hover nudge and needed no reduced-motion block to undo
+ * one. That rule describes the black site; the header of
+ * MARKYOS-DESIGN-SYSTEM.md marks §1, §5 and §13 superseded for the website,
+ * and §5 is the one that had the nudge deleted.
+ *
+ * What replaces it is still narrow. Two rules, both of them *answers* rather
+ * than ornament: a CTA presses, and a card that is a link rises toward the
+ * pointer. (There was a third — a link's arrow leaned the way it pointed —
+ * which went when the arrows did, 6 Nov 2026.) Each is on an element the
+ * reader is already aiming at, which is the one place motion cannot be in the
+ * way — and each is inside `(hover: hover) and (pointer: fine)`, so a
+ * touchscreen, where `:hover` sticks after a tap, gets none of it.
+ *
+ * The travel is gated on `prefers-reduced-motion` and the colour and shadow
+ * are not, which is the split those rules ask for: a state change is
+ * information, and only the movement is the thing somebody may not want.
+ */
+@media (hover: hover) and (pointer: fine) {
+  /*
+   * A button does not move.
+   *
+   * It used to rise 2px toward the pointer and drop back on `:active`, so
+   * the press was the motion. That came off on 6 Nov 2026 at the user's
+   * request, and it puts this file back on §1 line 9 of
+   * MARKYOS-DESIGN-SYSTEM.md, which allows a hover scrim and nothing else:
+   * no lift, no nudge, no choreography. The colour still changes, because a
+   * state change is information — only the movement was decoration, and a
+   * control that moves under the finger reads as unsteady rather than as
+   * responsive.
+   */
+
+  /*
+   * A card that is a link rises toward the pointer.
+   *
+   * `filter: drop-shadow` and not `box-shadow`, for a reason specific to this
+   * site: most of these cards set their lift as an inline `boxShadow`, from
+   * the design file's own values, and an inline style beats any rule in any
+   * layer — so a `box-shadow` hover here would need `!important` to land, on
+   * every card, for ever. `drop-shadow` is a different property, it composites
+   * against the card's real silhouette rather than its box, and it is free to
+   * animate.
+   *
+   * `:focus-within` as well as `:hover`, so arriving by keyboard gets the same
+   * answer. `.mk-reach` is applied at call sites; the two selectors beside it
+   * cover a card or a bento cell that is *itself* an anchor, which is the shape
+   * this treatment is for, so a new one is covered without anybody
+   * remembering this rule exists.
+   */
+  .mk-reach,
+  a.mk-card,
+  .mk-bento > a {
+    transition:
+      translate var(--mk-dur-base) var(--mk-ease),
+      filter var(--mk-dur-base) var(--mk-ease);
+  }
+
+  :where(.mk-reach, a.mk-card, .mk-bento > a):hover,
+  :where(.mk-reach, a.mk-card, .mk-bento > a):focus-within {
+    filter: drop-shadow(0 18px 30px rgba(11, 20, 60, 0.16));
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :where(.mk-reach, a.mk-card, .mk-bento > a):hover,
+    :where(.mk-reach, a.mk-card, .mk-bento > a):focus-within {
+      translate: 0 -3px;
+    }
+  }
+
+  /*
+   * The support centre's article rows, which already answered the pointer
+   * with a fill and now answer it with the same lift as every other card.
+   *
+   * Listed here rather than added to the selectors above because the row
+   * declares a `transition` of its own, further down this file: a shorthand
+   * at equal specificity and a later line wins outright, so being named up
+   * there would have had its background transition quietly delete the
+   * lift's. The lift is declared where that transition is, and this block
+   * states only the hover.
+   *
+   * `.mk-help-row` and *not* `.mk-help-tile`, which sits beside it and looks
+   * identical. The row is an `<a>` — a card-shaped link to an article, which
+   * is exactly what this treatment is for. The tile is a `<button>` that
+   * filters the list in place, and a button on this site does not move: it
+   * takes a fill and nothing else. That is §1 line 9 of
+   * MARKYOS-DESIGN-SYSTEM.md and the 6 Nov instruction, and two controls
+   * looking alike is not a reason to break it.
+   */
+  .mk-help-row:hover,
+  .mk-help-row:focus-within {
+    filter: drop-shadow(0 14px 22px rgba(11, 20, 60, 0.12));
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mk-help-row:hover,
+    .mk-help-row:focus-within {
+      translate: 0 -2px;
+    }
+  }
+}
+}

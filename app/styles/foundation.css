@@ -1,0 +1,175 @@
+/* Tap targets, the funnel, the door pair and the page-level custom properties. Imported by app/globals.css, in order. */
+
+@layer components {
+/*
+ * A touch-sized hit area for a standalone inline link.
+ *
+ * §10 asks for 44px on a coarse pointer, and `.mk-btn` already does it. An
+ * inline text link cannot: its box is its line box, which at 15px is about
+ * 24px tall. A phone sweep found 34 controls under 44px — every "read more"
+ * arrow link on the page among them.
+ *
+ * So the *text* keeps its size and an invisible ::after carries the hit area,
+ * centred on the link and 44px tall. Nothing moves, and the layout is
+ * identical at every width.
+ *
+ * Only for links that stand alone. In a dense list — the footer's columns,
+ * whose links sit on a 33px pitch — a 44px target would overlap its
+ * neighbours and a tap near the boundary would follow the wrong link, which
+ * is worse than a small target. Those get real padding instead; see
+ * `components/chrome/Footer.tsx`.
+ *
+ * ── Two sizes, because there are two requirements ────────────────────────
+ *
+ * 44px is §10's, and AAA's, and it is about fingers — so it is behind a coarse
+ * pointer. 24px is WCAG 2.5.8 at AA, and that one is not about fingers: it
+ * applies to a mouse as well, and a 20px link with a neighbour 12px away fails
+ * it on a desktop. A sweep of the thirty-one data-driven pages found about
+ * fifty-five of them — every breadcrumb trail and every "see the plans" link on
+ * the site — and none of it showed up in the homepage audit, because the
+ * homepage's own arrow links are 24px line boxes already.
+ *
+ * So the base rule grows the box to 24px at every pointer and the coarse rule
+ * takes it to 44px. The 6px of inline bleed is the same at both: it is there so
+ * a tap just past the last glyph still lands, and it is well inside the 12px
+ * gap the tightest row of these links uses.
+ */
+.mk-tap {
+  position: relative;
+}
+
+.mk-tap::after {
+  content: "";
+  position: absolute;
+  inset-inline: -0.375rem;
+  top: 50%;
+  block-size: 1.5rem;
+  translate: 0 -50%;
+}
+
+@media (pointer: coarse) {
+  .mk-tap::after {
+    block-size: 2.75rem;
+  }
+}
+
+/*
+ * The ecosystem funnel, at two sizes.
+ *
+ * The arc is an absolutely-positioned composition in a 1000-unit space: six
+ * tiles placed at 8%–92% with their lines drawn to match. Below about 640px
+ * the tiles are wider than the gaps between them, so they overlap each other
+ * and the outermost two are clipped by the section — the diagram stops being
+ * a diagram and becomes a pile.
+ *
+ * So the arc is desktop-and-tablet only, and a phone gets the same six tools
+ * as a wrapped chip row. Nothing is lost: the tools are the content, the arc
+ * is how they are arranged, and an arrangement that does not fit is not worth
+ * showing badly.
+ */
+.mk-funnel-wide {
+  display: none;
+}
+
+.mk-funnel-narrow {
+  display: flex;
+}
+
+@media (min-width: 40rem) {
+  .mk-funnel-wide {
+    display: block;
+  }
+
+  .mk-funnel-narrow {
+    display: none;
+  }
+}
+
+/*
+ * The hero's two doors.
+ *
+ * `inline-grid` with `1fr` auto-columns: under an intrinsic width constraint
+ * every flexible track resolves to the *largest* track's max-content size, so
+ * the pair shrink-wraps to the wider label and both pills come out the same
+ * width. Two `inline-flex` pills side by side cannot do that — each sizes to
+ * its own text — and the page's two audiences carry equal weight by design, so
+ * a 32px difference between them is a claim nobody meant to make.
+ *
+ * Below 30rem they stack and fill the gutter: side by side at that width each
+ * pill is about 150px, which is narrower than its own Arabic label wants.
+ */
+.mk-doors {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 29.99rem) {
+  .mk-doors {
+    display: grid;
+    grid-auto-flow: row;
+    inline-size: 100%;
+    max-inline-size: 22rem;
+  }
+}
+
+/*
+ * How far a segmented control's knob travels to reach its second position.
+ *
+ * `transform: translateX()` is physical — positive is always rightwards — but
+ * the knob is placed with `inset-inline-start`, so "the other half" is
+ * rightwards in English and leftwards in Arabic. One token, flipped once
+ * here, keeps every toggle on the page from having to know which locale it
+ * is in. (`translate` has no logical axis; this is the whole workaround.)
+ */
+:root {
+  --mk-knob: 100%;
+  /*
+   * +1 in LTR, -1 in RTL. Multiply any physical `translateX()` by it when the
+   * element is anchored with a *logical* inset, so the two agree.
+   *
+   * This pairing has now caused three bugs on this page: the pricing toggle's
+   * knob, the handoff loop's three stations, and the ecosystem funnel's tiles,
+   * which sat a full tile-width off the mark and were clipped at every
+   * viewport. `inset-inline-start` flips with the locale and `translate` never
+   * does, and there is no logical translate in CSS — so this token is the
+   * whole workaround, in one place.
+   */
+  --mk-dir: 1;
+
+  /*
+   * The hero headline's leading, which is the one place the two scripts
+   * cannot share a number.
+   *
+   * `Display` sets this inline, which is why `[dir="rtl"] :where(h1,h2,h3)`
+   * further down could never correct it — an inline style beats a
+   * stylesheet. So the value itself has to know the direction.
+   *
+   * 1.22 is right for Inter at 76px and wrong for Thmanya Sans, whose
+   * descenders drop far enough that the two hero lines nearly touched. 1.38
+   * is the design system's 1.3 for Arabic display with room for the tails
+   * of و, ش and ي at the hero's size.
+   */
+  --mk-lh-hero: 1.22;
+}
+
+[dir="rtl"] {
+  --mk-knob: -100%;
+  --mk-dir: -1;
+  --mk-lh-hero: 1.38;
+}
+
+/*
+ * The ecosystem diagram's travelling pulses.
+ *
+ * The only animation on the site. Hidden rather than paused for a reader who
+ * has asked for reduced motion: the static lines underneath carry the same
+ * diagram, so hiding the moving layer leaves the picture complete.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .mk-pulse {
+    display: none;
+  }
+}
+}

@@ -1,0 +1,762 @@
+/* Editorial: the blog, the guides and the help centre. Imported by app/globals.css, in order. */
+
+@layer components {
+/* ── Editorial: the blog, the guides and the help centre ─────────────────
+ *
+ * The three indexes and the article template. Written 6 Nov 2026 against
+ * three references the brief supplied — a magazine index, an article page
+ * and a support centre — adapted to this site's ground.
+ *
+ * ── Covers, with no photographs ──────────────────────────────────────────
+ *
+ * All three references are photographic and this site has no imagery: the
+ * content model's `heroImage` is optional and nothing published sets one. So
+ * a cover is typeset rather than shot — the piece's own category, large, on
+ * one of four grounds. Two of the four are dark and two are paper, which is
+ * what keeps an index of twelve from reading as one long blue rectangle; all
+ * four are mixed from the site's single blue and its ink, so the variety
+ * costs no new hue. `Cover` in editorial.tsx renders a real picture instead
+ * the day a piece has one.
+ */
+
+.mk-cover {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: clip;
+  isolation: isolate;
+}
+
+.mk-cover[data-tone="0"] {
+  background: linear-gradient(142deg, #1b8cff 0%, #0b3fd0 55%, #0a1a46 100%);
+  --mk-cover-ink: #ffffff;
+}
+
+.mk-cover[data-tone="1"] {
+  background: linear-gradient(142deg, #eef3fc 0%, #e2ebfa 60%, #dbe6f7 100%);
+  --mk-cover-ink: #0b3fd0;
+}
+
+.mk-cover[data-tone="2"] {
+  background: linear-gradient(152deg, #0b0b12 0%, #141c3c 58%, #1d3a86 100%);
+  --mk-cover-ink: #ffffff;
+}
+
+.mk-cover[data-tone="3"] {
+  background: linear-gradient(118deg, #dce9ff 0%, #f2f7ff 52%, #e6edfb 100%);
+  --mk-cover-ink: #122a66;
+}
+
+/*
+ * The category, as the cover's one word.
+ *
+ * Centred on a card, where it is the whole picture; pushed to the top start
+ * corner at feature size, where the headline is overlaid at the bottom and
+ * the word has to read as a section marker rather than compete with it.
+ */
+/*
+ * Full width with `text-align`, never a shrink-wrapped box centred by the
+ * grid. The two look identical and only one of them passes `check:bidi`: a
+ * centred *box* starts 88px in from the start edge, which is exactly the
+ * shape of Arabic laid out left-to-right, and the check cannot tell the
+ * difference. A centred *line* inside a full-width block starts at zero.
+ */
+.mk-cover-word {
+  inline-size: 100%;
+  padding-inline: 1.25rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--mk-cover-ink);
+}
+
+.mk-cover[data-size="card"] .mk-cover-word {
+  font-size: clamp(19px, 2.2vw, 26px);
+}
+
+.mk-cover[data-size="feature"] .mk-cover-word {
+  align-self: start;
+  padding: clamp(18px, 2.4vw, 28px);
+  font-size: clamp(22px, 2.6vw, 34px);
+  text-align: start;
+  opacity: 0.85;
+}
+
+.mk-cover-mark {
+  position: absolute;
+  inset-block-end: 12px;
+  inset-inline-end: 14px;
+  display: block;
+  color: var(--mk-cover-ink);
+  opacity: 0.8;
+}
+
+.mk-cover[data-size="thumb"] .mk-cover-mark {
+  position: static;
+  opacity: 0.9;
+}
+
+/* The 64px square a cover sits in beside a title in the "latest" list. */
+.mk-cover-frame {
+  display: block;
+  overflow: clip;
+  border-radius: var(--mk-r-button);
+}
+
+/*
+ * The glyph tile above a directory card's title.
+ *
+ * Same object as the help centre's category tile, because it is doing the
+ * same job one level up: /resources lists six places to go and /help lists
+ * eight, and a reader crossing from one to the other should not have to
+ * learn a second shape for "a destination".
+ */
+.mk-card-icon {
+  display: grid;
+  place-items: center;
+  align-self: start;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  margin-block-end: 1rem;
+  border-radius: var(--mk-r-button);
+  background: var(--accent-soft);
+  color: var(--mk-blue-deep);
+  transition:
+    background-color var(--mk-dur-fast) var(--mk-ease),
+    color var(--mk-dur-fast) var(--mk-ease),
+    box-shadow var(--mk-dur-fast) var(--mk-ease);
+}
+
+/*
+ * The tile lights when the card it belongs to is reached for.
+ *
+ * At rest it stays the §6 recipe — a glyph on its hue at ~14% — because that
+ * is what the system says an icon tile is, and nine of them down a page
+ * should not each be shouting. Lit on hover it becomes the §10 selected
+ * object, the same inversion the explorer's chosen tab uses, so the two
+ * places on this site where something is *picked* answer the same way.
+ *
+ * Only `.mk-reach` and `a.mk-card`, which is to say only the cards that lead
+ * somewhere: lighting a tile on a card that cannot be pressed promises
+ * something that does not happen. Only on a fine pointer, for the same
+ * reason the lift above is.
+ *
+ * The tile is not a button and nothing here moves it — the standing rule is
+ * that a control must not shift under the finger, and this is a colour
+ * change on a card's decoration.
+ */
+@media (hover: hover) and (pointer: fine) {
+  :where(.mk-reach, a.mk-card):hover .mk-card-icon,
+  :where(.mk-reach, a.mk-card):focus-within .mk-card-icon {
+    background: var(--mk-blue);
+    color: #fff;
+    box-shadow: var(--mk-glow-soft);
+  }
+}
+
+/* ── The lead piece ──────────────────────────────────────────────────────
+ *
+ * A cover with the words on it. The scrim belongs to the card rather than
+ * being an opacity on the text, because the text is a headline and has to
+ * stay at full strength — what gives way is the picture behind it. It is
+ * strong enough to carry white over the two paper tones as well as the two
+ * dark ones, which is what lets the tone stay a property of the category
+ * rather than of the slot.
+ */
+.mk-feature-post {
+  /*
+   * ── The words sit under the picture, not on it ────────────────────────
+   *
+   * This card used to be a cover with the headline laid over it, which is
+   * the usual shape for a magazine lead and was right while a cover was a
+   * typeset gradient this file drew itself. The covers are photographs now
+   * — 1600x900, with their own composition and their own words in them —
+   * and a headline across the middle of one lands on top of the artwork's
+   * labels. Nothing a scrim can fix: dimming the collision does not undo
+   * it.
+   *
+   * So the lead is a bigger version of the cards below it: the cover whole
+   * at 16:9, the words beneath on the card. The grid, the gap, the radius
+   * and the ring are unchanged, and the lead still reads as the lead
+   * because it is twice the size of anything else on the page.
+   *
+   * `align-self: start` keeps the outer grid from stretching this card to
+   * the height of the "latest" list beside it — a stretch would make the
+   * picture taller than 16:9 again and crop it, which is the whole problem
+   * coming back by another door.
+   */
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  /*
+   * A grid item's automatic minimum size is its min-content width, and this
+   * card has content in flow. Without this the column stopped fitting the
+   * viewport and the page scrolled sideways below 640px — the same
+   * `min-inline-size` .mk-post-card carries, for the same reason.
+   */
+  min-inline-size: 0;
+  overflow: clip;
+  border-radius: var(--mk-r-blog);
+  background: var(--surface-1);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+}
+
+/* The shape every cover is drawn at. Nothing is cropped at any width. */
+.mk-feature-post-art {
+  display: block;
+  flex: none;
+  inline-size: 100%;
+  min-inline-size: 0;
+  aspect-ratio: 16 / 9;
+}
+
+.mk-feature-post-body {
+  display: block;
+  padding: clamp(20px, 3vw, 30px);
+}
+
+/* ── A card in the grid ─────────────────────────────────────────────────── */
+
+.mk-post-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  /*
+   * A flex item is `min-width: auto` by default, which means it refuses to
+   * shrink below the widest thing inside it. On a 370px grid track that was
+   * enough to push the card out to 500px and the page into a horizontal
+   * scroll, once the categories stopped being short Arabic words:
+   * "Companies and content writers" in a nowrap pill has a 460px
+   * min-content width.
+   *
+   * Found on /en/guides at 800px and 390px and nowhere else, which made it
+   * look like an English bug rather than a grid one.
+   */
+  min-inline-size: 0;
+  overflow: clip;
+  border-radius: var(--mk-r-blog);
+  background: var(--surface-1);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+}
+
+.mk-post-card-art {
+  display: block;
+  /*
+   * 16:9, because that is what the covers are.
+   *
+   * This was a height band — 132 to 172px — chosen when a cover was a
+   * typeset gradient that could be any shape. Every cover is now a 1600x900
+   * picture with its own composition, and a 370px track against a 172px band
+   * is 2.15:1: it took a slice out of the middle and cut the artwork's words
+   * in half, top and bottom. The ratio means `object-fit: cover` has nothing
+   * left to crop.
+   */
+  aspect-ratio: 16 / 9;
+  flex: none;
+}
+
+/* ── The category pill ──────────────────────────────────────────────────── */
+
+.mk-cat-pill {
+  display: inline-flex;
+  align-items: center;
+  align-self: start;
+  border-radius: var(--radius-pill);
+  padding-block: 4px;
+  padding-inline: 11px;
+  background: var(--accent-soft);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--mk-blue-deep);
+  /*
+   * Wraps rather than refusing to.
+   *
+   * This was `white-space: nowrap`, which is right for the short labels it
+   * was written against and wrong as an absolute: an audience-shaped
+   * category — "Companies and content writers" — then has a min-content
+   * width wider than the card holding it. Nothing short wraps anyway, so
+   * the only pills this changes are the ones that could not fit on one
+   * line, and a two-line pill is better than a page that scrolls sideways
+   * or a label cut off mid-word.
+   */
+  max-inline-size: 100%;
+}
+
+/* ── The help centre ────────────────────────────────────────────────────── */
+
+/*
+ * The hero does not clip any more; its watermark does.
+ *
+ * `overflow: clip` was here to keep the 230px question mark inside the
+ * card's radius, and it also clipped the search field's suggestion panel —
+ * which hangs below a field sitting 24px off the bottom of this box, so the
+ * panel appeared as a sliver. The clipping moved to the one child that needs
+ * it, and nothing else in here reaches an edge.
+ */
+.mk-help-hero {
+  position: relative;
+  border-radius: var(--mk-r-feature);
+  padding: clamp(28px, 4.5vw, 56px);
+  background: linear-gradient(135deg, #e9f0ff 0%, #f7faff 52%, #eaf1fb 100%);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+}
+
+/*
+ * The watermark.
+ *
+ * The reference's one piece of imagery is a rendered glass question mark.
+ * This is the same glyph the rest of the page's icons come from, at display
+ * size and at 12% — so it cannot drift from the icons beside it, it costs
+ * nothing to load, and it is the site's answer to the reference rather than
+ * an import of it. Gone below 56rem, where it would sit under the copy.
+ */
+.mk-help-hero-glyph {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.mk-help-hero-glyph > * {
+  position: absolute;
+  inset-inline-end: clamp(20px, 5vw, 72px);
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  color: var(--mk-blue-ink);
+  opacity: 0.12;
+}
+
+@media (width < 56rem) {
+  .mk-help-hero-glyph {
+    display: none;
+  }
+}
+
+.mk-help-search {
+  position: relative;
+  margin-block-start: clamp(24px, 3.5vw, 36px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-inline-size: 27rem;
+  border-radius: var(--radius-pill);
+  padding-block: 11px;
+  padding-inline: 18px;
+  background: var(--surface-0);
+  box-shadow:
+    0 0 0 1px var(--hairline-strong),
+    0 14px 30px -22px rgba(11, 20, 60, 0.5);
+}
+
+.mk-help-search:focus-within {
+  box-shadow:
+    0 0 0 1.5px var(--accent),
+    0 0 0 5px rgba(0, 153, 255, 0.12);
+}
+
+.mk-help-search input {
+  flex: 1;
+  min-inline-size: 0;
+  border: 0;
+  background: none;
+  font-size: var(--fs-ui);
+  color: var(--text);
+}
+
+.mk-help-search input:focus {
+  /* The ring is on the wrapper, which is the control as far as a reader is
+     concerned — a second one around the bare input inside it would draw a
+     box around half of it. */
+  outline: none;
+}
+
+/* The browser's own clear affordance, removed: this field has its own, which
+   is a real button with a label and a 44px target on a touch screen. */
+.mk-help-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+/*
+ * The suggestions, under the field.
+ *
+ * Positioned on `.mk-help-search`, which was already `position: relative`
+ * for nothing in particular and is now relative for this. The panel is a
+ * flex item, so taking it out of flow is also what keeps it from becoming a
+ * third column beside the glyph and the input.
+ *
+ * `--radius-card` and `--lift-card` rather than values of its own: this is
+ * the dropdown the design system asks for — a white panel on the page's own
+ * lift — and the one thing it adds is the 6px inset, so a highlighted row's
+ * fill stops short of the panel's corners instead of squaring them off.
+ *
+ * Nothing here is physical. The rows are a flex column, the meta line sits
+ * under the title rather than beside it, and the panel is pinned with
+ * `inset-inline` — so the whole thing mirrors with the page and there is no
+ * `[dir="rtl"]` rule for it.
+ */
+.mk-suggest {
+  position: absolute;
+  z-index: 20;
+  inset-inline: 0;
+  inset-block-start: calc(100% + 8px);
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: var(--radius-card);
+  background: var(--surface-0);
+  box-shadow: var(--lift-card);
+}
+
+.mk-suggest-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-block: 8px;
+  padding-inline: 10px;
+  border-radius: var(--radius-widget);
+  transition: background-color var(--mk-dur-fast) var(--mk-ease);
+}
+
+/*
+ * One highlight, and the keyboard owns it.
+ *
+ * `.is-active` and not `:hover`: the pointer and the arrow keys move the
+ * same highlight, so a mouse resting over row four while the keyboard is on
+ * row one would otherwise light both, and the reader could not tell which
+ * one Enter would follow. `onMouseEnter` sets the state the arrows set.
+ */
+.mk-suggest-row.is-active {
+  background: var(--surface-2);
+}
+
+.mk-suggest-title {
+  font-size: var(--fs-ui);
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.mk-suggest-meta {
+  font-size: var(--fs-eyebrow);
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.mk-help-clear {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  border-radius: 50%;
+  color: var(--text-muted);
+  transition: background-color var(--mk-dur-fast) var(--mk-ease);
+}
+
+.mk-help-clear:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+@media (pointer: coarse) {
+  .mk-help-clear {
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+  }
+}
+
+/*
+ * A category tile.
+ *
+ * A button and not a link: it filters the list already on the page rather
+ * than jumping to an anchor further down it, so a reader never has to work
+ * out what happened to the page. `aria-pressed` is what says it is a toggle,
+ * and pressing it again clears the filter — there is no state to get stuck
+ * in and no back button to press.
+ */
+.mk-help-tile {
+  display: flex;
+  inline-size: 100%;
+  align-items: center;
+  gap: 12px;
+  border-radius: var(--radius-card);
+  padding: 14px 16px;
+  background: var(--surface-1);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+  text-align: start;
+  /* No `translate` here: this is a button, and a button on this site does not
+     move. See the note beside `.mk-help-row:hover`, which does. */
+  transition:
+    background-color var(--mk-dur-fast) var(--mk-ease),
+    box-shadow var(--mk-dur-fast) var(--mk-ease);
+}
+
+.mk-help-tile:hover {
+  background: var(--surface-2);
+}
+
+.mk-help-tile[aria-pressed="true"] {
+  box-shadow:
+    0 0 0 1.5px var(--accent),
+    0 0 0 5px rgba(0, 153, 255, 0.08);
+}
+
+.mk-help-tile-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  border-radius: var(--mk-r-button);
+  background: var(--accent-soft);
+  color: var(--mk-blue-deep);
+}
+
+.mk-help-tile[aria-pressed="true"] .mk-help-tile-icon {
+  background: var(--mk-blue-deep);
+  color: var(--surface-0);
+}
+
+/*
+ * One article, as a row.
+ *
+ * Rows and not the cards the blog uses, because in a support centre the
+ * title *is* the question — an excerpt under it would be a second sentence
+ * between the reader and their answer. Two columns, so fourteen of them are
+ * one screen rather than two.
+ */
+.mk-help-row {
+  display: flex;
+  inline-size: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-radius: var(--radius-card);
+  padding: 14px 16px;
+  background: var(--surface-1);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+  /* See `.mk-help-tile` above: the lift's transition lives beside the fill's. */
+  transition:
+    background-color var(--mk-dur-fast) var(--mk-ease),
+    translate var(--mk-dur-base) var(--mk-ease),
+    filter var(--mk-dur-base) var(--mk-ease);
+}
+
+.mk-help-row:hover {
+  background: var(--surface-2);
+}
+
+/*
+ * The disclosure mark, turned a quarter so it points along the reading
+ * direction. `rotate` and not a second glyph, and `--mk-dir` carries the
+ * locale's sign, so this is the one chevron on the site that still has a
+ * direction — it marks a row as openable, which is what a chevron is for.
+ * It is not an arrow: nothing here says "forward", it says "there is more".
+ */
+.mk-help-row-mark {
+  flex: none;
+  rotate: calc(90deg * var(--mk-dir));
+  color: var(--text-faint);
+}
+
+/* ── The article ────────────────────────────────────────────────────────── */
+
+/*
+ * The meta row: three labelled facts under hairlines, across the top.
+ *
+ * Each one answers a question a reader asks before they commit to reading —
+ * how old is this, what is it about, how long will it take — and they are
+ * labelled rather than run together as "Strategy · 2 Oct · 6 min", because
+ * the label is what makes the date a *publication* date rather than a number
+ * on the page.
+ */
+.mk-article-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px 28px;
+  margin: 0;
+  max-inline-size: 52rem;
+}
+
+.mk-article-meta > div {
+  border-block-start: 1px solid var(--hairline-strong);
+  padding-block-start: 12px;
+}
+
+.mk-article-meta dt {
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* Arabic has no case, and tracking breaks the joins between its letters. */
+[dir="rtl"] .mk-article-meta dt {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.mk-article-meta dd {
+  margin: 5px 0 0;
+  font-size: var(--fs-ui);
+  color: var(--text);
+}
+
+.mk-byline-avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--surface-0);
+}
+
+.mk-article-art {
+  margin-block-start: clamp(32px, 5vw, 56px);
+  /* 16:9 — the covers' own ratio. See .mk-post-card-art. At the 1100px
+     container the old 400px cap was 2.75:1 and cut the picture to a band. */
+  aspect-ratio: 16 / 9;
+  overflow: clip;
+  border-radius: var(--mk-r-feature);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+}
+
+/*
+ * The body, and the rail beside it.
+ *
+ * Three columns rather than two, so the *text* stays centred on the page and
+ * the rail sits in the margin. With two columns the pair would be centred
+ * and the prose would be off-centre by the width of the rail, which is the
+ * kind of wrongness nobody can name but everybody sees.
+ */
+.mk-article-body {
+  margin-block-start: clamp(40px, 6vw, 72px);
+  display: grid;
+  gap: 24px;
+  justify-content: center;
+  grid-template-columns: minmax(0, 62ch);
+}
+
+@media (width >= 64rem) {
+  .mk-article-body {
+    gap: 40px;
+    grid-template-columns: 2.5rem minmax(0, 62ch) 2.5rem;
+  }
+}
+
+/*
+ * Sticky beside the body on a wide screen, a plain row above it on a narrow
+ * one. `align-self: start` is what makes `position: sticky` do anything in a
+ * grid: a stretched item is already as tall as its row, so it has nothing to
+ * travel within.
+ */
+.mk-share-rail {
+  display: flex;
+  gap: 10px;
+}
+
+@media (width >= 64rem) {
+  .mk-share-rail {
+    position: sticky;
+    inset-block-start: calc(var(--mk-header-h) + 32px);
+    flex-direction: column;
+    align-self: start;
+  }
+}
+
+.mk-share-link {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: 50%;
+  background: var(--surface-1);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+  color: var(--text-muted);
+  transition:
+    background-color var(--mk-dur-fast) var(--mk-ease),
+    color var(--mk-dur-fast) var(--mk-ease);
+}
+
+.mk-share-link:hover {
+  background: var(--text);
+  color: var(--surface-0);
+}
+
+@media print {
+  .mk-share-rail,
+  .mk-help-search,
+  .mk-help-hero-glyph {
+    display: none;
+  }
+}
+
+/*
+ * The brand brain's effect table.
+ *
+ * Four rows, each said twice — once for a new brand and once for one that
+ * already exists. The pairing is the comparison, so it is a row and not two
+ * lists, and the two cells of a row have to be on one line from the width at
+ * which two columns of this much Arabic are still readable.
+ *
+ * Below that width the row stacks and each cell carries its own column name,
+ * which is `.mk-effect-head`. Above it the heading is the one on the column
+ * and the per-cell copy is `display: none` — not visually hidden: on a wide
+ * screen a screen reader would otherwise read "building a new brand" eight
+ * times, once per cell, for a heading that is already in the row above.
+ *
+ * `minmax(7rem, 0.62fr)` on the label column rather than `auto`: the four
+ * labels are different lengths in both languages, and an `auto` track sizes
+ * to the longest of them, which moves the two comparison columns by 30px
+ * between rows in Arabic. A floor plus a fraction keeps all four rows on the
+ * same grid.
+ */
+.mk-effect-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px 20px;
+  padding-block: 0.875rem;
+  box-shadow: 0 -1px 0 rgba(11, 11, 15, 0.06);
+}
+
+/* The per-cell column name, shown only while the row is stacked. */
+.mk-effect-head {
+  display: block;
+}
+
+/* …and the real heading row, which is the other half of the same switch. */
+.mk-effect-head-row {
+  display: none;
+}
+
+@media (min-width: 42rem) {
+  .mk-effect-row {
+    grid-template-columns: minmax(7rem, 0.62fr) 1fr 1fr;
+    align-items: start;
+  }
+
+  .mk-effect-head {
+    display: none;
+  }
+
+  .mk-effect-head-row {
+    display: grid;
+    box-shadow: none;
+    padding-block-start: 0;
+  }
+}
+
+.mk-effect-col {
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  color: var(--mk-blue-deep);
+}
+}

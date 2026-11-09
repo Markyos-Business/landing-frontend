@@ -1,0 +1,78 @@
+/* Disclosures. Imported by app/globals.css, in order. */
+
+@layer components {
+/* ── Disclosures open and close ──────────────────────────────────────────
+ *
+ * Every `<details>` on this site — the FAQ, the FAQ on the data-driven
+ * pages, and the two accordions in the phone menu — slides rather than
+ * snapping. The FAQ was the clearest place the page read as static: a
+ * question either had its answer under it or did not, with no moment in
+ * between, so nothing told the reader their click had done anything.
+ *
+ * ── Why this is CSS and the mechanism is still `<details>` ───────────────
+ *
+ * The design file builds the FAQ as nine buttons driving a
+ * `grid-template-rows` transition, which needs JavaScript. An FAQ built from
+ * `useState` is invisible to the search engine it exists to feed, is not
+ * findable with the browser's own find, and does not open before a script
+ * loads. `::details-content` is the part of the platform that makes the
+ * native element animatable, and `interpolate-size: allow-keywords` is what
+ * lets a height of `auto` be a transition endpoint — so the look is the
+ * design file's and the mechanism is still the platform's.
+ *
+ * `content-visibility` has to transition too, with `allow-discrete`: it is
+ * what keeps the answer painted while the box is collapsing instead of
+ * vanishing on the first frame and leaving an empty box to animate.
+ *
+ * Guarded twice. A browser without `::details-content` gets the instant
+ * open it has today, which is a working disclosure; a reader who asked for
+ * no motion gets the same.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports selector(::details-content) and (interpolate-size: allow-keywords) {
+    :root {
+      interpolate-size: allow-keywords;
+    }
+
+    details::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size 320ms var(--mk-ease),
+        content-visibility 320ms allow-discrete;
+    }
+
+    details[open]::details-content {
+      block-size: auto;
+    }
+  }
+}
+
+/*
+ * A question, before it is pressed.
+ *
+ * The disclosure animated and the plus turned, and both of those are
+ * answers to a *click* — so a reader running their eye down nine questions
+ * still had nothing telling them the rows were controls at all. This is the
+ * before: the row takes a trace of the brand's own light as the pointer
+ * crosses it, and the plus goes blue with it.
+ *
+ * Ground and ink only, no movement. A card may rise toward the pointer
+ * because it is an object; a row of text is not one, and lifting a line of a
+ * list off the list is how a hover state becomes a layout bug. It is outside
+ * the reduced-motion guard above for the reason the pointer-states block
+ * gives: a state change is information, and only travel is decoration.
+ *
+ * `(hover: hover) and (pointer: fine)`, so a touchscreen — where `:hover`
+ * sticks to whatever was tapped last — never leaves a question lit.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .mk-faq-summary {
+    transition: background-color var(--mk-dur-fast) var(--mk-ease);
+  }
+
+  .mk-faq-summary:hover {
+    background: rgba(0, 153, 255, 0.04);
+  }
+}
+}

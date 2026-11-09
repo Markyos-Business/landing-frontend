@@ -1,0 +1,159 @@
+/* Type. Imported by app/globals.css, in order. */
+
+@layer components {
+/* ── Type ────────────────────────────────────────────────────────────────── */
+
+/*
+ * Display type: one weight, one tracking.
+ *
+ * 500 everywhere and -0.04em — the design system allows no weight above 500
+ * anywhere on the website, so there is no 600 to fall back to and no second
+ * tracking value to choose between. Three sizes: 54 / 44 / 28.
+ */
+.mk-display,
+.mk-h2-lg,
+.mk-h2 {
+  font-family: var(--font-display);
+  font-weight: var(--mk-weight-display);
+  letter-spacing: var(--g-hero-tracking);
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.mk-display {
+  font-size: var(--fs-display);
+  line-height: var(--mk-lh-display);
+}
+
+.mk-h2-lg,
+.mk-h2 {
+  font-size: var(--fs-h2);
+  line-height: var(--mk-lh-display-2);
+}
+
+/* Card titles sit in the text scale, not the display scale: 18px, untracked.
+   At that size the -0.04em that makes a 54px hero deliberate only makes a
+   title look cramped. */
+.mk-h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+/*
+ * Arabic does not take the Latin tracking.
+ *
+ * Negative tracking on an Arabic headline pulls joined letterforms into each
+ * other — it is not a tighter line, it is a broken word. The Arabic face also
+ * sits optically smaller than Inter at the same size and needs more leading.
+ */
+/*
+ * The second selector is the heading that carries the Arabic itself rather
+ * than sitting inside something Arabic — an Arabic headline on an English
+ * page. `[dir="rtl"] …` is a descendant selector and cannot match it, and
+ * the `:lang(ar)` rule in the base layer loses to `.mk-h2` here, because a
+ * later layer beats an earlier one whatever the specificity. Without this
+ * line the only Arabic word on 28 English pages was set in Arial.
+ */
+[dir="rtl"] :where(.mk-display, .mk-h2-lg, .mk-h2, .mk-h3),
+:lang(ar):where(.mk-display, .mk-h2-lg, .mk-h2, .mk-h3) {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  line-height: var(--mk-lh-display-ar);
+}
+
+/* The paragraph under a section heading. */
+.mk-lead {
+  font-size: var(--fs-lead);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* Body copy inside a card or a column. */
+.mk-body {
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.mk-body strong,
+.mk-lead strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/*
+ * The eyebrow.
+ *
+ * Grey, uppercase, tracked out — never coloured. Uppercase is a *style role*
+ * here, which is why it is applied in CSS and never typed into the copy.
+ *
+ * Two forms: an uppercase tracked one inside a card ("STEP 2 · ANALYZE") and
+ * a sentence-case label above a section heading ("For studios"), which is the
+ * `-accent` variant. It is white rather than blue: blue is light on this
+ * site, never ink.
+ */
+.mk-eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mk-eyebrow-accent {
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--fs-ui);
+}
+
+/*
+ * The bracketed label.
+ *
+ * `[ الحلول ]` over a centred heading, the way the reference marks the top
+ * of a section. It is the same eyebrow underneath — same size, weight and
+ * ink — with two pieces of punctuation that do one job: they close the label
+ * off, so a two-word grey line above a heading reads as a tab rather than as
+ * the heading's own first line, which is exactly what it looked like at the
+ * top of a 7,000px page of them.
+ *
+ * The brackets are generated rather than typed into the string, so no
+ * translator has to carry them and no content file can forget one. `/ ""`
+ * gives each an empty alternative text: a screen reader announces the label,
+ * not "left square bracket".
+ *
+ * The gap is a margin, not a non-breaking space inside `content`. That was
+ * the first attempt and it put a literal NUL byte in this file twice —
+ * once in the rule and once in the comment explaining the rule — because a
+ * CSS unicode escape written with four hex digits reads, to most other
+ * languages, as an octal escape for zero followed by some digits. A margin
+ * needs no escape and is the right instrument anyway: it is spacing, and
+ * spacing belongs in the box model.
+ *
+ * Nothing is mirrored by hand. `[` and `]` are a Unicode mirrored pair, so
+ * an RTL line draws them the other way round on its own; writing `]` first
+ * for Arabic would produce two opening brackets.
+ */
+.mk-eyebrow-bracket::before {
+  content: "[" / "";
+  margin-inline-end: 0.45em;
+  color: var(--text-faint);
+}
+
+.mk-eyebrow-bracket::after {
+  content: "]" / "";
+  margin-inline-start: 0.45em;
+  color: var(--text-faint);
+}
+
+/* Arabic has no case, and tracking breaks its joins — so the eyebrow's two
+   Latin mannerisms both come off in RTL. */
+[dir="rtl"] .mk-eyebrow {
+  letter-spacing: 0;
+  text-transform: none;
+}
+}
