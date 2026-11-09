@@ -1,0 +1,439 @@
+export const pageBlocksStyles = [
+  /* Page blocks: showcase, note, deep panel, callout, table and accent. Imported by tailwind/, in order. */
+  /*
+   * The product, shown.
+   *
+   * A frame around one of the pictures in `src/components/public/mock/`, used by the
+   * `showcase` block on the pages under /solutions. It adds three things and
+   * nothing else, because the mock inside it is already a finished object with
+   * its own card, its own padding and its own direction:
+   *
+   *   - a pool of the brand's light behind it, which §8 reserves for "the one
+   *     object a section is about" and a product shot is exactly that;
+   *   - `overflow: clip`, because the pool is wider than the frame and without
+   *     this a phone scrolls sideways by the overhang — the same bug the hero
+   *     block's comment records;
+   *   - a measure, so a two-column mock does not run to 1100px on a page whose
+   *     prose stops at 46rem.
+   *
+   * `clip` and not `hidden`: `hidden` would make this a scroll container on
+   * both axes and strand every `view()` timeline inside it at 100% progress,
+   * which is the trap `.mk-card` and `.mk-table-shell` both pay for already.
+   */
+  { ".mk-showcase": {
+    "position": "relative",
+    "overflow": "clip",
+    /* Room for the lift's 70px shadow and the pool's bloom, which `clip`
+     would otherwise cut square across the bottom of the frame. */
+    "margin-inline": "-20px",
+    "padding": "24px 20px 32px",
+  } },
+  { ".mk-showcase > figcaption": {
+    "position": "relative",
+  } },
+  { "@media (min-width: 60rem)": {
+    ".mk-showcase-measure": {
+      "max-inline-size": "56rem",
+      "margin-inline": "auto",
+    },
+  } },
+  /*
+   * A note.
+   *
+   * The caveat under a table, a card grid or a ladder of plans: "viewers are
+   * free on every paid plan", "the first analysis in each project is free",
+   * "features marked «قريباً» arrive after launch". There are seven of them
+   * across the data-driven pages and until now each was a muted paragraph with
+   * a hand-set margin — which meant a reader scanning the page could not tell a
+   * note from the last line of the thing above it, and the page had no object
+   * that says "this is a condition on what you just read".
+   *
+   * ── Why a tint and a start rule rather than a card ───────────────────────
+   *
+   * A note is subordinate. A card on this page is a white surface lifted off
+   * the ground, and a lifted surface reads as a peer of the cards beside it —
+   * which is wrong for a footnote and would put a condition at the same weight
+   * as the plan it qualifies. A tint sits *into* the page instead of on top of
+   * it, and the 2px start rule gives the eye the same "aside" signal the
+   * callout block uses, one level quieter: no lift, no ring, no radius above
+   * the widget's 8px.
+   *
+   * ── Direction ────────────────────────────────────────────────────────────
+   *
+   * Every property here is logical, so the rule and the glyph sit on the
+   * reading edge in both editions: `border-inline-start` and `padding-inline`
+   * rather than left/right, and the flex row itself reverses with `direction`.
+   * Nothing in this object needs a `[dir="rtl"]` override.
+   *
+   * The glyph is a sibling of the text rather than inside it, and the text is
+   * its own <p>. That is also direction: `p` is in the plaintext list, so a
+   * note resolves its own direction from its own first strong character — and
+   * had the glyph been *inside* that paragraph it would have been an atomic
+   * inline-flex box with no strong character in it, which is the isolate trap
+   * `.mk-atomic` exists for. Keeping them siblings means the paragraph only
+   * ever scans its own words.
+   */
+  /*
+   * ── Rebuilt into the page's own language, 7 Nov 2026 ─────────────────────
+   *
+   * It was a full-bleed bar of flat 8% blue with a hard 2px accent rule down
+   * its reading edge, and it was the one place on these pages where blue is a
+   * *fill*. §1.4 and §13 both say it is not: blue on this site is light —
+   * glow, neon edge, focus ring — and never a panel. Stretched to the measure
+   * it also read as a form-validation strip rather than as an aside.
+   *
+   * Now it is built from the three things every other surface here is built
+   * from: a white ground, a hairline and a lift, with the blue carried by an
+   * icon tile at the §6 recipe — a glyph centred on a rounded square filled
+   * with its hue at ~14%, the same object the cards use. The lift is its own
+   * value rather than `--lift-card`: that one is tuned for a 400px card and
+   * throws a 70px shadow, which under a 44px note is a smudge.
+   *
+   * `fit-content` rather than `100%`: an aside is as wide as what it says.
+   * The cap still catches the long ones. (The old `100%` was there because
+   * the hero's note sits in a flex column that does not stretch it — with
+   * `fit-content` that note shrinks to its text, which is now the intent
+   * everywhere rather than the exception.)
+   */
+  { ".mk-note": {
+    "display": "flex",
+    "align-items": "flex-start",
+    "gap": "12px",
+    "inline-size": "fit-content",
+    "max-inline-size": "46rem",
+    "padding-block": "10px",
+    "padding-inline-start": "10px",
+    "padding-inline-end": "18px",
+    "border-radius": "var(--radius-widget)",
+    "background": "var(--surface-1)",
+    "box-shadow": "0 0 0 1px rgba(11, 11, 15, 0.06),\n    0 12px 26px -20px rgba(11, 20, 60, 0.4)",
+    "font-size": "var(--fs-ui)",
+    "line-height": "1.6",
+    "color": "var(--text-secondary)",
+  } },
+  /* The icon tile, which is where the blue went. `flex-start` and not
+   `center`: a tile centred against three lines of text floats away from the
+   sentence it belongs to, and these run to three. */
+  { ".mk-note-mark": {
+    "display": "grid",
+    "place-items": "center",
+    "flex": "none",
+    "inline-size": "1.75rem",
+    "block-size": "1.75rem",
+    "border-radius": "10px",
+    "background": "var(--accent-soft)",
+    "color": "var(--accent)",
+  } },
+  /*
+   * On the deep panel.
+   *
+   * The closing CTA's note is the one that sits on `.mk-deep`, where the ink
+   * inverts and the page's blue is the ground. The accent tint and the accent
+   * rule both disappear into it, so the note borrows the panel's own two
+   * inverted tokens instead of inventing a third pair.
+   */
+  { ".mk-deep .mk-note": {
+    "background": "rgba(255, 255, 255, 0.1)",
+    /* Inset, because an outer ring plus a drop shadow on a blue panel is two
+     edges where the panel wants none. */
+    "box-shadow": "inset 0 0 0 1px rgba(255, 255, 255, 0.16)",
+    "color": "var(--mk-on-deep-soft)",
+  } },
+  { ".mk-deep .mk-note-mark": {
+    "background": "rgba(255, 255, 255, 0.16)",
+    "color": "var(--mk-on-deep)",
+  } },
+  /*
+   * The callout's reading edge, as light rather than as a rule.
+   *
+   * Both gradients are safe in either edition without a `[dir]` override, and
+   * that is why they are shaped the way they are: the bar runs *down* its own
+   * length, and a vertical gradient has no side to get wrong, while the pool
+   * is a radial centred on itself and anchored with `inset-inline-start`. The
+   * one direction-dependent form — a horizontal `linear-gradient` fading away
+   * from the edge — would have needed the same four-rule flip `.mk-web-line`
+   * carries, for an effect the eye cannot tell apart from this one.
+   *
+   * `z-index: -1` keeps both under the words: `.mk-card` isolates, so a
+   * negative child paints after the card's own background and before its
+   * content, and cannot escape the card. `.mk-card` is already `overflow:
+   * clip`, so the pool is trimmed to the radius.
+   */
+  /*
+   * As wide as what it says.
+   *
+   * The body is already capped at 62ch by `.mk-measure`, so a card running the
+   * full 1100px container spent its last 40% on nothing — the same full-bleed
+   * slab the note was, and the same reason it read as chrome rather than as a
+   * paragraph with something to add. The cap leaves the measure room and a
+   * little air past it.
+   */
+  { ".mk-callout": {
+    "max-inline-size": "48rem",
+  } },
+  { ".mk-callout::before, .mk-callout::after": {
+    "content": "\"\"",
+    "position": "absolute",
+    "z-index": "-1",
+    "pointer-events": "none",
+  } },
+  { ".mk-callout::before": {
+    "inset-block": "0",
+    "inset-inline-start": "0",
+    "inline-size": "3px",
+    "background": "linear-gradient(to bottom, var(--mk-blue), rgba(0, 85, 255, 0))",
+  } },
+  { ".mk-callout::after": {
+    "inset-block": "-30%",
+    "inset-inline-start": "-8%",
+    "inline-size": "48%",
+    "border-radius": "50%",
+    "background": "radial-gradient(\n    50% 50% at 50% 50%,\n    rgba(0, 153, 255, 0.13),\n    rgba(0, 153, 255, 0) 70%\n  )",
+  } },
+  /* The tint has to clear the shell's own 10px, or the first and last rows'
+   fills square off the corners they sit in. */
+  { ".mk-table-shell table": {
+    "border-radius": "20px",
+    /* `clip` and not `hidden`, for the reason given on `.mk-card`. */
+    "overflow": "clip",
+  } },
+  /*
+   * A headline's closing clause, in blue.
+   *
+   * The light page's one gradient and its most recognisable move: the first
+   * clause states the subject in ink, the second lands the claim in blue. Painted
+   * through `background-clip: text`, which is why the element's own `color` is
+   * transparent — a contrast checker reading that property sees 1:1 and skips it,
+   * so the real figures are in --mk-blue-ink, where they can be checked.
+   *
+   * The gradient runs with the reading direction: light at the start of the
+   * clause, deep at its end, which is leftwards in Arabic and rightwards in
+   * English. The design file hardcodes 270deg because its page is only ever
+   * Arabic.
+   */
+  /*
+   * The headline's second clause, painted in the brand gradient.
+   *
+   * ── The padding is not spacing. It is the glyphs. ─────────────────────────
+   *
+   * `background-clip: text` with `color: transparent` means the letters paint
+   * nothing themselves: what you see is this element's *background* showing
+   * through a text-shaped clip. An inline box's background painting area is
+   * its line box — so any ink that reaches past the font's ascent or descent
+   * is outside the thing being clipped, and simply does not exist.
+   *
+   * In Latin that is invisible: the clause is set in Inter at a line height
+   * well clear of its descenders. In Arabic it erased them. «والشركة تحييها.»
+   * at 76px in Thmanya Sans drops the tails of و, ش and ي below the line box,
+   * and all three were being cut off flat — on the hero, and on every other
+   * Arabic headline that carries a clause, which is most of them. It reads
+   * exactly like a font that failed to load half its glyphs.
+   *
+   * `padding-block` on an inline element extends the background painting area
+   * without touching the line box, so this buys the descenders back and moves
+   * nothing. It is in `em` because what it has to clear is a property of the
+   * type size, not of the layout.
+   */
+  { ".mk-accent-clause": {
+    "background": "linear-gradient(270deg, var(--mk-blue-ink), var(--mk-blue-deep))",
+    "-webkit-background-clip": "text",
+    "background-clip": "text",
+    "color": "transparent",
+    "padding-block": "0.22em",
+  } },
+  { "[dir=\"ltr\"] .mk-accent-clause": {
+    "background-image": "linear-gradient(90deg, var(--mk-blue-ink), var(--mk-blue-deep))",
+  } },
+  /*
+   * The deep panel: the page's closing ask.
+   *
+   * ── What it replaced ──────────────────────────────────────────────────────
+   *
+   * `.mk-horizon` — an enormous shallow ellipse lit from below, so that a page
+   * "ended on the light rather than on the footer rule". It did end on light,
+   * and that was the problem: a wash the same colour as the ground, fading out
+   * at exactly the moment the visitor is being asked to choose. Nine pages and
+   * the homepage closed on a decision set on nothing.
+   *
+   * The ask is now an object. One panel of brand blue inset on the ground, the
+   * copy packed to the reading edge, and the light moving across the far side
+   * of it — the one place on a paper-white site where the ink inverts, which is
+   * what makes the last thing on the page the loudest.
+   *
+   * ── Why the light is inside the panel ─────────────────────────────────────
+   *
+   * §8 allows one light source per composition and this is still one: the pool
+   * behind the panel is gone, and what is left is the panel's own surface
+   * catching it. Three layers, all decorative, all inert:
+   *
+   *   ::before      the broad lift across the far half
+   *   .mk-deep-wave two soft lens shapes, tip to tip along the diagonal
+   *
+   * Nothing is drawn. The lens is a box with two opposite corners rounded to
+   * 100%, rotated off the diagonal and blurred — §13 forbids hand-drawn SVG
+   * shapes, and a shape that can be a border-radius should be one.
+   *
+   * ── Direction ─────────────────────────────────────────────────────────────
+   *
+   * A diagonal gradient has no logical form: `115deg` is 115deg in both
+   * locales, so the dark end would sit under the Arabic copy on /en and behind
+   * the light on /. Same for a radial gradient's `at 100%` and for a rotation.
+   * So the Arabic page's values are the declared ones and `[dir="ltr"]`
+   * overrides them, exactly as `.mk-accent-clause` does; the corner radii are
+   * written logically, and the rotations carry `--mk-dir`.
+   */
+  { ".mk-deep": {
+    "position": "relative",
+    "isolation": "isolate",
+    /* `clip` and not `hidden`, for the reason given on `.mk-card`. */
+    "overflow": "clip",
+    "border-radius": "clamp(1.5rem, 3vw, 2.25rem)",
+    /* Dark at the reading edge, where the copy is; see --mk-deep-near. */
+    "background": "linear-gradient(245deg, var(--mk-deep-near), var(--mk-deep-far))",
+    "box-shadow": "var(--lift-deep)",
+    "color": "var(--mk-on-deep)",
+    "padding": "clamp(2rem, 5.5vw, 4.25rem)",
+    /* Queried by the light inside it — see the note on the ribbon below. */
+    "container": "deep / inline-size",
+  } },
+  { "[dir=\"ltr\"] .mk-deep": {
+    "background-image": "linear-gradient(115deg, var(--mk-deep-near), var(--mk-deep-far))",
+  } },
+  /* The broad lift across the far half. */
+  { ".mk-deep::before": {
+    "content": "\"\"",
+    "position": "absolute",
+    "z-index": "-1",
+    "inset": "0",
+    "background": "radial-gradient(\n    70% 90% at 0% 60%,\n    rgba(255, 255, 255, 0.1),\n    rgba(255, 255, 255, 0) 70%\n  )",
+    "pointer-events": "none",
+  } },
+  { "[dir=\"ltr\"] .mk-deep::before": {
+    "background-image": "radial-gradient(\n    70% 90% at 100% 60%,\n    rgba(255, 255, 255, 0.1),\n    rgba(255, 255, 255, 0) 70%\n  )",
+  } },
+  /*
+   * One lens of the ribbon.
+   *
+   * Logical corner radii, so the point swaps ends with the locale, and a blur
+   * large enough that the box it is made of is not findable. Behind the copy in
+   * the panel's own stacking context (`isolation: isolate` above), so a negative
+   * z-index puts it over the gradient and under the text rather than behind the
+   * whole section.
+   */
+  { ".mk-deep-wave": {
+    "position": "absolute",
+    "z-index": "-1",
+    "inline-size": "clamp(15rem, 32vw, 27rem)",
+    "aspect-ratio": "0.95",
+    "border-start-start-radius": "100%",
+    "border-start-end-radius": "0",
+    "border-end-end-radius": "100%",
+    "border-end-start-radius": "0",
+    "background": "linear-gradient(\n    150deg,\n    rgba(255, 255, 255, 0.04) 14%,\n    rgba(255, 255, 255, 0.62) 52%,\n    rgba(255, 255, 255, 0.1) 82%\n  )",
+    "filter": "blur(0.75rem)",
+    "pointer-events": "none",
+  } },
+  { ".mk-deep-wave-a": {
+    "inset-inline-end": "-6rem",
+    "inset-block-start": "-16rem",
+    "rotate": "calc(-26deg * var(--mk-dir))",
+  } },
+  { ".mk-deep-wave-b": {
+    "inset-inline-end": "-15rem",
+    "inset-block-end": "-17rem",
+    "rotate": "calc(154deg * var(--mk-dir))",
+  } },
+  /*
+   * Below 56rem of measure there is no far side.
+   *
+   * The lens shapes are a wide-canvas device: they read because the copy stops
+   * at a measure — 680px for a headline — and the light has the rest of the
+   * panel to move across. Narrower than that and every line reaches the far
+   * edge, so the shapes end up behind the text, which is both the one place
+   * light must not go and the one place a hard edge is visible as a shape.
+   *
+   * A container query and not a media query, because what runs out is the
+   * panel's width and not the window's: the homepage's panel is 1120px at both
+   * 1280 and 1440 — it is capped — and /pricing's is 1060px at the same two
+   * widths, while a phone's is 350px. One number in here holds for all of them.
+   * A media query would have had to guess the sum from outside, and did: the
+   * first cut was 48rem of viewport, which left the 768px panel flat with its
+   * light hidden behind the headline.
+   *
+   * 56rem is 896px of the panel's CONTENT box, which is what a container query
+   * measures — not the border box. Worth stating because the first threshold
+   * here was 62rem, chosen as a panel width, and the panel the ribbon was
+   * written for is 1120px wide and 984px inside its own 4.25rem padding: the
+   * rule matched on every page at every width and the ribbon never rendered
+   * anywhere. 896 is 680 of copy plus about 220 for the light to move in.
+   *
+   * What is left below it is the bloom alone, moved into the top far corner:
+   * above the headline, opposite the mark, no edge to collide with a wrapped
+   * line. Still one light source, which is what §8 asks for either way.
+   */
+  { "@container deep (max-width: 55.99rem)": {
+    ".mk-deep-wave": {
+      "display": "none",
+    },
+    ".mk-deep::before": {
+      "background-image": "radial-gradient(\n      62% 42% at 6% 0%,\n      rgba(255, 255, 255, 0.3),\n      rgba(255, 255, 255, 0) 72%\n    )",
+    },
+    "[dir=\"ltr\"] .mk-deep::before": {
+      "background-image": "radial-gradient(\n      62% 42% at 94% 0%,\n      rgba(255, 255, 255, 0.3),\n      rgba(255, 255, 255, 0) 72%\n    )",
+    },
+  } },
+  /*
+   * The CTA inside the panel: the inverse of the page's primary.
+   *
+   * `.mk-solid` is near-black on paper; on this ground that is the one fill
+   * that disappears, so the pill turns white and the label takes the ink.
+   */
+  { ".mk-btn.mk-deep-solid": {
+    "background": "var(--mk-on-deep)",
+    "color": "var(--text)",
+  } },
+  /*
+   * …and its press scrim runs the other way, like `.mk-outline`'s.
+   *
+   * Qualified with `.mk-btn` rather than left as `.mk-deep-solid::after`, and
+   * the same correction is now on `.mk-outline::after` above: both are one class
+   * plus a pseudo-element, which ties with `.mk-btn::after` on specificity, and
+   * `.mk-btn::after` is declared later in this layer. The outline button's dark
+   * scrim had been losing that tie since the day it was written — a variant
+   * override that has to sit at a particular line number is a rule waiting to be
+   * silently undone by the next insertion, so both are qualified instead.
+   */
+  { ".mk-btn.mk-deep-solid::after": {
+    "background": "rgba(11, 11, 15, 0.07)",
+  } },
+  /*
+   * The second action inside the panel.
+   *
+   * `.mk-outline` is a white card edged with ink at 7% — an edge that needs a
+   * paper ground to be an edge at all. Inverted: the fill is the panel showing
+   * through and the ring is white, so the pair still reads as one loud and one
+   * quiet rather than as two white pills. The shared white press scrim is the
+   * right direction here, so there is no override.
+   */
+  { ".mk-btn.mk-deep-outline": {
+    "background": "transparent",
+    "box-shadow": "0 0 0 1px rgba(255, 255, 255, 0.38)",
+    "color": "var(--mk-on-deep)",
+  } },
+  /*
+   * The focus ring inside the panel.
+   *
+   * The site's ring is `--accent`, #0055FF, "because focus is light" — and on
+   * this one object #0055FF is the ground: the panel's far stop is that exact
+   * value. A keyboard visitor would have tabbed onto the closing CTA and seen
+   * nothing. White is the only ring this panel can show, and the 2px offset
+   * keeps a band of blue between it and the white pill so it still reads as a
+   * ring rather than as part of the button.
+   *
+   * In `@layer components` over a `:where()` rule in `@layer base`, so it wins
+   * twice over and needs no `!important`.
+   */
+  { ".mk-deep :focus-visible": {
+    "outline-color": "var(--mk-on-deep)",
+  } },
+];

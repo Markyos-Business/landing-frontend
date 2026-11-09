@@ -19,7 +19,7 @@ Two things unblock everything else, and both are decisions rather than work:
 
    ~~Send the design files.~~ **Done** — 21 mockups are in
    `UI-UX Design Reference/`, named 1:1 with the components in
-   `components/sections/`. They confirm the dark theme and the audience-first
+   `src/components/public/home/`. They confirm the dark theme and the audience-first
    nav, and they match the built structure closely: the pricing mockup has the
    same toggle, three cards, lifted recommendation, note and compare link that
    `PricingTeaser.tsx` already renders.
@@ -35,7 +35,7 @@ Worth doing in parallel, because it has a long lead time:
 ## Step 1 — Design integration
 
 The mockups are in `UI-UX Design Reference/`, one per section, numbered in
-page order. `components/sections/` is already in that order and already
+page order. `src/components/public/home/` is already in that order and already
 receives typed copy, so styling a section should not require touching its data.
 
 - Settle the accent family first (`docs/OPEN-DECISIONS.md` §5). Styling 17
@@ -46,10 +46,10 @@ receives typed copy, so styling a section should not require touching its data.
   (`docs/OPEN-DECISIONS.md` §1). The header mockup shows a chevron on all
   five items; the current header has none.
 - The language switcher is a text link reading العربية in the design, not the
-  EN/ع pill currently in `components/chrome/LangSwitch.tsx`. The swap-the-path
+  EN/ع pill currently in `src/components/navbar/LangSwitch.tsx`. The swap-the-path
   logic stays; only the presentation changes.
 - Add any brand value the design needs **to the platform app's
-  `globals.css`**, then `npm run sync:tokens`. Never add a hex here. A token
+  `tailwind/`**, then `npm run sync:tokens`. Never add a hex here. A token
   that only the marketing site knows about is how two deploys stop matching.
 - Port `scripts/no-physical-props.mjs` from the platform repo and add it to
   `npm run check` (`docs/BEFORE-PUBLISH.md` item 14). Do this *before* writing
@@ -95,7 +95,7 @@ are already in place.
 than being written twice.
 
 As each page becomes real: drop the `noindex`, and add it to
-`PUBLISHED_ROUTES` in `app/sitemap.ts`. Those two go together — a page in the
+`PUBLISHED_ROUTES` in `src/app/sitemap.ts`. Those two go together — a page in the
 sitemap that is also `noindex` sends a crawler two contradictory instructions.
 
 ---
@@ -157,6 +157,6 @@ Worth keeping to, because each one is cheap now and expensive later.
 | `npm run check` before every commit | tsc, lint, token drift and Arabic parity in one command |
 | Never author a brand value here | Add it to the platform's `globals.css` and sync. Two deploys that disagree on a colour is the problem this company exists to solve |
 | Logical properties only | `start`/`end`, never `left`/`right`. A physical property is the one thing that will not flip with `dir` |
-| A new feature mention gets a `lib/status.ts` entry | The registry throws on an unknown id, which is the point — it is what stops the page promising something that has not shipped |
+| A new feature mention gets a `src/lib/status.ts` entry | The registry throws on an unknown id, which is the point — it is what stops the page promising something that has not shipped |
 | Check `/ar` whenever you change `/en` | Not at the end of the project |
 | Never invent proof | No quotes, no logos, no usage numbers until they are real |

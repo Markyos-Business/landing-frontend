@@ -1,11 +1,11 @@
 import React from "react";
-import { Logo, Mark } from "@/components/brand/Logo";
+import { Logo, Mark } from "@/components/ui";
 
 /*
  * The Markyos mark inside the Payload admin.
  *
  * Payload takes two graphics: `Logo` for the login screen and `Icon` for the
- * sidebar header. Both reuse `components/brand/Logo.tsx` — the same component
+ * sidebar header. Both reuse `src/components/ui/brand/Logo.tsx` — the same component
  * the marketing header renders — rather than pointing an <img> at the file in
  * public/brand/.
  *
@@ -21,7 +21,7 @@ import { Logo, Mark } from "@/components/brand/Logo";
  * the admin too. Third, `<img>` on a local SVG trips the lint rule the build
  * runs with `--max-warnings=0`.
  *
- * Sizing lives in app/(payload)/custom.css, so nothing about the artwork is
+ * Sizing lives in tailwind/admin.js, so nothing about the artwork is
  * decided here (§12: files only, never retyped, redrawn or recoloured).
  */
 

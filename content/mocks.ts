@@ -5,7 +5,7 @@ import type { Locale } from "@/lib/i18n/locales";
  *
  * ── Why they are here and not in the components ───────────────────────────
  *
- * They were English string literals inside `components/mock/*` and
+ * They were English string literals inside `src/components/public/mock/*` and
  * `components/sections/StudioPath.tsx`, which meant that on the Arabic
  * homepage four of the five pictures of the product were blocks of
  * left-aligned English. A page whose central claim is «بُنيت بالعربية. لا
@@ -44,7 +44,7 @@ import type { Locale } from "@/lib/i18n/locales";
  */
 
 export type MockCopy = {
-  /** components/mock/ToneResult.tsx */
+  /** src/components/public/mock/ToneResult.tsx */
   tone: {
     /** The pasted item's label. */
     title: string;
@@ -59,7 +59,7 @@ export type MockCopy = {
     flagLine: string;
   };
 
-  /** components/mock/VoiceMock.tsx */
+  /** src/components/public/mock/VoiceMock.tsx */
   voice: {
     traitsHeading: string;
     /** In order. The first three are on, the last two off. */
@@ -72,7 +72,7 @@ export type MockCopy = {
     approved: string;
   };
 
-  /** components/mock/DraftsPanel.tsx */
+  /** src/components/public/mock/DraftsPanel.tsx */
   drafts: {
     heading: string;
     positioningLabel: string;
@@ -95,7 +95,7 @@ export type MockCopy = {
     dismiss: string;
   };
 
-  /** components/mock/LeadershipMock.tsx */
+  /** src/components/public/mock/LeadershipMock.tsx */
   leadership: {
     question: string;
     /** Four answers. The first two clash; the fourth is already Arabic. */
@@ -106,7 +106,7 @@ export type MockCopy = {
     unansweredLine: string;
   };
 
-  /** The three product fragments in components/sections/StudioPath.tsx */
+  /** The three product fragments of the studio path section (component deleted 9 Nov 2026; copy kept for its future page). */
   studio: {
     findings: { label: string; line: string }[];
     zip: {
@@ -120,7 +120,8 @@ export type MockCopy = {
   };
 
   /*
-   * components/sections/PlatformGrid.tsx — the seven cell fragments.
+   * The platform grid's seven cell fragments (component deleted 9 Nov 2026;
+   * copy kept for its future page).
    *
    * These are interface labels in a picture of the product, so the Arabic is
    * the *product's* Arabic, taken from the platform app's own `arLabel`
@@ -152,7 +153,7 @@ export type MockCopy = {
   };
 
   /*
-   * components/mock/ProjectBoard.tsx — the studio board.
+   * src/components/public/mock/ProjectBoard.tsx — the studio board.
    *
    * Four of one studio's projects, each at a different stage, which is the
    * whole claim of /solutions/client-projects in one picture: you can see
@@ -179,7 +180,7 @@ export type MockCopy = {
   };
 
   /*
-   * components/mock/HandoffCard.tsx — the moment of handoff.
+   * src/components/public/mock/HandoffCard.tsx — the moment of handoff.
    *
    * Ownership moves to the client, the studio keeps the role it agreed, the
    * project's seat comes back, and the reward starts. Four facts that are a
@@ -203,7 +204,7 @@ export type MockCopy = {
   };
 
   /*
-   * components/mock/SeatsPanel.tsx — who is paid for.
+   * src/components/public/mock/SeatsPanel.tsx — who is paid for.
    *
    * The company plans charge for editors and not for viewers, which is the
    * one thing about the pricing that sounds too good and so has to be shown
@@ -258,7 +259,7 @@ export type MockCopy = {
   };
 
   /*
-   * components/mock/BrandHub.tsx — the hub in the hero.
+   * src/components/public/mock/BrandHub.tsx — the hub in the hero.
    *
    * This one was a set of Arabic string literals inside the component,
    * with a comment arguing that it should stay Arabic on the English page:
@@ -294,7 +295,7 @@ export type MockCopy = {
   };
 
   /*
-   * components/mock/GuidelinesBuilder.tsx — the second pane in the hero.
+   * src/components/public/mock/GuidelinesBuilder.tsx — the second pane in the hero.
    *
    * Pinned to Arabic until 8 Nov 2026, with the same argument the hub
    * carried and the same answer: Part A §3 asks for the English window in
@@ -328,7 +329,7 @@ export type MockCopy = {
   };
 
   /*
-   * components/sections/Problem.tsx — the two pictures in the problem cards.
+   * src/components/public/home/Problem.tsx — the two pictures in the problem cards.
    *
    * The queue is the one that mattered: three questions landing on one
    * desk, hard-coded in Arabic, so the English homepage showed an Arabic

@@ -1,7 +1,7 @@
 import type { Cta } from "../types";
 import type { FeatureId } from "@/lib/status";
-import type { IconName } from "@/components/ui/Icon";
-import type { MockName } from "@/components/mock/registry";
+import type { IconName } from "@/components/ui";
+import type { MockName } from "@/components/public/mock/registry";
 
 /*
  * The page contract.
@@ -28,7 +28,7 @@ import type { MockName } from "@/components/mock/registry";
  *     another file with the same shape, not thirty rebuilt pages — which is
  *     exactly what was asked for: Arabic now, English from it later.
  *   - Status chips stay honest. A block names a `feature` id and the chip is
- *     resolved from `lib/status.ts`, so a page cannot hard-code "coming
+ *     resolved from `src/lib/status.ts`, so a page cannot hard-code "coming
  *     spring 2027" and then keep saying it after it ships.
  *
  * When a page genuinely needs something this cannot express, add a block —
@@ -49,7 +49,7 @@ export type Cell =
   | string
   | {
       text?: string;
-      /** Resolves to a status chip via lib/status.ts. Never a literal label. */
+      /** Resolves to a status chip via src/lib/status.ts. Never a literal label. */
       feature?: FeatureId;
       /** The cell is the point of its row — a price, a recommended plan's limit. */
       strong?: boolean;
@@ -295,7 +295,7 @@ export type PageBlock =
    * while the page devoted to that same feature had two thousand words and
    * no screen. This block puts the picture on the page that earned it.
    *
-   * `mock` names a view in `components/mock/registry.tsx` rather than
+   * `mock` names a view in `src/components/public/mock/registry.tsx` rather than
    * importing one, because a content file is data. Same indirection as
    * `icon`, for the same reason.
    *
@@ -324,7 +324,7 @@ export type PageBlock =
    * the one page in this set that still showed nothing of the product.
    *
    * So the same nine rows are a control now. Pick one and its real screen
-   * appears beside it — the same `components/mock/` views the nine detail
+   * appears beside it — the same `src/components/public/mock/` views the nine detail
    * pages use, so the hub shows what the product looks like before asking
    * anybody to click into it.
    *
@@ -440,7 +440,7 @@ export type PageDoc = {
    * For the legal frames, which carry a real plain-language summary but no
    * legal text yet, and for anything else that would rank for a term and then
    * disappoint. A page that drops this becomes indexable and enters the
-   * sitemap in the same edit — see lib/pages/registry.ts.
+   * sitemap in the same edit — see src/lib/pages/registry.ts.
    */
   noindex?: boolean;
   /** Sitemap priority. Audience and solution pages earn more than legal. */

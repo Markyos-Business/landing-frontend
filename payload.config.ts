@@ -1,5 +1,6 @@
 import path from "path";
 import { mkdirSync } from "fs";
+import { tmpdir } from "os";
 import sharp from "sharp";
 import { fileURLToPath } from "url";
 import { buildConfig } from "payload";
@@ -90,9 +91,18 @@ const db = usePostgres
  * The cost is that `rm -rf node_modules` takes local CMS content with it.
  * That is acceptable for a scratch database — real content lives in Postgres,
  * and anything worth keeping locally should be seeded by a script.
+ *
+ * **On Vercel it goes to the system temp folder.** A Vercel function's
+ * filesystem is read-only except /tmp, and this runs at import — so a deploy
+ * without `DATABASE_URI` crashed on the import itself, before the CMS client's
+ * fallback to built-in content could catch anything: the hourly revalidations
+ * and every on-demand article URL failed instead of rendering the copy in
+ * content/. Throwaway is fine there for the same reason it is fine locally.
  */
 function sqliteFile(): string {
-  const dir = path.resolve(dirname, "node_modules/.cache/payload");
+  const dir = process.env.VERCEL
+    ? path.join(tmpdir(), "payload")
+    : path.resolve(dirname, "node_modules/.cache/payload");
   mkdirSync(dir, { recursive: true });
   return path.join(dir, "cms.db");
 }
@@ -142,7 +152,7 @@ export default buildConfig({
      *
      * markyos.com is a light page — paper ground, white cards, near-black
      * ink — and the admin is the surface a person reaches from it, usually in
-     * the next tab. The skin in app/(payload)/custom.css re-points Payload's
+     * the next tab. The skin in tailwind/admin.js re-points Payload's
      * theme variables onto that one palette, so there is no second set of
      * values to keep in step and nothing for a theme switch to switch to:
      * leaving it on would offer a theme that does not exist.
@@ -191,7 +201,7 @@ export default buildConfig({
     components: {
       /*
        * Inter and Thmanya Sans, the website's two faces. The admin is a
-       * separate root layout, so `app/fonts.ts` does not reach it and every
+       * separate root layout, so `src/app/fonts.ts` does not reach it and every
        * Arabic string in the panel rendered in a system fallback — see
        * cms/views/AdminFonts.tsx.
        */
@@ -240,7 +250,7 @@ export default buildConfig({
    * source text in front of them instead of an empty box.
    *
    * It is deliberately **not** how the public site reads. Every editorial
-   * read in `lib/content/payload.ts` passes `fallbackLocale: false`, because
+   * read in `src/lib/content/payload.ts` passes `fallbackLocale: false`, because
    * with Arabic primary a fallback is wrong in both directions: it would
    * print English body copy under an Arabic URL, and the other way round it
    * leaves a blank page rather than an absent one. Off, a piece exists in

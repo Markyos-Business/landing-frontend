@@ -66,7 +66,7 @@ is now correct. Longest line on the page: 139 characters before, 98 after.
 
 ### 4. One section heading was off the scale
 
-`theme.css` calls `--fs-h2` "one h2 size in the system". The founder note
+`tailwind/tokens.js` calls `--fs-h2` "one h2 size in the system". The founder note
 overrode it with a bespoke 28→34px clamp found nowhere else, so the one
 section in the founder's voice was also the only one whose heading came in
 smaller than its neighbours. All seven section headings now measure 44px at
@@ -88,7 +88,7 @@ resolved to near-white. With source-over alpha carried properly, **nothing on
 the page fails WCAG AA**.
 
 Ten nodes sit between 6.36:1 and 6.95:1 — just under the 7:1 that the comment
-in `theme.css` claims as a small-type floor. That claim is true of 60% white
+in `tailwind/tokens.js` claims as a small-type floor. That claim is true of 60% white
 on `#111`; it is not quite true on `--surface-2` (`#1A1A1A`), where the same
 ink gives 6.93:1. A comment to correct, not a colour to change.
 
@@ -276,7 +276,7 @@ an RTL page, so all six lines crossed. Each pair is now mirrored.
 ### Every page fired six failed cross-origin requests
 
 `/start` and `/login` redirect to `app.markyos.com`, so Next prefetching them
-logs a CORS failure and caches nothing. `lib/i18n/href.ts` has had
+logs a CORS failure and caches nothing. `src/lib/i18n/href.ts` has had
 `isAppHandoff` for exactly this since the last time it happened; the new CTA
 components simply did not call it. They do now.
 
@@ -285,7 +285,7 @@ components simply did not call it. They do now.
 The design file's 55%, 50% and 45% inks measure 4.34:1, 3.9:1 and 3.5:1 on
 this ground, and all three carry real copy. Darkened to 62% / 62% / 58%. The
 state hues had the same problem more severely — amber `#FFBB00` on a 14%
-amber tint is 1.6:1 — and are re-pointed in `theme.css` to the darker values
+amber tint is 1.6:1 — and are re-pointed in `tailwind/tokens.js` to the darker values
 the design file itself uses in its light mocks (`#C2004E`, `#00799A`,
 `#6A3BE0`). Fills stay bright; only ink darkened.
 
@@ -329,7 +329,7 @@ expensive thing a visitor can hit.
 `public/brand/` holds four superseded files — `markyos-wordmark.svg`,
 `markyos-wordmark-white.svg`, `markyos-mark-white.svg`,
 `markyos-lockup-white.svg`. Nothing references them; the masking approach in
-`components/brand/Logo.tsx` needs no white variants. They are previous
+`src/components/ui/brand/Logo.tsx` needs no white variants. They are previous
 artwork and should be deleted so nobody reaches for one.
 
 
@@ -998,7 +998,7 @@ word ramp was correct, 0.86 down to 0.51, and the line still looked grey.
 A block whose heading carries `.mk-words` now moves without fading.
 
 **An `inline-block` word would have broken every Arabic heading.** Not found
-by measurement — found by reading `globals.css` before writing the component.
+by measurement — found by reading `tailwind/` before writing the component.
 Every split-text implementation makes its words `inline-block` so they can be
 translated, and an `inline-block` is atomic to the `unicode-bidi: plaintext`
 scan each heading block here uses to pick its direction: it would have seen

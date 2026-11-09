@@ -20,7 +20,7 @@ the same thing — the Arabic is a separate string and will not follow the
 English automatically.
 
 ### 2. Update the status chips
-`lib/status.ts`. On launch day, flip every `status: "mvp"` to `"current"` for
+`src/lib/status.ts`. On launch day, flip every `status: "mvp"` to `"current"` for
 anything that actually shipped. The chips disappear on their own — `chipFor()`
 returns null for `current`, and for `mvp` once the phase is `public`.
 
@@ -34,7 +34,7 @@ The `CONFIRM` comment sits directly above the block.
 ### 4. Fill or hide the social proof section
 Currently **hidden**, which is the correct state. There is no component for it
 and nothing renders. When the beta produces real quotes, it goes between
-`FounderNote` and `Faq` in `app/[lang]/page.tsx`.
+`FounderNote` and `Faq` in `src/app/[lang]/page.tsx`.
 
 Never invent a quote, a logo or a number. Collect, in priority order:
 two or three studio quotes about the handoff moment ("What did your client say
@@ -61,7 +61,7 @@ Confirm **ماركيوس** is the right spelling of the brand name before it is 
 121 strings.
 
 ### 7. Check the stakeholder workshop ships with v2.0
-`lib/status.ts` → `stakeholder-workshop`. If it slips into the first two weeks
+`src/lib/status.ts` → `stakeholder-workshop`. If it slips into the first two weeks
 after launch it needs a `Coming March 2027` chip, which means adding that key
 to `ChipKey`, to `chips` in both locales, and setting the feature's status to
 `coming`.
@@ -109,13 +109,13 @@ done, and the swap is automatic.
 
 ### 11a. The tab icon is provisional
 
-`app/icon.svg` is the brand mark on the canvas colour, generated so the site
+`src/app/icon.svg` is the brand mark on the canvas colour, generated so the site
 stops 404ing a favicon on every page load. It is a stand-in, not a designed
 icon — a mark drawn for a 1027px lockup is not automatically right at 16px.
 Replace it in the design pass.
 
 ### 11. The OG image does not exist
-`lib/seo.ts` points at `/brand/og-en.png` and `/brand/og-ar.png`. Neither file
+`src/lib/seo.ts` points at `/brand/og-en.png` and `/brand/og-ar.png`. Neither file
 is in `public/brand/`.
 
 Every share of this link currently renders a broken card. Two images, 1200×630,
@@ -127,7 +127,7 @@ canonical tag, every `hreflang`, the sitemap and every Open Graph URL. Shipping
 without it tells Google the canonical home of every page is localhost.
 
 ### 13. No mobile navigation — DONE
-Built with the Solutions menu. `components/chrome/MobileNav.tsx`: a hamburger
+Built with the Solutions menu. `src/components/navbar/MobileNav.tsx`: a hamburger
 and a full-height panel, with native `<details>` accordions nested one level,
 so Solutions opens to three audiences and each opens to its four solutions.
 They work before hydration.
@@ -315,7 +315,7 @@ still load-bearing:
 
 - Its URL returned **404** while the index linked to it, because a dynamic
   route param arrives percent-encoded while `generateStaticParams` returns
-  the slug decoded. `lib/pages/params.ts` now decodes it in all three article
+  the slug decoded. `src/lib/pages/params.ts` now decodes it in all three article
   routes. Arabic slugs work, which they must — the CMS will slugify an Arabic
   title this way again whether or not anybody intends it.
 - `docs/OPEN-DECISIONS.md` §0.5 says slugs stay English in both languages.
@@ -336,7 +336,7 @@ bytes, gets a **500** instead of a 400. `/nope` still 404s correctly, so this
 is specifically about parsing, not routing.
 
 It is Next 16.4.2 behaviour, not ours. The throw happens while the request URL
-is parsed, **before** `proxy.ts` is called — a `try`/`catch` around
+is parsed, **before** `src/proxy.ts` is called — a `try`/`catch` around
 `request.nextUrl` was tried and never fires, so it was reverted rather than
 left in as dead code with a confident comment on it.
 
@@ -362,7 +362,7 @@ written and would mean an editor opens a new post in Arabic by default. Worth
 deciding with whoever writes, not unilaterally.
 
 **Comparisons still read with fallback on.** `listComparisons` and
-`getComparison` in `lib/content/payload.ts` were left as they were. The three
+`getComparison` in `src/lib/content/payload.ts` were left as they were. The three
 articles collections were changed because a real post proved the bug there;
 the comparison pages are seeded and had nothing to prove it with. If a
 comparison is ever published in one language only, it will show the same blank

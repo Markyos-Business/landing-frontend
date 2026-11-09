@@ -1,0 +1,146 @@
+export const bidiStyles = [
+  /* Bidirectional text isolation. Imported by tailwind/, in order. */
+  /* ── Bidirectional text isolation ─────────────────────────────────────────
+   *
+   * Found by running the Arabic page and reading it.
+   *
+   * A Latin string inside an RTL container is laid out by the Unicode bidi
+   * algorithm as part of the surrounding Arabic paragraph, which moves its
+   * trailing punctuation and its leading digits to the wrong end. On /ar the
+   * proof strip rendered "guideline sections that build themselves 16" — the
+   * 16 had jumped from the front of the sentence to the back — and the
+   * announcement bar put its full stop at the left edge.
+   *
+   * `unicode-bidi: plaintext` is the CSS form of `dir="auto"`: it resolves each
+   * element's direction from its own first strong character instead of
+   * inheriting the page's. An English line inside the Arabic page then lays out
+   * as English, and an Arabic line as Arabic, with no per-element attribute and
+   * nothing for a component to remember.
+   *
+   * This matters in two situations that are both permanent:
+   *
+   *   1. Untranslated copy. Arabic falls back to English by design, so Latin
+   *      text on the Arabic page is a normal state, not a bug to be fixed by
+   *      translating it away.
+   *   2. Terms that stay Latin on purpose — PDF, Figma, Stripe, API,
+   *      final_FINAL_v3.pdf — which the Arabic copy document lists explicitly
+   *      and which will still be there long after everything else is Arabic.
+   *
+   * Scoped to RTL: the English page has no mixed-direction problem to solve,
+   * and applying it there would change nothing while costing a rule.
+   */
+  { "[dir=\"rtl\"]\n  :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, summary, figcaption, th, td, blockquote, cite, label, time)": {
+    "unicode-bidi": "plaintext",
+  } },
+  /*
+   * An isolate inside a plaintext block hides the text from it.
+   *
+   * `plaintext` reads the block's first strong character to decide which way
+   * the block runs. An isolated child is not transparent to that scan: the
+   * algorithm sees one neutral object replacement character, finds no strong
+   * character at all, and falls back to left-to-right. The block then sets
+   * `text-align: start` to the *left*, and an Arabic heading lands on the
+   * wrong side of the page — while the Arabic inside it still reads correctly,
+   * which is what makes it look like a styling accident rather than a bidi one.
+   *
+   * `.mk-bidi` makes exactly that isolate. Wherever a component wrapped its
+   * string in one *inside* an element the rule above already covers —
+   * `<h2><span class="mk-bidi">…</span></h2>` is the common shape, and
+   * `<li><a class="mk-bidi">…</a></li>` is the other — the block it was meant
+   * to help was the thing it broke. It cost 250 blocks across the site: every
+   * footer link, every CMS-rendered heading, and most cells of the comparison
+   * tables on /pricing, /platform and /solutions.
+   *
+   * So an inline `.mk-bidi` directly inside one of those blocks stops
+   * isolating. The resolution does not disappear, it moves up one level to the
+   * block that actually owns the alignment — which is a better place for it:
+   * an English fallback string now turns its whole heading left-to-right
+   * instead of leaving an English line hard against the right edge.
+   *
+   * Inline only, and at any depth. A block child — `<li><p class="mk-bidi">` —
+   * starts its own bidi paragraph whatever this says and keeps resolving its
+   * own direction, so no block tag is listed here. Depth matters because the
+   * isolates nest: a status chip is `<span class="mk-bidi"><span
+   * class="mk-bidi">…`, and de-isolating only the outer one leaves the inner
+   * one still hiding the text from the cell.
+   *
+   * Nesting is also the case the original rule was written for — "a Latin
+   * fragment inside an Arabic sentence should inherit the paragraph's
+   * direction, not isolate" — so a Latin term inside an Arabic paragraph now
+   * behaves the way that comment asks for, which it did not before.
+   */
+  { "[dir=\"rtl\"]\n  :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, summary, figcaption, th, td, blockquote, cite, label, time)\n  :where(a, span, strong, em, b, i, code, abbr, small, time).mk-bidi": {
+    "unicode-bidi": "normal",
+  } },
+  /*
+   * The one case the rule above cannot reach.
+   *
+   * An `inline-flex` box is atomic to the bidi algorithm whatever its
+   * `unicode-bidi` says — the parent sees one object replacement character and
+   * nothing inside it. So a cell holding only a chip has no text for
+   * `plaintext` to read and falls back to left-to-right forever.
+   *
+   * `.mk-atomic` marks a wrapper that is one of those boxes, and the block
+   * holding it stops guessing: `isolate` makes it use its own inherited
+   * `direction`, which on this page is the page's. That is the right answer
+   * here — a chip is a label in the reader's language, not a string that might
+   * be either — and it is the only way out, since there is no "plaintext, but
+   * fall back to rtl" in CSS.
+   */
+  { "[dir=\"rtl\"]\n  :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, summary, figcaption, th, td, blockquote, cite, label, time):has(\n    > .mk-atomic\n  )": {
+    "unicode-bidi": "isolate",
+  } },
+  /*
+   * A column takes the page's direction, not each cell's.
+   *
+   * The opposite of `.mk-atomic`'s problem and the same answer. `plaintext`
+   * resolves every element it touches *separately*, which is right for a
+   * standalone string and wrong for a column of them: each cell picks its own
+   * direction and therefore its own edge, and the column stops being a column.
+   *
+   * Measured on the Arabic homepage: the problem table's "usual tool" column is
+   * 308px wide and its seven cells' text ran to seven different edges, because
+   * "Google Forms or Typeform" begins with a Latin letter and went left-to-right
+   * while "a PDF or Guidelines.site" begins with Arabic and went right-to-left.
+   * Both read correctly on their own. Together they look like a column somebody
+   * forgot to align.
+   *
+   * So a cell marked this way stops guessing and takes the direction it
+   * inherits, which is the page's and the one its column header already uses.
+   * The Latin runs inside still reorder correctly — the bidi algorithm handles
+   * them within an RTL paragraph, and on an Arabic line a Latin tool name is
+   * *meant* to begin at the right.
+   *
+   * Only for mixed or Arabic-led content. A cell that is one Latin string ending
+   * in punctuation ("Figma.") would have its full stop moved to the far end by
+   * an RTL paragraph direction, which is the case `plaintext` exists for; such a
+   * cell keeps the default.
+   */
+  { "[dir=\"rtl\"] .mk-page-dir": {
+    "unicode-bidi": "isolate",
+  } },
+  /*
+   * Deliberately only the reordering, not alignment.
+   *
+   * Adding `text-align: start` here would also have been correct in principle,
+   * and it overrode the hero's `text-center` — same specificity, later in the
+   * file — which centred nothing and left the headline hard against one edge.
+   * Alignment belongs to the component that laid the section out; the bidi
+   * algorithm's ordering does not.
+   */
+  /*
+   * For a standalone string inside a generic wrapper.
+   *
+   * The rule above covers real text elements. A string rendered into a bare
+   * <span> or <div> — the announcement bar, a chip, a pill — is not covered,
+   * because applying `plaintext` to every inline span would also isolate the
+   * Latin fragments *inside* an Arabic sentence, where inheriting the
+   * paragraph's direction is exactly what should happen.
+   *
+   * So those opt in. Use this on any element whose entire content is one string
+   * that might be in either language.
+   */
+  { ".mk-bidi": {
+    "unicode-bidi": "plaintext",
+  } },
+];

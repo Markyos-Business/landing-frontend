@@ -483,7 +483,7 @@ async function main(): Promise<void> {
          * Named only in the metadata table — it is never placed in the body
          * — so it is read from the row rather than lifted out of the text
          * like the cover. One per piece per language at 1200x630, which is
-         * what `lib/seo.ts` wanted and did not have.
+         * what `src/lib/seo.ts` wanted and did not have.
          */
         let ogImage: number | string | undefined;
         const ogName = (map.get("Social image") ?? "").match(/`([^`]+\.png)`/)?.[1];

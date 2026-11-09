@@ -22,7 +22,7 @@ They fall into four kinds, and three of them are work:
   article, the Word copy and the images, and no PDF or template. Until one is
   uploaded to the guide's `downloadFile`, "Download the template" has nothing
   behind it, which is why the markers were not rendered as buttons.
-- **`[CHIP: …]` / `[شارة: …]`** — a launch-status chip. `lib/status.ts` already
+- **`[CHIP: …]` / `[شارة: …]`** — a launch-status chip. `src/lib/status.ts` already
   owns these by feature id; they were never going to be placed from a string
   in the body.
 

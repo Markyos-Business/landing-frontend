@@ -1,0 +1,124 @@
+export const designLanguageStyles = [
+  /* The design language: cards, insets, bands and the light. Imported by tailwind/, in order. */
+  /* ── The design language ──────────────────────────────────────────────────
+   *
+   * Everything from here down is the Markyos Design System's vocabulary,
+   * written once so that twenty sections cannot each invent their own card.
+   * The values come from MARKYOS-DESIGN-SYSTEM.md; UI-UX Design Reference/
+   * still governs layout, section order and composition, but no longer colour,
+   * type or shape.
+   *
+   * The rule that keeps it honest: a section composes these, it does not
+   * redefine them. If a section needs a card that is 2px rounder, that is a
+   * design question, not a licence to write a one-off class.
+   */
+  /*
+   * The card.
+   *
+   * Flat #111 with a 1px ring at 10% white. Depth comes from surface lift and
+   * light, never from a gradient or a drop shadow — the gradient this rule used
+   * to carry is retired.
+   *
+   * The ring is an outer `box-shadow` rather than a `border`: a child that
+   * paints to the card's edge cannot cover it, and swapping it for the lit
+   * variant does not shift the card's geometry by a pixel.
+   *
+   * `isolation` so a card that carries a glow inside it clips and composites it
+   * against itself rather than the page.
+   */
+  { ".mk-card": {
+    "position": "relative",
+    "isolation": "isolate",
+    /* `clip`, not `hidden`. Both clip identically; only `hidden` makes the
+     element a *scroll container*, and `animation-timeline: view()` resolves
+     against the nearest one — so every reveal inside a `hidden` box is
+     measured against a box that never scrolls, sits at 100% progress and
+     silently never runs. That cost 66 reveals across four sections once
+     already. `clip` is the same clip without the scroll container. */
+    "overflow": "clip",
+    "border": "0",
+    "border-radius": "var(--radius-card)",
+    "background": "var(--surface-1)",
+    /* The landing design lifts cards off the near-white ground rather than
+     ringing them against black. Still an outer shadow, so children cannot
+     cover it and the geometry does not shift. */
+    "box-shadow": "var(--lift-card)",
+  } },
+  /* Card padding, one value, so a grid of them lines up internally as well as
+   externally. 25px at desktop, tightened on a phone where it would otherwise
+   eat half the measure. */
+  { ".mk-card-pad": {
+    "padding": "1.25rem",
+  } },
+  { "@media (min-width: 40rem)": {
+    ".mk-card-pad": {
+      "padding": "var(--mk-card-pad)",
+    },
+  } },
+  /*
+   * A panel inside a card.
+   *
+   * Drops back to the canvas colour rather than going lighter, which is the
+   * reference's move for the tone checker's input, the analysis findings and
+   * the voice table: inside an already-raised surface, *recessed* is the only
+   * direction left that still reads.
+   */
+  { ".mk-inset": {
+    "border": "1px solid var(--hairline)",
+    "border-radius": "var(--radius-widget)",
+    "background": "var(--canvas)",
+  } },
+  /*
+   * ── Light — the signature ────────────────────────────────────────────────
+   *
+   * Blue is never a fill on this site. It is light: ~2% of any layout, and
+   * **one source per composition**. Four forms, and a section uses at most one.
+   */
+  /*
+   * The light pool.
+   *
+   * Decorative and nothing else, so every use is aria-hidden and none of it is
+   * in the tab or reading order. Sized by the element it is placed in, and sits
+   * behind the one object a section is about.
+   */
+  { ".mk-glow": {
+    "position": "absolute",
+    "z-index": "-1",
+    "pointer-events": "none",
+    "border-radius": "50%",
+    /*
+     * The landing design's light pool, which is the one on the homepage: a soft
+     * radial that stops at 70% of its own box, with no blur. The previous value
+     * was a 32%-blue disc under a 40px blur, tuned for a black ground, where it
+     * read as a light source; on #F7F8FA the same disc reads as a blue stain.
+     */
+    "background": "radial-gradient(\n    50% 50% at 50% 50%,\n    rgba(0, 153, 255, 0.11),\n    rgba(0, 153, 255, 0) 70%\n  )",
+    /*
+     * A pool is as tall as it is wide unless a caller says otherwise.
+     *
+     * Four callers set a width and no height — the hero on every data-driven
+     * page, the closing CTA on every one, the editorial header and the 404 —
+     * so the element was 0px tall and the light those pages were composed
+     * around has never once been painted. A ratio means a width alone is
+     * enough, and `h-*` from a caller still wins.
+     */
+    "aspect-ratio": "1.6",
+  } },
+  /*
+   * The neon edge: the one selected or focused object in a composition.
+   *
+   * A lit 1px ring, drawn as an inset shadow so it replaces the card's resting
+   * ring without changing its geometry.
+   */
+  { ".mk-neon": {
+    /*
+     * The landing design's selected ring: a 1.5px lit edge and a 6px halo at 8%.
+     * `--mk-glow` is three stacked blue shadows out to 64px, which is a light
+     * source on a black ground and a bruise on a near-white one — the
+     * recommended plan card was wearing a halo wider than the gap to its
+     * neighbour. Outer rather than inset, so it reads as light around the card
+     * rather than as a border drawn inside it.
+     */
+    "box-shadow": "0 0 0 1.5px var(--mk-blue),\n    0 0 0 6px rgba(0, 153, 255, 0.08)",
+  } },
+];

@@ -15,7 +15,8 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./*"],
+      "@/content/*": ["./content/*"],
+      "@/*": ["./src/*"],
       "@payload-config": ["./payload.config.ts"]
     }
   },

@@ -5,7 +5,7 @@ import { BASE, assertServerUp, launch } from "./browser-lib.mjs";
 /*
  * Every revealed element has to reach its own settled state.
  *
- * The reveals in `app/globals.css` are scroll-driven: an element's animation
+ * The reveals in `tailwind/` are scroll-driven: an element's animation
  * is positioned along its crossing of the viewport rather than along a clock.
  * That is what makes them fail safe — no JavaScript, and a browser without
  * `animation-timeline` drops the whole block and renders the page as it
@@ -260,7 +260,7 @@ if (problems.length) {
       "  `.mk-rise-end` / `.mk-seq-end`, which measure in `entry` instead —\n" +
       "  or `.mk-still`, if the element positions itself with `translate`\n" +
       "  and the reveal is fighting it. See the motion block in\n" +
-      "  app/globals.css.\n",
+      "  tailwind/.\n",
   );
   process.exit(1);
 }

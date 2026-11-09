@@ -25,7 +25,7 @@ and both are now handled rather than hidden:
   bare runner. It is also enforced by `.github/workflows/checks.yml` on every
   pull request, so a cloud session cannot merge past it.
 - **Token drift is not checked.** `npm run check:tokens` compares
-  `app/tokens.generated.css` against the platform app, which lives in a
+  `src/app/tokens.generated.css` against the platform app, which lives in a
   separate repo that is not checked out in a cloud session. It prints a
   warning and passes. That is expected. CI emits a notice saying so. If a task
   touches design tokens, verify it on a machine that has both repos.
@@ -39,7 +39,7 @@ stub stylesheet written to silence it would make the check lie.
 
 > The v2 homepage rewrite left seven section components rendering nowhere:
 > `Bilingual`, `ComingNext`, `HandoffLoop`, `Problem`, `Statement`,
-> `StudioPath` and `ToneChecker`, all in `components/sections/`. Confirm that
+> `StudioPath` and `ToneChecker`, all in `src/components/public/home/`. Confirm that
 > list yourself rather than trusting it — grep for each name across `app/`,
 > `components/` and `lib/` and report anything that is actually still
 > referenced.
@@ -55,14 +55,14 @@ stub stylesheet written to silence it would make the check lie.
 > before and after numbers and confirm the percentage is still 100%.
 >
 > Read `CLAUDE.md`, `AGENTS.md` and `MARKYOS-DESIGN-SYSTEM.md` first; they are
-> binding. Never edit `app/tokens.generated.css`. `npm run check`, `npm run
+> binding. Never edit `tailwind/tokens.generated.js`. `npm run check`, `npm run
 > build` and `npm run check:live` must all pass — start the server with
 > `npx next start -p 3210 &` before the last one. Open a pull request.
 
 ## Task 2 — the navigation is carrying too much
 
 > The header mega menu holds 18 destinations with two-line descriptions, which
-> is more than a visitor can scan. Audit it: read `components/chrome/Nav.tsx`
+> is more than a visitor can scan. Audit it: read `src/components/navbar/nav/`
 > and the `nav` section of `content/en/index.ts`, list every destination, and
 > work out which are genuinely top-level, which belong one level down, and
 > which are duplicates of each other.
@@ -84,7 +84,7 @@ stub stylesheet written to silence it would make the check lie.
 
 > This repo has no `.gitattributes`, and about 120 files produced CRLF
 > warnings when they were first committed from Windows. Add one with
-> `* text=auto eol=lf`, plus explicit `binary` for the fonts in `app/fonts/`
+> `* text=auto eol=lf`, plus explicit `binary` for the fonts in `src/app/fonts/`
 > and the images under `public/` and `UI-UX Design Reference/`.
 >
 > Then renormalise the tree in its own commit (`git add --renormalize .`) so
