@@ -1,3 +1,4 @@
+import { currentPricingTeaser } from "../current-pricing.ts";
 import type { DeepPartial, SiteCopy } from "../types";
 
 /*
@@ -1395,75 +1396,7 @@ export const overrides: DeepPartial<SiteCopy> = {
       link: { label: "اطّلع على خريطة الطريق كاملة", href: "/roadmap" },
     },
 
-    pricingTeaser: {
-      headline: "ابدأ مجاناً. وادفع حين تكبر.",
-      body: "مشروع كامل مجاناً للاستوديوهات، ومركز كامل مجاناً للشركات. والخطط المدفوعة من 24 دولاراً شهرياً.",
-      studioToggle: "للاستوديوهات",
-      companyToggle: "للشركات",
-      recommendedLabel: "موصى بها",
-      studioPlans: [
-        {
-          name: "المجانية",
-          price: "مجاناً",
-          rows: [{ label: "المشاريع النشطة", value: "1" }],
-          line: "نفّذ مشروعاً كاملاً، من الاستبيان حتى التسليم",
-          cta: { label: "ابدأ مجاناً", href: "/start?type=studio" },
-        },
-        {
-          name: "الاحترافية",
-          price: "24 دولاراً شهرياً",
-          recommended: true,
-          rows: [{ label: "المشاريع النشطة", value: "3" }],
-          line: "للمستقلين الذين يعملون مع عدة عملاء في وقت واحد",
-          cta: { label: "ابدأ الاحترافية", href: "/start?type=studio&plan=pro" },
-        },
-        {
-          name: "الاستوديو",
-          price: "59 دولاراً شهرياً",
-          rows: [{ label: "المشاريع النشطة", value: "10" }],
-          line: "للاستوديوهات التي لديها فريق (5 مقاعد)",
-          cta: { label: "ابدأ الاستوديو", href: "/start?type=studio&plan=studio" },
-        },
-      ],
-      companyPlans: [
-        {
-          name: "المجانية",
-          price: "مجاناً",
-          rows: [
-            { label: "المحرّرون", value: "2" },
-            { label: "المشاهدون", value: "25" },
-          ],
-          line: "ابنِ مركزك وراجع محتواك",
-          cta: { label: "ابدأ مجاناً", href: "/start?type=company" },
-        },
-        {
-          name: "العلامة",
-          price: "24 دولاراً شهرياً",
-          recommended: true,
-          rows: [
-            { label: "المحرّرون", value: "5" },
-            { label: "المشاهدون", value: "بلا حدود" },
-          ],
-          line: "شركتك كلها على هوية واحدة",
-          cta: { label: "ابدأ العلامة", href: "/start?type=company&plan=brand" },
-        },
-        {
-          name: "الفريق",
-          price: "59 دولاراً شهرياً",
-          rows: [
-            { label: "المحرّرون", value: "15" },
-            { label: "المشاهدون", value: "بلا حدود" },
-          ],
-          line: "لعدة علامات (3) وفرق أكبر",
-          cta: { label: "ابدأ الفريق", href: "/start?type=company&plan=team" },
-        },
-      ],
-      studioNote: "المشاريع المسلّمة لا تُحتسب. تتحرر حصتها لحظة يتسلّم العميل مركزه.",
-      companyNote:
-        "المشاهدون مجانيون في كل الخطط المدفوعة. تدفع مقابل من يغيّر العلامة، لا من يستخدمها.",
-      underBoth: "وفّر نحو 20% مع الاشتراك السنوي.",
-      link: { label: "قارن كل الخطط", href: "/pricing" },
-    },
+    pricingTeaser: currentPricingTeaser("ar"),
 
     founderNote: {
       headline: "لماذا بنيت ماركيوس",

@@ -24,11 +24,12 @@
     "check:pages": "node scripts/check-pages.mjs",
     "check:articles": "node scripts/check-articles.mjs",
     "check:live": "npm run check:articles && npm run check:bidi && npm run check:align && npm run check:nav && npm run check:pages && npm run check:motion",
-    "check": "tsc --noEmit && eslint . --max-warnings=0 && npm run check:tokens && npm run check:design && npm run check:locales",
+    "check": "tsc --noEmit && eslint . --max-warnings=0 && npm run check:tokens && npm run check:design && npm run check:locales && npm run check:pricing",
     "check:bidi": "node scripts/check-bidi.mjs",
     "check:align": "node scripts/check-align.mjs",
     "check:nav": "node scripts/check-nav.mjs",
     "check:motion": "node scripts/check-motion.mjs",
+    "check:pricing": "node scripts/check-pricing.mjs",
     "cms:import": "payload run scripts/import-resources.ts"
   },
   "dependencies": {
