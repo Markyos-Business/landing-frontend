@@ -261,7 +261,7 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
 
             <li>
               <Link
-                href="/login"
+                href={localeHref(locale, "/login")}
                 prefetch={false}
                 className="mk-bidi block py-4 text-[0.9375rem] font-medium text-[var(--text)]"
               >
@@ -291,7 +291,7 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
           {/* The margin and the width belong to the wrapper now — it is the
               flex item — and the pill fills it from `.mk-spark > a`. */}
           <Spark full>
-            <Link href="/start" prefetch={false} className="mk-btn mk-solid mt-6 w-full">
+            <Link href={localeHref(locale, "/start")} prefetch={false} className="mk-btn mk-solid mt-6 w-full">
               <span className="mk-bidi">{copy.startFree}</span>
             </Link>
           </Spark>

@@ -1,5 +1,5 @@
 export const disclosureStyles = [
-  /* Disclosures. Imported by tailwind/, in order. */
+  /* Disclosures. Registered by tailwind.config.js, in order. */
   /* ── Disclosures open and close ──────────────────────────────────────────
    *
    * Every `<details>` on this site — the FAQ, the FAQ on the data-driven

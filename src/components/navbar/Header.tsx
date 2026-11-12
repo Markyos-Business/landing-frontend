@@ -93,7 +93,7 @@ export function Header({ copy, locale }: { copy: NavCopy; locale: Locale }) {
           </span>
 
           <Link
-            href="/login"
+            href={localeHref(locale, "/login")}
             prefetch={false}
             className="mk-bidi hidden py-1 text-[length:var(--fs-ui)] font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text)] lg:block"
           >
@@ -102,7 +102,7 @@ export function Header({ copy, locale }: { copy: NavCopy; locale: Locale }) {
 
           {/* The standing ask, and the only lit thing in the header. */}
           <Spark>
-            <Link href="/start" prefetch={false} className="mk-btn mk-btn-sm mk-solid">
+            <Link href={localeHref(locale, "/start")} prefetch={false} className="mk-btn mk-btn-sm mk-solid">
               <span className="mk-bidi">{copy.startFree}</span>
             </Link>
           </Spark>

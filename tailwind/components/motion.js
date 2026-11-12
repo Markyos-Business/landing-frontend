@@ -1,5 +1,5 @@
 export const motionStyles = [
-  /* Grids and scroll motion. Imported by tailwind/, in order. */
+  /* Grids and scroll motion. Registered by tailwind.config.js, in order. */
   /* ── Grids ───────────────────────────────────────────────────────────────── */
   /*
    * The reference's gutter is 16px between cards, everywhere, in every grid.

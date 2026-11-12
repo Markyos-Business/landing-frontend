@@ -1,5 +1,5 @@
 export const transitionStyles = [
-  /* The page transition. Imported by tailwind/, in order. */
+  /* The page transition. Registered by tailwind.config.js, in order. */
   /* ── The page transition's paint ─────────────────────────────────────────────
    *
    * `src/app/[lang]/template.tsx` names the two halves — why it is a template, why

@@ -1,5 +1,5 @@
 export const buttonsStyles = [
-  /* Rules, buttons and pointer states. Imported by tailwind/, in order. */
+  /* Rules, buttons and pointer states. Registered by tailwind.config.js, in order. */
   /* ── Rules ───────────────────────────────────────────────────────────────── */
   /* The line between sections. Full-bleed, drawn by the section rather than by
    a card, so it survives a section having no card in it. */
@@ -160,4 +160,25 @@ export const buttonsStyles = [
       },
     } },
   ] },
+  /*
+   * A text link whose underline arrives on hover, rather than snapping in.
+   *
+   * The line is always drawn and only its colour changes, transparent to the
+   * link's own, so nothing on the line moves and the change can ease over the
+   * same 120ms every other hover on the site takes. On a link itself it
+   * answers its own hover; on a title inside a card that is the link
+   * (`.group`), it answers the card's — which is what `hover:underline` and
+   * `group-hover:underline` did instantly. Hover-capable pointers only, as
+   * Tailwind's `hover:` was, so a tap does not leave a line behind.
+   */
+  { ".mk-underline-reveal": {
+    "text-decoration-line": "underline",
+    "text-decoration-color": "transparent",
+    "transition": "text-decoration-color var(--mk-dur-fast) var(--mk-ease)",
+  } },
+  { "@media (hover: hover)": {
+    ".mk-underline-reveal:hover, .group:hover .mk-underline-reveal": {
+      "text-decoration-color": "currentColor",
+    },
+  } },
 ];

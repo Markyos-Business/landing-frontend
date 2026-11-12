@@ -1,5 +1,5 @@
 export const pageBlocksStyles = [
-  /* Page blocks: showcase, note, deep panel, callout, table and accent. Imported by tailwind/, in order. */
+  /* Page blocks: showcase, note, deep panel, callout, table and accent. Registered by tailwind.config.js, in order. */
   /*
    * The product, shown.
    *

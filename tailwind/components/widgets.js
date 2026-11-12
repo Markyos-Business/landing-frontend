@@ -1,5 +1,5 @@
 export const widgetsStyles = [
-  /* Spark, the station dial and the switch. Imported by tailwind/, in order. */
+  /* Spark, the station dial and the switch. Registered by tailwind.config.js, in order. */
   /*
    * The cursor light on a primary CTA.
    *

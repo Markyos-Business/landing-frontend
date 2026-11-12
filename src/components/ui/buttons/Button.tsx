@@ -41,7 +41,7 @@ type Tone = "page" | "deep";
 // either. The hit area grows; the text does not move.
 const LINK =
   "mk-tap inline-flex items-center gap-1.5 text-sm font-medium " +
-  "hover:underline underline-offset-4";
+  "mk-underline-reveal underline-offset-4";
 
 /*
  * Every resting fill, as one class per (variant, tone).

@@ -46,7 +46,7 @@ export function ArticleList({
             <li key={post.slug} className="flex">
               <Link href={localeHref(locale, `/help/${post.slug}`)} className="mk-help-row group">
                 <span className="min-w-0">
-                  <span className="mk-bidi block text-[length:var(--fs-ui)] leading-[1.5] font-medium text-[var(--text)] group-hover:underline">
+                  <span className="mk-bidi block text-[length:var(--fs-ui)] leading-[1.5] font-medium text-[var(--text)] mk-underline-reveal">
                     {post.title}
                   </span>
                   <span className="mk-bidi mt-1.5 block text-[length:var(--fs-eyebrow)] text-[var(--text-muted)]">

@@ -1,5 +1,5 @@
 export const baseStyles = [
-  /* Element defaults. Imported by tailwind/, in order. */
+  /* Element defaults. Registered by tailwind.config.js, in order. */
   { "*": {
     "box-sizing": "border-box",
   } },

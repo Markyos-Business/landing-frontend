@@ -1,3 +1,4 @@
+import { currentPricingTeaser } from "../current-pricing.ts";
 import type { SiteCopy } from "../types";
 
 /*
@@ -7,11 +8,10 @@ import type { SiteCopy } from "../types";
  * voice rules in §1.5 (short sentences, "you" over "we", real nouns, no
  * exclamation marks, none of "revolutionary / seamless / leverage / unlock").
  *
- * Three things in here are deliberately unfinished and must not ship as they
- * stand. Each is marked CONFIRM at its line, and all three are listed in
+ * Two things in here are deliberately unfinished and must not ship as they
+ * stand. Each is marked CONFIRM at its line, and both are listed in
  * docs/BEFORE-PUBLISH.md:
  *   - "No card needed" on the free plans
- *   - every price (hypotheses until the beta pricing test closes 1 Feb 2027)
  *   - the founder note, which Abdullah rewrites in his own words
  */
 
@@ -1451,80 +1451,8 @@ export const copy: SiteCopy = {
       link: { label: "See the full roadmap", href: "/roadmap" },
     },
 
-    // CONFIRM: every price below is a hypothesis until the beta pricing test
-    // closes on 1 Feb 2027. Update from the final pricing page before launch.
-    pricingTeaser: {
-      headline: "Start free. Pay as you grow.",
-      // §2.9. The scope of the free plans, before the three cards spell
-      // them out — a reader who stops here still leaves with the offer.
-      body: "A full project free for studios. A full hub free for companies. Paid plans from $24 a month.",
-      studioToggle: "For studios",
-      companyToggle: "For companies",
-      studioPlans: [
-        {
-          name: "Free",
-          price: "$0",
-          rows: [{ label: "Active projects", value: "1" }],
-          line: "Run a full project, from brief to handoff",
-          cta: { label: "Start free", href: "/start?type=studio&plan=free" },
-        },
-        {
-          name: "Pro",
-          price: "$24/month",
-          rows: [{ label: "Active projects", value: "3" }],
-          line: "For freelancers running a few clients at once",
-          cta: { label: "Start with Pro", href: "/start?type=studio&plan=pro" },
-          recommended: true,
-        },
-        {
-          name: "Studio",
-          price: "$59/month",
-          rows: [{ label: "Active projects", value: "10" }],
-          line: "For studios with a team (5 seats)",
-          cta: { label: "Start with Studio", href: "/start?type=studio&plan=studio" },
-        },
-      ],
-      companyPlans: [
-        {
-          name: "Free",
-          price: "$0",
-          rows: [
-            { label: "Editors", value: "2" },
-            { label: "Viewers", value: "25" },
-          ],
-          line: "Build your hub and check your content",
-          cta: { label: "Start free", href: "/start?type=company&plan=free" },
-        },
-        {
-          name: "Brand",
-          price: "$24/month",
-          rows: [
-            { label: "Editors", value: "5" },
-            { label: "Viewers", value: "Unlimited" },
-          ],
-          line: "Your whole company, on brand",
-          cta: { label: "Start with Brand", href: "/start?type=company&plan=brand" },
-          recommended: true,
-        },
-        {
-          name: "Team",
-          price: "$59/month",
-          rows: [
-            { label: "Editors", value: "15" },
-            { label: "Viewers", value: "Unlimited" },
-          ],
-          line: "For several brands (3) and bigger teams",
-          cta: { label: "Start with Team", href: "/start?type=company&plan=team" },
-        },
-      ],
-      recommendedLabel: "Recommended",
-      studioNote:
-        "Handed-off projects don't count. Your slot frees up the moment the client owns their hub.",
-      companyNote:
-        "Viewers are free on every paid plan. You pay for the people who change the brand, not the people who use it.",
-      underBoth: "Save about 20% with annual billing.",
-      link: { label: "Compare all plans", href: "/pricing" },
-    },
+    // Keep the homepage offer aligned with the pricing page and current checkout.
+    pricingTeaser: currentPricingTeaser("en"),
 
     // CONFIRM: Abdullah to rewrite in his own words, and correct the regions
     // to match his real client history. Do not publish as drafted.

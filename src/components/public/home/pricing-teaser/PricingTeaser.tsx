@@ -13,9 +13,9 @@ import { Plan } from "./Plan";
  *
  * ── Two audiences, one grid ──────────────────────────────────────────────
  *
- * Studios pay by active projects, companies pay by editors, and the two
- * ladders happen to cost the same. Showing both at once would mean six cards
- * and a reader working out which three are theirs; the toggle shows three.
+ * Account types determine the current per-brand price. Studios and freelancers
+ * share a panel; companies have their own. Both use the same pricing catalog
+ * as the full pricing page.
  *
  * It is a real radio group, not two buttons: the two options are mutually
  * exclusive states of one control, so arrow keys move between them and a
@@ -23,9 +23,6 @@ import { Plan } from "./Plan";
  * absolutely-positioned element behind the labels — that way the labels
  * never move, and only `transform` animates.
  *
- * The recommended plan carries the lit ring and the badge. Exactly one, in
- * both ladders, because a recommendation that applies to two of three cards
- * is not one.
  */
 
 export function PricingTeaser({ copy, locale }: {

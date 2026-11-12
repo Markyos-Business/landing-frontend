@@ -1,5 +1,5 @@
 export const proseStyles = [
-  /* The article body. Imported by tailwind/, in order. */
+  /* The article body. Registered by tailwind.config.js, in order. */
   /* ── Article body ─────────────────────────────────────────────────────────
    *
    * Styling for whatever an editor writes in the CMS. Scoped to `.mk-prose` and
@@ -65,6 +65,8 @@ export const proseStyles = [
     "color": "var(--text)",
     "text-decoration": "underline",
     "text-underline-offset": "0.2em",
+    /* Blue arrives over the site's hover duration rather than at once. */
+    "transition": "color var(--mk-dur-fast) var(--mk-ease)",
   } },
   { ".mk-prose a:hover": {
     "color": "var(--accent)",

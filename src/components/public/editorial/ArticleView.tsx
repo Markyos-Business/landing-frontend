@@ -37,7 +37,7 @@ export function ArticleView({
       <nav aria-label="Breadcrumb" className="mb-8">
         <Link
           href={localeHref(locale, `/${PATH[collection]}`)}
-          className="mk-bidi inline-flex items-center gap-1.5 text-[length:var(--fs-ui)] font-medium text-[var(--accent-text)] hover:underline"
+          className="mk-bidi inline-flex items-center gap-1.5 text-[length:var(--fs-ui)] font-medium text-[var(--accent-text)] mk-underline-reveal"
         >
           <Icon name="chevron" size={13} className="rotate-90 rtl:-rotate-90" />
           {copy.back}
