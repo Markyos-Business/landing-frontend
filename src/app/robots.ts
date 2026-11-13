@@ -30,7 +30,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         // The product app's hand-off routes are redirects, not pages.
-        disallow: ["/api/", "/start", "/login"],
+        disallow: ["/api/", "/start", "/login", "/signup", "/register"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

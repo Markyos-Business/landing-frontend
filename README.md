@@ -183,3 +183,18 @@ See the note at the top of `docs/DESIGN.md`.
 Waiting on: where a beta signup goes (`docs/OPEN-DECISIONS.md` §2), the brand
 sign-off in §5, and the `[CONFIRM]` list in `docs/BEFORE-PUBLISH.md` — which
 includes every price on the site.
+
+## Website → platform authentication
+
+Set `NEXT_PUBLIC_APP_URL=https://app.markyos.com` on the website deployment.
+Sign in links to `/login`; registration CTAs link to `/signup`. The shared
+`localeHref` helper preserves `lang=ar|en` and account-type selections such as
+`type=company`, `studio` or `freelancer`. Authentication and account creation
+remain in the platform. No separate website account is created.
+
+Use the staging platform origin for Preview deployments, then rebuild the site
+when changing this public environment variable. Old website `/start`, `/signup`,
+`/register` and `/login` URLs redirect to the corresponding platform form.
+
+Run `npm run check:auth-links` to verify both languages, account-type parameters,
+legacy routes and deployment origin configuration.
