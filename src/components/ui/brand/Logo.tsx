@@ -67,7 +67,7 @@ export function Logo({
   locale = "en",
   height = 24,
   className = "",
-  title = "Markyos",
+  title = locale === "ar" ? "ماركيوس" : "Markyos",
 }: {
   locale?: Locale;
   /** Height in px. The width follows from the file's own aspect ratio. */
@@ -77,11 +77,13 @@ export function Logo({
   title?: string;
 }) {
   const { file, ratio } = LOCKUP[locale === "ar" ? "ar" : "en"];
+  const name = title.trim();
 
   return (
     <span
-      role="img"
-      aria-label={title}
+      role={name ? "img" : undefined}
+      aria-label={name || undefined}
+      aria-hidden={name ? undefined : true}
       className={className}
       style={masked(file, height, ratio)}
     />

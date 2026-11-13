@@ -3456,3 +3456,7 @@ languages and copy revisions:
 
 > A length that depends on how long a word is cannot be a constant. Either
 > measure the word, or let the box grow.
+
+### Accessibility maintenance after audit 1.19
+
+Standalone Logo images have localized brand names. Use an empty title only for decorative marks inside a link that already has an accessible name; the mark then has no image role and is hidden from accessibility APIs. Light approved-state text uses the existing token at #007a42 so it passes on white and the approved badge tint. The homepage comparison table is a named keyboard-focusable region with native horizontal scrolling. Preserve these semantics when changing marketing mocks or navigation.

@@ -263,7 +263,7 @@ export const themeTokens = [
      * re-pointed yet. Fills stay bright; only the ink darkens, which is why the
      * `-soft` tints are left alone.
      */
-    "--mk-state-approved": "#00894a",
+    "--mk-state-approved": "#007a42",
     "--mk-state-review": "#6a3be0",
     "--mk-state-expiring": "#8a6200",
     "--mk-state-rejected": "#c2004e",
