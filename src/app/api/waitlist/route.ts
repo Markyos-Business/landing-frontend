@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
-import { LOCALES } from "@/lib/i18n/locales";
+import { WaitlistSchema } from "@/lib/waitlist";
 
 /*
  * The beta waitlist endpoint.
@@ -20,20 +19,6 @@ import { LOCALES } from "@/lib/i18n/locales";
  * is the one failure mode worth engineering against: the form would look like
  * it worked, and the 25 studio spots would fill with people nobody can reach.
  */
-
-const WaitlistSchema = z.object({
-  email: z.string().trim().toLowerCase().email().max(254),
-  /** Which side of the fork they came from, so the beta cohorts stay balanced. */
-  type: z.enum(["studio", "company"]),
-  /** Optional, and asked for because the beta is Gulf and Southeast Asia. */
-  country: z.string().trim().max(60).optional(),
-  locale: z.enum(LOCALES).optional(),
-  /*
-   * Honeypot. A real person never fills this; a bot fills every field it
-   * finds. Named something a bot would want rather than "honeypot".
-   */
-  company_url: z.string().max(0).optional(),
-});
 
 export async function POST(request: Request) {
   let body: unknown;

@@ -94,7 +94,7 @@ export const Updates: CollectionConfig = {
       type: "select",
       hidden: true,
       options: ["draft", "published"],
-      access: { update: publishAccess },
+      access: { create: publishAccess, update: publishAccess },
     },
     seoFields,
   ],

@@ -22,6 +22,8 @@
     "check:locales": "node --experimental-strip-types --no-warnings scripts/check-locale-parity.mjs",
     "check:design": "node scripts/check-design-rules.mjs",
     "check:pages": "node scripts/check-pages.mjs",
+    "check:waitlist": "node scripts/check-waitlist.mjs",
+    "check:cms-permissions": "node scripts/check-cms-permissions.mjs",
     "check:articles": "node scripts/check-articles.mjs",
     "check:live": "npm run check:articles && npm run check:bidi && npm run check:align && npm run check:nav && npm run check:pages && npm run check:motion",
     "check": "tsc --noEmit && eslint . --max-warnings=0 && npm run check:tokens && npm run check:design && npm run check:locales && npm run check:pricing",

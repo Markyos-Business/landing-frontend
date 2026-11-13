@@ -1,3 +1,4 @@
+import type { SignupTopic } from "@/lib/waitlist";
 import type { Cta } from "../types";
 import type { FeatureId } from "@/lib/status";
 import type { IconName } from "@/components/ui";
@@ -255,7 +256,7 @@ export type PageBlock =
       placeholder: string;
       submit: string;
       note?: string;
-      topic: string;
+      topic: SignupTopic;
     }
   /**
    * Two audiences, one place on the page.

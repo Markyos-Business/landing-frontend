@@ -102,7 +102,7 @@ export const Posts: CollectionConfig = {
       // because the Publish button is the real control.
       hidden: true,
       options: ["draft", "published"],
-      access: { update: publishAccess },
+      access: { create: publishAccess, update: publishAccess },
     },
     seoFields,
   ],

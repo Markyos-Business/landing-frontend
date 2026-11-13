@@ -129,6 +129,14 @@ rather than an open question.
 `/api/waitlist` validates the submission, catches bots with a honeypot, and
 returns **501** rather than storing anything.
 
+The shared request contract is `src/lib/waitlist.ts`: public forms send
+`email`, `topic` (`newsletter` or `contact`) and `locale`; beta requests send
+`email` and `type` (`studio` or `company`), with optional locale/country.
+Both reach the honest unconnected state. A filled `company_url` honeypot is
+accepted with 202 and discarded. No form claims that an address was saved
+locally or subscribed when the route returns 501. Use `npm run check:waitlist`
+against an isolated running build when changing this contract.
+
 That is deliberate. A silent 200 that drops the email is the one failure mode
 worth engineering against — the form would look like it worked, and the 25
 studio spots would fill with people nobody can reach.

@@ -43,6 +43,9 @@ section, in the order that document sets.
 | **`docs/BEFORE-PUBLISH.md`** | The launch gate. Nothing goes live until it is closed |
 | **`docs/CMS-GUIDE.md`** | For whoever writes — using the admin, no code |
 
+Regression setup for public forms and CMS permissions is documented in
+[Testing](docs/TESTING.md).
+
 ## Commands
 
 ```bash
