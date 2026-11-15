@@ -1,60 +1,9 @@
 import type { Collection, ContentSource } from "./adapter";
 import { LOCALES, type Locale } from "@/lib/i18n/locales";
-import { payloadContent } from "./payload";
 import { djangoContent } from "./django";
-import { contentApiUrl } from "./djangoClient";
 
-/*
- * The one place the content source is chosen.
- *
- * Pages import `content` and are unaware of which implementation answered —
- * which is what let the site ship against a stub before the CMS existed, and
- * what would let it move again if Payload were ever replaced.
- *
- * ── There used to be two sources, and that was the bug ────────────────────
- *
- * Until 8 Nov 2026 this file composed Payload with a second, code-level source
- * (`./seed.ts`, reading `content/editorial/ar.ts`) that filled in per slug
- * wherever the CMS had nothing. The intent was good: migrate the section an
- * article at a time instead of going from all-placeholder to one real post and
- * an empty page.
- *
- * What it actually produced was a site whose blog listed thirteen posts and an
- * admin panel that listed one. Thirty-one of the thirty-two pieces on the
- * resource pages were code. They could not be edited, categorised, reordered,
- * unpublished or translated from the panel; the dashboard's counts were honest
- * about the CMS and therefore wrong about the site; and deleting a post in the
- * panel would have silently resurrected its placeholder, because the fallback
- * had no way to tell "never written" from "deliberately removed".
- *
- * Those thirty-one were imported into Payload and then deleted from it, on
- * request, to make room for real writing. Both files are gone with them —
- * keeping a one-command way to recreate thirty-one deleted documents is the
- * same "the panel is not in control" failure in a slower form. `git log --
- * content/editorial/` has them if they are ever wanted back.
- *
- * So this is one source now. The CMS is the whole truth about what the
- * resource pages contain, and an empty section is an empty section.
- *
- * ── What happens when the CMS is unreachable ──────────────────────────────
- *
- * The index pages render their empty state. Every read in ./payload.ts goes
- * through `safeRead`, so a database problem degrades the blog to "nothing
- * published yet" rather than 500ing a route the homepage links to. That is a
- * worse failure than serving a placeholder and a better one than serving a
- * placeholder nobody can see in the panel.
- */
-
-/*
- * ── Moving to the platform, 15 Nov 2026 ──────────────────────────────────
- *
- * Website content is now written in the Markyos platform (/admin/cms) and
- * served by its public API. Setting CONTENT_API_URL switches this site to
- * that source; leaving it unset keeps Payload, so each environment moves
- * when its content has been copied across and not before. Still one source
- * at a time, for the reason above.
- */
-export const content: ContentSource = contentApiUrl() ? djangoContent : payloadContent;
+/** Website content is edited and published in the app's Django CMS only. */
+export const content: ContentSource = djangoContent;
 
 export type {
   Article,

@@ -4,15 +4,15 @@ import "server-only";
  * The platform's public content API, as this site's server sees it.
  *
  * `CONTENT_API_URL` is the platform API root, for example
- * https://api-staging.markyos.com/api/v1. Set, it makes the platform the
- * site's content source (see ./index.ts); unset, the site keeps reading
- * Payload. `CONTENT_SITE_KEY` is the secret the two share: the platform signs
+ * https://api-staging.markyos.com/api/v1. It always points at the app's Django backend; there is no
+ * secondary CMS fallback. `CONTENT_SITE_KEY` is the secret the two share: the platform signs
  * its "rebuild these pages" call with it, and this site signs page views.
  */
 
 export const CONTENT_TAG = "content";
 
-export const contentApiUrl = (): string => (process.env.CONTENT_API_URL ?? "").replace(/\/+$/, "");
+import { contentApiUrl } from "./connection";
+export { contentApiUrl } from "./connection";
 
 export const contentSiteKey = (): string => process.env.CONTENT_SITE_KEY ?? "";
 

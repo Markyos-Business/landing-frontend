@@ -1,3 +1,4 @@
+import { contentApiUrl } from "./connection";
 /*
  * Redirects from the platform's CMS (/admin/cms/redirects), for src/proxy.ts.
  *
@@ -11,7 +12,7 @@
  * a second and a half. If the platform can't be reached the last list keeps
  * working (or none, at first), so a platform outage never stops the site.
  *
- * Off unless CONTENT_API_URL is set, like the rest of the platform source.
+ * Uses the same backend origin as article reads and page-view writes.
  */
 
 type Rule = { to: string; status: 301 | 302 };
@@ -21,7 +22,7 @@ let rules = new Map<string, Rule>();
 let loadedAt = 0;
 let loading: Promise<void> | null = null;
 
-const apiUrl = () => (process.env.CONTENT_API_URL ?? "").replace(/\/+$/, "");
+const apiUrl = contentApiUrl;
 
 /** "/a/b/" and "/a/b" are one path. */
 const normal = (path: string) => (path.length > 1 ? path.replace(/\/+$/, "") : path);

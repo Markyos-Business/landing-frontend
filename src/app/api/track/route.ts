@@ -1,7 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { payloadClient } from "@/lib/content/payloadClient";
 import { contentApiUrl, contentSiteKey } from "@/lib/content/djangoClient";
 import { LOCALES } from "@/lib/i18n/locales";
 
@@ -124,20 +123,15 @@ export async function POST(request: Request) {
     // the shared key; the hash and the trimming above stay on this side, so
     // the platform never sees an IP address or a full referrer either.
     const api = contentApiUrl();
-    if (api) {
-      const response = await fetch(`${api}/content/public/pageviews/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Content-Key": contentSiteKey() },
-        body: JSON.stringify(Object.fromEntries(Object.entries(view).filter(([, v]) => v !== undefined))),
-        cache: "no-store",
-        signal: AbortSignal.timeout(3000),
-      });
-      if (!response.ok) throw new Error(`platform answered ${response.status}`);
-      return ok;
-    }
-
-    const payload = await payloadClient();
-    await payload.create({ collection: "pageviews", data: view });
+    if (!contentSiteKey()) return ok; // Analytics is opt-in via a shared server key.
+    const response = await fetch(`${api}/content/public/pageviews/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Content-Key": contentSiteKey() },
+      body: JSON.stringify(Object.fromEntries(Object.entries(view).filter(([, v]) => v !== undefined))),
+      cache: "no-store",
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!response.ok) throw new Error(`platform answered ${response.status}`);
 
     return ok;
   } catch (error) {

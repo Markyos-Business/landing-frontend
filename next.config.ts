@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
 import { APP_URL } from "./src/lib/appUrls";
-import { withPayload } from "@payloadcms/next/withPayload";
 
 /*
  * Every Vercel deploy that is not production — staging and each preview —
@@ -22,6 +21,7 @@ const nextConfig: NextConfig = {
   // thing SEO cares about most here.
   async redirects() {
     return [
+      { source: "/admin/:path*", destination: `${APP_URL}/admin/cms`, permanent: false },
       // Keep bookmarked website auth paths working. New CTAs link directly
       // to the platform; incoming query strings (lang/type/plan) pass through.
       ...["/start", "/signup", "/register", "/login"].map(source => ({
@@ -130,10 +130,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-/*
- * `withPayload` adds what the admin panel needs to build: the SCSS pipeline
- * for Payload's own stylesheets, and the server-only packages that must stay
- * out of the client bundle. The marketing site's config above is untouched by
- * it.
- */
-export default withPayload(nextConfig);
+export default nextConfig;
