@@ -18,7 +18,7 @@ export const adminStyles = [
    * ── Which palette, and why it changed ─────────────────────────────────────
    *
    * It used to be the platform app's dark one, read out of
-   * `tailwind/tokens.generated.js`: #060607 ground, #16161a cards, a white-opacity
+   * `tailwind/base-tokens.js`: #060607 ground, #16161a cards, a white-opacity
    * text ramp. The argument was that the admin is product UI and sits beside
    * the platform in somebody's day.
    *
@@ -38,7 +38,7 @@ export const adminStyles = [
    * are no literals below and no second palette to keep in step: when the
    * landing design moves, the admin moves with it.
    *
-   * `tailwind/tokens.generated.js` is deliberately *not* imported any more. It
+   * `tailwind/base-tokens.js` is deliberately *not* imported any more. It
    * carries the platform's two palettes, and its `:root[data-theme="light"]`
    * block would outrank `tailwind/tokens.js`'s plain `:root` the moment Payload wrote
    * `data-theme="light"` onto <html> — the admin would have silently rendered

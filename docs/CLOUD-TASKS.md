@@ -24,11 +24,6 @@ and both are now handled rather than hidden:
   `scripts/browser-lib.mjs` falls back to bundled Chromium, so this runs on a
   bare runner. It is also enforced by `.github/workflows/checks.yml` on every
   pull request, so a cloud session cannot merge past it.
-- **Token drift is not checked.** `npm run check:tokens` compares
-  `src/app/tokens.generated.css` against the platform app, which lives in a
-  separate repo that is not checked out in a cloud session. It prints a
-  warning and passes. That is expected. CI emits a notice saying so. If a task
-  touches design tokens, verify it on a machine that has both repos.
 
 Tell a cloud session not to "fix" that warning. There is nothing to fix, and a
 stub stylesheet written to silence it would make the check lie.
@@ -55,7 +50,7 @@ stub stylesheet written to silence it would make the check lie.
 > before and after numbers and confirm the percentage is still 100%.
 >
 > Read `CLAUDE.md`, `AGENTS.md` and `MARKYOS-DESIGN-SYSTEM.md` first; they are
-> binding. Never edit `tailwind/tokens.generated.js`. `npm run check`, `npm run
+> binding. Change tokens only in `tailwind/tokens.js` or `tailwind/base-tokens.js`. `npm run check`, `npm run
 > build` and `npm run check:live` must all pass — start the server with
 > `npx next start -p 3210 &` before the last one. Open a pull request.
 

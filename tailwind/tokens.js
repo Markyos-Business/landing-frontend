@@ -4,8 +4,8 @@ export const designSystemTokens = [
    MARKYOS-DESIGN-SYSTEM.md §3. Do not invent values here; when the design
    system changes, a new export replaces that file and these values follow it.
    
-   This layer sits between `tailwind/tokens.generated.js` (the product's tokens, which
-   are generated and never edited) and `tailwind/tokens.js` (which re-points the site's
+   This layer sits between `tailwind/base-tokens.js` (the base layer, owned here
+   since 15 Nov 2026) and `tailwind/tokens.js` (which re-points the site's
    own token names onto these). Nothing reads `--mk-*` directly from a
    component: components read the site's names, and `tailwind/tokens.js` is the one
    place the two vocabularies meet. */
@@ -126,9 +126,9 @@ export const themeTokens = [
    * are a literal trace of the design file and carry their own values inline;
    * everything else still comes through here.
    *
-   * `src/app/tokens.generated.css` is generated from the platform app and is never
-   * edited. Where a product token name needs a different value here, it is
-   * re-pointed below rather than changed at the source.
+   * `tailwind/base-tokens.js` is the base layer underneath. Where one of its
+   * names needs the design system's value, it is re-pointed below, so the
+   * base keeps one meaning and the site's identity lives in one place.
    *
    * ── The art direction, in one line ────────────────────────────────────────
    *

@@ -47,7 +47,7 @@
 
 > **9 Nov 2026 — the site has no stylesheets any more.** Like markyos-frontend,
 > every value and rule lives in `tailwind.config.js` and `tailwind/*.js`
-> (tokens in `tailwind/tokens.js` and `tailwind/tokens.generated.js`, element
+> (tokens in `tailwind/tokens.js` and `tailwind/base-tokens.js`, element
 > defaults in `tailwind/base.js`, the `.mk-*` vocabulary in
 > `tailwind/components/`), registered with `addBase`. Where the sections below
 > say to edit a `.css` file, edit the matching module instead; the values and
@@ -61,7 +61,7 @@
 4. **`AGENTS.md`** (Next.js 16 rules) applies to all code.
 
 Still binding, do not undo:
-- `src/app/tokens.generated.css` is never edited. The site re-points tokens in `src/app/theme.css`.
+- The base layer `tailwind/base-tokens.js` keeps its names; the site re-points them in `tailwind/tokens.js` rather than renaming them. (It was synced from the platform app until 15 Nov 2026; it is owned here now.)
 - Everything in `globals.css` stays inside `@layer base` or `@layer components`.
 - Logical properties only (`margin-inline-start`, `inset-inline-end`, `text-align: start`). No `left`/`right`.
 - CTAs are `<Link>`s, never `<button>`s that navigate.
@@ -103,7 +103,7 @@ npm i line-awesome@1.3.0
 
 ### 2.1 `src/app/fonts.ts`
 
-Add Thmanya Sans. Keep IBM Plex Sans Arabic loaded: it is the design system's last-resort fallback and `tokens.generated.css` still references `--font-plex-arabic`.
+Add Thmanya Sans. Keep IBM Plex Sans Arabic loaded: it is the design system's last-resort fallback and `tailwind/base-tokens.js` still references `--font-plex-arabic`.
 
 ```ts
 import localFont from "next/font/local";
@@ -579,7 +579,7 @@ Approved key lines (use verbatim): "Build the brand. Hand it over. Keep it alive
 
 ## 13. Don't
 
-- Don't edit `src/app/tokens.generated.css`.
+- Don't rename tokens in `tailwind/base-tokens.js`; re-point them in `tailwind/tokens.js`.
 - Don't write rules outside a cascade layer in `globals.css`.
 - Don't use the warm orange palette, zinc greys or card/button gradients.
 - Don't use weights above 500 or text below 12px.
@@ -611,7 +611,7 @@ One commit per step. After each: `npm run check`, then look at `/` (Arabic) and 
 
 `scripts/check-design-rules.mjs` holds the six rules below as six named
 checks, plus a seventh for §11's "no emoji, anywhere". It runs inside
-`npm run check`, after `check:tokens`, so a violation fails the build instead
+`npm run check`, so a violation fails the build instead
 of waiting for somebody to remember the greps. Every exemption lives in one
 commented table at the top of that script with the reason it is there — there
 are no ignore comments in the source — and `npm run check:design --list`

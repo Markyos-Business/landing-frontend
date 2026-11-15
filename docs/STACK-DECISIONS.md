@@ -242,22 +242,11 @@ That creates one genuine risk, and it is the one this company least wants:
 **two deploys whose blue is not the same blue.** A marketing site that drifts
 from the product is brand decay, on the site about brand decay.
 
-So the tokens are generated, never authored here:
-
-```
-markyosmvp/tailwind/          ← the only place a brand value is decided
-          │
-          │  npm run sync:tokens
-          ▼
-Landing Page/tailwind/tokens.generated.js   ← generated, committed, never edited
-```
-
-`scripts/sync-tokens.mjs` lifts the three token blocks — the dark theme, the
-light theme, and the Tailwind v4 `@theme inline` mapping — out of the platform's
-stylesheet. 89 declarations today. `npm run check:tokens` fails the build if the
-committed copy is stale, so a token change in the platform that nobody pulled
-across becomes a failed build here rather than a slightly-wrong colour on the
-homepage.
+**Superseded on 15 Nov 2026.** The tokens below were synced from the platform
+app until the site adopted its own design system (`MARKYOS-DESIGN-SYSTEM.md`).
+The sync script and its drift check were removed; the last synced values live on
+as `tailwind/base-tokens.js`, owned here, under the `--mk-*` layer in
+`tailwind/tokens.js`.
 
 The platform's `docs/token-contract.md` applies to this app in full. The two
 clauses that matter most: consume a token and never hardcode a hex, a radius or
@@ -306,7 +295,6 @@ Landing Page/
 ├── app/
 │   ├── [lang]/              root layout (lang + dir), homepage, 16 placeholder routes
 │   ├── tailwind/          base layer — rhythm, measure, focus. No brand values
-│   ├── tokens.generated.css GENERATED from the platform app
 │   ├── fonts.ts             Inter · IBM Plex Sans Arabic · Bricolage Grotesque
 │   ├── robots.ts            closed to crawlers during the beta
 │   ├── sitemap.ts           published pages only, with hreflang pairs
@@ -326,7 +314,6 @@ Landing Page/
 │   ├── launch.ts            beta vs public, one env var
 │   └── seo.ts               canonicals, hreflang, Open Graph
 ├── scripts/
-│   ├── sync-tokens.mjs      token sync + drift gate
 │   └── check-locale-parity.mjs   the Arabic transcreation brief
 └── src/proxy.ts                 locale negotiation
 ```
@@ -336,8 +323,7 @@ Landing Page/
 ```bash
 npm run dev            # localhost:3000 — note the platform app may already hold it
 npm run build          # 39 static pages, both locales
-npm run check          # tsc · eslint · token drift · Arabic parity
-npm run sync:tokens    # pull brand tokens from the platform app
+npm run check          # tsc · eslint · design rules · Arabic parity
 npm run check:locales  # what still needs Arabic
 ```
 
