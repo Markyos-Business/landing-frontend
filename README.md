@@ -43,6 +43,9 @@ section, in the order that document sets.
 | **`docs/BEFORE-PUBLISH.md`** | The launch gate. Nothing goes live until it is closed |
 | **`docs/CMS-GUIDE.md`** | For whoever writes — using the admin, no code |
 
+Regression setup for public forms and CMS permissions is documented in
+[Testing](docs/TESTING.md).
+
 ## Commands
 
 ```bash
@@ -53,7 +56,6 @@ npm run cms:types      # regenerate CMS types after a schema change
 npm run cms:import -- <dir>   # load the written resources into the CMS;
                        # matched on slug, never overwrites, --replace to redo
 npm run cms:importmap  # regenerate the admin import map
-npm run sync:tokens    # pull brand tokens from the platform app
 npm run check:design   # the design system’s §14 rules — add --list for the
                        #   rules and why each exemption exists
 npm run check:locales  # what still needs Arabic (the transcreation brief)
@@ -104,12 +106,12 @@ src/proxy.ts           Arabic at the root, /en prefixed (Next 16: middleware →
 
 ## Three things to know before editing
 
-**Brand values are never authored here.** `tailwind/tokens.generated.js` is
-generated from the platform app by `npm run sync:tokens`, and
-`npm run check:tokens` fails the build if it is stale. If you need a colour, a
-radius or a type size that does not exist, add it to the platform's
-`tailwind/` and sync. A token only the marketing site knows about is how two
-deploys stop matching — which is the exact problem this product sells against.
+**Brand values come from the design system, as tokens.** Since 15 Nov 2026
+the site owns its tokens: `MARKYOS-DESIGN-SYSTEM.md` is the source, its values
+live as `--mk-*` in `tailwind/tokens.js`, and `tailwind/base-tokens.js` is the
+base layer underneath (no longer synced from the platform app). If you need a
+colour, a radius or a type size that does not exist, add a token there; never
+put a raw value in a component.
 
 **Logical CSS properties only.** `padding-inline`, `margin-inline-start`,
 `start`/`end` — never `left`/`right`. The site ships in Arabic, `dir` is set on
@@ -180,3 +182,18 @@ See the note at the top of `docs/DESIGN.md`.
 Waiting on: where a beta signup goes (`docs/OPEN-DECISIONS.md` §2), the brand
 sign-off in §5, and the `[CONFIRM]` list in `docs/BEFORE-PUBLISH.md` — which
 includes every price on the site.
+
+## Website → platform authentication
+
+Set `NEXT_PUBLIC_APP_URL=https://app.markyos.com` on the website deployment.
+Sign in links to `/login`; registration CTAs link to `/signup`. The shared
+`localeHref` helper preserves `lang=ar|en` and account-type selections such as
+`type=company`, `studio` or `freelancer`. Authentication and account creation
+remain in the platform. No separate website account is created.
+
+Use the staging platform origin for Preview deployments, then rebuild the site
+when changing this public environment variable. Old website `/start`, `/signup`,
+`/register` and `/login` URLs redirect to the corresponding platform form.
+
+Run `npm run check:auth-links` to verify both languages, account-type parameters,
+legacy routes and deployment origin configuration.

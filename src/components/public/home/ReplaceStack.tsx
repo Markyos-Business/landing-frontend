@@ -70,6 +70,9 @@ export function ReplaceStack({
       </div>
 
       <div
+        role="region"
+        aria-label={locale === "ar" ? "مقارنة أدوات العمل" : "Workflow tools comparison"}
+        tabIndex={0}
         className="mk-rise-soft"
         style={{
           background: "#fff",

@@ -48,9 +48,8 @@ receives typed copy, so styling a section should not require touching its data.
 - The language switcher is a text link reading العربية in the design, not the
   EN/ع pill currently in `src/components/navbar/LangSwitch.tsx`. The swap-the-path
   logic stays; only the presentation changes.
-- Add any brand value the design needs **to the platform app's
-  `tailwind/`**, then `npm run sync:tokens`. Never add a hex here. A token
-  that only the marketing site knows about is how two deploys stop matching.
+- Add any brand value the design needs as a token in `tailwind/tokens.js`
+  (from `MARKYOS-DESIGN-SYSTEM.md`). Never put a raw hex in a component.
 - Port `scripts/no-physical-props.mjs` from the platform repo and add it to
   `npm run check` (`docs/BEFORE-PUBLISH.md` item 14). Do this *before* writing
   a lot of CSS, so it catches mistakes as they are made rather than in a sweep.

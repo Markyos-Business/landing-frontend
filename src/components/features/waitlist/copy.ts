@@ -5,7 +5,7 @@ export const COPY: Record<Locale, { sent: string; pending: string; failed: strin
     sent: "تم. وصلك بريد التأكيد.",
     // Said plainly, because it is true and because the alternative is a
     // visitor who thinks they are on a list that does not exist.
-    pending: "النموذج غير متصل بعد. حفظنا طلبك محلياً فقط، فراسلنا مباشرة في الوقت الحالي.",
+    pending: "النموذج غير متصل بعد، ولم يُحفظ أي طلب. راسلنا مباشرة في الوقت الحالي.",
     failed: "لم نستطع إرسال الطلب. حاول مرة أخرى.",
     label: "البريد الإلكتروني",
   },

@@ -1,3 +1,4 @@
+import { appAuthHref } from "../appUrls";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "./locales";
 
 /*
@@ -19,25 +20,25 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from "./locales";
  * The slugs stay English in both languages, also per §0.5: they are easier to
  * share and to type, and Arabic slugs get percent-mangled by most apps.
  *
- * Four kinds of href are left exactly as written:
+ * Handle these hrefs before applying a locale prefix:
  *
  *   - absolute URLs, which point off-site;
  *   - "#anchor", which stays on the page being read;
- *   - "/start" and "/login", which are the hand-off into the product app and
- *     are redirected out by next.config.ts. These must never be localised:
+ *   - authentication paths, which link directly to the product app.
+ *     next.config.ts also redirects old inbound website URLs. These must never be localised:
  *     prefixing them would produce /en/start, which no route serves and the
  *     proxy would not rescue, so the single most important link on the page
  *     would 404;
  *   - "mailto:" and "tel:".
  */
 
-const PASSTHROUGH_PREFIXES = ["/start", "/login"];
+const PASSTHROUGH_PREFIXES = ["/start", "/login", "/signup", "/register"];
 
 /**
  * Whether this href hands off to the product app rather than staying here.
  *
- * `next.config.ts` redirects /start and /login to app.markyos.com, so these
- * are cross-origin links wearing a relative href. That matters for
+ * The copy uses relative auth paths; localeHref resolves these to the
+ * configured platform origin. That matters for
  * prefetching: Next prefetches every <Link> in the viewport, and the CTA is
  * in the header of every page, so without this each page load fires a request
  * at another origin that can only ever answer with a redirect. Nothing is
@@ -48,7 +49,7 @@ const PASSTHROUGH_PREFIXES = ["/start", "/login"];
  */
 export function isAppHandoff(href: string): boolean {
   return PASSTHROUGH_PREFIXES.some(
-    (p) => href === p || href.startsWith(`${p}?`) || href.startsWith(`${p}/`),
+    (p) => href === p || href.startsWith(`${p}?`) || href.startsWith(`${p}#`) || href.startsWith(`${p}/`),
   );
 }
 
@@ -66,14 +67,15 @@ export function localePrefix(locale: Locale): string {
  * query string through. A link that already says `lang=` keeps its own.
  */
 export function withAppLang(locale: Locale, href: string): string {
-  if (/[?&]lang=/.test(href)) return href;
-  return `${href}${href.includes("?") ? "&" : "?"}lang=${locale}`;
+  const [path, hash] = href.split("#", 2);
+  const withLang = /[?&]lang=/.test(path) ? path : `${path}${path.includes("?") ? "&" : "?"}lang=${locale}`;
+  return hash === undefined ? withLang : `${withLang}#${hash}`;
 }
 
 export function localeHref(locale: Locale, href: string): string {
   if (/^[a-z]+:/i.test(href)) return href; // http:, https:, mailto:, tel:
   if (href.startsWith("#")) return href;
-  if (isAppHandoff(href)) return withAppLang(locale, href);
+  if (isAppHandoff(href)) return appAuthHref(withAppLang(locale, href));
 
   const prefix = localePrefix(locale);
   // "/" under the unprefixed locale is "/" and not the empty string, which is

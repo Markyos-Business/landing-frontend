@@ -53,20 +53,9 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      # tsc, eslint, token drift, the design-system gate, Arabic parity.
-      #
-      # check:tokens will report that the platform stylesheet is missing and
-      # skip, because the platform app is a separate private repo that is not
-      # checked out here. That is by design and is NOT a silent hole: the
-      # "token drift" step below makes the skip visible in the log so nobody
-      # reads a green tick as "tokens were verified".
+      # tsc, eslint, the design-system gate, Arabic parity.
       - name: Static checks
         run: npm run check
-
-      - name: Note what token drift did not cover
-        if: always()
-        run: |
-          echo "::notice title=Token drift unchecked::check:tokens needs the platform app checked out beside this repo. It is not available in CI, so app/tokens.generated.css was not compared against its source. Run 'npm run check' locally to verify it."
 
       - name: Build
         run: npm run build

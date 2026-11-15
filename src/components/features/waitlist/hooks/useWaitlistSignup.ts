@@ -2,10 +2,11 @@ import { useState, type FormEvent } from "react";
 import type { Locale } from "@/lib/i18n/locales";
 import { COPY } from "../copy";
 import { joinWaitlist } from "../services/waitlistService";
+import type { SignupTopic } from "@/lib/waitlist";
 import type { SignupState } from "../types";
 
 /** The signup form's address, its submit, and the line it reports back. */
-export function useWaitlistSignup(topic: string, locale: Locale) {
+export function useWaitlistSignup(topic: SignupTopic, locale: Locale) {
   const [state, setState] = useState<SignupState>("idle");
   const [email, setEmail] = useState("");
   const copy = COPY[locale];
@@ -17,7 +18,7 @@ export function useWaitlistSignup(topic: string, locale: Locale) {
     event.preventDefault();
     if (!email.trim()) return;
     setState("sending");
-    setState(await joinWaitlist({ email, topic }));
+    setState(await joinWaitlist({ email, topic, locale }));
   };
 
   return { state, email, setEmail, message, label: copy.label, onSubmit };

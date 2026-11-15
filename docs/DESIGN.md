@@ -363,10 +363,9 @@ reference and why.
 > be restyled and their next release cannot break a selector we wrote.
 >
 > The admin follows the **platform app's** palette, not the website's. It
-> maps Payload's variables onto `tailwind/tokens.generated.js` — the file
-> `sync:tokens` copies out of the platform and `check:tokens` guards — so
-> the skin holds no colour literals at all and tracks the platform when it
-> moves. That matters because the two sit side by side in one person's day:
+> maps Payload's variables onto `tailwind/base-tokens.js` — the platform's
+> palette as last synced (the sync was retired on 15 Nov 2026) — so the skin
+> holds no colour literals at all. That matters because the two sit side by side in one person's day:
 > the website is #000 with #111 cards at 15px, the platform is #060607 with
 > #16161a cards at 16px and a brighter text ramp, and the website's palette
 > next to the platform reads as a different product. Structure still follows
@@ -392,7 +391,7 @@ Four files, and nothing else should be inventing values.
 | File | Holds |
 | :--- | :--- |
 | `MARKYOS-DESIGN-SYSTEM.md` | **The source of truth for every visual value** — colour, type, weight, size, radius, border, light, motion, icons. Exported from the Markyos Design System project. |
-| `src/app/tokens.generated.css` | The **product's** tokens, copied from the platform app. Never edited here; `npm run check:tokens` fails if it drifts. |
+| `tailwind/base-tokens.js` | The base token layer: the product's palette as last synced from the platform app (sync retired 15 Nov 2026). Owned here; re-pointed by the layer below. |
 | `tailwind/tokens.js` | The design system's marketing identity layer (`--mk-*`). Values come from the file above and are not decided here. |
 | `tailwind/tokens.js` | The **marketing site's** own token names, re-pointed onto `--mk-*`. A mapping, not a palette — which is what lets the whole site change look from one file. |
 | `tailwind/` | The vocabulary built from those tokens — `.mk-card`, `.mk-btn`, `.mk-display`, the grid and the light. |
@@ -624,7 +623,7 @@ SVGs in `public/brand/`.
 Two things did change with it. Display is **500 at -0.04em**, not 600 at
 -0.035em: no weight above 500 appears anywhere on this site. And Arabic is
 **Thmanya Sans**, not IBM Plex Sans Arabic — Plex stays loaded only as the
-last-resort fallback in the stacks, because `tailwind/tokens.generated.js` still
+last-resort fallback in the stacks, because `tailwind/base-tokens.js` still
 references it.
 
 ### 3. The hero's brand-line pill has no arrow
@@ -3456,3 +3455,7 @@ languages and copy revisions:
 
 > A length that depends on how long a word is cannot be a constant. Either
 > measure the word, or let the box grow.
+
+### Accessibility maintenance after audit 1.19
+
+Standalone Logo images have localized brand names. Use an empty title only for decorative marks inside a link that already has an accessible name; the mark then has no image role and is hidden from accessibility APIs. Light approved-state text uses the existing token at #007a42 so it passes on white and the approved badge tint. The homepage comparison table is a named keyboard-focusable region with native horizontal scrolling. Preserve these semantics when changing marketing mocks or navigation.

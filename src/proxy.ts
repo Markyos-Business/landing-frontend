@@ -81,6 +81,6 @@ export const config = {
      * them through the locale rewrite turns every tab icon and every social
      * card into a 404. Found by running the page and reading the network log.
      */
-    "/((?!_next|api|admin|start|login|favicon|icon|apple-icon|opengraph-image|robots\.txt|sitemap\.xml|fonts/|brand/).*)",
+    "/((?!_next|api|admin|start|login|signup|register|favicon|icon|apple-icon|opengraph-image|robots\.txt|sitemap\.xml|fonts/|brand/).*)",
   ],
 };

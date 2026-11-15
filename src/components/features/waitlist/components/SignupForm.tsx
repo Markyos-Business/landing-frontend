@@ -1,6 +1,7 @@
 "use client";
 
 import { useId } from "react";
+import type { SignupTopic } from "@/lib/waitlist";
 import type { Locale } from "@/lib/i18n/locales";
 import { useWaitlistSignup } from "../hooks/useWaitlistSignup";
 
@@ -24,7 +25,7 @@ export function SignupForm({
   submit: string;
   note?: string;
   /** Which list this is, so one endpoint can serve several forms. */
-  topic: string;
+  topic: SignupTopic;
   locale: Locale;
 }) {
   const { state, email, setEmail, message, label, onSubmit } = useWaitlistSignup(topic, locale);

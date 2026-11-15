@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { APP_URL } from "./src/lib/appUrls";
 import { withPayload } from "@payloadcms/next/withPayload";
 
 /*
@@ -21,19 +22,13 @@ const nextConfig: NextConfig = {
   // thing SEO cares about most here.
   async redirects() {
     return [
-      // Every CTA on the site points at the sign-up fork, which lives in the
-      // platform app — not here. Centralising the hop means a copywriter can
-      // write /start without knowing where the product is deployed.
-      {
-        source: "/start",
-        destination: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://app.markyos.com"}/start`,
+      // Keep bookmarked website auth paths working. New CTAs link directly
+      // to the platform; incoming query strings (lang/type/plan) pass through.
+      ...["/start", "/signup", "/register", "/login"].map(source => ({
+        source,
+        destination: `${APP_URL}/${source === "/login" ? "login" : "signup"}`,
         permanent: false,
-      },
-      {
-        source: "/login",
-        destination: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://app.markyos.com"}/login`,
-        permanent: false,
-      },
+      })),
 
       /*
        * The audience pages moved under /solutions.

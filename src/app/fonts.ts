@@ -15,8 +15,8 @@ import localFont from "next/font/local";
  * tracked — tracking Arabic breaks the joins between letters.
  *
  * IBM Plex Sans Arabic stays loaded deliberately, as the last-resort fallback
- * in the stacks: `tailwind/tokens.generated.js` still references
- * `--font-plex-arabic`, and that file is generated and never edited here.
+ * in the stacks: `tailwind/base-tokens.js` still references
+ * `--font-plex-arabic`.
  *
  * ── Bricolage Grotesque ───────────────────────────────────────────────────
  *
