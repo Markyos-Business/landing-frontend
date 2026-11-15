@@ -1,3 +1,8 @@
+> Active architecture, 16 November 2026: the website reads content from the
+> app's Django backend. Editing is in the platform `/admin/cms`; Payload runtime
+> and its separate admin are retired. The Payload decisions below are retained
+> as historical context, not setup instructions. See [CMS guide](CMS-GUIDE.md).
+
 # markyos.com — stack decisions
 
 **Written 17 October 2026.** For whoever builds and maintains the marketing site.
@@ -15,9 +20,9 @@ reason is what tells you when the decision stops being right.
 | **Language** | TypeScript, strict. React 19.2.8 |
 | **Framework** | Next.js 16.4.2, App Router, Turbopack |
 | **Styling** | Tailwind CSS v4, consuming the platform's design tokens |
-| **CMS** | Payload 3.91, self-hosted — **in this app**, not the platform app. **Installed and running** |
+| **CMS** | Shared Django content API; edit in the platform `/admin/cms` |
 | **Bilingual** | Route-based `src/app/[lang]` with `en` and `ar`. No i18n library |
-| **Database** | Postgres in production; SQLite locally so the admin runs with no setup |
+| **Database** | Shared app backend database; no separate website CMS database |
 | **Media** | Cloudflare R2, same bucket as brand assets, separate key prefix |
 | **Hosting** | Vercel or Cloudflare Pages. Static by default |
 | **Repo** | Separate from the platform app, with a token-sync gate against drift |

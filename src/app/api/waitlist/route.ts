@@ -1,25 +1,9 @@
 import { NextResponse } from "next/server";
 import { WaitlistSchema } from "@/lib/waitlist";
 
-/*
- * The beta waitlist endpoint.
- *
- * ── Status: validates and does not store ────────────────────────────────────
- *
- * This route is complete except for the one line that writes the signup
- * somewhere, and that line is left out on purpose rather than guessed at.
- * Where a beta applicant's email goes is a decision with consequences — a
- * table in the Postgres the platform already uses, an email tool, or a sheet —
- * and it is one of the open decisions in docs/OPEN-DECISIONS.md.
- *
- * What is here is the part that is the same whichever way that goes: the
- * schema, the validation, the honeypot, and a response shape the form can
- * already be built against. It returns 501 so that nothing can ship believing
- * it is collecting signups when it is not. A silent 200 that drops the email
- * is the one failure mode worth engineering against: the form would look like
- * it worked, and the 25 studio spots would fill with people nobody can reach.
- */
+import { contentApiUrl } from "@/lib/content/connection";
 
+/** Validate locally; report success only after the shared backend accepts it. */
 export async function POST(request: Request) {
   let body: unknown;
   try {
@@ -50,13 +34,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true }, { status: 202 });
   }
 
-  return NextResponse.json(
-    {
-      ok: false,
-      error: "not_implemented",
-      message:
-        "Waitlist storage is not wired up yet. See docs/OPEN-DECISIONS.md before building the form against this.",
-    },
-    { status: 501 },
-  );
+  try {
+    const response = await fetch(`${contentApiUrl()}/content/public/signups/`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(parsed.data), cache: "no-store", signal: AbortSignal.timeout(8000),
+    });
+    if (response.status === 429) {
+      return NextResponse.json({ ok: false, error: "rate_limited" }, {
+        status: 429, headers: { "Retry-After": response.headers.get("Retry-After") ?? "60" },
+      });
+    }
+    const accepted = response.status === 202 && (await response.json().catch(() => null))?.ok === true;
+    if (!accepted) return NextResponse.json({ ok: false, error: "storage_unavailable" }, { status: 503 });
+    return NextResponse.json({ ok: true }, { status: 202 });
+  } catch {
+    return NextResponse.json({ ok: false, error: "storage_unavailable" }, { status: 503 });
+  }
 }

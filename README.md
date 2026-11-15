@@ -13,8 +13,9 @@ Arabic has no locale segment: `/pricing` is Arabic and `/en/pricing` is
 English. That is `docs/OPEN-DECISIONS.md` §6, and two files implement it —
 `src/lib/i18n/href.ts` and `src/proxy.ts`.
 
-The admin panel needs no database to run: with `DATABASE_URI` unset it uses a
-local SQLite file. Open `/admin` and create the first account.
+Website editing lives in the platform at `/admin/cms`, using the same Django
+backend and accounts as the app. The website `/admin` redirects there; it does
+not host a separate CMS or first-user setup.
 
 `npm run check` must pass before a commit.
 
@@ -52,10 +53,10 @@ Regression setup for public forms and CMS permissions is documented in
 npm run dev            # dev server
 npm run build          # 147 static pages — every route, both locales
 npm run check          # tsc · eslint · token drift · design rules · Arabic parity
-npm run cms:types      # regenerate CMS types after a schema change
-npm run cms:import -- <dir>   # load the written resources into the CMS;
+npm run cms:types      # legacy Payload migration tooling; not the active CMS
+npm run cms:import -- <dir>   # legacy Payload import tooling;
                        # matched on slug, never overwrites, --replace to redo
-npm run cms:importmap  # regenerate the admin import map
+npm run cms:importmap  # legacy Payload admin tooling
 npm run check:design   # the design system’s §14 rules — add --list for the
                        #   rules and why each exemption exists
 npm run check:locales  # what still needs Arabic (the transcreation brief)
@@ -230,3 +231,10 @@ server-only values. Without a key, tracking is disabled; public content still
 loads and refreshes on its cache schedule. Restart both processes after local
 environment changes. The waitlist storage decision remains separate and is
 not implemented by switching the editorial backend.
+
+
+Website signup forms persist through `/api/waitlist` to the shared backend's
+`/content/public/signups/`. They report success only after storage accepts the
+request, deduplicate email/topic pairs and do not promise a confirmation email.
+Operators can review entries in Django admin under Website signups. Apply
+backend migrations before deployment. See [CMS guide](docs/CMS-GUIDE.md).
