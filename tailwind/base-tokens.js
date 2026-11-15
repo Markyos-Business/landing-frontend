@@ -1,20 +1,17 @@
 /*
- * GENERATED FILE — DO NOT EDIT.
+ * The base token layer: the product's palette as it stood on 9 Nov 2026.
  *
- * Written by `npm run sync:tokens` from the platform app's app/globals.css.
- * Edit the tokens there; this file is a copy and any change made here is
- * lost on the next sync and reported as drift by `npm run check:tokens`.
+ * This used to be generated from the platform app by a sync script. On 15 Nov
+ * 2026 the landing site took ownership of its tokens: its identity now comes
+ * from the Markyos Design System (MARKYOS-DESIGN-SYSTEM.md, `--mk-*` in
+ * tailwind/tokens.js), which re-points most of the names below. These values
+ * are the fallback layer underneath and are edited here like any other token.
  *
- * The token contract these belong to is documented in the platform repo at
- * docs/token-contract.md. The two rules that matter to this site:
- *   - consume a token, never hardcode a hex, radius or type size;
- *   - a token may be added, never renamed, removed or redefined.
- *
- * `generatedTokens` is registered with addBase in tailwind.config.js;
- * `generatedTheme` goes under theme.extend there.
+ * `baseTokens` is registered with addBase in tailwind.config.js;
+ * `baseTheme` goes under theme.extend there.
  */
 
-export const generatedTokens = [
+export const baseTokens = [
   { ":root": {
     /*
      * The surface ramp.
@@ -293,7 +290,7 @@ export const generatedTokens = [
 ];
 
 /* The Tailwind theme mapping (`@theme inline` in the platform's stylesheet), for theme.extend. */
-export const generatedTheme = {
+export const baseTheme = {
   colors: {
     "canvas": "var(--canvas)",
     "surface-0": "var(--surface-0)",

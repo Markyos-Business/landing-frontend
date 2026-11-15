@@ -182,12 +182,10 @@ Two collisions to settle before implementing:
    Plex Sans Arabic across the whole Arabic site. The brand kit plausibly
    overrules that note, but it is a reversal, not a gap.
 
-2. **Tokens here are generated, not authored.** `scripts/sync-tokens.mjs` lifts
-   them from the sibling platform app into `src/app/tokens.generated.css`, and
-   `npm run check` fails on drift — deliberately, so the marketing site's blue
-   cannot quietly stop being the product's blue. If the kit's tokens differ,
-   either the kit becomes the platform app's source too, or that gate changes.
-   That is an architecture call, not a detail.
+2. **Tokens are owned here.** Until 15 Nov 2026 they were synced from the
+   platform app; that sync was retired when the site adopted its own design
+   system. `MARKYOS-DESIGN-SYSTEM.md` is the source, `tailwind/tokens.js` holds
+   its `--mk-*` values, and `tailwind/base-tokens.js` is the base layer.
 
 On scope: the file list is a full product component library — charts, donut
 graphs, table widgets, switches, radios, and forty-odd `kit-aliases` covering

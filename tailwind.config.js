@@ -3,8 +3,8 @@
  * entry (src/app/tailwind.css) only loads Tailwind and points here; everything
  * else lives in this file and the modules beside it:
  *
- *   tailwind/tokens.generated.js  the product's tokens and theme mapping,
- *                                 written by `npm run sync:tokens` and never
+ *   tailwind/base-tokens.js       the base tokens and theme mapping, owned
+ *                                 here since 15 Nov 2026 (no longer synced) and
  *                                 edited here
  *   tailwind/tokens.js            the design system's `--mk-*` layer, and the
  *                                 site's own token names re-pointed onto it
@@ -24,14 +24,14 @@
  * @type {import("tailwindcss").Config}
  */
 import plugin from "tailwindcss/plugin";
-import { generatedTheme, generatedTokens } from "./tailwind/tokens.generated.js";
+import { baseTheme, baseTokens } from "./tailwind/base-tokens.js";
 import { designSystemTokens, themeTokens } from "./tailwind/tokens.js";
 import { baseStyles } from "./tailwind/base.js";
 import { componentStyles } from "./tailwind/components/index.js";
 
 const config = {
   theme: {
-    extend: generatedTheme,
+    extend: baseTheme,
   },
   plugins: [
     plugin(({ addBase }) => {
@@ -43,12 +43,12 @@ const config = {
        */
       addBase({
         ":root, :host": {
-          "--font-mono": generatedTheme.fontFamily.mono,
-          "--default-font-family": generatedTheme.fontFamily.sans,
-          "--default-mono-font-family": generatedTheme.fontFamily.mono,
+          "--font-mono": baseTheme.fontFamily.mono,
+          "--default-font-family": baseTheme.fontFamily.sans,
+          "--default-mono-font-family": baseTheme.fontFamily.mono,
         },
       });
-      addBase(generatedTokens);
+      addBase(baseTokens);
       addBase(designSystemTokens);
       addBase(themeTokens);
       addBase(baseStyles);
