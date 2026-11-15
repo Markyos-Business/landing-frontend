@@ -66,7 +66,10 @@ export type ArticleSummary = {
 
 export type Article = ArticleSummary & {
   /**
-   * The rich text, as the editor's serialized state.
+   * The rich text: the Lexical tree from Payload, or cleaned HTML from the
+   * platform (src/lib/content/django.ts). RichText renders both.
+   *
+   * What follows is why Payload's half is a tree.
    *
    * Deliberately `unknown` rather than an HTML string: HTML from a CMS has to
    * be injected with `dangerouslySetInnerHTML`, which is exactly as dangerous
