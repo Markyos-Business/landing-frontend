@@ -1,6 +1,8 @@
 import type { Collection, ContentSource } from "./adapter";
 import { LOCALES, type Locale } from "@/lib/i18n/locales";
 import { payloadContent } from "./payload";
+import { djangoContent } from "./django";
+import { contentApiUrl } from "./djangoClient";
 
 /*
  * The one place the content source is chosen.
@@ -43,7 +45,16 @@ import { payloadContent } from "./payload";
  * placeholder nobody can see in the panel.
  */
 
-export const content: ContentSource = payloadContent;
+/*
+ * ── Moving to the platform, 15 Nov 2026 ──────────────────────────────────
+ *
+ * Website content is now written in the Markyos platform (/admin/cms) and
+ * served by its public API. Setting CONTENT_API_URL switches this site to
+ * that source; leaving it unset keeps Payload, so each environment moves
+ * when its content has been copied across and not before. Still one source
+ * at a time, for the reason above.
+ */
+export const content: ContentSource = contentApiUrl() ? djangoContent : payloadContent;
 
 export type {
   Article,
