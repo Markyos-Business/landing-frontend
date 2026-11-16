@@ -33,6 +33,7 @@
     "check:motion": "node scripts/check-motion.mjs",
     "check:pricing": "node scripts/check-pricing.mjs",
     "cms:import": "payload run scripts/import-resources.ts",
+    "cms:export": "payload run scripts/export-content.ts",
     "check:auth-links": "node scripts/check-auth-links.mjs",
     "cms:seed-demo": "node scripts/seed-platform-content.mjs",
     "check:content-backend": "node scripts/check-content-backend.mjs"
