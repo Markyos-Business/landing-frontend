@@ -1,9 +1,21 @@
 import type { Metadata } from "next";
 import { LOCALES, LOCALE_HREFLANG, DEFAULT_LOCALE, type Locale } from "./i18n/locales";
 import { localePrefix } from "./i18n/href";
+import { byDeployment } from "./deployEnv";
 
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "http://localhost:3000";
+/**
+ * The site's own origin, for canonicals, hreflang, the sitemap and Open
+ * Graph: NEXT_PUBLIC_SITE_URL, else this deployment's public address. It
+ * used to fall back to localhost on every deployment that forgot the var.
+ */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+  byDeployment({
+    production: "https://markyos.com",
+    preview: "https://staging.markyos.com",
+    local: "http://localhost:3000",
+  })
+).replace(/\/+$/, "");
 
 /**
  * The absolute URL of a page, in the shape the site actually publishes.

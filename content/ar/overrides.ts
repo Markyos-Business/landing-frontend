@@ -1460,7 +1460,7 @@ export const overrides: DeepPartial<SiteCopy> = {
         {
           question: "كيف أدفع؟",
           answer:
-            "بالبطاقة عبر Stripe، وبالدولار الأمريكي. البطاقات التي تعمل على شبكة مدى فقط غير مدعومة حالياً.",
+            "عبر PayPal، أو ببطاقتك من خلال PayPal، وبالدولار الأمريكي.",
         },
       ],
       link: { label: "كل الأسئلة", href: "/pricing#faq" },

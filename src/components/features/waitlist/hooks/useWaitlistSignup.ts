@@ -12,7 +12,7 @@ export function useWaitlistSignup(topic: SignupTopic, locale: Locale) {
   const copy = COPY[locale];
 
   const message =
-    state === "sent" ? copy.sent : state === "pending" ? copy.pending : state === "failed" ? copy.failed : "";
+    state === "sent" ? copy.sent : state === "failed" ? copy.failed : "";
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

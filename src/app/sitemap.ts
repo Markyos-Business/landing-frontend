@@ -1,3 +1,4 @@
+import { CONTENT_TAG, contentApi } from "@/lib/content/djangoClient";
 import type { MetadataRoute } from "next";
 import { LOCALES, LOCALE_HREFLANG, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { pageUrl } from "@/lib/seo";
@@ -23,7 +24,8 @@ import { PUBLISHED_PATHS, localesFor } from "@/lib/pages/registry";
  * 8 Nov 2026.
  */
 
-type Entry = { path: string; priority: number; locales: readonly Locale[] };
+type Entry = { path: string; priority: number; locales: readonly Locale[]; lastModified?: string };
+export const revalidate = 3600;
 
 const ROUTES: Entry[] = [
   { path: "", priority: 1, locales: LOCALES },
@@ -34,13 +36,15 @@ const ROUTES: Entry[] = [
   })),
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const editorial = await contentApi<{results: {path:string; locales:Locale[]; lastModified:string}[]}>("/content/public/sitemap/", [CONTENT_TAG]);
+  const routes:Entry[] = [...ROUTES, ...(editorial?.results ?? []).map(entry => ({...entry, priority:0.6}))];
   const lastModified = new Date();
 
-  return ROUTES.flatMap(({ path, priority, locales }) =>
+  return routes.flatMap(({ path, priority, locales, lastModified: updated }) =>
     locales.map((locale) => ({
       url: pageUrl(locale, path),
-      lastModified,
+      lastModified: updated ?? lastModified,
       changeFrequency: "weekly" as const,
       priority,
       /*

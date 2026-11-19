@@ -5,7 +5,7 @@ separate deploy from the platform app.
 
 ```bash
 npm install
-npm run dev        # site at / (Arabic), /en (English), admin at /admin
+npm run dev        # site at / (Arabic), /en (English), CMS at the platform /admin/cms
                    # the platform app may already hold :3000 — check the log for the port
 ```
 
@@ -13,8 +13,9 @@ Arabic has no locale segment: `/pricing` is Arabic and `/en/pricing` is
 English. That is `docs/OPEN-DECISIONS.md` §6, and two files implement it —
 `src/lib/i18n/href.ts` and `src/proxy.ts`.
 
-The admin panel needs no database to run: with `DATABASE_URI` unset it uses a
-local SQLite file. Open `/admin` and create the first account.
+Website editing lives in the platform at `/admin/cms`, using the same Django
+backend and accounts as the app. The website `/admin` redirects there; it does
+not host a separate CMS or first-user setup.
 
 `npm run check` must pass before a commit.
 
@@ -23,8 +24,8 @@ local SQLite file. Open `/admin` and create the first account.
 ## What this is
 
 A Next.js 16 app serving the homepage, the audience and product pages, and
-(later) the `/resources` hub backed by Payload. It is **not** part of
-`../markyosmvp`: separate repo, separate deploy, so a copy tweak does not
+the `/resources` hub backed by the app’s Django API. It is **not** part of
+`../markyos-frontend`: separate repo, separate deploy, so a copy tweak does not
 rebuild the product and a broken product build does not block a landing-page
 fix.
 
@@ -52,10 +53,10 @@ Regression setup for public forms and CMS permissions is documented in
 npm run dev            # dev server
 npm run build          # 147 static pages — every route, both locales
 npm run check          # tsc · eslint · token drift · design rules · Arabic parity
-npm run cms:types      # regenerate CMS types after a schema change
-npm run cms:import -- <dir>   # load the written resources into the CMS;
+npm run cms:types      # legacy Payload migration tooling; not the active CMS
+npm run cms:import -- <dir>   # legacy Payload import tooling;
                        # matched on slug, never overwrites, --replace to redo
-npm run cms:importmap  # regenerate the admin import map
+npm run cms:importmap  # legacy Payload admin tooling
 npm run check:design   # the design system’s §14 rules — add --list for the
                        #   rules and why each exemption exists
 npm run check:locales  # what still needs Arabic (the transcreation brief)
@@ -80,9 +81,8 @@ with `npm run check` green and were caught here — see the header of
 
 ```
 src/app/[lang]/        every route, under the locale. Root layout sets lang + dir
-src/app/(payload)/     the admin panel and its API (generated — do not hand-edit)
-cms/               Payload: collections, globals, access control, fields,
-                   the dashboard view, and analytics aggregation
+src/lib/content/      article reads and redirects from the shared Django API
+cms/                  legacy Payload schemas retained for migration tooling
 components/
   chrome/          header, nav, phone menu, footer, announcement, lang switch
   sections/        17 homepage sections, one per copy-doc block
@@ -170,9 +170,9 @@ screen, per-section permissions (a writer can be scoped to the blog alone and
 sees nothing else), first-party cookieless analytics, and an admin panel that
 runs in Arabic with the whole layout mirrored.
 
-**Payload CMS is installed and working.** Ten collections, four globals, a
-Lexical editor, AR/EN on every field, drafts and versions, Live Preview, roles,
-and on-demand revalidation.
+**The app’s Django CMS is the only active editorial backend.** Manage writing,
+translations, roles and publishing at the platform’s `/admin/cms`. The website
+reads published snapshots and forwards page views to that API.
 
 The design reference is in `UI-UX Design Reference/`. It was swapped on
 21 Oct 2026: the 21 per-section mockups were replaced by 39 captures of
@@ -197,3 +197,44 @@ when changing this public environment variable. Old website `/start`, `/signup`,
 
 Run `npm run check:auth-links` to verify both languages, account-type parameters,
 legacy routes and deployment origin configuration.
+
+## Current local website CMS
+
+The active CMS is the platform’s Django-backed `/admin/cms` at
+`http://localhost:3000/admin/cms`. Seed it from `markyos-backend` with
+`DJANGO_SETTINGS_MODULE=config.settings.dev python manage.py seed_web_content`.
+Use `admin@demo.markyos.test` / `MarkyosDemo2026!` on the platform login.
+
+Run `npm run cms:seed-demo` from this website checkout to invoke the local
+backend seed command. It adds 20 bilingual placeholder articles and preserves
+existing records and passwords. No separate website CMS account is required.
+
+## Shared backend configuration
+
+| Environment | `CONTENT_API_URL` | `NEXT_PUBLIC_APP_URL` |
+| --- | --- | --- |
+| Local | `http://localhost:8010/api/v1` | `http://localhost:3000` |
+| Staging | `https://api-staging.markyos.com/api/v1` | `https://app-staging.markyos.com` |
+| Production | `https://api.markyos.com/api/v1` | `https://app.markyos.com` |
+
+Set these in `.env.local` for local development and the host environment for
+staging/production, then restart or rebuild the website. Articles, redirects
+and analytics all use this same Django API; an outage does not switch the site
+to a second database. Website `/admin` URLs forward to the platform CMS.
+The Payload route group is retired. Legacy import/schema tools remain in the
+repository for historical content migration, but do not serve the website.
+
+For analytics and immediate publish refresh, set the same random
+`CONTENT_SITE_KEY` on the website and backend. Set backend
+`CONTENT_REVALIDATE_URL` to the website's `/api/revalidate` URL. These are
+server-only values. Without a key, tracking is disabled; public content still
+loads and refreshes on its cache schedule. Restart both processes after local
+environment changes. The waitlist storage decision remains separate and is
+not implemented by switching the editorial backend.
+
+
+Website signup forms persist through `/api/waitlist` to the shared backend's
+`/content/public/signups/`. They report success only after storage accepts the
+request, deduplicate email/topic pairs and do not promise a confirmation email.
+Operators can review entries in Django admin under Website signups. Apply
+backend migrations before deployment. See [CMS guide](docs/CMS-GUIDE.md).

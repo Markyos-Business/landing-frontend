@@ -26,14 +26,17 @@
     "check:cms-permissions": "node scripts/check-cms-permissions.mjs",
     "check:articles": "node scripts/check-articles.mjs",
     "check:live": "npm run check:articles && npm run check:bidi && npm run check:align && npm run check:nav && npm run check:pages && npm run check:motion",
-    "check": "tsc --noEmit && eslint . --max-warnings=0 && npm run check:design && npm run check:locales && npm run check:pricing && npm run check:auth-links",
+    "check": "tsc --noEmit && eslint . --max-warnings=0 && npm run check:design && npm run check:locales && npm run check:pricing && npm run check:auth-links && npm run check:content-backend",
     "check:bidi": "node scripts/check-bidi.mjs",
     "check:align": "node scripts/check-align.mjs",
     "check:nav": "node scripts/check-nav.mjs",
     "check:motion": "node scripts/check-motion.mjs",
     "check:pricing": "node scripts/check-pricing.mjs",
     "cms:import": "payload run scripts/import-resources.ts",
-    "check:auth-links": "node scripts/check-auth-links.mjs"
+    "cms:export": "payload run scripts/export-content.ts",
+    "check:auth-links": "node scripts/check-auth-links.mjs",
+    "cms:seed-demo": "node scripts/seed-platform-content.mjs",
+    "check:content-backend": "node scripts/check-content-backend.mjs"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.91.0",

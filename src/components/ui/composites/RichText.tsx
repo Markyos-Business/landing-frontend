@@ -102,7 +102,18 @@ export function RichText({
 }) {
   // An unpublished or empty body is a normal state, not an error — a draft
   // with only a title is a thing people make.
-  if (!data || typeof data !== "object") return null;
+  if (!data) return null;
+
+  // From the platform (src/lib/content/django.ts) the body is HTML. It is
+  // cleaned against an allowlist twice before it arrives — when it is saved
+  // and again when it is served — so it can hold only the elements the
+  // platform's editor makes: no scripts, no handlers, no styles, no h1. The
+  // one change made here is the scroll wrapper every table gets below.
+  if (typeof data === "string") {
+    const html = data.replace(/<table\b/g, '<div class="mk-prose-table"><table').replace(/<\/table>/g, "</table></div>");
+    return <div className={`mk-prose ${className}`} dangerouslySetInnerHTML={{ __html: html }} />;
+  }
+  if (typeof data !== "object") return null;
 
   return (
     <div className={`mk-prose ${className}`}>

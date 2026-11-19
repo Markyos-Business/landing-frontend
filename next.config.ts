@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
 import { APP_URL } from "./src/lib/appUrls";
-import { withPayload } from "@payloadcms/next/withPayload";
 
 /*
  * Every Vercel deploy that is not production — staging and each preview —
@@ -11,17 +10,39 @@ import { withPayload } from "@payloadcms/next/withPayload";
  */
 const hiddenFromSearch = Boolean(process.env.VERCEL_ENV) && process.env.VERCEL_ENV !== "production";
 
+/*
+ * Baseline browser protections for every page. No full Content-Security-Policy
+ * yet (inline scripts and analytics need an audit first); `frame-ancestors`
+ * alone stops the site being framed for clickjacking.
+ */
+const securityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+];
+
 const nextConfig: NextConfig = {
+  // Which deployment this is, fixed at build for server and browser alike
+  // (src/lib/deployEnv.ts).
+  env: { MARKYOS_DEPLOY_ENV: process.env.VERCEL_ENV ?? "" },
   async headers() {
-    return hiddenFromSearch
-      ? [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }]
-      : [];
+    return [
+      {
+        source: "/:path*",
+        headers: hiddenFromSearch
+          ? [...securityHeaders, { key: "X-Robots-Tag", value: "noindex, nofollow" }]
+          : securityHeaders,
+      },
+    ];
   },
   // The marketing site is almost entirely static. Keeping `trailingSlash` off
   // and the default output means one canonical URL per page, which is the
   // thing SEO cares about most here.
   async redirects() {
     return [
+      { source: "/admin/:path*", destination: `${APP_URL}/admin/cms`, permanent: false },
       // Keep bookmarked website auth paths working. New CTAs link directly
       // to the platform; incoming query strings (lang/type/plan) pass through.
       ...["/start", "/signup", "/register", "/login"].map(source => ({
@@ -130,10 +151,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-/*
- * `withPayload` adds what the admin panel needs to build: the SCSS pipeline
- * for Payload's own stylesheets, and the server-only packages that must stay
- * out of the client bundle. The marketing site's config above is untouched by
- * it.
- */
-export default withPayload(nextConfig);
+export default nextConfig;
