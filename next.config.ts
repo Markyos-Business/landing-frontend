@@ -10,11 +10,32 @@ import { APP_URL } from "./src/lib/appUrls";
  */
 const hiddenFromSearch = Boolean(process.env.VERCEL_ENV) && process.env.VERCEL_ENV !== "production";
 
+/*
+ * Baseline browser protections for every page. No full Content-Security-Policy
+ * yet (inline scripts and analytics need an audit first); `frame-ancestors`
+ * alone stops the site being framed for clickjacking.
+ */
+const securityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+];
+
 const nextConfig: NextConfig = {
+  // Which deployment this is, fixed at build for server and browser alike
+  // (src/lib/deployEnv.ts).
+  env: { MARKYOS_DEPLOY_ENV: process.env.VERCEL_ENV ?? "" },
   async headers() {
-    return hiddenFromSearch
-      ? [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }]
-      : [];
+    return [
+      {
+        source: "/:path*",
+        headers: hiddenFromSearch
+          ? [...securityHeaders, { key: "X-Robots-Tag", value: "noindex, nofollow" }]
+          : securityHeaders,
+      },
+    ];
   },
   // The marketing site is almost entirely static. Keeping `trailingSlash` off
   // and the default output means one canonical URL per page, which is the
