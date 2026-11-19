@@ -54,12 +54,27 @@ const toArticle = (doc: Doc): Article => {
 /** Title is required to publish, so an empty one is a language nobody wrote. */
 const translated = (doc: Doc): boolean => str(doc.title).trim().length > 0;
 
+/*
+ * What a failed read becomes.
+ *
+ * At runtime it is thrown. Next keeps serving the last good page when a
+ * refresh throws and retries on the next request, so a backend that is
+ * asleep (Render's free tier takes longer to wake than this site waits) no
+ * longer gets an empty list or a 404 cached for an hour. Swallowing it did.
+ *
+ * During `next build` there is no last good page to fall back on, and a
+ * sleeping backend must not fail a deploy, so the build renders the empty
+ * fallback; the next publish or the hourly refresh fills it in.
+ */
+const building = () => process.env.NEXT_PHASE === "phase-production-build";
+
 async function safe<T>(label: string, read: () => Promise<T>, fallback: T): Promise<T> {
   try {
     return await read();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.warn(`[cms] ${label} unavailable: ${message.slice(0, 160)}`);
+    if (!building()) throw error;
     return fallback;
   }
 }
