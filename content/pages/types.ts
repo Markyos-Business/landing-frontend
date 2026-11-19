@@ -87,6 +87,8 @@ export type PlanCard = {
   /** One line on who the plan is for. */
   who?: string;
   rows: { label: string; value: string; strong?: boolean }[];
+  /** What the plan includes, as a checklist under the rows. */
+  features?: string[];
   cta?: Cta;
   /** Set when the plan itself has not shipped: the CTA becomes a chip. */
   feature?: FeatureId;

@@ -1,82 +1,192 @@
-import type { PageDoc, PlanCard } from "./pages/types";
+import type { PageBlock, PageDoc, PlanCard } from "./pages/types";
 import type { PricingTeaserCopy } from "./types";
 
 type AccountType = "freelancer" | "studio" | "company";
 type Locale = "en" | "ar";
 
-/** Current USD checkout prices, per brand. Guarded against Django and the app by check:pricing. */
+/**
+ * Monthly USD price per brand, by the brand owner's account type.
+ * Guarded against Django's billing.PRICES and the app by check:pricing.
+ */
 export const CURRENT_PRICES = {
-  freelancer: { pass: 15, subscription: 19 },
-  studio: { pass: 19, subscription: 29 },
-  company: { pass: 49, subscription: 99 },
+  freelancer: { subscription: 19 },
+  studio: { subscription: 29 },
+  company: { subscription: 99 },
 } as const;
 
-const names = {
-  en: { freelancer: "Freelancer", studio: "Studio", company: "Company" },
-  ar: { freelancer: "مستقل", studio: "استوديو", company: "شركة" },
-};
+/**
+ * What each account type may have (null = no limit). Guarded against the
+ * app's ACCOUNT_TYPES limits by check:pricing. Plans don't change these.
+ */
+export const CURRENT_LIMITS = {
+  freelancer: { brands: 3, editors: 0 },
+  studio: { brands: null, editors: null },
+  company: { brands: 1, editors: null },
+} as const;
 
-/** Account type selects the price; paid plans always cover one brand. */
+const TYPES = ["freelancer", "studio", "company"] as const;
+
+const copy = {
+  en: {
+    names: { freelancer: "Freelancer", studio: "Studio", company: "Company" },
+    who: {
+      freelancer: "For one person running a few client brands.",
+      studio: "For studios running client brands with a team.",
+      company: "For a company running its own brand.",
+    },
+    period: "/ month, per brand",
+    brands: "Brands",
+    editors: "Editors",
+    unlimited: "Unlimited",
+    alone: "Works alone",
+    features: ["Share the guideline with your client", "No “Made with Markyos” badge"],
+    cta: "Get started free",
+    popular: "Most popular",
+    payNote:
+      "Pay with PayPal or a card through PayPal. Cancel any time and keep access to the end of the month you paid for.",
+  },
+  ar: {
+    names: { freelancer: "مستقل", studio: "استوديو", company: "شركة" },
+    who: {
+      freelancer: "لمن يعمل وحده على علامات عدد من العملاء.",
+      studio: "للاستوديوهات التي تدير علامات عملائها مع فريق.",
+      company: "للشركات التي تدير علامتها الخاصة.",
+    },
+    period: "شهرياً، لكل علامة",
+    brands: "العلامات",
+    editors: "المحرّرون",
+    unlimited: "بلا حدود",
+    alone: "تعمل وحدك",
+    features: ["مشاركة الدليل مع عميلك", "دون شارة «صُنع بماركيوس»"],
+    cta: "ابدأ مجاناً",
+    popular: "الأكثر اختياراً",
+    payNote:
+      "ادفع عبر PayPal، أو ببطاقتك من خلال PayPal. ألغِ متى شئت، ويبقى وصولك حتى نهاية الشهر الذي دفعت عنه.",
+  },
+} as const;
+
+const limit = (value: number | null, locale: Locale) => (value === null ? copy[locale].unlimited : String(value));
+
+/** The brand owner's account type selects the price; a paid plan covers one brand. */
 function accountPlan(type: AccountType, locale: Locale): PlanCard & { cta: { label: string; href: string } } {
-  const ar = locale === "ar";
-  const prices = CURRENT_PRICES[type];
+  const c = copy[locale];
+  const limits = CURRENT_LIMITS[type];
   return {
-    name: names[locale][type],
-    price: `$${prices.pass}`,
-    period: ar ? "لمرة واحدة، لكل علامة" : "once, per brand",
-    who: ar ? "تصريح المشروع يفتح رابط العميل لدليل علامة واحدة." : "A Project Pass opens the client link for one brand's guideline.",
+    name: c.names[type],
+    price: `$${CURRENT_PRICES[type].subscription}`,
+    period: c.period,
+    who: c.who[type],
     rows: [
-      { label: ar ? "الاشتراك الشهري" : "Monthly brand plan", value: ar ? `$${prices.subscription} / شهر` : `$${prices.subscription} / month` },
-      { label: ar ? "نطاق الخطة المدفوعة" : "Each paid plan covers", value: ar ? "علامة واحدة" : "One brand" },
+      { label: c.brands, value: limit(limits.brands, locale) },
+      { label: c.editors, value: limits.editors === 0 ? c.alone : limit(limits.editors, locale) },
     ],
-    cta: { label: ar ? "أنشئ حسابك" : "Create your account", href: `/start?type=${type}` },
+    features: [...c.features],
+    recommended: type === "studio",
+    cta: { label: c.cta, href: `/start?type=${type}` },
   };
 }
 
 export function currentPricingPage(locale: Locale): PageDoc {
   const ar = locale === "ar";
+  const yes = ar ? "نعم" : "Yes";
+  const firstFree = ar ? "التحليل الأول مجاني" : "First run free";
   return {
     path: "/pricing",
     shortTitle: ar ? "الأسعار" : "Pricing",
     title: ar ? "الأسعار · ماركيوس" : "Pricing · Markyos",
-    description: ar ? "ابدأ بإنشاء علامتك مجاناً. تصريح لمرة واحدة أو اشتراك شهري لكل علامة، بالدولار الأمريكي." : "Create your brand free. Choose a one-time Project Pass or a monthly plan for each brand, in US dollars.",
+    description: ar
+      ? "ابنِ علامتك مجاناً، وادفع شهرياً لكل علامة حين تشارك دليلها مع عميلك. بالدولار الأمريكي، عبر PayPal."
+      : "Build your brand free, and pay monthly per brand when you share its guideline with your client. In US dollars, through PayPal.",
     breadcrumbs: [{ label: ar ? "الرئيسية" : "Home", href: "/" }],
     priority: 0.9,
     blocks: [
       {
         kind: "hero",
-        title: ar ? "ابدأ مجاناً. وادفع لكل علامة." : "Start free. Pay per brand.",
-        lead: ar ? "أنشئ علامتك وأعدّ دليلها قبل الدفع. لمشاركة الدليل، اختر تصريح المشروع لمرة واحدة أو اشتراكاً شهرياً لتلك العلامة." : "Create your brand and prepare its guideline before paying. To share the guideline, choose a one-time Project Pass or a monthly plan for that brand.",
+        title: ar ? "ابنِ علامتك مجاناً. وادفع لكل علامة حين تشاركها." : "Build your brand free. Pay per brand when you share it.",
+        lead: ar
+          ? "أعدّ الاستراتيجية والهوية والدليل دون أن تدفع. وحين تريد مشاركة الدليل مع عميلك، اشترك شهرياً لتلك العلامة وحدها."
+          : "Set up the strategy, identity and guideline without paying. When you share the guideline with your client, subscribe that one brand monthly.",
       },
       {
         kind: "plans",
         id: "plans",
         title: ar ? "اختر نوع حسابك." : "Choose your account type.",
-        lead: ar ? "السعر حسب نوع حساب مالك العلامة. كل تصريح أو اشتراك مدفوع يخص علامة واحدة، وليس جميع علامات الحساب." : "The price follows the brand owner's account type. Each paid pass or subscription covers one brand, not every brand in the account.",
-        recommendedLabel: ar ? "موصى بها" : "Recommended",
-        plans: (["freelancer", "studio", "company"] as const).map((type) => accountPlan(type, locale)),
-        note: ar ? "كل الأسعار بالدولار الأمريكي. الاشتراك شهري؛ لا توجد فوترة سنوية أو رسوم مقاعد إضافية ضمن هذه الخطط." : "All prices are in US dollars. Subscriptions are billed monthly; these plans have no annual billing or extra-seat charges.",
+        lead: ar
+          ? "السعر حسب نوع حساب مالك العلامة، وكل اشتراك يخص علامة واحدة."
+          : "The price follows the brand owner's account type. Each plan covers one brand.",
+        recommendedLabel: copy[locale].popular,
+        plans: TYPES.map((type) => accountPlan(type, locale)),
+        note: copy[locale].payNote,
       },
       {
-        kind: "prose",
-        title: ar ? "أنشئ حسابك أولاً، ثم اختر خطة لعلامتك." : "Create your account, then choose a plan for your brand.",
-        body: [
-          ar ? "إنشاء الحساب لا يشتري خطة. بعد إعداد علامتك، افتح إعداداتها لاختيار تصريح المشروع أو الاشتراك الشهري. تتحقق المنصة من الدفع قبل تفعيل الخطة." : "Signing up does not purchase a plan. After setting up your brand, open its settings to choose a Project Pass or monthly plan. The platform verifies payment before activating access.",
-          ar ? "لا تشمل الخطط الحالية أرصدة شهرية أو حزم أرصدة مدفوعة." : "The current plans do not include monthly credit allowances or paid credit packs.",
+        kind: "table",
+        id: "compare",
+        title: ar ? "علامة مجانية أم مدفوعة." : "Free brand vs paid brand.",
+        head: ["", ar ? "علامة مجانية" : "Free brand", { text: ar ? "علامة مدفوعة" : "Paid brand", strong: true }],
+        rows: [
+          [ar ? "بناء الاستراتيجية والهوية والدليل" : "Build strategy, identity and guideline", yes, { text: yes, strong: true }],
+          [ar ? "روابط المشاركة" : "Share links", yes, { text: yes, strong: true }],
+          [ar ? "نشر موقع الدليل" : "Publish the guideline site", ar ? "مسودة فقط" : "Draft only", { text: yes, strong: true }],
+          [ar ? "شارة «صُنع بماركيوس»" : "“Made with Markyos” badge", ar ? "تظهر" : "Shown", { text: ar ? "تُزال" : "Removed", strong: true }],
+          [ar ? "تحليل الموجز بالذكاء الاصطناعي" : "AI brief analysis", firstFree, { text: firstFree, strong: true }],
         ],
       },
       {
-        kind: "faq",
+        kind: "cards",
         id: "faq",
         title: ar ? "أسئلة عن الدفع." : "Payment questions.",
+        cols: 2,
         items: [
-          { q: ar ? "ما الفرق بين التصريح والاشتراك؟" : "How do the pass and subscription differ?", a: ar ? "تصريح المشروع دفعة واحدة لفتح رابط العميل لدليل علامة واحدة. الاشتراك خطة شهرية لدليل تلك العلامة، ويمكن إدارته من إعداداتها." : "A Project Pass is a one-time payment to open the client link for one guideline. A subscription is a monthly plan for that brand's guideline, managed from its settings." },
-          { q: ar ? "هل يغطي الاشتراك كل علاماتي؟" : "Does a subscription cover all my brands?", a: ar ? "لا. كل عملية شراء تخص علامة واحدة. يحدد نوع الحساب عدد العلامات والمحررين المسموح بهم، وليس مستوى الاشتراك." : "No. Each purchase covers one brand. Account type determines the brand and editor limits; it is separate from the paid plan." },
-          { q: ar ? "هل نشر الدليل متاح مجاناً؟" : "Can I publish a guideline for free?", a: ar ? "يمكنك إعداد الدليل قبل الدفع. عرض الدليل المنشور يتطلب تصريحاً مدفوعاً تم التحقق منه أو اشتراكاً نشطاً لتلك العلامة." : "You can prepare the guideline before paying. Serving the published guideline requires a verified paid pass or active subscription for that brand." },
-          { q: ar ? "كيف أدفع؟" : "How do I pay?", a: ar ? "من إعدادات العلامة عبر Stripe، بالدولار الأمريكي. تعرض صفحة الدفع الخطة والسعر قبل تأكيد الشراء." : "From the brand's settings through Stripe, in US dollars. Checkout shows the plan and price before you confirm the purchase." },
+          {
+            title: ar ? "متى أدفع؟" : "When do I pay?",
+            body: ar
+              ? "حين تريد مشاركة دليل علامة مع عميلك فقط. البناء مجاني، ودون مهلة."
+              : "Only when you want to share a brand's guideline with your client. Building it is free, with no time limit.",
+          },
+          {
+            title: ar ? "هل الاشتراك لكل علامة؟" : "Is it per brand?",
+            body: ar
+              ? "نعم. كل اشتراك يخص علامة واحدة، بسعر نوع حسابك. وتبقى علاماتك الأخرى مجانية حتى تشاركها."
+              : "Yes. Each plan covers one brand, priced by your account type. Your other brands stay free until you share them.",
+          },
+          {
+            title: ar ? "هل يمكنني الإلغاء؟" : "Can I cancel?",
+            body: ar
+              ? "متى شئت، من إعدادات الفوترة. تبقى الخطة مفعّلة حتى نهاية الشهر الذي دفعت عنه، ثم يتوقف موقع الدليل. ويبقى عملك كما هو."
+              : "Any time, from billing settings. The plan stays active to the end of the month you paid for, then the site goes offline. Your work stays.",
+          },
+          {
+            title: ar ? "كيف أدفع؟" : "How do I pay?",
+            body: ar
+              ? "عبر PayPal، أو ببطاقتك من خلال PayPal، بالدولار الأمريكي. ويرسل لك PayPal إيصالاً عن كل دفعة."
+              : "With PayPal, or a card through PayPal, in US dollars. PayPal emails you a receipt for every payment.",
+          },
         ],
       },
     ],
+  };
+}
+
+/** An audience page's price table: a free brand next to that account type's paid brand. */
+export function audiencePlanTable(type: AccountType, locale: Locale, title: string): PageBlock {
+  const ar = locale === "ar";
+  const c = copy[locale];
+  const limits = CURRENT_LIMITS[type];
+  const brands = limits.brands === null ? (ar ? "عدد غير محدود من العلامات" : "any number of brands") : ar ? `${limits.brands === 1 ? "علامة واحدة" : `حتى ${limits.brands} علامات`}` : `${limits.brands === 1 ? "one brand" : `up to ${limits.brands} brands`}`;
+  const team = limits.editors === 0 ? (ar ? "ويعمل وحده" : "and works alone") : ar ? "مع فريق من المحرّرين" : "with a team of editors";
+  return {
+    kind: "table",
+    title,
+    numeric: true,
+    head: ["", ar ? "علامة مجانية" : "Free brand", { text: ar ? `خطة ${c.names[type]}` : `${c.names[type]} plan`, strong: true }],
+    rows: [
+      [ar ? "السعر" : "Price", "$0", { text: `$${CURRENT_PRICES[type].subscription} ${c.period}`, strong: true }],
+      [ar ? "موقع الدليل" : "Guideline site", ar ? "مسودة فقط" : "Draft only", { text: ar ? "منشور لعميلك" : "Live for your client", strong: true }],
+      [ar ? "شارة «صُنع بماركيوس»" : "“Made with Markyos” badge", ar ? "تظهر" : "Shown", { text: ar ? "تُزال" : "Removed", strong: true }],
+    ],
+    note: ar
+      ? `حساب ${c.names[type]} يملك ${brands} ${team}. كل اشتراك يخص علامة واحدة.`
+      : `A ${c.names[type]} account owns ${brands} ${team}. Each plan covers one brand.`,
   };
 }
 
@@ -84,19 +194,28 @@ export function currentPricingTeaser(locale: Locale): PricingTeaserCopy {
   const ar = locale === "ar";
   const teaser = (type: AccountType) => {
     const plan = accountPlan(type, locale);
-    return { name: plan.name, price: `${plan.price} ${ar ? "لمرة واحدة" : "once"}`, rows: plan.rows, line: ar ? "تصريح المشروع لكل علامة" : "Project Pass per brand", cta: plan.cta };
+    return {
+      name: plan.name,
+      price: `${plan.price} ${plan.period}`,
+      rows: plan.rows,
+      line: plan.who ?? "",
+      recommended: plan.recommended,
+      cta: plan.cta,
+    };
   };
   return {
-    headline: ar ? "ابدأ مجاناً. وادفع لكل علامة." : "Start free. Pay per brand.",
-    body: ar ? "أعدّ دليلك مجاناً، ثم اختر تصريحاً لمرة واحدة أو اشتراكاً شهرياً لمشاركته. كل خطة مدفوعة تخص علامة واحدة، بالدولار الأمريكي." : "Prepare your guideline free, then choose a one-time pass or monthly plan to share it. Each paid plan covers one brand, in US dollars.",
+    headline: ar ? "ابنِ علامتك مجاناً. وادفع لكل علامة حين تشاركها." : "Build your brand free. Pay per brand when you share it.",
+    body: ar
+      ? "أعدّ دليلك مجاناً، ثم اشترك شهرياً لتشاركه مع عميلك. كل اشتراك يخص علامة واحدة، بالدولار الأمريكي."
+      : "Prepare your guideline free, then subscribe monthly to share it with your client. Each plan covers one brand, in US dollars.",
     studioToggle: ar ? "للاستوديوهات والمستقلين" : "For studios and freelancers",
     companyToggle: ar ? "للشركات" : "For companies",
     studioPlans: [teaser("freelancer"), teaser("studio")],
     companyPlans: [teaser("company")],
-    recommendedLabel: ar ? "موصى بها" : "Recommended",
-    studioNote: ar ? "اختر نوع حسابك عند التسجيل، والخطة من إعدادات كل علامة." : "Choose your account type at signup and a plan in each brand's settings.",
+    recommendedLabel: copy[locale].popular,
+    studioNote: ar ? "اختر نوع حسابك عند التسجيل، واشترك من إعدادات كل علامة." : "Choose your account type at signup, and subscribe in each brand's settings.",
     companyNote: ar ? "الاشتراك الشهري يخص علامة شركتك وحدها." : "The monthly plan covers your company's brand only.",
-    underBoth: ar ? "فوترة شهرية فقط؛ لا توجد حزم أرصدة مدفوعة ضمن هذه الخطط." : "Monthly billing only; these plans do not include paid credit packs.",
+    underBoth: ar ? "فوترة شهرية عبر PayPal، وإلغاء متى شئت." : "Monthly billing through PayPal. Cancel any time.",
     link: { label: ar ? "اطّلع على الأسعار" : "See full pricing", href: "/pricing" },
   };
 }

@@ -1,4 +1,4 @@
-import { Words, Button, Card, CardTitle, Chip, Section, SectionHead } from "@/components/ui";
+import { Words, Button, Card, CardTitle, Chip, Icon, Section, SectionHead } from "@/components/ui";
 import type { PageBlock } from "@/content/pages/types";
 import { BillingSwitch } from "../BillingSwitch";
 import { T, Note, type Ctx } from "./shared";
@@ -150,6 +150,17 @@ export function PlansBlock({
                 </div>
               ))}
             </dl>
+
+            {plan.features?.length ? (
+              <ul className="mt-4 space-y-2.5">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-2.5">
+                    <Icon name="check" size={16} className="mt-0.5 shrink-0 text-[var(--text-muted)]" />
+                    <span className="mk-bidi text-[length:var(--fs-ui)] leading-[1.5] text-[var(--text)]">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
 
             <div className="mt-auto pt-6">
               {plan.feature ? (
