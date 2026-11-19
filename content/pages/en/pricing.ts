@@ -167,7 +167,7 @@ const security: PageDoc = {
       kind: "prose",
       title: "Account and payment",
       body: [
-        "Payments go through Stripe, and we never see your card number. Passwords are hashed, and repeated sign-in attempts are limited.",
+        "Payments go through PayPal, and we never see your card number. Passwords are hashed, and repeated sign-in attempts are limited.",
       ],
     },
     {
