@@ -27,6 +27,9 @@ const nextConfig: NextConfig = {
   // Which deployment this is, fixed at build for server and browser alike
   // (src/lib/deployEnv.ts).
   env: { MARKYOS_DEPLOY_ENV: process.env.VERCEL_ENV ?? "" },
+  experimental: {
+    agentUpgrade: "security",
+  },
   async headers() {
     return [
       {
