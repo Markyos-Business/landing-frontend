@@ -1,6 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { z } from "zod";
 import { CONTENT_TAG, contentSiteKey } from "@/lib/content/djangoClient";
 
@@ -19,6 +19,8 @@ import { CONTENT_TAG, contentSiteKey } from "@/lib/content/djangoClient";
  */
 
 export const runtime = "nodejs";
+// Room for the rebuild after the response; see `after` below.
+export const maxDuration = 60;
 
 const Body = z.object({
   paths: z
@@ -55,6 +57,22 @@ export async function POST(request: Request) {
   for (const route of routes) revalidatePath(route);
   // Lists every article, in the languages it is written in.
   revalidatePath("/sitemap.xml");
+
+  /*
+   * Rebuild the pages now, while the platform is certainly awake: it sent
+   * this request. Left to the next visitor, the rebuild could meet a backend
+   * that has gone back to sleep (Render's free tier) and fail with nothing
+   * cached to fall back on, since the expiry above removed it.
+   */
+  const origin = new URL(request.url).origin;
+  after(async () => {
+    const pages = [...parsed.data.paths, "/sitemap.xml"];
+    const results = await Promise.allSettled(
+      pages.map((path) => fetch(new URL(path, origin), { cache: "no-store", signal: AbortSignal.timeout(30000) })),
+    );
+    const failed = pages.filter((_, i) => results[i].status === "rejected" || !(results[i] as PromiseFulfilledResult<Response>).value.ok);
+    if (failed.length) console.warn(`[cms] rebuild after publish failed for ${failed.join(", ").slice(0, 300)}`);
+  });
 
   return NextResponse.json({ revalidated: routes });
 }

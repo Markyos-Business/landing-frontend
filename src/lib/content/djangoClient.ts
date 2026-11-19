@@ -36,7 +36,9 @@ export async function contentApi<T>(path: string, tags: string[]): Promise<T | n
   const response = await fetch(`${root}${path}`, {
     headers: { Accept: "application/json" },
     next: { revalidate: 3600, tags },
-    signal: AbortSignal.timeout(8000),
+    // A build waits long enough to wake a sleeping backend; a page refresh
+    // doesn't need to, because a failure keeps the last good page.
+    signal: AbortSignal.timeout(process.env.NEXT_PHASE === "phase-production-build" ? 45000 : 8000),
   });
   if (response.status === 404) return null;
   if (!response.ok) throw new Error(`${response.status} from ${path}`);
