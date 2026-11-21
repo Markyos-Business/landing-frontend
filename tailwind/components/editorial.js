@@ -918,4 +918,60 @@ export const editorialStyles = [
       "min-block-size": "44px",
     },
   } },
+  /* ── Help Center feedback (C6, 21 Nov 2026) ──────────────────────────── */
+  { ".mk-help-feedback": {
+    "margin-block-start": "clamp(2.5rem, 5vw, 3.5rem)",
+    "border-radius": "var(--radius-card)",
+    "padding": "clamp(20px, 3vw, 28px)",
+    "background": "var(--surface-1)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-help-feedback h2:focus": {
+    "outline": "none",
+  } },
+  { ".mk-help-check": {
+    "display": "flex",
+    "align-items": "center",
+    "gap": "10px",
+    "min-block-size": "40px",
+    "border-radius": "var(--radius-widget)",
+    "padding-inline": "12px",
+    "font-size": "var(--fs-ui)",
+    "color": "var(--text)",
+    "cursor": "pointer",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-help-check:has(input:checked)": {
+    "background": "var(--accent-soft)",
+    "box-shadow": "0 0 0 1.5px var(--accent)",
+  } },
+  { ".mk-help-check input": {
+    "inline-size": "18px",
+    "block-size": "18px",
+    "accent-color": "var(--accent)",
+    "flex": "none",
+  } },
+  { ".mk-help-textarea": {
+    "inline-size": "100%",
+    "resize": "vertical",
+    "border-radius": "var(--radius-widget)",
+    "padding": "10px 14px",
+    "font-size": "var(--fs-ui)",
+    "color": "var(--text)",
+    "background": "var(--canvas)",
+    "box-shadow": "inset 0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-help-textarea:focus-visible": {
+    "outline": "2px solid var(--accent)",
+    "outline-offset": "2px",
+  } },
+  /* The honeypot: present for bots, absent for people. */
+  { ".mk-honeypot": {
+    "position": "absolute",
+    "inline-size": "1px",
+    "block-size": "1px",
+    "overflow": "hidden",
+    "clip-path": "inset(50%)",
+    "white-space": "nowrap",
+  } },
 ];

@@ -7,6 +7,7 @@ import { Icon, Section } from "@/components/ui";
 import { Bidi } from "./Bidi";
 import type { TocItem } from "./body";
 import { HELP_COPY } from "./copy";
+import { HelpFeedback } from "./HelpFeedback";
 import { ArticleRow, ContactFallback } from "./HelpHome";
 
 /*
@@ -78,7 +79,7 @@ export function HelpArticleView({
 
           <div className="mk-prose mk-help-body mt-8" dangerouslySetInnerHTML={{ __html: html }} />
 
-          {/* C6: the "Was this article helpful?" question goes here. */}
+          <HelpFeedback locale={locale} articleId={article.id} />
         </article>
 
         {toc.length > 1 ? (
