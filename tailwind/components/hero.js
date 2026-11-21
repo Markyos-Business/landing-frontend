@@ -1,4 +1,62 @@
 export const heroStyles = [
+  /*
+   * The shader's host.
+   *
+   * Same box the gradient aurora occupied: the whole hero, behind everything.
+   * The mask is on the host rather than inside the shader because the shader
+   * has no idea how tall the section it is lighting is.
+   *
+   * ── Top to bottom, 19 Nov 2026 ──────────────────────────────────────────
+   *
+   * The mask held `#000 58%` and the light sat at 80% of the frame with a
+   * narrow spread, so the field was a band low in the hero and the top two
+   * thirds were flat canvas. Asked for the full height. The mask now holds
+   * to 84% and only feathers the last sixth -- enough to stop the field
+   * ending on a line where the hero meets the section below it, which is the
+   * same seam `.mk-aurora` and `.mk-hero-wash` were both fixed for.
+   */
+  { ".mk-hero-shader": {
+    "position": "absolute",
+    "inset": "0",
+    "pointer-events": "none",
+    "z-index": "0",
+    "mask-image": "linear-gradient(to bottom, #000 0%, #000 84%, transparent 100%)",
+    "opacity": "0.8",
+  } },
+  /*
+   * A scrim over the shader, under the copy.
+   *
+   * The ribbon is beautiful and it is also light directly behind text. The
+   * headline survives at 88px/700; the 17px subtitle and the 13px microcopy
+   * do not. This darkens the band the copy occupies -- strongest through the
+   * middle, gone at the edges -- so the composition still reads as lit while
+   * the words keep their contrast.
+   */
+  { ".mk-hero-shader::after": {
+    "content": "\"\"",
+    "position": "absolute",
+    "inset": "0",
+    /*
+     * Widened and deepened with the light, 19 Nov 2026.
+     *
+     * It was `64% 40% at 50% 40%` ending at 80% canvas, which was enough when
+     * the lit band sat at 80% of the frame and the copy had the top two
+     * thirds to itself. With the light across the whole height the copy is
+     * *in* it, so the scrim has to do the work the placement used to: 74% x
+     * 50% centred on the copy block, 90% canvas at its core.
+     *
+     * Still a radial and still gone by 88%, so the flanks stay lit. The
+     * ribbon reads at the edges of the frame and the words sit on ground.
+     *
+     * 58% tall, not 50%, and centred at 38% rather than 36%: the copy block
+     * is a fixed stack of elements and the hero is not, so the lower the
+     * viewport width the further down the hero the microcopy falls. At 1024
+     * it sits at 63% of the section against an ellipse that ended at 61%,
+     * and English -- a longer line across more of the frame -- measured
+     * 4.45:1 there against the 4.5 it needs. The ellipse reaches 67% now.
+     */
+    "background": "radial-gradient(76% 58% at 50% 38%, color-mix(in oklab, var(--canvas) 90%, transparent) 0%, color-mix(in oklab, var(--canvas) 54%, transparent) 54%, transparent 88%)",
+  } },
   /* The hero stage. Registered by tailwind.config.js, in order. */
   /* ── The hero stage ──────────────────────────────────────────────────────
    *
@@ -34,10 +92,29 @@ export const heroStyles = [
   { ".mk-hero": {
     "position": "relative",
     "overflow": "clip",
-    /* The block end is not decoration: it is the run-out the covers are
-     pulled down into at the end of the scroll story, and the clip at the
-     bottom of it is what finally takes them. */
-    "padding-block": "clamp(96px, 11vw, 150px) clamp(130px, 13vw, 200px)",
+    /*
+     * The block end is not decoration: it is the run-out the covers are
+     * pulled down into at the end of the scroll story, and the clip at the
+     * bottom of it is what finally takes them.
+     *
+     * Both ends came down with the headline on 19 Nov 2026 -- they were
+     * `clamp(96px, 11vw, 150px) clamp(130px, 13vw, 200px)`, so a 1440px
+     * desktop spent 337px of a 900px viewport on padding before anything was
+     * drawn. The run-out keeps the larger share, because that is the part
+     * doing a job.
+     */
+    /*
+     * The block end came down again when the covers went.
+     *
+     * It was never decoration: it was the run-out the three covers were
+     * pulled down into at the end of the scroll story, and the clip at the
+     * bottom of it was what finally took them. With one act and nothing
+     * leaving the frame, that run-out is empty page under the product
+     * window — on a phone it was most of a viewport of nothing between the
+     * hero and the section after it. Ordinary section padding now, and the
+     * same at both ends.
+     */
+    "padding-block": "clamp(72px, 7.5vw, 104px)",
     "padding-inline": "24px",
     /* On the section, not on an inner div: `text-align: start` left here makes
      the Arabic look left-aligned to anything measuring it, check:bidi
@@ -54,7 +131,28 @@ export const heroStyles = [
     /* Above the cards, so a card drifting under the measure never lands on a
      word or swallows a click meant for a door. */
     "z-index": "2",
-    "max-inline-size": "40rem",
+    /*
+     * 52rem, up from 40rem on 18 Nov 2026.
+     *
+     * The brief puts the hero headline at clamp(44px, 6vw, 88px) and says it
+     * is two lines. At 40rem it was not: 640px of measure at 88px took
+     * "Studios build it. Companies live it." to three lines, with the second
+     * sentence breaking mid-clause. The Arabic fitted in two because its
+     * headline is shorter set than the English one, which is exactly the
+     * class of fault this codebase keeps finding -- a measure tuned against
+     * one language's word lengths.
+     *
+     * 52rem is measured, not guessed: /pricing's two-line h1 renders 832px
+     * wide at the same size, so the tier needs that much room. It stays
+     * inside the brief's 1152px container with the gutters intact.
+     *
+     * 19 Nov 2026: the headline dropped from 88px to 68px, so the same two
+     * lines now need 832 x 68/88 = 643px. 44rem (704px) holds them with room
+     * over, and a narrower measure is the other half of the scale-down -- a
+     * 68px headline across 832px reads as a wide banner rather than as a
+     * block of display type.
+     */
+    "max-inline-size": "44rem",
     "margin-inline": "auto",
     "display": "flex",
     "flex-direction": "column",
@@ -71,15 +169,63 @@ export const heroStyles = [
    * clearly subordinate to the line above it.
    */
   { ".mk-hero-sub": {
-    "margin-block-start": "34px",
-    "max-inline-size": "34rem",
-    "font-size": "clamp(18px, 1.9vw, 25px)",
-    "line-height": "1.65",
+    /*
+     * Measured off docs/21st-reference/screenshots/01-hero.jpg, which is at
+     * 1:1 with a 1150px desktop: the reference subtitle is one quiet grey
+     * line of about 17px sitting ~26px under the headline, and it is narrow
+     * enough that the eye reads it as a caption rather than as a paragraph.
+     *
+     * This was clamp(18, 1.9vw, 25) in a 34rem measure -- up to 25px, which
+     * is section-lead size, not caption size, and it wrapped our longer
+     * sentence onto three lines. 17px in a 40rem measure puts it on two,
+     * which is as close as copy this long gets to the reference's one.
+     */
+    "margin-block-start": "22px",
+    "max-inline-size": "40rem",
+    "font-size": "clamp(16px, 1.3vw, 17px)",
+    "line-height": "1.6",
     "color": "var(--text-muted)",
     "text-wrap": "pretty",
   } },
+  /*
+   * …and narrower in the band where the columns are at their floor.
+   *
+   * The note above `--mk-side-x` records this collision once already: the
+   * columns stop closing in at a floor, the sub does not stop widening until
+   * its measure, so between about 810px and 1200px the two meet. Spreading
+   * the chips down the flanks brought the "Moodboard" chip level with the sub
+   * and it met it again — measured on /en, 45px of overlap at 960 and 11px
+   * at 1024, 1100 and 1152, with Arabic clear at all four because its words
+   * are shorter. Third time this file has found a length tuned against one
+   * language.
+   *
+   * The sub gives way rather than the columns, because the columns cannot:
+   * at 810 — the last width before the scene switches off — pushing them far
+   * enough out to clear a 40rem sub puts the widest chip past the viewport
+   * edge.
+   *
+   * Two steps, because the columns have two floors and so does this. Solved
+   * from the measurements rather than guessed: the sub's half-width has to
+   * stay 12px clear of the nearest chip's left edge, which gives 36.4rem at
+   * 1152, 36.1rem at 1280 and 31rem at 810. One step below 64rem where the
+   * columns sit at 316px, one between 64 and 84 where they sit at 350, and
+   * the full measure above that where there is room for it.
+   *
+   * The narrower rule is declared second so it wins the overlap by source
+   * order, which is this file's standing convention.
+   */
+  { "@media (width < 84rem)": {
+    ".mk-hero-sub": {
+      "max-inline-size": "36rem",
+    },
+  } },
+  { "@media (width < 64rem)": {
+    ".mk-hero-sub": {
+      "max-inline-size": "30rem",
+    },
+  } },
   { ".mk-hero-head .mk-doors": {
-    "margin-block-start": "44px",
+    "margin-block-start": "36px",
   } },
   { ".mk-hero-micro": {
     "margin-block-start": "20px",
@@ -115,11 +261,34 @@ export const heroStyles = [
    * The slope stays gentler than the Arabic's 6vw so the English cap holds
    * further down the viewport range instead of the line jumping a size.
    */
+  /*
+   * ── Scaled down for the desktop, 19 Nov 2026 ────────────────────────────
+   *
+   * This was `clamp(44px, 6vw, 88px)`, which is the brief's figure, and on a
+   * 1440px desktop it resolves to 86.4px. Measured there: the Arabic headline
+   * took three lines of 119px each, the hero section came to 1363px against a
+   * 900px viewport, and nothing but the first line and a half of the headline
+   * was above the fold. The owner's words were "too zoomed in and too big",
+   * which is what a display size looks like when it was chosen against the
+   * viewport width and then met a real sentence.
+   *
+   * 4.6vw with a 68px cap is still the oversized tight headline the brief
+   * asks for -- it is larger than every other type size on the page by more
+   * than three times -- and it is close to what the reference actually shows:
+   * screenshots/01-hero.jpg is 1:1 at 1150px and its headline measures about
+   * 66px. The floor comes down with it so the phone is not left relatively
+   * larger than the desktop, and the slope is gentler so the cap holds across
+   * more of the range instead of the line jumping a size at every breakpoint.
+   *
+   * Both editions take the same value, as they did before: the per-`lang`
+   * split is kept because the two scripts have needed different sizes twice
+   * and the line-height still differs (--mk-lh-hero, foundation.js).
+   */
   { ":root": {
-    "--mk-fs-hero": "clamp(38px, 6vw, 76px)",
+    "--mk-fs-hero": "clamp(38px, 4.6vw, 68px)",
   } },
   { "html[lang=\"en\"]": {
-    "--mk-fs-hero": "clamp(36px, 5.2vw, 62px)",
+    "--mk-fs-hero": "clamp(38px, 4.6vw, 68px)",
   } },
   /* ── Act one: the brand's elements ───────────────────────────────────────
    *
@@ -141,25 +310,20 @@ export const heroStyles = [
    * the centre in every child and stops being the same centre the moment the
    * window's aspect changes.
    */
-  { ".mk-hero-fan, .mk-hero-deck, .mk-hero-deck > ul": {
+  { ".mk-hero-fan": {
     "margin": "0",
     "padding": "0",
     "list-style": "none",
   } },
-  { ".mk-hero-fan, .mk-hero-deck": {
+  { ".mk-hero-fan": {
     "position": "absolute",
     "inset-inline-start": "50%",
     "inset-block-start": "50%",
     "inline-size": "0",
     "block-size": "0",
-  } },
-  /* The deck comes out of the window, so it is in front of it and of the fan
-   that went in. Neither is ever above `.mk-hero-head`, which is z-index 2. */
-  { ".mk-hero-fan": {
+    /* Behind the headline, which is z-index 2, and over the window it is
+     travelling into. */
     "z-index": "1",
-  } },
-  { ".mk-hero-deck": {
-    "z-index": "2",
   } },
   /*
    * One formula for everything on this stage.
@@ -173,7 +337,7 @@ export const heroStyles = [
    *
    * `rotate` carries the sign too, so the arc leans the way the page reads.
    */
-  { ".mk-hero-chip, .mk-hero-cover, .mk-hero-deck-label": {
+  { ".mk-hero-chip": {
     "position": "absolute",
     "inset-block-start": "0",
     "inset-inline-start": "0",
@@ -211,10 +375,96 @@ export const heroStyles = [
      * columns come back in.
      */
     "--mk-side-x": "clamp(316px, 28vw, 420px)",
-    "--mk-col-y": "clamp(640px, 52vw, 800px)",
-    "--mk-row-y": "clamp(54px, 4.6vw, 70px)",
-    "--mk-x": "calc((var(--mk-side-x) + var(--mk-b) * 26px) * var(--mk-f))",
-    "--mk-y": "calc(var(--mk-k) * var(--mk-row-y) - var(--mk-col-y))",
+    /*
+     * ── The column spans the flank, 19 Nov 2026 ─────────────────────────
+     *
+     * This was `--mk-col-y: clamp(640px, 52vw, 800px)` with a fixed
+     * `--mk-row-y: clamp(54px, 4.6vw, 70px)` pitch: a column 198px tall,
+     * sitting 749px above the scene's centre at 1440. Measured there, the
+     * seven chips occupied y -40 to 156 of a 1036px hero -- two tight
+     * clusters jammed against the top edge, with the first of each column
+     * clipped off it, and at 1920 the top chip was 92px above the section.
+     *
+     * The owner asked for them spread down the right and left sides. So the
+     * pitch is gone and the column has a *height*: `--mk-span`, shared by
+     * both flanks, with each chip at a fraction of it (see `chipAt` in
+     * Hero.tsx). The two columns now start and end level even though one
+     * holds four names and the other three.
+     *
+     * The span stops above the product window rather than running the hero's
+     * full height, and that is a collision, not taste: the frame is 920px
+     * wide inside a 1440px viewport, so it reaches x 260-1180 and the chips
+     * sit at 252-360 and 1066-1187. They overlap it horizontally at every
+     * width, and the only thing keeping them off it is being above it. The
+     * numbers are solved for that: at 1440 the column runs y 88 to 620
+     * against a window whose top edge is at 662.
+     */
+    /*
+     * The cap is set by the header, and it is a measurement, not a feel.
+     *
+     * The column grows upward from a foot pinned near the window, so the
+     * taller it is the higher its head reaches -- and the header is sticky
+     * at y 0 with a 64px box, which is also where `.mk-hero` begins and
+     * where its `overflow: clip` starts taking things.
+     *
+     * This read `clamp(380px, 34vw, 500px)`, and the note above it claimed
+     * "500 leaves 38px of clearance at 1920 and 43px at 1440, measured".
+     * Both figures were real; neither was a clearance. 38 was the top
+     * chip's *absolute* y, so the chip began 26px above the hero -- its
+     * crown sliced off by the clip, and the rest of the pill sitting in
+     * the nav's band. Measured across eight widths in both editions, that
+     * was six of the eight: the top chip of each column landed at y 30-54
+     * at 820, 900, 1024, 1440, 1600 and 1920. Only 1150 and 1280 cleared,
+     * which is why it survived a review -- those are the two widths a
+     * laptop is most often read at.
+     *
+     * -- Why a slope and not a smaller flat cap --------------------------
+     *
+     * The head's distance above the scene's centre is `--mk-span + 211px`
+     * by construction, and the scene's centre is wherever the headline and
+     * the sub leave it: measured, 640px down the page at 820 and 772px at
+     * 1920, because the display type grows with the viewport. So the room
+     * over the column is itself a function of the width, and one flat cap
+     * has to be the narrowest width's cap everywhere -- 320px of column
+     * across a 1920px desktop with room for 450.
+     *
+     * `220px + 12vw` is that room, fitted to the eight measurements and
+     * clamped at both ends. It leaves the top chip at y 90-146 across the
+     * range in both editions: 26px under the header at the tightest width,
+     * and never above it.
+     *
+     * The foot does not move, and that is algebra rather than luck:
+     * `--mk-col-y` is `211px + span / 2`, so the bottom chip lands at
+     * `span / 2 - col-y`, the span cancels, and the foot stays 211px above
+     * the scene's centre whatever this length becomes. Measured after the
+     * change, the column still clears the product window by 20-27px at
+     * every width in both editions -- unchanged, because it cannot change.
+     * That is the other constraint this one length has to satisfy, and the
+     * one that has broken twice.
+     */
+    "--mk-span": "clamp(320px, calc(220px + 12vw), 450px)",
+    /*
+     * Derived from the span, not clamped beside it.
+     *
+     * Both were independent clamps for one build, and the two curves crossed:
+     * at 1280 the column's foot landed at y 632 against a window whose top
+     * edge is at 627, so two chips sat on the product frame. A second clamp
+     * cannot be made to track the first at every width -- they are different
+     * functions of the viewport, and the widths where they disagree are the
+     * ones nobody looks at.
+     *
+     * So there is one length. The column's foot is pinned 211px above the
+     * scene's centre, which is 44px above the window's top edge (the frame
+     * renders 334px tall, so its top is 167px up), and the column grows
+     * *upward* from there. The clearance is then the same 44px at every
+     * width by construction rather than by three clamps agreeing.
+     */
+    "--mk-col-y": "calc(211px + var(--mk-span) / 2)",
+    /* Every other chip sits a little further out, so a column reads as
+     scattered rather than as a list box with the labels stripped off. 34px
+     now the column is tall enough for the scatter to be visible. */
+    "--mk-x": "calc((var(--mk-side-x) + var(--mk-b) * 34px) * var(--mk-f))",
+    "--mk-y": "calc(var(--mk-k) * var(--mk-span) - var(--mk-col-y))",
     "border-radius": "var(--radius-pill)",
     "padding-block": "9px",
     "padding-inline": "16px",
@@ -245,13 +495,46 @@ export const heroStyles = [
     "position": "relative",
     "z-index": "0",
     "display": "grid",
-    "margin-block-start": "clamp(140px, 12vw, 180px)",
+    /*
+     * ~75px under the buttons, measured off screenshots/01-hero.jpg where the
+     * frame's top edge breaks the fold just below them. It was clamp(140,
+     * 12vw, 180), which left a dead band of empty page between the ask and
+     * the product -- the one place the reference is deliberately tight -- and
+     * then clamp(72, 7vw, 100), which came down again with the headline.
+     *
+     * The frame came down with it. At 1000x440 inside a 1080px stage it was
+     * all but edge to edge, so the product window read as the page rather
+     * than as an object on it; 920x400 leaves a margin either side and is
+     * still the largest thing in the composition by a wide margin.
+     */
+    "margin-block-start": "clamp(56px, 5.5vw, 76px)",
     "margin-inline": "auto",
-    "max-inline-size": "1000px",
-    "max-block-size": "420px",
+    "max-inline-size": "920px",
+    "max-block-size": "400px",
     "overflow": "clip",
-    "border-start-start-radius": "var(--radius-card)",
-    "border-start-end-radius": "var(--radius-card)",
+    /*
+     * The outer frame of the brief's section 4.2: "outer frame radius ~28px,
+     * hairline border, faint white fill, with a darker app window inset ~36px
+     * inside it".
+     *
+     * Until now this element was the window itself -- panes sitting straight
+     * on the page behind a top radius. In the reference
+     * (screenshots/01-hero.jpg) there are plainly two boxes: a large pale
+     * frame, and a darker product window floating inside it with a visible
+     * margin all round. That inner/outer pair is most of what makes the
+     * preview read as a *device* showing software rather than as a screenshot
+     * pasted onto the page.
+     *
+     * So this is the frame now, and `.mk-hero-pane` below is the window. The
+     * padding is the inset; it is clamped rather than the reference's flat
+     * 36px because this frame is 1000px at most and shrinks to a phone.
+     */
+    "background": "var(--ghost-fill)",
+    "box-shadow": "var(--lift-ring)",
+    "padding": "clamp(10px, 1.6vw, 20px)",
+    "padding-block-end": "0",
+    "border-start-start-radius": "var(--radius-frame)",
+    "border-start-end-radius": "var(--radius-frame)",
     /*
      * The bottom edge fades into the ground rather than ending.
      *
@@ -285,56 +568,6 @@ export const heroStyles = [
   { ".mk-hero-pane": {
     "grid-area": "1 / 1",
   } },
-  { ".mk-hero-pane-builder": {
-    "opacity": "0",
-  } },
-  /* ── Act three: the covers the builder deals out ─────────────────────────
-   *
-   * The three templates a guideline site can be built from, dealt out of the
-   * window as a descending cascade. They rest invisible at the positions they
-   * land on, so a browser with no scroll timelines — and a reader who asked
-   * for no motion — is served the opening frame rather than three covers
-   * sitting on top of the hub with no explanation of where they came from.
-   */
-  { ".mk-hero-cover": {
-    "inline-size": "168px",
-    "block-size": "212px",
-    "overflow": "clip",
-    "border-radius": "var(--radius-card)",
-    "box-shadow": "var(--lift-card)",
-    "opacity": "0",
-  } },
-  /*
-   * The caption, and the one string on this stage a screen reader is read.
-   *
-   * Everything else here is a picture of the product and is `aria-hidden`;
-   * this is a claim about what the product ships with, so it is text. It is
-   * placed like the reference's floating name pills — beside the head of the
-   * cascade — and arrives with the first cover.
-   */
-  { ".mk-hero-deck-label": {
-    "--mk-x": "-236px",
-    "--mk-y": "-196px",
-    "--mk-r": "0deg",
-    "--mk-in": "650px",
-    "margin": "0",
-    /* `inline-size`, not `max-inline-size`: an absolutely positioned box in a
-     zero-width containing block has no available width to shrink-wrap
-     against, so it falls back to min-content — this caption came out 86px
-     wide and seven lines tall. */
-    "inline-size": "13.5rem",
-    "border-radius": "18px",
-    "padding-block": "8px",
-    "padding-inline": "14px",
-    "background": "var(--surface-0)",
-    "box-shadow": "var(--lift-card)",
-    "font-size": "var(--fs-ui)",
-    "font-weight": "500",
-    "line-height": "1.45",
-    "color": "var(--text)",
-    "text-align": "center",
-    "opacity": "0",
-  } },
   /*
    * Below 810px the stage stops being a stage.
    *
@@ -364,28 +597,6 @@ export const heroStyles = [
       "margin-block-start": "40px",
       "max-block-size": "300px",
     },
-    ".mk-hero-deck": {
-      "position": "static",
-      "inline-size": "auto",
-      "block-size": "auto",
-    },
-    ".mk-hero-deck > ul": {
-      "display": "none",
-    },
-    ".mk-hero-deck-label": {
-      "position": "static",
-      "translate": "none",
-      "rotate": "none",
-      "margin-block-start": "20px",
-      "margin-inline": "auto",
-      "max-inline-size": "22rem",
-      "padding": "0",
-      "background": "none",
-      "box-shadow": "none",
-      "font-weight": "400",
-      "color": "var(--text-muted)",
-      "opacity": "1",
-    },
   } },
   /*
    * The entrance.
@@ -407,20 +618,20 @@ export const heroStyles = [
        rotate — those are the chip's position on the stage, and a keyframe
        touching either would animate it away from where it goes. */
       ".mk-hero-chip": {
-        "animation": "mk-hero-arrive 520ms var(--mk-ease) backwards",
+        "animation": "mk-hero-arrive 780ms var(--mk-ease) backwards",
         "animation-timeline": "auto",
         /* Staggered along the arc by `--mk-s`, the same 0-to-3 step that sets
          `--mk-in` below: a chip that arrives late also leaves late. It is a
          separate unitless custom property because `--mk-in` is a length, and
          `calc(520ms + 60px * 1.4)` is not a time — the whole declaration is
          invalid and every chip arrives at once. */
-        "animation-delay": "calc(520ms + var(--mk-s) * 90ms)",
+        "animation-delay": "calc(780ms + var(--mk-s) * 135ms)",
       },
       ".mk-hero-window": {
         "--mk-rise-y": "72px",
-        "animation": "mk-rise 620ms var(--mk-ease) backwards",
+        "animation": "mk-rise 930ms var(--mk-ease) backwards",
         "animation-timeline": "auto",
-        "animation-delay": "760ms",
+        "animation-delay": "1140ms",
       },
     },
   } },
@@ -444,17 +655,11 @@ export const heroStyles = [
    *
    * ── Fill modes, and why the resting state is the opening frame ───────────
    *
-   * Every animation here is `forwards`, so before its range the element shows
+   * The one animation here is `forwards`, so before its range each chip shows
    * its own declared values and after it holds the last keyframe. The declared
-   * values are the opening frame — chips out, hub up, builder and covers at
-   * opacity 0 — which means a browser with no scroll timelines, and a reader
-   * who asked for no motion, both get a complete and honest hero rather than
-   * every act stacked on top of the others.
-   *
-   * That is also why `mk-hero-deal` names `opacity` in its last keyframe. A
-   * property that appears only in `from` interpolates back to the element's
-   * own value by the end — which here is zero, so the covers would have dealt
-   * out and then vanished.
+   * values are the opening frame — chips out, hub up — which means a browser
+   * with no scroll timelines, and a reader who asked for no motion, both get a
+   * complete and honest hero rather than a stage mid-story.
    */
   { "@media (prefers-reduced-motion: no-preference)": {
     "@supports (animation-timeline: view())": {
@@ -472,10 +677,10 @@ export const heroStyles = [
        * styles said "timeline" anywhere.
        */
       /*
-       * The four acts do not overlap, which is the whole of the retiming on
-       * 6 Nov 2026. Each one finishes before the next begins, because a
-       * reader cannot be asked to watch two of these at once and because
-       * every pair of them shares the same 1000x420 frame.
+       * One act, since 19 Nov 2026.
+       *
+       * There were four, and they did not overlap because a reader cannot be
+       * asked to watch two at once:
        *
        *     0 –  430   the names travel down into the hub
        *   430 –  530   the hub goes
@@ -483,62 +688,39 @@ export const heroStyles = [
        *   640 –  880   it deals the three covers out
        *   880 – 1090   the covers are pulled down past it and fade
        *
-       * The end of the budget is set by the window, not by taste: it is at
-       * page 853 and the viewport is 900, so the frame is well placed between
-       * about 450 and 880 of scroll and has left the top of the screen by
-       * 1100. An act timed past that plays to an empty stage — which is what
-       * the first pass at this did, dealing the covers at 950 while the
-       * window was already halfway off the top.
+       * The owner asked for the first line and nothing else: the tags travel
+       * down into the hub, the hub stays, no second screen. So the budget is
+       * the first act's alone, and the three that followed it are gone from
+       * this file and from `Hero.tsx`.
+       *
+       * Which also removes the constraint the retiming was solving for. The
+       * acts had to be packed into 0–1090 because the window leaves the top
+       * of the screen by about 1100, and an act timed past that plays to an
+       * empty stage. One act ending at ~700 has the frame to itself for the
+       * whole of its travel, so the chips can take longer over it: 420px of
+       * scroll rather than 310, which is the difference between names being
+       * drawn in and names being pulled.
        */
       ".mk-hero-chip": {
         "animation": "mk-hero-gather linear forwards",
         "animation-timeline": "scroll(root block)",
-        /*
-         * 380px of scroll for a chip that has 760px of page to cross. It was
-         * 240, which read as the names being snatched rather than drawn in —
-         * the ask was for more room and more time and this is both, since
-         * moving the columns up beside the headline roughly doubled the
-         * distance as well.
-         */
-        "animation-range": "var(--mk-in) calc(var(--mk-in) + 310px)",
-      },
-      ".mk-hero-pane-hub": {
-        "animation": "mk-hero-hub linear forwards",
-        "animation-timeline": "scroll(root block)",
-        "animation-range": "430px 530px",
-      },
-      ".mk-hero-pane-builder": {
-        "animation": "mk-hero-builder linear forwards",
-        "animation-timeline": "scroll(root block)",
-        "animation-range": "530px 640px",
+        "animation-range": "var(--mk-in) calc(var(--mk-in) + 630px)",
       },
       /*
-       * Dealt out, then pulled down and gone.
+       * The hub has no exit any more.
        *
-       * Two animations on one element, with ranges that do not overlap. They
-       * can share the element because they touch different properties: the
-       * deal owns `translate`, which is where a cover rests, and the sink
-       * owns `transform`, which composes after it. Writing the sink as
-       * `translate` too would mean restating the resting offset inside a
-       * keyframe, which is the duplication the shared origin exists to avoid.
-       *
-       * They do share `opacity`, and that is deliberate — the later animation
-       * in the list wins while it is running, and its implicit starting value
-       * is the one the deal is holding, so the fade starts from fully opaque
-       * rather than from the element's own zero.
+       * It used to fade at 430–530 to hand the window to the builder. With
+       * nothing to hand it to, that fade was the product screen disappearing
+       * for no reason — so that keyframe is gone with it and the pane
+       * simply stays, which is the thing the chips were arriving at all along.
        */
-      ".mk-hero-cover, .mk-hero-deck-label": {
-        "animation": "mk-hero-deal linear forwards,\n        mk-hero-sink linear forwards",
-        "animation-timeline": "scroll(root block), scroll(root block)",
-        "animation-range": "var(--mk-in) calc(var(--mk-in) + 160px),\n        880px 1090px",
-      },
       /*
        * No scroll story below 810px, where the stage is a column: the
        * keyframes animate toward an offset from a centre these elements no
        * longer have, so they would simply slide off their own row.
        */
       "@media (width < 50.625rem)": {
-        ".mk-hero-chip, .mk-hero-cover, .mk-hero-deck-label, .mk-hero-pane-hub, .mk-hero-pane-builder": {
+        ".mk-hero-chip": {
           "animation": "none",
         },
       },
@@ -558,65 +740,51 @@ export const heroStyles = [
       "opacity": "0",
     },
   } },
-  { "@keyframes mk-hero-hub": {
-    "60%": {
-      "opacity": "1",
-    },
-    "to": {
-      "opacity": "0",
-      "translate": "0 -40px",
-    },
-  } },
-  { "@keyframes mk-hero-builder": {
-    "from": {
-      "translate": "0 26px",
-    },
-    "to": {
-      "opacity": "1",
-    },
-  } },
-  /*
-   * The covers are pulled down out of the frame.
-   *
-   * 340px against 210px of scroll, so they gain on the page rather than
-   * merely keeping up with it: on screen they travel downward past the
-   * window and into the run-out below it, which is what the hero's block-end
-   * padding is for. The fade is done at 72% so a cover is already invisible
-   * by the time the hero's clip reaches it — otherwise the last one is cut in
-   * half at full opacity, which reads as a crop and not as a departure.
-   *
-   * `transform` and not `translate`: see the two-animation note above.
-   */
-  { "@keyframes mk-hero-sink": {
-    "72%": {
-      "opacity": "0",
-    },
-    "to": {
-      "transform": "translateY(340px)",
-      "opacity": "0",
-    },
-  } },
-  { "@keyframes mk-hero-deal": {
-    "from": {
-      /* Stacked just inside the window's top edge: where the builder is, so
-       the covers come out of it rather than out of the air. */
-      "translate": "calc(-50% * var(--mk-dir)) calc(-176px - 50%)",
-      "rotate": "0deg",
-      "scale": "0.6",
-      "opacity": "0",
-    },
-    "45%": {
-      "opacity": "1",
-    },
-    "to": {
-      "opacity": "1",
-    },
-  } },
   { "@keyframes mk-hero-arrive": {
     "from": {
       "opacity": "0",
       "filter": "blur(8px)",
       "scale": "0.96",
     },
+  } },
+  /*
+   * The floating overlays are a desktop device.
+   *
+   * The brief's section 6 is explicit: below 768px "the dock and floating
+   * overlays are hidden". On this hero that is the chip fan, which at 390px
+   * had its boxes overlapping the headline by 187px -- harmless to read,
+   * because the measure sits at z-index 2 and the probe confirms nothing
+   * paints over the words, but it is four decorative cards stacked behind two
+   * lines of type in a space with room for neither.
+   *
+   * `display: none` rather than `visibility`, so they cost no layout and no
+   * composite layer on the viewport that can least afford either.
+   *
+   * **Last in the file, and that is load-bearing.** Every rule here is
+   * registered with `addBase`, so the whole module sits in one layer at one
+   * specificity and a tie is broken by source order. Declared at the top of
+   * this array -- where it was first written -- this lost to `.mk-hero-fan`'s
+   * own `display` further down and did nothing at all: the probe still
+   * measured the chips at full size. Equal specificity, later wins.
+   */
+  { "@media (width < 48rem)": {
+    ".mk-hero-fan": {
+      "display": "none",
+    },
+  } },
+  /*
+   * The inner window, inset in the frame above.
+   *
+   * A darker surface than the frame, its own smaller radius, and its own
+   * edge -- the three things that make it read as a screen inside a bezel.
+   * Last in the file deliberately: `.mk-hero-pane` is declared earlier for
+   * the cross-fade, and at equal specificity the later rule is the one that
+   * wins. That is the same tie this file lost once already.
+   */
+  { ".mk-hero-pane": {
+    "background": "var(--surface-1)",
+    "border-radius": "var(--radius-widget)",
+    "box-shadow": "var(--lift-ring)",
+    "overflow": "clip",
   } },
 ];

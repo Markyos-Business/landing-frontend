@@ -24,14 +24,27 @@ export function HeroBlock({
       {/* `.mk-center-x` rather than `start-1/2 -translate-x-1/2`, and no `h-`
           needed now that `.mk-glow` carries a ratio — this pool was 0px tall
           and painting nothing on every one of these pages. */}
-      <Glow className="mk-center-x -top-40 w-[min(62rem,110%)]" />
+      {/*
+       * The same hero background the homepage used to have.
+       *
+       * Asked for site-wide on 18 Nov 2026: every page's hero now carries the
+       * drifting blue field, so a solutions page and a pricing page open the
+       * way the homepage does. The homepage itself has moved on to the
+       * `CobaltLouvre` shader, which is the one place that cost is worth
+       * paying -- see Hero.tsx.
+       *
+       * It sits before the light pool, so the pool still reads as the one
+       * light source on the composition rather than competing with it.
+       */}
+      <div className="mk-aurora" aria-hidden="true" />
+      <Glow className="mk-hero-wash mk-center-x -top-40 w-[min(62rem,110%)]" />
       <div className="mk-seq-load mk-container relative flex flex-col items-center text-center">
         {block.eyebrow ? <Eyebrow className="mb-5">{block.eyebrow}</Eyebrow> : null}
         {block.feature ? (
           <Chip feature={block.feature} chips={ctx.chips} className="mb-5" />
         ) : null}
 
-        <h1 id={headingId} className="mk-load-move mk-display max-w-[52rem]">
+        <h1 id={headingId} className="mk-load-move mk-display max-w-[44rem]">
           <T>
             {/* `load`: the hero is above the fold, where a scroll-driven
                 range has already run out before anybody sees it. */}

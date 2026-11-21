@@ -17,8 +17,8 @@ const roadmap: PageDoc = {
   blocks: [
     {
       kind: "hero",
-      title: "نبني بشفافية.",
-      lead: "هذا ما أطلقناه، وما نعمل عليه، وما يأتي بعده، بالترتيب. نكتب المواسم لا التواريخ، لأننا نفضّل أن نَصدقك على أن نَعِدك.",
+      title: "ما بنيناه. وما نبنيه.",
+      lead: "ما نبنيه نكتبه دون مواعيد، لأننا نفضّل أن نَصدقك على أن نَعِدك.",
     },
     {
       kind: "terms",
@@ -36,29 +36,42 @@ const roadmap: PageDoc = {
         },
         {
           term: "للجميع",
-          body: "واجهة عربية وإنجليزية كاملة · نطاقات خاصة وحماية بكلمة مرور · خطط مجانية.",
+          body: "واجهة عربية وإنجليزية كاملة · نطاقات خاصة وحماية بكلمة مرور · «اسأل علامتك» · موصّل الذكاء الاصطناعي · المساعد الاستراتيجي · نصوص أقسام الدليل · صانع الموك اب · خطط مجانية.",
         },
       ],
     },
+      /*
+       * Two columns, not four seasons.
+       *
+       * Copy deck v4.1 Part D Page 2 replaced the season ladder with "what
+       * is live at launch" and "what is coming soon", and dropped every
+       * date from the second one. Two things forced it.
+       *
+       * The first is that the seasons had become a list of promises with
+       * quarters attached, which is the one thing src/lib/status.ts exists
+       * to keep off this site: a chip that names a quarter is wrong for the
+       * whole site the moment one release slips. The roadmap was the last
+       * page still naming them.
+       *
+       * The second is that a third of the entries no longer exist. v4.1
+       * removed the live board, campaigns, email signatures, Word and PDF
+       * checks, Figma sync, templates, sub-brands, webhooks, the API and
+       * the Agency and Business plans from the product, so the ladder was
+       * promising nine things nobody is building.
+       *
+       * The dates have not gone into hiding: each feature's `shipsIn` in
+       * status.ts still carries its release for our own reference. They are
+       * simply not said to a visitor as a commitment.
+       */
     {
       kind: "cards",
       title: "ما يأتي بعده.",
-      cols: 3,
+      cols: 2,
       items: [
         {
-          title: "ربيع 2027 · استكشاف مشترك",
-          body: "لوح تفاعلي مباشر تشاركه مع عميلك، دون حساب له · شعار العلامة وألوانها وخطوطها كعناصر حيّة على اللوح · توجيه فني ذكي من أي لوحة · أدلّة الأقسام · الحملات والإطلاقات داخل العلامة · توقيعات البريد بالعربية والإنجليزية لكل موظف.",
-          feature: "whiteboard",
-        },
-        {
-          title: "منتصف 2027 · فكّر، اسأل، اعرض",
-          body: "مساعد استراتيجي يتبع منهجية حقيقية في بناء العلامات · العصف الذهني للتسمية والتموضع والعبارات · «اسأل علامتك» لكل موظف · مراجعة ملفات Word وPDF · تحويل دليل PDF قديم إلى مركز حيّ · نصوص أقسام الدليل بالذكاء الاصطناعي · قوالب جاهزة: منشورات، وعروض تقديمية، وأوراق رسمية، وبطاقات عمل · كتل متحركة جديدة لموقع الدليل.",
-          feature: "strategy-ai",
-        },
-        {
-          title: "أواخر 2027 · إدارة فريق علامة كامل",
-          body: "طلبات المراجعة والموافقة · لوحة صحة العلامة · إضافة Chrome للمراجعة في أي مكان · مراجعة التصاميم مقابل ألوان العلامة وشعارها · ربط لوحة الاستوديو بأدواتك عبر Webhooks · العلامات الفرعية التي ترث من العلامة الأم · المزامنة مع Figma، ثم Canva وFramer · واجهة برمجية (API) · خطة «الوكالة» ببوابة تحمل اسم الاستوديو · خطتا «الأعمال» و«المؤسسات» · تسجيل دخول موحّد وسجلات تدقيق.",
-          feature: "brand-health",
+          title: "قريباً",
+          body: "لوحات الإلهام · التوجيه الفني من عقل العلامة · أدلّة الأقسام · إضافة Chrome · تحويل دليل PDF قديم إلى مركز حيّ · لوحة صحة العلامة · من نزّل ماذا من روابط الشركاء · المراجعات والموافقات · مراجعة التصاميم · خطة المؤسسات.",
+          note: "لا تواريخ هنا. كل ميزة تصل حين تصبح حقيقية، وتظهر في «ما الجديد» يوم وصولها.",
         },
       ],
     },
@@ -87,7 +100,12 @@ const roadmap: PageDoc = {
       ],
       cta: CTA.suggestFeature,
     },
-    { kind: "cta", buttons: [CTA.startFree], links: [LINK.whatsNew] },
+    {
+      kind: "cta",
+      title: "قل لنا ما الذي ينقصك.",
+      buttons: [CTA.startFree],
+      links: [LINK.whatsNew],
+    },
   ],
 };
 
@@ -138,7 +156,12 @@ const whatsNew: PageDoc = {
         ["سطران", "ما الذي تغيّر، ولماذا يهمّ"],
       ],
     },
-    { kind: "cta", buttons: [CTA.startFree], links: [LINK.roadmap] },
+    {
+      kind: "cta",
+      title: "اقرأ الجديد. ثم جرّبه بنفسك.",
+      buttons: [CTA.startFree],
+      links: [LINK.roadmap],
+    },
   ],
 };
 

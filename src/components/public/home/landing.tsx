@@ -1,7 +1,7 @@
 import type { Locale } from "@/lib/i18n/locales";
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
-import { Icon, type IconName, Mark as BrandMark, Spark } from "@/components/ui";
+import { Icon, type IconName, Mark as BrandMark } from "@/components/ui";
 import { isAppHandoff, localeHref } from "@/lib/i18n/href";
 
 /*
@@ -27,54 +27,101 @@ import { isAppHandoff, localeHref } from "@/lib/i18n/href";
  */
 
 /*
- * The ink, and its opacities.
+ * The ink, the grounds and the lifts -- as tokens, not as values.
  *
- * ── Three of these are darker than the design file's ─────────────────────
+ * -- Why these stopped being hex, 18 Nov 2026 ------------------------------
  *
- * The export sets its quietest greys at 55%, 50% and 45% of #0B0B0F. On this
- * near-white ground those land at 4.34:1, 3.9:1 and 3.5:1 against text — all
- * under the 4.5:1 that WCAG AA asks of text below 24px, and all used for
- * real copy: plan rows, column heads, card sublines, mock labels. A rendered
- * sweep counted 80 failures across the page.
+ * These constants were the design file's own numbers, read off a *light*
+ * page: #0B0B0F ink at seven opacities on an #F7F8FA ground, white cards on
+ * long blue-grey shadows. The 21st.dev-style brief replaces that ground with
+ * a near-black canvas, and a hardcoded near-black ink does not survive that
+ * change -- it would have painted black text on a black page across every
+ * section that imports from here, which is twenty-seven files.
  *
- * Black-on-white is a forgiving direction and it is easy to assume a grey is
- * fine because it looks fine; it was fine on the previous black site because
- * white-on-black at the same opacity is a different measurement entirely,
- * which is why the earlier audit found none of this.
+ * So each one now names the token that already carries its meaning. The
+ * mapping is the point: `INK` was never "the colour #0B0B0F", it was "the
+ * colour type is set in", and `--text` is that colour on whichever ground the
+ * site is currently on. Re-pointing the token layer now moves the homepage
+ * with it instead of leaving it behind.
  *
- * So the three quiet greys are darkened to clear the threshold — 62% for the
- * two that carry text, 58% for the smallest. The visible change is slight;
- * the names keep the design file's numbering so the mapping is still legible.
- * This is a deliberate departure from the trace, and the only one made for a
- * reason other than RTL correctness.
+ * -- The three AA departures are gone, and that is not a regression ---------
+ *
+ * On the light ground, the design file's quietest greys (55%, 50% and 45% of
+ * the ink) measured 4.34:1, 3.9:1 and 3.5:1 -- all under AA for text below
+ * 24px, and all carrying real copy, so they were darkened to 62/62/58 and the
+ * names kept the file's numbering to keep the mapping legible.
+ *
+ * That correction is no longer needed at this layer: `--text-muted` is solved
+ * for the dark canvas once, in tailwind/tokens.js, at about 6.9:1. The five
+ * middle steps therefore collapse onto it. They are kept as separate names
+ * only so the twenty-seven importers do not all have to change at once, and
+ * so a future ground can pull them apart again.
+ *
+ * `--text-faint` is the one step below, for meta and column heads.
  */
-export const INK = "#0B0B0F";
-export const INK_72 = "rgba(11,11,15,.72)";
-export const INK_64 = "rgba(11,11,15,.64)";
-export const INK_62 = "rgba(11,11,15,.62)";
-export const INK_55 = "rgba(11,11,15,.62)"; /* design file: .55 — 4.34:1 */
-export const INK_50 = "rgba(11,11,15,.62)"; /* design file: .50 — 3.9:1 */
-export const INK_45 = "rgba(11,11,15,.58)"; /* design file: .45 — 3.5:1 */
+export const INK = "var(--text)";
+export const INK_72 = "var(--text-secondary)";
+export const INK_64 = "var(--text-muted)";
+export const INK_62 = "var(--text-muted)";
+export const INK_55 = "var(--text-muted)";
+export const INK_50 = "var(--text-muted)";
+export const INK_45 = "var(--text-faint)";
 
-/* Blue, used as ink on light rather than as glow on black. */
+/*
+ * Blue.
+ *
+ * These two are unchanged, and on this ground they finally behave the way the
+ * design system always described them. #0099FF measures about 6.0:1 on the
+ * near-black canvas, so it is legible as ink here where it was 2.82:1 on the
+ * light page and had to be swapped for #0077FF; #0055FF stays the falloff for
+ * gradients and glows.
+ *
+ * The brief's own `--primary` -- the electric blue on the buttons -- is a
+ * third, deeper value and lives only in the token layer, because it is a fill
+ * and fails as text at any size.
+ */
 export const BLUE = "#0099FF";
 export const BLUE_DEEP = "#0055FF";
 
+/*
+ * The blue that is allowed to carry text.
+ *
+ * `BLUE` and `BLUE_DEEP` are fills and glows. #0055FF as *ink* measures about
+ * 3.2:1 on this canvas -- under AA for anything below 24px -- and it was
+ * being used for exactly that in ten places: category pills, table column
+ * heads, the locale row's accent number, icon glyphs, the path links.
+ *
+ * `--mk-blue-ink` is oklch(0.76 0.14 255), about 8.4:1, and still reads as
+ * the brand blue. Fills keep the deep value; only ink moved. This is the same
+ * split the light page needed in the opposite direction, where #0099FF was
+ * too pale to set type in and #0077FF was the answer.
+ */
+export const BLUE_INK = "var(--mk-blue-ink)";
+
 /* The grounds. */
-export const CANVAS = "#F7F8FA";
-export const PANEL = "#F4F6FA";
-export const TRACK = "#F0F2F6";
+export const CANVAS = "var(--canvas)";
+export const PANEL = "var(--surface-2)";
+export const TRACK = "var(--track)";
 
-/* The lifts. A card either rings or lifts; the long one is the page's. */
-export const RING = "0 0 0 1px rgba(11,11,15,.05)";
-export const RING_6 = "0 0 0 1px rgba(11,11,15,.06)";
-export const LIFT = "0 0 0 1px rgba(11,11,15,.05),0 30px 70px -40px rgba(11,20,60,.28)";
-export const LIFT_CARD = "0 0 0 1px rgba(11,11,15,.06),0 24px 50px -30px rgba(0,85,255,.35)";
-/* The one selected object in a composition: a lit ring and a soft halo. */
-export const SELECTED = "0 0 0 1.5px #0099FF,0 0 0 6px rgba(0,153,255,.08)";
+/*
+ * The lifts -- which are edges now.
+ *
+ * The brief is explicit that cards carry a hairline and no drop shadow, so
+ * `LIFT` and `RING` have converged: both are the 1px white-at-7.5% edge that
+ * `--lift-card` and `--lift-ring` now describe. `LIFT_CARD` keeps a glow,
+ * because the one card a section is about is still allowed to be lit.
+ */
+export const RING = "var(--lift-ring)";
+export const RING_6 = "var(--lift-ring)";
+export const LIFT = "var(--lift-card)";
+export const LIFT_CARD = "var(--lift-blue)";
+/* The one selected object in a composition: a lit ring and a soft halo. The
+ halo doubles on dark -- at 8% it was invisible against the canvas. */
+export const SELECTED = "0 0 0 1.5px #0099FF,0 0 0 6px rgba(0,153,255,.16)";
 
-/* The dotted ground inside a mock frame. */
-export const DOTS = "radial-gradient(rgba(11,11,15,.09) 1px,transparent 1.3px) 0 0/14px 14px,#F4F6FA";
+/* The dotted ground inside a mock frame, inverted for the dark panel. */
+export const DOTS =
+  "radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.3px) 0 0/14px 14px,var(--surface-2)";
 
 /*
  * The headline's second clause.
@@ -154,17 +201,40 @@ export function Display({
      * size. tailwind/ sets it per `lang`: see --mk-fs-hero.
      */
     hero: "var(--mk-fs-hero)",
-    h2lg: "clamp(30px,4.6vw,56px)",
-    h2: "clamp(30px,4.2vw,52px)",
+    /*
+     * One section size, which is the brief's: clamp(28px, 3.6vw, 44px) for a
+     * section title and for the big statement line alike. These were three
+     * sizes (56 / 52 / 44) traced off the light design file; the brief gives
+     * the whole section tier a single step, and collapsing them is most of
+     * why the page now reads as one rhythm rather than three.
+     */
+    h2lg: "clamp(28px,3.6vw,44px)",
+    h2: "clamp(28px,3.6vw,44px)",
     h3: "clamp(28px,3.6vw,44px)",
   }[size];
+
+  /*
+   * The weight, per role.
+   *
+   * This was a flat `fontWeight: 500` -- correct when the design system
+   * capped every weight at 500, and the reason the homepage hero was still
+   * arriving at 500 after the token layer had been moved to 700: an inline
+   * style beats the class that was carrying the new weight.
+   *
+   * The hero is the brief's display weight; everything in the section tier
+   * stays at 500, which the brief also asks for. Card titles are not this
+   * component -- they are `.mk-h3` at 600.
+   */
+  const weight = size === "hero"
+    ? "var(--mk-weight-display)"
+    : "var(--mk-weight-text-medium)";
 
   return (
     <Tag
       id={id}
       style={{
         margin: 0,
-        fontWeight: 500,
+        fontWeight: weight,
         fontSize: fs,
         lineHeight: size === "hero" ? "var(--mk-lh-hero)" : 1.3,
         textWrap: "balance",
@@ -243,23 +313,74 @@ export function Cta({
    * page's near-black primary is the one fill that disappears. The ink and
    * the ground swap; nothing else about the control changes.
    */
-  tone?: "solid" | "quiet" | "light";
+  tone?: "solid" | "quiet" | "light" | "onDeep";
   style?: CSSProperties;
 }) {
-  const h = { lg: 52, md: 50, sm: 40 }[size];
-  const px = { lg: 26, md: 24, sm: 18 }[size];
+  /*
+   * The brief's two button sizes, not the design file's three pills.
+   *
+   * 52 / 50 / 40px pills at 26px of padding were traced off the light design
+   * file. The brief gives buttons two sizes -- 44px tall with 15px text for a
+   * hero or a section, 32px with 13px text inside a card or the header -- and
+   * a 10px corner instead of a pill. `md` collapses onto `lg`: the brief has
+   * no middle size, and 50 against 52 was never a distinction anyone could
+   * see.
+   */
+  const h = { lg: 44, md: 44, sm: 32 }[size];
+  const px = { lg: 20, md: 20, sm: 12 }[size];
 
   const pill = (
     <Link
       href={localeHref(locale, href)}
       prefetch={isAppHandoff(href) ? false : undefined}
-      className="mk-bidi"
+      /* `.mk-press` is the brief's 0.97 on press. This CTA is a styled Link
+         rather than a `.mk-btn`, so it does not inherit the button's own. */
+      className="mk-bidi mk-press"
       style={{
         blockSize: h,
         paddingInline: px,
-        borderRadius: 999,
-        background: { solid: INK, light: "#fff", quiet: "transparent" }[tone],
-        color: tone === "solid" ? "#fff" : INK,
+        borderRadius: "var(--radius-btn)",
+        /*
+         * The brief's two fills.
+         *
+         * `solid` is the primary: the one electric blue with a white label
+         * and the 1px inset lip along its top edge, which is what reads as a
+         * light source above the page rather than as a blue rectangle.
+         * `light` is the secondary: white at 8% and no edge, because the
+         * brief is explicit that the secondary has a fill and no border, so
+         * the pair differs by fill alone.
+         *
+         * Briefly, between the ground going dark and this change, `solid` was
+         * the *inverted* pill -- `INK` as a fill, which now resolves to
+         * near-white. It was correct arithmetic and the wrong button: the
+         * hero's two asks rendered as white lozenges.
+         */
+        background: {
+          solid: "var(--solid)",
+          /*
+           * `onDeep` is the primary, inverted.
+           *
+           * The closing panel is the one place on the page where the accent
+           * is the *ground*, so the blue fill cannot be the loud button
+           * there -- it would be a blue rectangle on a blue panel. Both
+           * doors wore `light` instead, an 8%-white ghost, and measured on
+           * the rendered panel that is a fill you have to look for: the pair
+           * read as two outlines rather than as the page's closing ask.
+           *
+           * White, with the canvas as ink, which is what `.mk-deep-solid`
+           * already does on all fifty-one content pages. Named for the
+           * ground rather than for the role, for the same reason that rule
+           * had to stop saying `var(--text)`: this pill is white in both
+           * themes because of where it sits.
+           */
+          onDeep: "var(--mk-on-deep)",
+          light: "var(--ghost-fill)",
+          quiet: "transparent",
+        }[tone],
+        color: tone === "solid" ? "var(--solid-ink)"
+          : tone === "onDeep" ? "var(--canvas)"
+          : "var(--text)",
+        boxShadow: tone === "solid" ? "var(--solid-lip)" : undefined,
         display: "inline-flex",
         alignItems: "center",
         /* Centred rather than packed to the start: a CTA in `.mk-doors` is
@@ -267,8 +388,8 @@ export function Cta({
            start edge of a box wider than itself looks like a mistake. */
         justifyContent: "center",
         gap: 10,
-        fontSize: size === "sm" ? 15 : 16,
-        fontWeight: 500,
+        fontSize: size === "sm" ? 13 : 15,
+        fontWeight: "var(--mk-weight-text-medium)",
         ...style,
       }}
     >
@@ -277,25 +398,18 @@ export function Cta({
   );
 
   /*
-   * The filled pill carries the cursor light; the quiet one does not.
+   * No cursor light on buttons.
    *
-   * Same rule as `src/components/ui/buttons/Button.tsx`, and the same reason: one lit ask
-   * per section. `tone="quiet"` is a transparent pill with ink type and
-   * nothing to reflect, so it is left alone.
+   * `Spark` painted a specular highlight inside the pill and lit the nearest
+   * edge, resting at 0.42 so a light page could carry ten of them. On the dark
+   * ground it reads as a blue halo around every button, and the reference
+   * (docs/21st-reference/screenshots/01-hero.jpg) has no glow on buttons at
+   * all: the primary is a flat blue fill with a 1px inset lip, the secondary is
+   * a flat ghost fill, and both are clean-edged. The brief's section 3 gives
+   * buttons exactly three states -- brighten on hover, scale 0.97 on press, and
+   * the lip -- so the glow is gone rather than re-tuned.
    */
-  return tone === "quiet" ? (
-    pill
-  ) : (
-    /*
-     * `full` whenever the caller sized the pill itself. A CTA that was told to
-     * fill its parent was told that about the box it used to be — this wrapper
-     * is that box now, and a shrink-wrapped one would turn `100%` back into
-     * "as wide as the label".
-     */
-    <Spark tone={tone === "light" ? "deep" : "ink"} full={style?.inlineSize === "100%"}>
-      {pill}
-    </Spark>
-  );
+  return pill;
 }
 
 /*
@@ -333,7 +447,7 @@ export function TextLink({
            without moving the text. */
         fontSize: 15,
         fontWeight: 500,
-        color: BLUE_DEEP,
+        color: BLUE_INK,
         ...style,
       }}
     >
@@ -359,10 +473,17 @@ export function IconTile({
   tone?: "blue" | "ink" | "white";
   style?: CSSProperties;
 }) {
+  /*
+   * The tile fills. `blue` doubles its alpha for this ground -- an 8% tint
+   * of #0099FF was a visible wash on near-white and is nothing on
+   * near-black -- and `ink` becomes a raised grey rather than the inverted
+   * fill, because the glyph on it is set in `--text` and an inverted tile
+   * would need an inverted glyph as well for one tone out of three.
+   */
   const bg = {
-    blue: "rgba(0,153,255,.08)",
-    ink: INK,
-    white: "#fff",
+    blue: "rgba(0,153,255,.16)",
+    ink: "var(--surface-3)",
+    white: "var(--surface-1)",
   }[tone];
 
   return (
@@ -383,7 +504,7 @@ export function IconTile({
       <Icon
         name={name}
         size={Math.round(size * 0.5)}
-        style={{ color: tone === "ink" ? "#fff" : BLUE_DEEP }}
+        style={{ color: tone === "ink" ? "var(--text)" : BLUE_DEEP }}
       />
     </span>
   );
@@ -458,8 +579,12 @@ export function Band({
       style={{
         position: "relative",
         padding: "clamp(100px,12vw,168px) 24px",
-        background: white ? "#fff" : undefined,
-        boxShadow: white ? "0 0 0 1px rgba(11,11,15,.04)" : undefined,
+        /* The alternating band. On the light page the page was #F7F8FA and
+           the band was white; here the page is the darker of the two and the
+           band is the card surface, so the alternation reads the same way
+           round -- the band is always the lighter field. */
+        background: white ? "var(--surface-1)" : undefined,
+        boxShadow: white ? "var(--lift-ring)" : undefined,
         ...style,
       }}
     >

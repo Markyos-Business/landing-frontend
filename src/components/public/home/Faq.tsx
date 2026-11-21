@@ -1,7 +1,7 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { Words, Chip, Icon } from "@/components/ui";
 import type { FaqCopy, SiteCopy } from "@/content/types";
-import { Band, Display, INK, PANEL, TextLink } from "./landing";
+import { Band, Cta, Display, INK, PANEL } from "./landing";
 
 /*
  * The FAQ.
@@ -45,7 +45,7 @@ export function Faq({ copy, chips, locale }: {
           <details
             key={item.question}
             className="group"
-            style={{ boxShadow: "0 -1px 0 rgba(11,11,15,.08)" }}
+            style={{ boxShadow: "0 -1px 0 rgba(255,255,255,0.12)" }}
           >
             <summary
               className="mk-faq-summary flex cursor-pointer list-none items-center gap-4"
@@ -77,7 +77,7 @@ export function Faq({ copy, chips, locale }: {
                 paddingInlineEnd: 48,
                 fontSize: 16,
                 lineHeight: 1.9,
-                color: "rgba(11,11,15,.66)",
+                color: "var(--text-muted)",
               }}
             >
               {item.coming ? (
@@ -97,7 +97,9 @@ export function Faq({ copy, chips, locale }: {
       {copy.link ? (
         <p style={{ margin: "32px 0 0" }}>
           <span className="mk-atomic">
-            <TextLink locale={locale} href={copy.link.href}>{copy.link.label}</TextLink>
+            <Cta locale={locale} href={copy.link.href} size="sm">
+              {copy.link.label}
+            </Cta>
           </span>
         </p>
       ) : null}

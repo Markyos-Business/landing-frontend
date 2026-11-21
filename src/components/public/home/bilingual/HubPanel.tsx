@@ -51,7 +51,7 @@ export function HubPanel({ active, locale }: { active: boolean; locale: "ar" | "
         translate: active ? "0" : `${ar ? 22 : -22}px`,
         transition:
           "opacity 360ms cubic-bezier(.32,.72,0,1), translate 420ms cubic-bezier(.32,.72,0,1)",
-        background: "#fff",
+        background: "var(--surface-1)",
         borderRadius: 20,
         boxShadow: RING,
         overflow: "clip",
@@ -67,7 +67,7 @@ export function HubPanel({ active, locale }: { active: boolean; locale: "ar" | "
           alignItems: "center",
           gap: 10,
           padding: "0 18px",
-          boxShadow: "0 1px 0 rgba(11,11,15,.06)",
+          boxShadow: "0 1px 0 rgba(255,255,255,0.09)",
         }}
       >
         <span
@@ -90,7 +90,7 @@ export function HubPanel({ active, locale }: { active: boolean; locale: "ar" | "
             fontSize: 12,
             display: "inline-flex",
             alignItems: "center",
-            color: "rgba(11,11,15,.6)",
+            color: "var(--text-muted)",
             fontFamily: "Inter, sans-serif",
           }}
         >
@@ -106,11 +106,11 @@ export function HubPanel({ active, locale }: { active: boolean; locale: "ar" | "
             flexDirection: "column",
             gap: 2,
             fontSize: ar ? 14 : 13,
-            color: "rgba(11,11,15,.6)",
+            color: "var(--text-muted)",
             /* The sidebar's divider is on its inline-end edge, which is the
                left in Arabic and the right in English — one logical shadow
                rather than two physical ones. */
-            boxShadow: "1px 0 0 rgba(11,11,15,.06)",
+            boxShadow: "1px 0 0 rgba(255,255,255,0.09)",
           }}
         >
           {nav.map((item, i) => (
@@ -165,7 +165,7 @@ export function HubPanel({ active, locale }: { active: boolean; locale: "ar" | "
                 margin: ar ? "2px 0 0" : "4px 0 0",
                 fontSize: ar ? 14 : 13,
                 lineHeight: ar ? 1.7 : 1.45,
-                color: "rgba(11,11,15,.6)",
+                color: "var(--text-muted)",
               }}
             >
               {ar
@@ -201,7 +201,7 @@ export function HubPanel({ active, locale }: { active: boolean; locale: "ar" | "
                   borderRadius: 8,
                   background: swatch,
                   boxShadow:
-                    swatch === "#F3EAD9" ? "inset 0 0 0 1px rgba(11,11,15,.06)" : undefined,
+                    swatch === "#F3EAD9" ? "inset 0 0 0 1px rgba(255,255,255,0.09)" : undefined,
                 }}
               />
             ))}
@@ -216,7 +216,7 @@ export function HubPanel({ active, locale }: { active: boolean; locale: "ar" | "
                   justifyContent: "space-between",
                   gap: 12,
                   padding: ar ? "8px 0" : "9px 0",
-                  boxShadow: i === 0 ? "0 1px 0 rgba(11,11,15,.06)" : undefined,
+                  boxShadow: i === 0 ? "0 1px 0 rgba(255,255,255,0.09)" : undefined,
                 }}
               >
                 <span style={{ color: INK_55 }}>{label}</span>

@@ -71,7 +71,6 @@ export const FEATURES = [
   { id: "auto-sections", label: "16 sections that build themselves, 19 layouts, builder", status: "current", shipsIn: "Prototype" },
   { id: "strategy-hub", label: "Strategy Hub", status: "current", shipsIn: "Prototype" },
   { id: "visual-identity", label: "Visual identity: Arabic and Latin logo slots, palette, Type Lab", status: "current", shipsIn: "Prototype" },
-  { id: "moodboard", label: "Moodboard with colour extraction from real pixels", status: "current", shipsIn: "Prototype" },
   { id: "discovery-forms", label: "Discovery forms (Brief): 3 templates, client link, no account", status: "current", shipsIn: "Prototype" },
   { id: "department-pages", label: "Department pages (publishable, import from .docx/PDF)", status: "current", shipsIn: "Prototype" },
   { id: "drafts-queue", label: "Drafts queue with provenance", status: "current", shipsIn: "Prototype" },
@@ -94,46 +93,35 @@ export const FEATURES = [
   { id: "brief-analysis", label: "AI Brief Analysis (first one free per project)", status: "mvp", shipsIn: "v2.0" },
   { id: "voice-profile", label: "Voice profile and bilingual term base", status: "mvp", shipsIn: "v2.0" },
   { id: "tone-checker", label: "Tone checker: quick, deep, rewrite, translate in brand voice", status: "mvp", shipsIn: "v2.0" },
+  { id: "mockups", label: "Mockup builder: the brand's own assets on a template gallery", status: "mvp", shipsIn: "v2.0, ready end of Dec 2026" },
   // Before-you-publish item 7: if this slips past launch, move it to
   // "coming" and it chips itself. Confirm at launch.
   { id: "stakeholder-workshop", label: "Stakeholder workshop and alignment report", status: "mvp", shipsIn: "v2.0, or first 2 weeks after launch" },
 
   // ── Coming: always chipped, and the chip never names a date ────────────
-  { id: "whiteboard", label: "Real-time whiteboard, client guest links", status: "coming", shipsIn: "v3.0 (Feb to May 2027)" },
-  { id: "board-shapes", label: "Brand-aware board shapes, AI art direction", status: "coming", shipsIn: "v3.0" },
-  { id: "department-playbooks", label: "Department playbooks (voice dial, key messages)", status: "coming", shipsIn: "v3.0" },
-  { id: "initiatives", label: "Initiatives (campaigns, launches inside a brand)", status: "coming", shipsIn: "v3.0" },
-  { id: "email-signatures", label: "Email signature generator", status: "coming", shipsIn: "v3.0" },
-  { id: "strategy-ai", label: "Strategy AI assistant, Brainstorm", status: "coming", shipsIn: "v4.0 (May to Aug 2027)" },
-  { id: "ask-the-brand", label: "Ask the Brand", status: "coming", shipsIn: "v4.0" },
-  { id: "document-checks", label: "Document tone checks, PDF guideline import with AI", status: "coming", shipsIn: "v4.0" },
-  { id: "ai-connector", label: "AI connector: point ChatGPT or Claude at the real brand, read-only", status: "coming", shipsIn: "v4.0" },
-  { id: "templates-kit", label: "Brand templates kit and mockups", status: "coming", shipsIn: "v4.0" },
-  { id: "brand-health", label: "Review requests, brand health dashboard", status: "coming", shipsIn: "v5.0 (Aug to Oct 2027)" },
-  { id: "integrations", label: "Chrome extension, brand architecture, Figma sync, API, SSO", status: "coming", shipsIn: "v5.0" },
+  { id: "moodboard", label: "Moodboards with colour extraction from real pixels", status: "coming", shipsIn: "After launch" },
+  { id: "art-direction", label: "Art direction from Brand Brain", status: "coming", shipsIn: "After launch" },
+  { id: "department-playbooks", label: "Department playbooks (voice dial, key messages)", status: "coming", shipsIn: "After launch" },
+  { id: "strategy-ai", label: "Strategy assistant and brainstorm", status: "mvp", shipsIn: "v2.0 (Feb 2027)" },
+  { id: "ask-the-brand", label: "Ask the Brand", status: "mvp", shipsIn: "v2.0" },
+  { id: "ai-connector", label: "AI connector: point ChatGPT or Claude at the real brand, read-only", status: "mvp", shipsIn: "v2.0" },
+  { id: "brand-health", label: "Reviews and approvals, brand health dashboard, design checks", status: "coming", shipsIn: "After launch" },
 
   /*
    * Named separately from the buckets above because the subpages cite them
    * one at a time.
    *
-   * `integrations` is a v5.0 shopping list, which was fine while only the
-   * homepage's roadmap section named it. The solution, platform and pricing
-   * pages each point at a single item of it — the Agency plan's button, the
-   * download audit on a partner link, SSO in the enterprise row — and a chip
-   * has to be able to disappear when *that* item ships, not when the last
-   * thing in a bucket of eleven does.
+   * There used to be an `integrations` entry here: a v5.0 shopping list
+   * reading "Chrome extension, brand architecture, Figma sync, API, SSO".
+   * It went with copy deck v4.1, along with the rest of it — a chip has to
+   * be able to disappear when *that* item ships, not when the last thing in
+   * a bucket of five does, and three of its five no longer exist.
    */
-  { id: "pdf-import", label: "Read an existing PDF guideline and draft sections from it", status: "coming", shipsIn: "v4.0" },
-  { id: "ai-section-copy", label: "AI drafts for guideline section copy", status: "coming", shipsIn: "v4.0" },
-  { id: "webhooks", label: "Studio board webhooks", status: "coming", shipsIn: "v5.0" },
-  { id: "chrome-extension", label: "Chrome extension: review content anywhere", status: "coming", shipsIn: "v5.0" },
-  { id: "figma-sync", label: "Figma sync, then Canva and Framer", status: "coming", shipsIn: "v5.0" },
-  { id: "sub-brands", label: "Sub-brands that inherit from a parent brand", status: "coming", shipsIn: "v5.0" },
-  { id: "download-audit", label: "Partner links: who downloaded what", status: "coming", shipsIn: "v5.0" },
-  { id: "sso", label: "SSO, SAML, SCIM, audit logs, compliance export", status: "coming", shipsIn: "v5.0" },
-  { id: "agency-plan", label: "Agency plan: 30 active projects, studio-branded portal", status: "coming", shipsIn: "v5.0" },
-  { id: "business-plan", label: "Business plan", status: "coming", shipsIn: "v5.0" },
-  { id: "api", label: "Public API", status: "coming", shipsIn: "v5.0" },
+  { id: "pdf-import", label: "Turn an existing PDF guideline into a hub", status: "coming", shipsIn: "After launch" },
+  { id: "ai-section-copy", label: "AI drafts for guideline section copy", status: "mvp", shipsIn: "v2.0" },
+  { id: "chrome-extension", label: "Chrome extension: review content anywhere", status: "coming", shipsIn: "After launch" },
+  { id: "download-audit", label: "Partner links: who downloaded what", status: "coming", shipsIn: "After launch" },
+  { id: "sso", label: "The Enterprise plan: SSO, SAML, SCIM, audit logs, compliance export", status: "coming", shipsIn: "After launch" },
 ] as const satisfies readonly Feature[];
 
 export type FeatureId = (typeof FEATURES)[number]["id"];

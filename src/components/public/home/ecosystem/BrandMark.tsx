@@ -17,9 +17,9 @@ export function BrandMark({ label }: { label: string }) {
           inlineSize: 128,
           blockSize: 128,
           borderRadius: 32,
-          background: "#fff",
+          background: "var(--surface-1)",
           boxShadow:
-            "0 0 0 1px rgba(11,11,15,.04),0 24px 60px -12px rgba(0,153,255,.5),0 0 48px rgba(0,153,255,.22)",
+            "0 0 0 1px rgba(255,255,255,0.06),0 24px 60px -12px rgba(0,153,255,.5),0 0 48px rgba(0,153,255,.22)",
           display: "grid",
           placeItems: "center",
         }}

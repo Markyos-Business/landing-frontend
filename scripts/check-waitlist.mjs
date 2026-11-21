@@ -1,5 +1,14 @@
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
+/*
+ * The waitlist contract: the newsletter capture, which is still honestly 501.
+ *
+ * The page half of this check used to open /contact, because that is where a
+ * signup block used to be. /contact carries a real message form now, posting
+ * to /api/contact, and it has its own gate in scripts/check-contact.mjs. The
+ * one remaining signup block is the newsletter on /resources, so that is the
+ * page opened below and `newsletter` is the topic it posts.
+ */
 const base = process.env.BASE_URL ?? "http://localhost:3213";
 assert(["localhost", "127.0.0.1", "[::1]"].includes(new URL(base).hostname), "Use an isolated local server");
 const browser = await chromium.launch(process.env.PLAYWRIGHT_CHANNEL ? {channel: process.env.PLAYWRIGHT_CHANNEL} : {});
@@ -17,13 +26,13 @@ try {
   assert.equal((await context.request.post(`${base}/api/waitlist`,{data:{email:"bot@markyos.test",topic:"newsletter",company_url:"https://bot.invalid"}})).status(),202,"honeypot is discarded");
   for (const locale of ["en","ar"]) {
     const page=await context.newPage();const errors=[];page.on("pageerror",e=>errors.push(e.message));
-    await page.goto(`${base}/${locale}/contact`,{waitUntil:"networkidle"});
+    await page.goto(`${base}/${locale}/resources`,{waitUntil:"networkidle"});
     const form=page.locator("form").filter({has:page.locator('input[name="email"]')});
     await form.locator('input[name="email"]').fill("visitor@markyos.test");
     const responsePromise=page.waitForResponse(r=>r.url().endsWith('/api/waitlist')&&r.request().method()==='POST');
     await form.locator('button[type="submit"]').click();
     const response=await responsePromise;assert.equal(response.status(),501);
-    assert.deepEqual(response.request().postDataJSON(),{email:"visitor@markyos.test",topic:"contact",locale});
+    assert.deepEqual(response.request().postDataJSON(),{email:"visitor@markyos.test",topic:"newsletter",locale});
     const pending=locale==="ar"?"ولم يُحفظ أي طلب":"nothing was stored";
     await form.getByRole("status").filter({hasText:pending}).waitFor();
     assert.equal(await form.locator('button[type="submit"]').isEnabled(),true);assert.deepEqual(errors,[]);

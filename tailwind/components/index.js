@@ -20,6 +20,9 @@ import { disclosureStyles } from "./disclosure.js";
 import { editorialStyles } from "./editorial.js";
 import { motionStyles } from "./motion.js";
 import { transitionStyles } from "./transition.js";
+import { bentoStyles } from "./bento.js";
+import { pricingStyles } from "./pricing.js";
+import { formStyles } from "./forms.js";
 
 export const componentStyles = [
   foundationStyles,
@@ -37,6 +40,9 @@ export const componentStyles = [
   heroStyles,
   disclosureStyles,
   editorialStyles,
+  bentoStyles,
+  pricingStyles,
+  formStyles,
   motionStyles,
   transitionStyles,
 ];

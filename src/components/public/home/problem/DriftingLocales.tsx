@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { mockCopy } from "@/content/mocks";
-import { INK_45, RING, BLUE_DEEP } from "../landing";
+import { INK_45, RING, BLUE_INK } from "../landing";
 
 /*
  * The Arabic says something the English never did.
@@ -40,7 +40,7 @@ export function DriftingLocales({ line, locale }: { line: string; locale: Locale
         ring={RING}
       >
         {before}
-        <b style={{ fontWeight: 500, color: BLUE_DEEP }}>{accent}</b>
+        <b style={{ fontWeight: 500, color: BLUE_INK }}>{accent}</b>
         {after}
       </Row>
     </div>
@@ -88,7 +88,7 @@ function Row({
         minBlockSize: 46,
         padding: "8px 14px",
         borderRadius: 14,
-        background: "#fff",
+        background: "var(--surface-1)",
         boxShadow: ring,
       }}
     >

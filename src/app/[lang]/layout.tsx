@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { fontVariables } from "../fonts";
 import { Header } from "@/components/navbar";
 import { Footer } from "@/components/public/Footer";
+import { AnnouncementBar } from "@/components/public/AnnouncementBar";
+import { currentLaunchOffer } from "@/content/current-pricing";
 import { Analytics } from "@/components/public/Analytics";
 import { getCopyFor } from "@/lib/i18n/dictionary";
 import { isLocale, LOCALES, LOCALE_DIR } from "@/lib/i18n/locales";
@@ -68,6 +70,7 @@ export default async function RootLayout({
   // call `generateMetadata` above already makes, so the chrome and the
   // metadata can no longer disagree about what the nav says.
   const copy = await getCopyFor(lang);
+  const offer = currentLaunchOffer(lang);
 
   return (
     <html lang={lang} dir={LOCALE_DIR[lang]} className={fontVariables}>
@@ -78,6 +81,17 @@ export default async function RootLayout({
         <a href="#main" className="mk-sr-only">
           {copy.nav.skipToContent}
         </a>
+
+        {/*
+         * The announcement bar, above the nav, on every page (deck v4.1
+         * §1.1). Before the header in flow, so the header's `position:
+         * sticky` pins it to the viewport once the bar has scrolled past
+         * and the bar needs no offset of its own.
+         *
+         * `offer` is null whenever no offer is running, and then there is
+         * no bar and no gap where one was.
+         */}
+        {offer ? <AnnouncementBar copy={offer} locale={lang} /> : null}
 
         <Header copy={copy.nav} locale={lang} />
 

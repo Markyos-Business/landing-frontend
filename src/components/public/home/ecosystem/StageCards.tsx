@@ -6,9 +6,8 @@ import { BLUE_DEEP, INK, INK_55, LIFT_CARD, SELECTED } from "../landing";
 export function StageCards({ stages }: { stages: EcosystemCopy["stages"] }) {
   return (
     <ul
+      className="mk-trio"
       style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,280px),1fr))",
         gap: 16,
         margin: 0,
         padding: 0,
@@ -20,7 +19,7 @@ export function StageCards({ stages }: { stages: EcosystemCopy["stages"] }) {
         <li
           key={stage.name}
           style={{
-            background: "#fff",
+            background: "var(--surface-1)",
             borderRadius: 24,
             /* The third stage — Manage — is the one the page is heading
                towards, so it takes the lit ring. One per composition. */
@@ -36,7 +35,10 @@ export function StageCards({ stages }: { stages: EcosystemCopy["stages"] }) {
                 blockSize: 36,
                 borderRadius: 11,
                 background: i === 2 ? BLUE_DEEP : INK,
-                color: "#fff",
+                /* White on the blue tile, the canvas colour on the ink one:
+                   `INK` follows the ground now, so a fixed white glyph would
+                   be white on near-white for two of the three stages. */
+                color: i === 2 ? "#fff" : "var(--canvas)",
                 display: "grid",
                 placeItems: "center",
               }}

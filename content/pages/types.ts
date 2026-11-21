@@ -1,4 +1,5 @@
 import type { SignupTopic } from "@/lib/waitlist";
+import type { ContactTopic } from "@/lib/contact";
 import type { Cta } from "../types";
 import type { FeatureId } from "@/lib/status";
 import type { IconName } from "@/components/ui";
@@ -227,6 +228,53 @@ export type PageBlock =
       title?: string;
       items: { q: string; a: string; feature?: FeatureId }[];
     }
+  /*
+   * A dated offer, with the clock on it.
+   *
+   * Every other block here is true whenever it is read. This one stops being
+   * true at a stated instant, which is why it is its own kind rather than a
+   * `callout` with a date typed into its body: the block carries `opens` and
+   * `closes` as machine-readable instants, and the renderer is what decides
+   * whether a reader sees "opens in", "ends in", or that it is over.
+   *
+   * `window` is not decoration either. The countdown is a client component --
+   * it cannot run on the server without the server's clock disagreeing with
+   * the reader's and tearing hydration apart -- so the server sends the
+   * window as a sentence and the live figures replace it on mount. A reader
+   * with no JavaScript, and a crawler, get the two dates in words. That is
+   * also what keeps a page built in December from promising anything in
+   * March: the sentence names an end date, and the timer that would claim
+   * time remaining never starts.
+   *
+   * `rows` are written by the content file and derived there from
+   * CURRENT_PRICES, so the discounted figures cannot drift from the prices
+   * check:pricing guards.
+   */
+  | {
+      kind: "offer";
+      id?: string;
+      eyebrow?: string;
+      title: string;
+      lead?: string;
+      /** ISO instants. The renderer compares the reader's clock to these. */
+      opens: string;
+      closes: string;
+      /** The two dates as a sentence, for the server render and for no-JS. */
+      window: string;
+      countdown: {
+        /** Before `opens`. */
+        before: string;
+        /** Between `opens` and `closes`. */
+        during: string;
+        /** After `closes`, in place of the whole offer. */
+        after: string;
+        units: { days: string; hours: string; minutes: string; seconds: string };
+      };
+      rowHead?: [string, string, string];
+      rows?: { label: string; was: string; now: string }[];
+      terms?: string[];
+      cta?: Cta;
+    }
   /** Pricing cards. */
   | {
       kind: "plans";
@@ -257,6 +305,38 @@ export type PageBlock =
       submit: string;
       note?: string;
       topic: SignupTopic;
+    }
+  /*
+   * A message, sent to a real inbox.
+   *
+   * ── Why this is not the `signup` block with more fields ─────────────────
+   *
+   * `signup` captures an address for a list that does not exist yet, so it
+   * posts to `/api/waitlist` and that route answers 501 on purpose. /contact
+   * used it, which meant the page that says "a small team, and we read every
+   * message" offered one email box and a Send that could not succeed.
+   *
+   * A message is a different object with a different fate: it has a
+   * destination today, it is sent rather than stored, and the only thing the
+   * reader wants back is confirmation that it arrived. Four fields, posted to
+   * `/api/contact`, which sends and reports honestly when it cannot — see
+   * that route's header.
+   *
+   * `topic` is the fallback only. Six `/contact?topic=…` links already exist
+   * across the copy and the one in the URL wins, so a reader who clicked
+   * "report a vulnerability" finds the topic already chosen.
+   */
+  | {
+      kind: "contact";
+      id?: string;
+      title?: string;
+      lead?: string;
+      /** The topic selected when the URL names none. Defaults to `other`. */
+      topic?: ContactTopic;
+      /** The button's word, when the page wants its own. */
+      submit?: string;
+      /** A last line under the form — what to expect, or where else to go. */
+      note?: string;
     }
   /**
    * Two audiences, one place on the page.

@@ -13,6 +13,38 @@ export function CtaBlock({
   ctx: Ctx;
   headingId: string;
 }) {
+  /*
+   * A panel with nothing in it is not a closing ask.
+   *
+   * `.mk-deep` is a 240px inverted panel built to carry a line, a lead and a
+   * decision. Six Arabic pages reached it with `{ kind: "cta", buttons: [...] }`
+   * and nothing else -- every one of them had a closing line in English, and
+   * `/` is the Arabic edition, so the default site shipped a blue box holding
+   * a mark and an orphan button on /platform, /roadmap, /whats-new and three
+   * solutions pages. The copy is written now; this is so the shape cannot come
+   * back silently.
+   *
+   * It degrades to the buttons on the page's own ground rather than to
+   * nothing: the ask is still the ask, it just stops pretending to be a panel.
+   */
+  const bare = !block.title && !block.lead;
+
+  if (bare) {
+    return (
+      <section id={block.id} className="pt-[clamp(2rem,4vw,3rem)] pb-[clamp(4.5rem,10vw,7.5rem)]">
+        <div className="mk-container">
+          <Buttons
+            buttons={block.buttons}
+            links={block.links}
+            locale={ctx.locale}
+            tone="page"
+          />
+          {block.note ? <Note className="mt-7">{block.note}</Note> : null}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       id={block.id}

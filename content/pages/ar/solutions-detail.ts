@@ -66,13 +66,6 @@ const clientProjects: PageDoc = {
       ],
     },
     {
-      kind: "callout",
-      body: [
-        "وسنربط اللوحة بأدواتك عبر Webhooks، لتنتقل تحديثات المراحل إليها تلقائياً.",
-      ],
-      feature: "webhooks",
-    },
-    {
       kind: "terms",
       title: "الكل في مكانه، بالصلاحية المناسبة.",
       cols: 1,
@@ -115,6 +108,7 @@ const clientProjects: PageDoc = {
     },
     {
       kind: "cta",
+      title: "كل مشروع. كل مرحلة. شاشة واحدة.",
       buttons: [CTA.firstProject],
       links: [LINK.discovery, LINK.guidelineSites],
     },
@@ -492,7 +486,7 @@ const clientHandoff: PageDoc = {
       eyebrow: "مكافأة الشريك",
       title: "سلّمت العلامة. والعائد مستمر.",
       body: [
-        "حين يرقّي عميلك مركزاً سلّمته إلى خطة مدفوعة، تحصل على 20% مما يدفعه خلال أول 12 شهراً، رصيداً في اشتراكك أنت. وفي خطة «الوكالة»، القادمة خلال 2027، تصبح النسبة 25%.",
+        "حين يرقّي عميلك مركزاً سلّمته إلى خطة مدفوعة، تحصل على 20% مما يدفعه خلال أول 12 شهراً، رصيداً في اشتراكك أنت.",
       ],
     },
     {
@@ -652,14 +646,14 @@ const brandHub: PageDoc = {
           q: "هل يمكن أن يكون المركز على نطاقنا؟",
           a: "نعم، في الخطط المدفوعة، مثل brand.yourcompany.com.",
         },
-        {
-          q: "هل يتصل ماركيوس بـ Figma أو Canva؟",
-          a: "المزامنة مع Figma أولاً، ثم Canva وFramer.",
-          feature: "figma-sync",
-        },
       ],
     },
-    { kind: "cta", buttons: [CTA.setupBrand], links: [LINK.rollout] },
+    {
+      kind: "cta",
+      title: "غيّرها مرّة، تتغيّر في كل مكان.",
+      buttons: [CTA.setupBrand],
+      links: [LINK.rollout],
+    },
   ],
 };
 
@@ -794,12 +788,10 @@ const toneChecker: PageDoc = {
       title: "القادم",
       cols: 3,
       items: [
-        { term: "مراجعة ملفات Word وPDF كاملة", feature: "document-checks" },
         {
           term: "مراجعة النص أينما تكتب، في Gmail وLinkedIn وGoogle Docs، عبر إضافة Chrome",
           feature: "chrome-extension",
         },
-        { term: "واجهة برمجية (API) لأدواتك الأخرى", feature: "api" },
       ],
     },
     {
@@ -905,14 +897,9 @@ const companyRollout: PageDoc = {
       cols: 2,
       items: [
         {
-          term: "توقيع البريد",
-          body: "كل موظف يصنع توقيعه بالعربية والإنجليزية من ألوان العلامة وخطوطها، ويضيفه إلى Gmail أو Outlook.",
-          feature: "email-signatures",
-        },
-        {
-          term: "القوالب",
-          body: "منشورات، وعروض تقديمية، وأوراق رسمية، وبطاقات عمل، بشعارك الحقيقي دائماً.",
-          feature: "templates-kit",
+          term: "صانع الموك اب",
+          body: "اختر قالباً، فيضع ماركيوس شعارك وألوانك وخطوطك المعتمدة عليه، بالعربية والإنجليزية.",
+          feature: "mockups",
         },
       ],
     },
@@ -1024,7 +1011,11 @@ const leadershipAlignment: PageDoc = {
         },
       ],
     },
-    { kind: "cta", buttons: [CTA.firstWorkshop] },
+    {
+      kind: "cta",
+      title: "آراء كثيرة. علامة واحدة.",
+      buttons: [CTA.firstWorkshop],
+    },
   ],
 };
 

@@ -11,37 +11,55 @@ const roadmap: PageDoc = {
   shortTitle: "Roadmap",
   title: "Roadmap · Markyos",
   description:
-    "What's built, what's next and what's after: the seasons Markyos ships in, and the four things it will never build.",
+    "What's built and what's next in Markyos, without dates, and the four things it will never build.",
   breadcrumbs: [HOME],
   priority: 0.6,
   blocks: [
     {
       kind: "hero",
-      title: "What's built. What's next. What's after.",
-      lead: "We write seasons, not dates, because we'd rather be honest than promise.",
+      title: "What's built. What's next.",
+      lead: "What we're building has no dates here, because we'd rather be honest than promise.",
     },
+      /*
+       * Two columns, not four seasons.
+       *
+       * Copy deck v4.1 Part D Page 2 replaced the season ladder with "what
+       * is live at launch" and "what is coming soon", and dropped every
+       * date from the second one. Two things forced it.
+       *
+       * The first is that the seasons had become a list of promises with
+       * quarters attached, which is the one thing src/lib/status.ts exists
+       * to keep off this site: a chip that names a quarter is wrong for the
+       * whole site the moment one release slips. The roadmap was the last
+       * page still naming them.
+       *
+       * The second is that a third of the entries no longer exist. v4.1
+       * removed the live board, campaigns, email signatures, Word and PDF
+       * checks, Figma sync, templates, sub-brands, webhooks, the API and
+       * the Agency and Business plans from the product, so the ladder was
+       * promising nine things nobody is building.
+       *
+       * The dates have not gone into hiding: each feature's `shipsIn` in
+       * status.ts still carries its release for our own reference. They are
+       * simply not said to a visitor as a commitment.
+       */
     {
       kind: "steps",
-      eyebrow: "The seasons",
-      title: "What ships when.",
+      /* Not "what ships when" any more: the columns no longer answer
+         "when", and a heading that asks the question the section has
+         stopped answering is worse than no heading. */
+      title: "Where things stand.",
       items: [
         {
-          title: "Live · launch, February 2027",
-          body: "For studios: forms and AI analysis · Strategy hub · moodboards · Asset library · guideline sites in 8 looks · handoff and partner reward · studio board. For companies: brand voice and tone checker · leadership alignment · viewers and partner links · invite your studio.",
+          title: "Live at launch, February 2027",
+          body: "Forms and AI analysis · strategy and the strategy assistant · asset library · guideline sites and section copy · mockup builder · handoff and partner reward · studio board · brand voice and tone checker · leadership alignment · Ask the Brand · the AI Connector · viewers and partner links.",
         },
         {
-          title: "Spring 2027 · Explore together",
-          body: "A live board with your client · live brand elements · art direction · department playbooks · campaigns · email signatures.",
-        },
-        {
-          title: "Mid 2027 · Think, ask, present",
-          body: "Ask the Brand · strategy assistant and brainstorm · the AI Connector · Word and PDF checks · converting an old PDF guide · section copy · templates.",
-        },
-        {
-          title: "Later in 2027 · Run a whole brand team",
-          body: "Reviews and approvals · brand health · Chrome extension · design checks · sub-brands · Figma · webhooks · API · Agency, Business and Enterprise plans · SSO.",
+          title: "Coming soon",
+          body: "Moodboards · art direction from Brand Brain · department playbooks · a Chrome extension · turning an old PDF guide into a hub · brand health · download tracking on partner links · reviews and approvals · design checks · the Enterprise plan.",
         },
       ],
+      note: "No dates here. Each one arrives when it is real, and appears in What's new the day it does.",
     },
     {
       kind: "terms",

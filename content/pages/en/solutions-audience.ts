@@ -142,8 +142,8 @@ const studios: PageDoc = {
         },
         {
           title: "Moodboards",
-          body: ["References that turn into colours. And a live board with your client."],
-          feature: "whiteboard",
+          body: ["References that turn into colours, pulled from your real images."],
+          feature: "moodboard",
         },
         {
           title: "Both languages",
@@ -187,7 +187,7 @@ const studios: PageDoc = {
         [{ text: "Active projects" }, { text: "1" }, { text: "3" }, { text: "10" }],
         [{ text: "Seats" }, { text: "1" }, { text: "1" }, { text: "5" }],
       ],
-      note: "Handed-off projects don't count. An Agency plan with 30 projects is coming.",
+      note: "Handed-off projects don't count. The slot frees up the moment your client takes the hub.",
     },
     {
       kind: "faq",

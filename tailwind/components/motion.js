@@ -60,10 +60,40 @@ export const motionStyles = [
    * The `to` is still absent, and now only for the reason that it is not
    * needed: the end state is the element's own.
    */
+  /*
+   * The arrival, with the brief's blur-to-sharp added.
+   *
+   * The brief asks for sections and cards to "fade up 16-24px with a slight
+   * blur-to-sharp (filter: blur(6px) -> 0)". The travel and the fade were
+   * already here; the blur is new, and it is the one part of the brief's
+   * section 5 that this system did not already express.
+   *
+   * -- What was NOT taken from the brief, and why ---------------------------
+   *
+   * The brief specifies 600-800ms on `--ease-out-expo` with a 60-80ms
+   * stagger, through Framer Motion. These reveals are *scroll-driven*:
+   * `animation-timeline: view()` with no time axis at all, so a duration and
+   * an easing have nothing to act on -- the scroll position is the clock.
+   * `linear` is correct there, because the easing the reader feels is the one
+   * in their own scrolling; an ease on top of it reads as lag. The stagger is
+   * a shifted range for the same reason, and 4% of `cover` already works out
+   * at roughly the offset the brief is asking for.
+   *
+   * This is a better mechanism than the brief's, not a compromise: nothing is
+   * measured on the main thread, and `check:motion` already walks every page
+   * asserting each revealed element reaches its settled state.
+   *
+   * The blur is kept to this keyframe, which only `.mk-rise` and `.mk-seq > *`
+   * use -- section and card arrivals, which is exactly the brief's scope. It
+   * is deliberately not on the word-level reveals: a blur re-rasterises the
+   * element every frame, and there are over 2,600 revealed elements on the
+   * site.
+   */
   { "@keyframes mk-rise": {
     "from": {
       "opacity": "0",
       "translate": "0 var(--mk-rise-y, 1.25rem)",
+      "filter": "blur(var(--mk-rise-blur, 6px))",
     },
   } },
   /*
@@ -85,12 +115,58 @@ export const motionStyles = [
       "opacity": "0",
     },
   } },
-  /* One word of a kinetic heading. No transform — see .mk-words below for the
-   bidi reason, which is not a preference. */
+  /*
+   * One word of a kinetic heading: the "focusing blur in".
+   *
+   * Out of focus and transparent, resolving to sharp. The supplied reference
+   * does this per *character* at blur(12px), scale(1.1), 0.8s, 50ms apart.
+   * Two of those three survive here unchanged; the other two notes say why
+   * the rest could not.
+   *
+   * -- Per word, never per character -----------------------------------------
+   *
+   * Not a preference, and not negotiable on this site. Arabic letters join,
+   * and a letter's shape depends on its neighbours, so splitting «العلامة»
+   * into six boxes renders six isolated forms -- a different word, in the way
+   * that «ابنِ» and «ا ب ن ِ» are different. Whitespace is the only cut that is
+   * safe in both scripts. See the header of Words.tsx.
+   *
+   * -- No transform on the word ----------------------------------------------
+   *
+   * The reference scales each character. A transform does not apply to a
+   * non-replaced inline box, so scaling a word means making it
+   * `inline-block` -- and an inline-block is atomic to the bidi algorithm,
+   * so a heading under `unicode-bidi: plaintext` would see a row of object
+   * replacement characters, find no strong character, and lay every Arabic
+   * headline out left-to-right.
+   *
+   * So the focus pull moved up one level: the words blur and fade, and the
+   * block they sit in carries the scale. See `mk-move-focus` below. That is
+   * also the restrained reading of the effect -- animate the hierarchy, not
+   * every box at once.
+   */
   { "@keyframes mk-word": {
     "from": {
       "opacity": "0",
-      "filter": "blur(4px)",
+      "filter": "blur(var(--mk-word-blur, 12px))",
+    },
+  } },
+  /*
+   * The block's focus pull: the reference's scale, one level up.
+   *
+   * `mk-move`'s travel plus a scale, so the headline settles out of a slight
+   * zoom while its words sharpen. 1.06 rather than the reference's 1.1: that
+   * figure is for a 3rem line, and this headline is up to 88px over two
+   * lines, where 10% moves the second baseline most of a line-height and
+   * reads as a lurch rather than as a lens finding focus.
+   *
+   * `scale` as its own property, not inside a `transform`, so it composes
+   * with the translate instead of replacing it.
+   */
+  { "@keyframes mk-move-focus": {
+    "from": {
+      "translate": "0 var(--mk-rise-y, 1.25rem)",
+      "scale": "var(--mk-word-zoom, 1.06)",
     },
   } },
   /* A facing column, arriving from its own edge. `--mk-slide-sign` is which
@@ -222,10 +298,27 @@ export const motionStyles = [
        * and not a property of the rule, which is why the check walks every
        * page and asserts every revealed element reaches full opacity.
        */
+      /*
+       * ── Slowed, 19 Nov 2026 ───────────────────────────────────────────
+       *
+       * A scroll-driven animation has no time axis -- `animation-duration` is
+       * ignored -- so "slower" is not a duration here, it is *distance*: more
+       * scrolled pixels for the same progress, which is a wider range.
+       *
+       * Every window below grew by about half, 36% to 52% and so on, and the
+       * stagger offsets grew with them. The ceiling is what the note above
+       * describes: a range that outruns a short page leaves an element part
+       * faded for ever, so the tails stop at 68-74% of `cover` and the
+       * closing block keeps `entry`, whose length is the element's own height
+       * and is therefore the one unit a bottom-flush element is guaranteed to
+       * have. `check:motion` walks all 106 pages and asserts every revealed
+       * element reaches its settled state, which is what makes this
+       * verifiable rather than hopeful.
+       */
       ".mk-rise, .mk-seq > *": {
         "animation": "mk-rise linear backwards",
         "animation-timeline": "view()",
-        "animation-range": "cover 0% cover 36%",
+        "animation-range": "cover 0% cover 34%",
       },
       /*
        * The stagger.
@@ -245,10 +338,49 @@ export const motionStyles = [
        * the distance anybody sees.
        */
       ".mk-seq > :nth-child(3n + 2)": {
-        "animation-range": "cover 6% cover 42%",
+        "animation-range": "cover 8% cover 40%",
       },
       ".mk-seq > :nth-child(3n)": {
-        "animation-range": "cover 12% cover 48%",
+        "animation-range": "cover 16% cover 46%",
+      },
+      /*
+       * …and one at a time once the grid is one column.
+       *
+       * The cycle of three above is right for a three-column grid and wrong
+       * for a phone, which is the only place this site has no grid at all:
+       * every one of these collapses to a single stack below 48rem, and a
+       * stack given 0%, 6%, 12%, 0%, 6%, 12% does not read as a cascade. It
+       * reads as four cards arriving in an order nobody chose, because the
+       * fourth card restarts the offset while sitting directly under the
+       * third.
+       *
+       * In one column the children genuinely do arrive one after another, so
+       * the offset ramps instead of cycling. Capped at the fifth child at
+       * 16% — four points past the three-cycle's own maximum, which keeps
+       * every range inside the budget `check:motion` walks, and a sixth card
+       * offset further than that would still be fading while the reader was
+       * already past it.
+       *
+       * Declared after the cycle and at equal specificity, so it wins by
+       * source order. That is this codebase's standing rule and the reason
+       * these two blocks are adjacent rather than in separate files.
+       */
+      "@media (width < 48rem)": {
+        ".mk-seq > :nth-child(1)": {
+          "animation-range": "cover 0% cover 34%",
+        },
+        ".mk-seq > :nth-child(2)": {
+          "animation-range": "cover 5% cover 43%",
+        },
+        ".mk-seq > :nth-child(3)": {
+          "animation-range": "cover 10% cover 47%",
+        },
+        ".mk-seq > :nth-child(4)": {
+          "animation-range": "cover 15% cover 51%",
+        },
+        ".mk-seq > :nth-child(n + 5)": {
+          "animation-range": "cover 20% cover 55%",
+        },
       },
       /*
        * A table filling in, row by row.
@@ -280,7 +412,7 @@ export const motionStyles = [
       ".mk-seq-rows > *": {
         "animation": "mk-fade linear backwards",
         "animation-timeline": "view()",
-        "animation-range": "cover 0% cover 30%",
+        "animation-range": "cover 0% cover 34%",
       },
       /*
        * Kinetic headings: the words resolve one after another.
@@ -329,7 +461,7 @@ export const motionStyles = [
          * A twelve-word headline therefore spans 17% of its own cover range,
          * well inside the 30% the last word finishes at.
          */
-        "animation-range": "cover calc(6% + var(--i) * 1.4%) cover calc(30% + var(--i) * 1.4%)",
+        "animation-range": "cover calc(8% + var(--i) * 2%) cover calc(34% + var(--i) * 2%)",
       },
       /*
        * Above the fold, where there is no scroll to be driven by.
@@ -353,24 +485,24 @@ export const motionStyles = [
        * opened is not a cascade any more, it is a queue.
        */
       ".mk-load, .mk-seq-load > *": {
-        "animation": "mk-rise 420ms var(--mk-ease) backwards",
+        "animation": "mk-rise 540ms var(--mk-ease) backwards",
         "animation-timeline": "auto",
         "animation-delay": "0ms",
       },
       ".mk-seq-load > :nth-child(2)": {
-        "animation-delay": "80ms",
+        "animation-delay": "120ms",
       },
       ".mk-seq-load > :nth-child(3)": {
-        "animation-delay": "160ms",
-      },
-      ".mk-seq-load > :nth-child(4)": {
         "animation-delay": "240ms",
       },
+      ".mk-seq-load > :nth-child(4)": {
+        "animation-delay": "360ms",
+      },
       ".mk-seq-load > :nth-child(5)": {
-        "animation-delay": "320ms",
+        "animation-delay": "480ms",
       },
       ".mk-seq-load > :nth-child(n + 6)": {
-        "animation-delay": "400ms",
+        "animation-delay": "600ms",
       },
       /*
        * Rises, but never fades.
@@ -417,10 +549,24 @@ export const motionStyles = [
        * word and not on the last. Measured before and after, and recorded in
        * docs/UIUX-AUDIT.md.
        */
+      /*
+       * 800ms, 50ms apart -- the reference's timing, and close to what was
+       * already here (520ms / 55ms). The longer duration is what lets a 12px
+       * blur read as a lens pulling focus rather than as a flicker.
+       *
+       * `--ease-out-expo` rather than the house ease: the effect wants most
+       * of its travel early and a long settle, which is the curve the brief
+       * names for reveals.
+       *
+       * The first word still starts at t=0. That is load-bearing, not tidy:
+       * the headline is the hero's LCP element and an element at opacity 0
+       * does not count as painted, so a delay on word zero would push LCP to
+       * the end of the stagger. Measured, and recorded in docs/UIUX-AUDIT.md.
+       */
       ".mk-words-load > *, .mk-word-at-load": {
-        "animation": "mk-word 520ms var(--mk-ease) backwards",
+        "animation": "mk-word 900ms var(--ease-out-expo) backwards",
         "animation-timeline": "auto",
-        "animation-delay": "calc(var(--i) * 55ms)",
+        "animation-delay": "calc(var(--i) * 60ms)",
       },
       /*
        * Facing columns arrive from their own edges.
@@ -447,7 +593,7 @@ export const motionStyles = [
         "--mk-slide-x": "clamp(0.625rem, 1.6vw, 1.5rem)",
         "animation": "mk-slide linear backwards",
         "animation-timeline": "view()",
-        "animation-range": "cover 0% cover 38%",
+        "animation-range": "cover 0% cover 42%",
       },
       ".mk-slide-start": {
         "--mk-slide-sign": "-1",
@@ -461,7 +607,7 @@ export const motionStyles = [
        */
       ".mk-slide-end": {
         "--mk-slide-sign": "1",
-        "animation-range": "cover 5% cover 43%",
+        "animation-range": "cover 7% cover 47%",
       },
       /*
        * A block whose heading resolves word by word moves, but does not fade.
@@ -494,6 +640,23 @@ export const motionStyles = [
         "animation-name": "mk-pop-move",
       },
       /*
+       * ...and the hero's headline takes the focusing variant instead.
+       *
+       * `:has(.mk-words)` brings this to (0,2,0), the same weight as the
+       * `animation-name: mk-move` rule above it, so it wins on being later --
+       * which is the convention the rest of this file already relies on. Only
+       * the name changes; the clock, the duration and the fill still come
+       * from `.mk-seq-load > *`.
+       *
+       * Scoped to the hero deliberately. The fourteen headlines below the
+       * fold are scroll-driven, and a scale tied to scroll position is a zoom
+       * that tracks the wheel -- which is the parallax the design system
+       * spent a long time not having.
+       */
+      ".mk-hero-head > :where(h1, h2):has(.mk-words)": {
+        "animation-name": "mk-move-focus",
+      },
+      /*
        * The end of the document, where `cover` cannot finish.
        *
        * A `cover` range is the viewport plus the element, and the scroll
@@ -511,13 +674,13 @@ export const motionStyles = [
        * the foot of the page provides.
        */
       ".mk-rise-end, .mk-seq-end > *": {
-        "animation-range": "entry 0% entry 45%",
+        "animation-range": "entry 0% entry 48%",
       },
       ".mk-seq-end > :nth-child(3n + 2)": {
-        "animation-range": "entry 12% entry 57%",
+        "animation-range": "entry 10% entry 56%",
       },
       ".mk-seq-end > :nth-child(3n)": {
-        "animation-range": "entry 24% entry 69%",
+        "animation-range": "entry 20% entry 64%",
       },
       /*
        * Less travel, for a heavy block.
@@ -611,13 +774,13 @@ export const motionStyles = [
       ".mk-pop, .mk-seq-pop > *": {
         "animation": "mk-pop linear backwards",
         "animation-timeline": "view()",
-        "animation-range": "cover 0% cover 40%",
+        "animation-range": "cover 0% cover 38%",
       },
       ".mk-seq-pop > :nth-child(3n + 2)": {
-        "animation-range": "cover 6% cover 46%",
+        "animation-range": "cover 8% cover 44%",
       },
       ".mk-seq-pop > :nth-child(3n)": {
-        "animation-range": "cover 12% cover 52%",
+        "animation-range": "cover 16% cover 50%",
       },
       /* Less depth, for something closer to the reader's eye than a panel. */
       ".mk-pop-soft": {
@@ -692,8 +855,24 @@ export const motionStyles = [
    * `:has()` selectors here instead would work until the next one is added.
    */
   { "@media print": {
-    ".mk-rise, .mk-seq > *, .mk-seq-rows > *, .mk-words > *, .mk-word-at, .mk-slide-start, .mk-slide-end, .mk-load, .mk-seq-load > *, .mk-pop, .mk-seq-pop > *, .mk-drift, .mk-glow, .mk-deep-wave, .mk-draw, .mk-hero-chip, .mk-hero-cover, .mk-hero-deck-label, .mk-hero-window, .mk-hero-pane": {
+    ".mk-rise, .mk-seq > *, .mk-seq-rows > *, .mk-words > *, .mk-word-at, .mk-slide-start, .mk-slide-end, .mk-load, .mk-seq-load > *, .mk-pop, .mk-seq-pop > *, .mk-drift, .mk-glow, .mk-deep-wave, .mk-draw, .mk-hero-chip, .mk-hero-window, .mk-hero-pane": {
       "animation": "none !important",
+    },
+  } },
+  /*
+   * Less blur on a phone.
+   *
+   * The one caveat the previous author left on this effect still stands:
+   * stacked blur is what the writing on kinetic type is consistently
+   * negative about, phones especially, because every frame re-rasterises the
+   * glyphs. At 44px -- the headline's phone size -- 12px of blur is a smudge
+   * rather than a word, and the brief's section 7 asks for Lighthouse >= 90 on
+   * mobile. 6px keeps the effect legible and halves the work.
+   */
+  { "@media (width < 48rem)": {
+    ":root": {
+      "--mk-word-blur": "6px",
+      "--mk-word-zoom": "1.04",
     },
   } },
 ];

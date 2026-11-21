@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { NavCopy } from "@/content/types";
 import { localeHref } from "@/lib/i18n/href";
 import type { Locale } from "@/lib/i18n/locales";
-import { Logo, Spark } from "@/components/ui";
+import { Logo } from "@/components/ui";
 import { LangSwitch } from "./LangSwitch";
 import { Nav } from "./nav";
 import { MobileNav } from "./MobileNav";
@@ -31,17 +31,21 @@ import { MobileNav } from "./MobileNav";
 export function Header({ copy, locale }: { copy: NavCopy; locale: Locale }) {
   return (
     /*
-     * Opaque, and deliberately not blurred.
+     * A gradient, and a blur on a pseudo-element.
      *
-     * It used to be `color-mix(... 85%, transparent)` with `backdrop-blur`,
-     * which the design system does not have: the header is flat `--canvas`
-     * with a 10% rule under it. It also broke the phone menu, which is the
-     * reason it can never come back: `backdrop-filter` makes an
-     * element the containing block for its `position: fixed` descendants, so
-     * the panel below was being sized against a 56px-tall header instead of
-     * the viewport and collapsed to nothing. Found by opening the menu.
+     * This comment used to say "opaque, and deliberately not blurred", and
+     * gave the reason: `backdrop-filter` makes an element the containing
+     * block for its `position: fixed` descendants, so the phone menu below
+     * was being sized against a 64px header instead of the viewport and
+     * collapsed to nothing. Found by opening the menu.
+     *
+     * That is a reason about where the filter goes. `.mk-site-header::before`
+     * carries it now -- a pseudo-element has no descendants, so the menu
+     * resolves against the viewport as it always did, which `check:nav`
+     * asserts on every build. The rule and its workings are in
+     * tailwind/components/nav.js.
      */
-    <header className="sticky top-0 z-50 bg-[var(--canvas)] shadow-[inset_0_-1px_0_var(--hairline-strong)]">
+    <header className="mk-site-header">
       {/*
        * `gap-3` under lg, where there is no nav to separate from the logo.
        *
@@ -100,12 +104,10 @@ export function Header({ copy, locale }: { copy: NavCopy; locale: Locale }) {
             {copy.login}
           </Link>
 
-          {/* The standing ask, and the only lit thing in the header. */}
-          <Spark>
-            <Link href={localeHref(locale, "/start")} prefetch={false} className="mk-btn mk-btn-sm mk-solid">
-              <span className="mk-bidi">{copy.startFree}</span>
-            </Link>
-          </Spark>
+          {/* The standing ask. Flat blue, no glow -- see the note in landing.tsx. */}
+          <Link href={localeHref(locale, "/start")} prefetch={false} className="mk-btn mk-btn-sm mk-solid">
+            <span className="mk-bidi">{copy.startFree}</span>
+          </Link>
 
           <MobileNav copy={copy} locale={locale} />
         </div>

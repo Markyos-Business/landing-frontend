@@ -15,7 +15,7 @@ export function PainCard({ caption, children }: { caption: string; children: Rea
         display: "flex",
         flexDirection: "column",
         margin: 0,
-        background: "#fff",
+        background: "var(--surface-1)",
         borderRadius: 28,
         boxShadow: RING,
         overflow: "clip",

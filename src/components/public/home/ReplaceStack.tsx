@@ -11,8 +11,8 @@ import {
   Lead,
   LIFT,
   RING_6,
-  BLUE_DEEP,
-  TextLink,
+  BLUE_INK,
+  Cta,
 } from "./landing";
 
 /*
@@ -75,7 +75,7 @@ export function ReplaceStack({
         tabIndex={0}
         className="mk-rise-soft"
         style={{
-          background: "#fff",
+          background: "var(--surface-1)",
           borderRadius: 28,
           boxShadow: LIFT,
           padding: 10,
@@ -108,7 +108,7 @@ export function ReplaceStack({
               </th>
               <th
                 scope="col"
-                style={{ ...TH, inlineSize: "27%", color: BLUE_DEEP, fontWeight: 500 }}
+                style={{ ...TH, inlineSize: "27%", color: BLUE_INK, fontWeight: 500 }}
               >
                 {copy.columns.markyos}
               </th>
@@ -122,7 +122,7 @@ export function ReplaceStack({
               thing on this site that fades without moving. */}
           <tbody className="mk-seq-rows">
             {copy.rows.map((row) => (
-              <tr key={row.job} style={{ boxShadow: "0 -1px 0 rgba(11,11,15,.05)" }}>
+              <tr key={row.job} style={{ boxShadow: "0 -1px 0 rgba(255,255,255,0.075)" }}>
                 <th scope="row" style={{ ...TD, fontSize: 15, fontWeight: 500 }}>
                   <span className="mk-bidi">{row.job}</span>
                 </th>
@@ -192,7 +192,9 @@ export function ReplaceStack({
               whose only content is one of those has no text for plaintext
               to read — it falls back to left-to-right forever. */}
           <span className="mk-atomic">
-            <TextLink locale={locale} href={copy.link.href}>{copy.link.label}</TextLink>
+            <Cta locale={locale} href={copy.link.href} size="sm">
+              {copy.link.label}
+            </Cta>
           </span>
         </p>
       ) : null}
@@ -206,10 +208,8 @@ export function ReplaceStack({
             {copy.notReplacedHeadline}
           </h3>
           <ul
-            className="mk-seq-pop"
+            className="mk-seq-pop mk-trio"
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,300px),1fr))",
               gap: 16,
               margin: 0,
               padding: 0,
@@ -222,7 +222,7 @@ export function ReplaceStack({
                 style={{
                   padding: 24,
                   borderRadius: 22,
-                  background: "#fff",
+                  background: "var(--surface-1)",
                   boxShadow: RING_6,
                 }}
               >

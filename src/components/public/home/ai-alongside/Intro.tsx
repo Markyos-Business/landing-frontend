@@ -1,5 +1,5 @@
 import type { AiAlongsideCopy } from "@/content/types";
-import { Accent, BLUE_DEEP, Display, INK, INK_62 } from "../landing";
+import { Accent, BLUE_INK, Display, INK, INK_62 } from "../landing";
 
 /* The section's head: eyebrow, headline and the three body paragraphs. */
 export function Intro({ copy }: { copy: AiAlongsideCopy }) {
@@ -38,7 +38,7 @@ export function Intro({ copy }: { copy: AiAlongsideCopy }) {
               margin: "0 0 14px",
               fontSize: 14,
               fontWeight: 500,
-              color: BLUE_DEEP,
+              color: BLUE_INK,
             }}
           >
             {copy.eyebrow}

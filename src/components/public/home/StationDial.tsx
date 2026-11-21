@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { IconName } from "@/components/ui";
 import { Icon } from "@/components/ui";
-import { INK_50, INK_64, BLUE_DEEP } from "./landing";
+import { INK_50, INK_64, BLUE_INK } from "./landing";
 
 /*
  * The journey, as a dial.
@@ -171,7 +171,7 @@ export function StationDial({
           <dd>
             <span className="mk-dial-label mk-bidi">{labels.tool}</span>
             <span className="mk-dial-tool">
-              <Icon name={stop.icon} size={17} style={{ color: BLUE_DEEP, flex: "none" }} />
+              <Icon name={stop.icon} size={17} style={{ color: BLUE_INK, flex: "none" }} />
               {/* `.mk-page-dir`, not `dir="auto"`: "Google Forms أو Typeform"
                   begins with a Latin letter and would otherwise resolve its
                   own direction and sit on the far edge. See tailwind/. */}

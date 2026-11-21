@@ -9,6 +9,19 @@ export const baseStyles = [
     "scroll-behavior": "smooth",
     "scroll-padding-block-start": "5rem",
     "-webkit-text-size-adjust": "100%",
+    /*
+     * The page is dark and only dark, so the UA is told once: form controls,
+     * scrollbars and the overscroll gutter all come back dark instead of
+     * being light rectangles on a near-black page.
+     */
+    "color-scheme": "dark",
+    /*
+     * A gutter that is always there. The brief asks for it by name, and the
+     * reason is that several sections are exactly tall enough to gain or lose
+     * a scrollbar as a reveal finishes -- without this the whole page shifts
+     * sideways by the scrollbar's width when it does.
+     */
+    "scrollbar-gutter": "stable",
   } },
   { "@media (prefers-reduced-motion: reduce)": {
     "html": {
@@ -27,6 +40,24 @@ export const baseStyles = [
      where it sits beside Arabic. Arabic faces ignore features they don't
      ship. ss03/ss07 were dropped — see MARKYOS-DESIGN-SYSTEM.md §5. */
     "font-feature-settings": "var(--mk-features)",
+    /*
+     * 18px on desktop, which is the brief's body base and two steps up from
+     * the 16 the light page used. It is a token so the one number is also
+     * what `--fs-body` hands to every component that asks for body size.
+     */
+    "font-size": "var(--fs-body)",
+    "line-height": "1.55",
+  } },
+  /*
+   * The selection colour is the accent.
+   *
+   * One of the few places the brief lets the blue touch type, and it is safe
+   * there because the blue is the *ground* behind the selected words, with
+   * white on top of it -- about 8.6:1.
+   */
+  { "::selection": {
+    "background": "var(--primary)",
+    "color": "var(--primary-foreground)",
   } },
   /*
    * Arabic gets the Arabic face for body text too, not only for headings.

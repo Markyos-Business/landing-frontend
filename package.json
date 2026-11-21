@@ -9,7 +9,7 @@
   "engines": {
     "node": "22.x"
   },
-  "description": "markyos.com \u2014 the bilingual marketing site. Separate deploy from the platform app.",
+  "description": "markyos.com — the bilingual marketing site. Separate deploy from the platform app.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -23,6 +23,7 @@
     "check:design": "node scripts/check-design-rules.mjs",
     "check:pages": "node scripts/check-pages.mjs",
     "check:waitlist": "node scripts/check-waitlist.mjs",
+    "check:contact": "node scripts/check-contact.mjs",
     "check:cms-permissions": "node scripts/check-cms-permissions.mjs",
     "check:articles": "node scripts/check-articles.mjs",
     "check:live": "npm run check:articles && npm run check:bidi && npm run check:align && npm run check:nav && npm run check:pages && npm run check:motion",

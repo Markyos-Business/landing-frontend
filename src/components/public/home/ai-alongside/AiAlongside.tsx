@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n/locales";
 import type { AiAlongsideCopy, SiteCopy } from "@/content/types";
-import { TextLink, Band } from "../landing";
+import { Band, Cta } from "../landing";
 import { Intro } from "./Intro";
 import { EffectTable } from "./EffectTable";
 import { Seams } from "./Seams";
@@ -75,7 +75,9 @@ export function AiAlongside({
         {copy.limits?.length || copy.connector ? <Limits copy={copy} chips={chips} /> : null}
 
         <div style={{ marginBlockStart: 40 }}>
-          <TextLink locale={locale} href={copy.cta.href}>{copy.cta.label}</TextLink>
+          <Cta locale={locale} href={copy.cta.href} size="sm">
+            {copy.cta.label}
+          </Cta>
         </div>
       </div>
     </Band>

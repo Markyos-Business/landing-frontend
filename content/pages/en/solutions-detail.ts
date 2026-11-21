@@ -60,7 +60,6 @@ const clientProjects: PageDoc = {
         { term: "Clients as guests", body: "With no account and no limit." },
         { term: "Sign-off", body: "On the core sections, dated.", feature: "roles-approvals" },
         { term: "Not a CRM, on purpose", body: "Proposals and invoices stay in your tools." },
-        { term: "Webhooks to your tools", body: "And the Agency plan.", feature: "webhooks" },
       ],
     },
     {
@@ -324,7 +323,7 @@ const clientHandoff: PageDoc = {
       eyebrow: "Partner reward",
       title: "You handed it over. The return keeps coming.",
       body: [
-        "20% of what your client pays in their first year, as credit on your plan. 25% on the Agency plan. Five clients on the Brand plan cover your Pro plan.",
+        "20% of what your client pays in their first year, as credit on your plan. Five clients on the Brand plan cover your Pro plan.",
       ],
       emphasiseLast: true,
     },
@@ -393,7 +392,7 @@ const brandHub: PageDoc = {
         { term: "Nothing uploads until you confirm", body: "You see the list first." },
         {
           term: "Reading an old PDF guide",
-          body: "And Figma sync.",
+          body: "And turning it into a living hub.",
           feature: "pdf-import",
         },
       ],
@@ -518,9 +517,9 @@ const toneChecker: PageDoc = {
           body: "Unless you save it, and then for 30 days.",
         },
         {
-          term: "Word and PDF files",
-          body: "And a Chrome extension.",
-          feature: "document-checks",
+          term: "A Chrome extension",
+          body: "Review your writing anywhere you write it.",
+          feature: "chrome-extension",
         },
       ],
       note: "Checks against the brand voice and term base, and viewers use it free. 25 quick checks a month free · 1,000 on Brand · 3,000 on Team.",
@@ -634,11 +633,6 @@ const companyRollout: PageDoc = {
         {
           term: "Permissions on the server",
           body: "A viewer can't change anything.",
-        },
-        {
-          term: "Bilingual email signatures",
-          body: "For everyone in the company.",
-          feature: "email-signatures",
         },
         {
           term: "Ask the Brand",

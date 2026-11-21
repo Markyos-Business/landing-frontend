@@ -56,22 +56,23 @@ export function PlansBlock({
           <Card
             key={plan.name}
             as="li"
-            className={`flex flex-col ${plan.cta ? "mk-reach " : ""}${
+            className={`mk-plan flex flex-col ${plan.cta ? "mk-reach " : ""}${
               plan.recommended
-                ? // The one selected object in the section, marked with the
-                  // neon edge rather than a scale transform: a lifted card in
-                  // a row of five clips its neighbours' hover targets and
-                  // shifts the row on load.
-                  "mk-neon"
+                ? // The one selected object in the section, lit rather than
+                  // scaled: a lifted card in a row of five clips its
+                  // neighbours' hover targets and shifts the row on load.
+                  // `.mk-plan-lit` carries the edge, the tight halo and the
+                  // wide pool that the reference section puts behind this one
+                  // card — see tailwind/components/pricing.js for why that is
+                  // an outer shadow and not a wrapper with a radial in it.
+                  "mk-plan-lit"
                 : ""
             }`}
           >
             <div className="flex items-start justify-between gap-3">
               <CardTitle as="h3">{plan.name}</CardTitle>
               {plan.recommended ? (
-                <span className="mk-bidi shrink-0 rounded-[var(--mk-r-status)] bg-[var(--accent-soft)] px-2.5 py-1 text-[length:var(--fs-eyebrow)] font-medium leading-none text-[var(--accent-on-soft)]">
-                  {block.recommendedLabel}
-                </span>
+                <span className="mk-bidi mk-plan-tag">{block.recommendedLabel}</span>
               ) : null}
             </div>
 
@@ -102,14 +103,14 @@ export function PlansBlock({
             <p className="@container/plan mt-4 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
               <span
                 data-bill={plan.annual ? "monthly" : undefined}
-                className="mk-bidi whitespace-nowrap text-[1.25rem] font-medium leading-none tracking-[-0.04em] text-[var(--text)] @[10rem]/plan:text-[1.5rem] @[17rem]/plan:text-[length:var(--fs-d3)]"
+                className="mk-bidi mk-plan-amount text-[1.375rem] text-[var(--text)] @[10rem]/plan:text-[1.75rem] @[17rem]/plan:text-[2.5rem]"
               >
                 {plan.price}
               </span>
               {plan.annual ? (
                 <span
                   data-bill="annual"
-                  className="mk-bidi whitespace-nowrap text-[1.25rem] font-medium leading-none tracking-[-0.04em] text-[var(--text)] @[10rem]/plan:text-[1.5rem] @[17rem]/plan:text-[length:var(--fs-d3)]"
+                  className="mk-bidi mk-plan-amount text-[1.375rem] text-[var(--text)] @[10rem]/plan:text-[1.75rem] @[17rem]/plan:text-[2.5rem]"
                 >
                   {plan.annual.price}
                 </span>
@@ -134,14 +135,13 @@ export function PlansBlock({
               </p>
             ) : null}
 
-            <dl className="mt-5 space-y-3 border-t border-[var(--hairline)] pt-4">
+            {/* Ruled above and below, the reference's ledger — `.mk-plan-limits`. */}
+            <dl className="mk-plan-limits mt-5">
               {plan.rows.map((row) => (
-                <div key={row.label} className="flex items-baseline justify-between gap-4">
-                  <dt className="mk-bidi text-[length:var(--fs-ui)] leading-[1.5] text-[var(--text-muted)]">
-                    {row.label}
-                  </dt>
+                <div key={row.label} className="mk-plan-limit">
+                  <dt className="mk-bidi">{row.label}</dt>
                   <dd
-                    className={`mk-bidi shrink-0 text-[length:var(--fs-ui)] font-medium ${
+                    className={`mk-bidi shrink-0 ${
                       row.strong ? "text-[var(--accent-text)]" : "text-[var(--text)]"
                     }`}
                   >
@@ -158,7 +158,24 @@ export function PlansBlock({
                 <Button
                   cta={plan.cta}
                   locale={ctx.locale}
-                  variant={plan.recommended ? "solid" : "outline"}
+                  /*
+                   * Every plan's button is the filled one.
+                   *
+                   * It used to be `recommended ? solid : outline`, which is the
+                   * right rule for a pair — `.mk-outline` is a ghost with no
+                   * edge precisely so that two CTAs side by side differ by fill
+                   * alone and the filled one reads as the ask. It is the wrong
+                   * rule for a row of plans where nothing is flagged
+                   * recommended: measured on /pricing, all three buttons came
+                   * out ghosts, so the page a visitor comes to in order to
+                   * choose had no ask on it anywhere.
+                   *
+                   * The hierarchy between plans is carried by the card — the
+                   * lit edge, the halo and the badge of `.mk-plan-lit` — not by
+                   * demoting the other plans' buttons. Each card's action is
+                   * the same action, so each one is stated the same way.
+                   */
+                  variant="solid"
                   size="sm"
                   block
                 />

@@ -26,6 +26,10 @@ export function Toggle({
       style={{
         position: "relative",
         blockSize: 44,
+        /* Room either side of the label, now that the track is sized by its
+           content rather than padded out to a fixed 300px. */
+        paddingInline: 20,
+        whiteSpace: "nowrap",
         border: 0,
         background: "transparent",
         borderRadius: 999,

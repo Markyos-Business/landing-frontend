@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Cta } from "@/content/types";
 import { isAppHandoff, localeHref } from "@/lib/i18n/href";
 import type { Locale } from "@/lib/i18n/locales";
-import { Spark } from "../primitives/Spark";
 
 /*
  * The CTA.
@@ -89,10 +88,10 @@ export function Button({
   /*
    * Fill the parent rather than the label.
    *
-   * A prop and not `className="w-full"`, because the solid variant is wrapped
-   * in `Spark` and a class on the <Link> sizes it against that wrapper, which
-   * shrink-wraps — so `w-full` would quietly resolve to the width it already
-   * had. This puts it on both.
+   * It was a prop and not `className="w-full"` because the solid variant used
+   * to be wrapped in `Spark`, and a class on the <Link> sized it against that
+   * shrink-wrapping wrapper. The wrapper is gone, so this is now simply the
+   * class, kept as a prop so the plan cards' call sites do not have to change.
    */
   block?: boolean;
   className?: string;
@@ -133,19 +132,35 @@ export function Button({
   );
 
   /*
-   * The loudest button in a section carries the cursor light.
+   * ── The cursor light is gone ──────────────────────────────────────────────
    *
-   * Only the solid variant: it is the one ask per section, and an effect that
-   * marks everything marks nothing. The outline variant is deliberately the
-   * quieter half of a pair and the link variant is a signpost out of a
-   * section, so neither gets it. `Spark` is a client component and the <Link>
-   * is passed to it as a child, so nothing here leaves the server.
+   * The solid variant used to be wrapped in `Spark`: a sprung specular
+   * highlight inside the pill plus two blurred rings outside it, which the
+   * homepage's own `Cta` dropped on 18 Nov 2026 and this one did not. Two
+   * things made it wrong here rather than merely unnecessary.
+   *
+   * **Its geometry no longer matched the button.** `.mk-spark-edge` draws at
+   * `border-radius: var(--radius-pill)` -- 999px -- because every CTA on this
+   * site was a pill when it was written. The brief's button is a 10px
+   * rectangle. Measured on /solutions/leadership-alignment: a 10px pill inside
+   * a 999px ring, so the glow bulged past the corners on all four sides and
+   * the pair read as a glowing blob with a button somewhere in it.
+   *
+   * **Its palette was solved for a page that no longer exists.** Read its own
+   * header: "This ground is #F7F8FA and the homepage has ten of these." It
+   * rests at 0.42 of full intensity because the page it was built for was
+   * paper. On near-black the same rest intensity is a saturated cyan halo
+   * around every primary button on the site, and on the closing panel
+   * `.mk-spark-deep`'s white filament bloomed across a white pill and fogged
+   * the label.
+   *
+   * The hover the brief actually asks for is on `.mk-btn.mk-solid:hover` in
+   * tailwind/components/buttons.js -- the fill brightens and casts the accent
+   * under itself. That is a state. This was choreography, and it was
+   * choreography measured against the wrong ground.
+   *
+   * `Spark.tsx` and its `.mk-spark-*` rules are left in place and unreferenced
+   * rather than deleted: nothing renders the class, so the rules never match.
    */
-  return variant === "solid" ? (
-    <Spark tone={tone === "deep" ? "deep" : "ink"} full={block}>
-      {button}
-    </Spark>
-  ) : (
-    button
-  );
+  return button;
 }

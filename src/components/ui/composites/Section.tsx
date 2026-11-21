@@ -75,30 +75,18 @@ export function Section({
 export function Eyebrow({
   children,
   accent = true,
-  bracket = false,
   className = "",
 }: {
   children: ReactNode;
   accent?: boolean;
-  /**
-   * Close the label off with brackets — `[ الحلول ]`.
-   *
-   * What the reference puts over a centred section heading, and what the
-   * `showcase` block uses. Two words of grey above a heading read as the
-   * heading's own first line; the same two words bracketed read as a tab.
-   * The punctuation is drawn by CSS, not typed into the string — see
-   * `.mk-eyebrow-bracket`.
-   */
-  bracket?: boolean;
   className?: string;
 }) {
   if (!children) return null;
+  /* There was a `bracket` variant here that drew `[ الحلول ]` around the
+     label. It came off on 21 Nov 2026 at the owner's request — see the note
+     where `.mk-eyebrow-bracket` used to be, in tailwind/components/type.js. */
   return (
-    <p
-      className={`mk-bidi mk-eyebrow${accent ? " mk-eyebrow-accent" : ""}${
-        bracket ? " mk-eyebrow-bracket" : ""
-      } ${className}`}
-    >
+    <p className={`mk-bidi mk-eyebrow${accent ? " mk-eyebrow-accent" : ""} ${className}`}>
       {children}
     </p>
   );

@@ -36,7 +36,15 @@ import type { Locale } from "@/lib/i18n/locales";
  * site's own claim is that Arabic was not an afterthought.
  */
 
-const LOCKUP = {
+/*
+ * Exported, because `LogoTrace` needs the same two numbers.
+ *
+ * It traces the same artwork and has to size its stage to the same ratio; two
+ * copies of "1698.77 / 412.51" in two files is the kind of duplication that
+ * survives a brand-file replacement and then renders the new lockup in the
+ * old lockup's box.
+ */
+export const LOCKUP = {
   /* w/h from each file's own viewBox, so the box is never the wrong shape. */
   ar: { file: "markyos-lockup-ar", ratio: 1698.77 / 412.51 },
   en: { file: "markyos-lockup", ratio: 2139.19 / 412.51 },

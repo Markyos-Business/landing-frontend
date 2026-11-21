@@ -217,12 +217,24 @@ const contact: PageDoc = {
       note: "نردّ على كل رسالة. ومواعيد الردّ لكل موضوع تُنشر هنا قبل الإطلاق.",
     },
     {
-      kind: "signup",
+      /*
+       * A real message, not an address.
+       *
+       * This was a `signup` block — one email field posting to the waitlist
+       * endpoint, which answers 501 because no mailing list exists. On a page
+       * headed "a small team, and we read every message", that was a Send
+       * button that could not succeed. It is the `contact` block now and it
+       * sends; see src/app/api/contact/route.ts.
+       *
+       * No `topic` is set, so it opens on "شيء آخر" unless the reader arrived
+       * from one of the `/contact?topic=…` links in _shared.ts, which now
+       * preselect the topic they name.
+       */
+      kind: "contact",
       title: "اكتب لنا",
-      lead: "أدخل بريدك وسنتواصل معك. وإن كان سؤالك عن استخدام ماركيوس، فقد تجد إجابته في مركز المساعدة أسرع.",
-      placeholder: "بريد العمل",
-      submit: "أرسل",
-      topic: "contact",
+      lead: "اختر الموضوع واكتب رسالتك. وإن كان سؤالك عن استخدام ماركيوس، فقد تجد إجابته في مركز المساعدة أسرع.",
+      submit: "أرسل الرسالة",
+      note: "نقرأ كل رسالة، ويصلك الردّ على البريد الذي تكتبه هنا.",
     },
     {
       kind: "cta",

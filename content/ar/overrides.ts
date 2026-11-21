@@ -1,5 +1,21 @@
-import { currentPricingTeaser } from "../current-pricing.ts";
+import { CURRENT_PRICES, currentPricingTeaser } from "../current-pricing.ts";
 import type { DeepPartial, SiteCopy } from "../types";
+
+/*
+ * The cheapest monthly subscription on offer, read from the prices the
+ * checkout actually charges rather than typed out here.
+ *
+ * v4 §2.7 moves pricing off the homepage and into one line in the last call.
+ * The deck writes that line as "from $24 a month", which belongs to v4's own
+ * proposed plans; those have no checkout behind them yet, so the line quotes
+ * the live floor instead. Derived rather than typed, because a price written
+ * into a sentence is a price nothing checks — `check:pricing` guards
+ * `CURRENT_PRICES` against the backend's `billing.py` and the platform's
+ * `accountTypes.ts`, and this sentence now moves with them.
+ */
+const MIN_SUBSCRIPTION = Math.min(
+  ...Object.values(CURRENT_PRICES).map((plan) => plan.subscription),
+);
 
 /*
  * Arabic copy — the primary edition.
@@ -533,9 +549,9 @@ export const overrides: DeepPartial<SiteCopy> = {
           headline: "اكتشف الاتجاه مع عميلك، لا نيابةً عنه.",
           body: "اجمع مراجعك على لوحة الإلهام، ويستخرج ماركيوس لوحة الألوان من البكسلات الحقيقية في صورك. جمّعها، واستبعد ما لا يلزم، وأرِ عميلك اتجاهاً يستطيع أن يتفاعل معه.",
           coming: {
-            feature: "whiteboard",
-            headline: "اللوح التفاعلي المباشر.",
-            body: "ارسم الاتجاهات مع فريقك وعميلك في الوقت نفسه وعلى اللوح نفسه، مع شعارك وألوانك وخطوطك المعتمدة كعناصر حيّة. يدخل العميل من رابط، دون حساب. ويحوّل التوجيه الفني الذكي أي لوحة إلى كلمات للمزاج العام، ومنطق لاختيار الألوان، وثنائيات خطوط عربية ولاتينية.",
+            feature: "art-direction",
+            headline: "التوجيه الفني الذكي.",
+            body: "يقرأ عقل العلامة لوحتك، فيحوّلها إلى كلمات للمزاج العام، ومنطق لاختيار الألوان، وثنائيات خطوط عربية ولاتينية.",
           },
         },
         {
@@ -675,7 +691,6 @@ export const overrides: DeepPartial<SiteCopy> = {
         "نراجع نصّك، ولا نحتفظ به. نحفظ الدرجة لا الكلمات، إلا إن اخترت أنت حفظ النص (لمدة 30 يوماً).",
       comingHeading: "القادم للمدقّق",
       coming: [
-        { feature: "document-checks", label: "مراجعة ملفات Word وPDF كاملة" },
         { feature: "chrome-extension", label: "مراجعة النص أينما تكتب، عبر إضافة Chrome" },
       ],
       cta: { label: "جرّب أول مراجعة مجاناً", href: "/start?type=company" },
@@ -769,9 +784,13 @@ export const overrides: DeepPartial<SiteCopy> = {
       headlineAccent: "وفي كل مكانٍ بيانها.",
       body:
         "في ماركيوس، لا تنتقل العلامة من أداة إلى أخرى. تكبر في مكان واحد: إجابات الاستبيان تصبح تحليلاً. والتحليل يصبح مسودات للاستراتيجية. والاستراتيجية تصبح صوتاً تكتب به الشركة. والملفات النهائية تصبح موقع دليل. والموقع يصبح المركز الذي يعيش فيه فريق العميل كل يوم. وكل خطوة من هذه يتعلّمها عقل العلامة، فيعرف علامتك أكثر كلما عملت.",
+      /* Five tools, not six. Deck v4.1 §2.2 drops the Moodboards card and
+         its Milanote caption until moodboards ship: the arc is the list of
+         things Markyos replaces today, and naming one it does not replace
+         yet is the one claim this section cannot afford. It comes back with
+         the feature. */
       tools: [
         { label: "استبيان", tool: "Google Forms", icon: "form" },
-        { label: "لوحة", tool: "Milanote", icon: "grid" },
         { label: "مستند", tool: "Word", icon: "fileAlt" },
         { label: "مجلد", tool: "Drive", icon: "folder" },
         { label: "دليل", tool: "PDF", icon: "filePdf" },
@@ -877,7 +896,7 @@ export const overrides: DeepPartial<SiteCopy> = {
         {
           title: "بين الاستراتيجية والاتجاه البصري",
           line: "التوجيه الفني الذكي من لوحات الإلهام.",
-          chip: "board-shapes",
+          chip: "art-direction",
         },
         {
           title: "بين دليلك وما يسأل عنه الناس",
@@ -1003,19 +1022,9 @@ export const overrides: DeepPartial<SiteCopy> = {
               line: "مراجع الإلهام لا تظهر في أي صفحة عامة.",
             },
             {
-              name: "لوح تفاعلي مباشر",
-              line: "أنت وفريقك وعميلك على اللوح نفسه في الوقت نفسه، ويدخل العميل من رابط دون حساب.",
-              chip: "whiteboard",
-            },
-            {
-              name: "عناصر العلامة الحيّة",
-              line: "شعارك وألوانك وخطوطك المعتمدة كعناصر على اللوح، تتحدّث حين تتغيّر.",
-              chip: "board-shapes",
-            },
-            {
               name: "التوجيه الفني الذكي",
               line: "يقرأ عقل العلامة اللوحة، ويقترح كلمات للمزاج، وألواناً، وثنائيات خطوط عربية ولاتينية.",
-              chip: "board-shapes",
+              chip: "art-direction",
             },
           ],
           link: { label: "لوحات الإلهام", href: "/platform/moodboards" },
@@ -1195,7 +1204,7 @@ export const overrides: DeepPartial<SiteCopy> = {
               line: "يعمل الاستوديو داخل علامتك، دون أن يُحتسب من محرّريك.",
             },
             {
-              name: "أدلّة الأقسام وتوقيعات البريد",
+              name: "أدلّة الأقسام",
               line: "صوت ورسائل لكل قسم، وتوقيع باللغتين لكل موظف.",
               chip: "department-playbooks",
             },
@@ -1282,8 +1291,7 @@ export const overrides: DeepPartial<SiteCopy> = {
           job: "لوحات الإلهام",
           usually: "Milanote · Pinterest · Miro",
           markyos: "لوحة إلهام تستخرج الألوان من صورك الحقيقية",
-          change: "اللوحة تتحول إلى قرارات: ألوان ومسودات. ولوح مباشر مع عميلك",
-          changeChip: "whiteboard",
+          change: "اللوحة تتحول إلى قرارات: ألوان ومسودات",
         },
         {
           job: "الملفات",
@@ -1353,43 +1361,36 @@ export const overrides: DeepPartial<SiteCopy> = {
         },
       ],
     },
+    /*
+     * قائمة واحدة بلا تواريخ، لا ثلاثة مواسم.
+     *
+     * One undated list, not three dated seasons. Copy deck v4.1 collapsed
+     * the roadmap, here and on /roadmap, for the two reasons written at the
+     * roadmap block in content/pages/ar/pricing.ts: a dated promise is the
+     * one thing src/lib/status.ts exists to keep off this site, and nine of
+     * the entries that were here named features v4.1 removed.
+     *
+     * This section is not rendered -- it was cut from the homepage on
+     * 5 Nov 2026 with four others, and its copy stayed. That is exactly why
+     * it was worth correcting: unrendered copy is where a promise survives
+     * longest after it stops being true.
+     */
     comingNext: {
       headline: "المنظومة تكبر. وهذا ما يأتي بعد ذلك.",
-      subheadline: "نبني بشفافية. هذا ما يأتي بعد ذلك، بالترتيب.",
+      subheadline: "نبني بشفافية، ودون مواعيد: كل ميزة تصل حين تصبح حقيقية.",
       phases: [
         {
-          season: "ربيع 2027",
-          theme: "استكشاف مشترك",
+          season: "قريباً",
+          theme: "قيد البناء الآن",
           items: [
-            "لوح تفاعلي مباشر تشاركه مع عميلك",
-            "شعار علامتك وألوانها وخطوطها كعناصر حيّة على اللوح",
-            "توجيه فني ذكي من أي لوحة",
+            "لوحات الإلهام، والألوان مستخرجة من صورك الحقيقية",
+            "التوجيه الفني من عقل العلامة",
             "أدلّة الأقسام",
-            "الحملات والإطلاقات داخل العلامة",
-            "توقيعات بريد إلكتروني بالعربية والإنجليزية لكل موظف",
-          ],
-        },
-        {
-          season: "منتصف 2027",
-          theme: "فكّر، اسأل، اعرض",
-          items: [
-            "«اسأل علامتك» لكل موظف",
-            "المساعد الاستراتيجي والعصف الذهني",
-            "اربط ChatGPT أو Claude بعلامتك",
-            "مراجعة ملفات Word وPDF كاملة",
             "تحويل دليل PDF قديم إلى مركز حيّ",
-            "قوالب جاهزة لعلامتك: منشورات التواصل، والعروض التقديمية، والأوراق الرسمية، وبطاقات العمل",
-          ],
-        },
-        {
-          season: "أواخر 2027",
-          theme: "إدارة فريق علامة كامل",
-          items: [
-            "طلبات المراجعة والموافقة",
-            "لوحة لصحة العلامة تعرضها على الإدارة",
             "مراجعة كتاباتك في أي مكان عبر إضافة Chrome",
-            "علامات فرعية ترث من العلامة الأم",
-            "مزامنة مع Figma، وواجهة برمجية (API)، وتسجيل دخول موحّد",
+            "طلبات المراجعة والموافقة، ولوحة لصحة العلامة",
+            "من نزّل ماذا من روابط الشركاء",
+            "خطة المؤسسات، بتسجيل دخول موحّد وسجلات تدقيق",
           ],
         },
       ],
@@ -1486,7 +1487,7 @@ export const overrides: DeepPartial<SiteCopy> = {
         "علامتك كلها في مكان واحد، بالعربية والإنجليزية. من يفتحها بعد سنة يجدها كما تركتها، لا نُسخاً منها.",
       studioCta: { label: "أصمّم هويات لعملائي", href: "/start?type=studio" },
       companyCta: { label: "أدير علامة شركتي", href: "/start?type=company" },
-      microcopy: "خطة مجانية، دون بطاقة دفع.",
+      microcopy: `ابدأ مجاناً. والخطط المدفوعة من ${MIN_SUBSCRIPTION} دولاراً شهرياً.`,
       beta: {
         studioCta: { label: "احجز مكان استوديوك", href: "/start?type=studio" },
         companyCta: { label: "احجز مكان شركتك", href: "/start?type=company" },

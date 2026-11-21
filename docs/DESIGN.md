@@ -3459,3 +3459,1676 @@ languages and copy revisions:
 ### Accessibility maintenance after audit 1.19
 
 Standalone Logo images have localized brand names. Use an empty title only for decorative marks inside a link that already has an accessible name; the mark then has no image role and is hidden from accessibility APIs. Light approved-state text uses the existing token at #007a42 so it passes on white and the approved badge tint. The homepage comparison table is a named keyboard-focusable region with native horizontal scrolling. Preserve these semantics when changing marketing mocks or navigation.
+
+## The site went dark, on the 21st.dev brief (18 Nov 2026)
+
+`docs/design-brief.md` is the governing document now, and it records the four
+questions that were asked before any code was written. This is the account of
+what it took to apply it.
+
+### One file turned fifty-one pages dark
+
+The token names did not change. `--canvas`, `--surface-1`, `--text-muted`,
+`--lift-card` and forty more kept their names in `tailwind/tokens.js` and were
+re-pointed at the brief's OKLCH values, so the chrome, the blog, and every page
+under `content/pages/` followed without being touched. Two names stayed and
+changed meaning, which is the part worth remembering: `--lift-card` and
+`--lift-ring` described a drop shadow and now describe a 1px edge, because the
+brief gives cards a hairline and no shadow. Forty-two components read them and
+none needed editing.
+
+### The homepage did not follow, and that was the real work
+
+The homepage is a literal trace of a *light* design file: 140 hardcoded colour
+values across twenty files, `#fff` cards and `rgba(11,11,15,.64)` ink written
+inline where a token would normally be. None of it follows a token change. On a
+near-black canvas it would have rendered as white boxes with black type.
+
+Most of it collapsed to one edit, because the trace already had a shared
+constant layer — `INK`, `CANVAS`, `PANEL`, `RING`, `LIFT`, `DOTS` and eleven
+more, imported by twenty-seven files. Those now name the token that carries
+their meaning rather than a value: `INK` was never "the colour `#0B0B0F`", it
+was "the colour type is set in". The remaining fifty were swept by rule — ink
+at low alpha is an edge, so it becomes white at half again the alpha; the
+blue-grey drop shadow becomes black, which on this ground is invisible and so
+is the brief's "no shadow" with none of the restructuring.
+
+**Four had to be done by hand, and they are all the same bug.** A value that
+means "the ink colour" used as a *fill* inverts when the ground does. The
+`solid` pill was `INK` with a white label — near-white on near-white. The icon
+tile was `INK` with a white glyph. The stage tile the same. And the hero's two
+CTAs rendered as white lozenges. An inverted pair has to invert *both* ends or
+it does not survive the flip.
+
+### Three things the brief asked for that were not taken
+
+- **General Sans.** `/` is the Arabic edition and General Sans has no Arabic
+  glyphs. Inter and Thmanya stay. This was the owner's call.
+- **600–800ms reveals on `--ease-out-expo`, through Framer Motion.** These
+  reveals are scroll-driven — `animation-timeline: view()`, no time axis — so a
+  duration and an easing have nothing to act on, and an ease on top of the
+  reader's own scrolling reads as lag. What the brief *did* add is the
+  blur-to-sharp, scoped to the one keyframe `.mk-rise` and `.mk-seq > *` use.
+  Not the word-level reveals: a blur re-rasterises every frame and there are
+  2,409 revealed elements.
+- **A WebGL shader behind the hero.** The brief allows CSS where WebGL would be
+  overkill. `.mk-aurora` is three radial gradients on one element on a 32s
+  loop, masked out at the bottom. No canvas, no rAF, nothing on the main
+  thread, above the fold on a page that wants Lighthouse ≥ 90.
+
+### Two measurements, and the trap that has now caught this codebase four times
+
+The hero headline at `clamp(44px, 6vw, 88px)` took **three** lines in English
+and two in Arabic, because `.mk-hero-head` was capped at 40rem — a measure
+tuned, once again, against the language whose headline happens to be shorter.
+52rem is not a guess: `/pricing`'s two-line h1 renders 832px wide at the same
+size. Both editions are two lines now, and nothing paints over either.
+
+And the rule hiding the hero's chip fan below 768px **did nothing at all** when
+it was written at the top of `tailwind/components/hero.js`. Every rule in that
+module is registered with `addBase`, so they share one layer and one
+specificity, and a tie goes to source order — `.mk-hero-fan`'s own `display`
+sat further down and won. The probe still measured the chips at full size, and
+the fix was to move the rule to the end of the file. *Equal specificity, later
+wins*, and a rule that loses silently looks exactly like a rule that was never
+written.
+
+### What changed in the gates
+
+`WEIGHT_CEILING` in `scripts/check-design-rules.mjs` went from 500 to 700, and
+nothing else was relaxed. The rule still fails 800 and 900. `npm run check` and
+`npm run check:live` are both green: ten design rules, Arabic 185/185, 39
+articles, 51 bidi, 51 align × 2, nav, 106 pages × 3 viewports, 2,409 reveals.
+
+## The focusing blur, and a bridge that was never hit (18 Nov 2026)
+
+### The headline animation is per word, and it has to be
+
+The supplied reference animates **per character**: `blur(12px)`, `scale(1.1)`,
+0.8s, 50ms apart. Two of those three survived; the other two are worth writing
+down, because both are the kind of thing that looks like a preference and is
+not.
+
+**Per character is impossible here.** Arabic letters join, and a letter's shape
+depends on its neighbours, so splitting «العلامة» into six boxes renders six
+isolated forms — a different word, the way «ابنِ» and «ا ب ن ِ» are different
+words. Whitespace is the only cut that is safe in both scripts. `Words.tsx`
+already said so; this is the second time that note has earned its keep.
+
+**The scale cannot go on the word either.** A transform does not apply to a
+non-replaced inline box, so scaling a word means making it `inline-block` — and
+an inline-block is atomic to the bidi algorithm, so a heading under
+`unicode-bidi: plaintext` would find a row of object replacement characters,
+see no strong character, and lay every Arabic headline out left-to-right.
+
+So the focus pull moved up one level: the words blur and fade, the block they
+sit in carries the scale (`mk-move-focus`). That is also the restrained reading
+of the effect — animate the hierarchy, not every box at once.
+
+The blur went 4px → 12px and the duration 520ms → 800ms, which is what lets a
+blur that size read as a lens finding focus rather than as a flicker. Phones
+get 6px: stacked blur re-rasterises glyphs every frame, and at the 44px phone
+headline 12px is a smudge rather than a word.
+
+The first word still starts at `t=0`. That is load-bearing — the headline is
+the hero's LCP element and an element at opacity 0 does not count as painted.
+
+### `check:nav` was failing half the time, and the fix was in the wrong place twice
+
+The dropdown sits 0.875rem below its trigger. That strip is dead space:
+leaving a trigger starts the close timer, and only re-entering the nav cancels
+it. `check:nav` reported the Arabic "Resources" panel "closed 64% of the way
+from the trigger to its first link", intermittently — two runs in three.
+
+**First fix: a `::before` on the panel, offset up into the gap.** It got better
+(three runs in four) which was enough to look like progress and was almost
+certainly noise. **Second fix: the same strip, 8rem wider.** It got *worse* —
+four runs in five.
+
+Both were guesses. Tracing the crossing with `elementFromPoint` at twenty
+steps answered it in one run: through the entire gap the topmost element was
+the header's container, and the bridge was never hit at all. `.mk-nav-panel`
+carries `overflow-y: auto`, and **a pseudo-element positioned outside its
+host's box is clipped by the host's own overflow** — so the first bridge had
+never existed, and widening a thing that does not exist does nothing.
+
+The strip belongs on `.mk-nav`: the panel's positioned ancestor, not clipped,
+and it spans every trigger, so one rule closes the gap for all of them. Six
+runs, six passes.
+
+> A fix that improves a flaky result is not evidence. Measure where the
+> pointer actually is before deciding what it is missing.
+
+## The cobalt louvre, and four smaller things (19 Nov 2026)
+
+### WebGL above the fold, with the cost paid down
+
+The homepage hero is a fragment shader now: a flat ribbon twisting on its
+vertical axis, seen through horizontal fluted glass. The owner supplied it and
+asked for it here, which reverses the decision recorded one section up — that
+a GL context above the fold costs a shader compile, a composite layer and a
+rAF loop before the headline paints, on a page whose brief asks for Lighthouse
+≥ 90 on mobile.
+
+So the cost is paid down rather than argued with. `CobaltLouvre.tsx` adds four
+things to the supplied component:
+
+- **It stops when it is off screen.** An IntersectionObserver cancels the loop
+  entirely once the hero leaves, so the remaining eleven sections scroll with
+  no GPU work behind them. Verified: the canvas is off screen after one
+  viewport of scroll and the loop is cancelled, not merely throttled.
+- **devicePixelRatio is capped at 1.5**, the figure §7 names, not the usual 2.
+  On a 3× phone that is 1× against 4× the fragments.
+- **`prefers-reduced-motion` paints one frame and schedules no rAF at all.**
+- **A failed context is not a blank hero** — no GL, no program, and the host
+  keeps its background so what the caller painted shows through.
+
+One React change was needed: the original assigns `propsRef.current` straight
+down the render body, which the React Compiler rejects outright. An effect with
+no dependency array is the same timing for this purpose, since the loop only
+reads the ref on its next frame.
+
+### The shader was beautiful and unreadable
+
+At the supplied intensity of 1.3 with the light centred at 51%, the ribbon is
+the brightest thing on the page and the hero copy sits directly on it.
+Measured: the subtitle fell to about **1.6:1** and the microcopy under the
+buttons disappeared.
+
+Dimming it to 0.42 fixed the contrast and removed the effect — the ribbon was
+barely visible. The answer was not brightness but *placement*: the light peaks
+at **80%** down the frame now, below the copy and behind the product window,
+where it reads as the thing lifting the frame off the page. A radial scrim over
+the shader darkens the band the copy occupies and fades out at the edges.
+
+With that, the hero copy is absent from the contrast audit entirely and the
+page's failures stayed at 14 — all of them the client-brand mock, unchanged.
+
+> A background that competes with the type is not a background. Move the
+> light, do not turn it down.
+
+### The aurora went site-wide
+
+The gradient field the homepage used is now on every other hero:
+`HeroBlock` for the fifty-one content pages, and `IndexHero` for the blog,
+guides and help hubs — which were the one set still opening on flat canvas
+after the first pass.
+
+### Three smaller corrections
+
+- **The pricing switch was a fixed 300px**, giving each half about 146px.
+  «للاستوديوهات والمستقلين» does not fit in 146px at 15px, so the Arabic label
+  overran its own half of the track. It is an intrinsically sized
+  `inline-grid` now: `1fr 1fr` with no width sizes both columns to the widest
+  label in either, so the halves stay equal — which the knob at
+  `calc(50% - 4px)` depends on — and the track grows to fit the copy. 406px in
+  Arabic, 480px in English, nothing clipped.
+- **Four calls to action were text links**, not buttons: the three audience
+  cards and the comparison link. They are real buttons now, at the ghost tone.
+- **The homepage CTAs had no hover at all.** They set their fill as an inline
+  style, so a `:hover { background }` rule loses to it — `filter` is the one
+  hook that is not set inline, and it works for both tones. The primary gains
+  a `drop-shadow` in the accent rather than a second `box-shadow`, so the
+  inset lip it already carries is left alone.
+
+## Five faults from four screenshots (19 Nov 2026)
+
+The owner sent four screenshots and one sentence. Every one of the four turned
+out to be a value that was correct on the light page and was never re-measured
+when the ground went dark — which is the same fault the file above records
+twice already, and the reason this entry spells out what each one measured.
+
+### The glowing blob around every primary button
+
+`Button.tsx` wrapped the solid variant in `Spark`: a sprung specular highlight
+inside the pill, plus two blurred rings outside it. It is gone from all
+fifty-one content pages, for two reasons that are both arithmetic.
+
+**Its geometry stopped matching the button.** `.mk-spark-edge` draws at
+`border-radius: var(--radius-pill)` — 999px — because every CTA was a pill when
+it was written. The brief's button is a 10px rectangle. A 10px pill inside a
+999px ring bulges past the corners on all four sides, and the pair reads as a
+glowing blob with a button somewhere in it.
+
+**Its palette was solved for a page that no longer exists.** From its own
+header: *"This ground is #F7F8FA and the homepage has ten of these."* It rests
+at 0.42 of full intensity because the page it was built for was paper. On
+near-black that rest intensity is a saturated cyan halo on every primary
+button on the site.
+
+The hover the brief asks for already exists on `.mk-btn.mk-solid:hover` — the
+fill brightens and casts the accent under itself. That is a state. The ring was
+choreography, and it was choreography measured against the wrong ground.
+
+> `Spark.tsx` and its `.mk-spark-*` rules are left in place and unreferenced.
+> Nothing renders the class, so the rules never match.
+
+### The closing panel's button was white on white
+
+`.mk-btn.mk-deep-solid` set `color: var(--text)`, and its comment said "the
+label takes the ink" — true for as long as `--text` was near-black. The dark
+rework re-pointed `--text` to the page's near-white and the rule went on
+saying the same thing while painting white on white. Measured on the closing
+panel of /solutions/leadership-alignment: `lab(96.28)` on `lab(100)`,
+**1.07:1**. The label was there and could not be read.
+
+It is `var(--canvas)` now. The lesson is in which token was wrong, not in the
+ratio: this pill is white in *both* themes because it sits on the blue panel,
+so its label has to name a ground rather than a role.
+
+### …and on six Arabic pages the panel was empty
+
+Screenshot four also showed a 240px blue panel holding a mark, a button and
+nothing else. That was not a rendering fault. Six Arabic pages reach the
+closing block as `{ kind: "cta", buttons: [...] }` with no title and no lead —
+/platform, /roadmap, /whats-new, /solutions/client-projects,
+/solutions/brand-hub and /solutions/leadership-alignment — and every one of
+them has a closing line in English. `/` is the Arabic edition, so the default
+site was the one shipping empty panels. `check:locales` reads 185 of 185
+because a block with no copy in it has nothing to compare.
+
+The six lines are written (transcreated, and two of them are §11's approved key
+lines verbatim), and `CtaBlock` now degrades a title-less block to its buttons
+on the page's own ground rather than inflating an empty panel. The copy is the
+fix; the guard is so the shape cannot come back silently.
+
+### A column of single digits that could not pick a direction
+
+Every `th` and `td` on an RTL page is `unicode-bidi: plaintext`, which resolves
+direction from the cell's first *strong* character. A cell holding `"5"` has
+none — digits are weak — so it falls back to left-to-right and `text-align:
+start` sends the digit to the left, which is the far end of an Arabic row.
+
+It only shows when a column is mixed, which is why it survived. The ten-row
+table on /solutions/discovery marks rows 6 and 7 `strong`, so those two render
+through the `Cell` object branch — `.mk-atomic`, which takes the page direction
+— and landed at x=1195. The eight plain-string rows landed at x=1159. **Thirty-
+six pixels of rag down one column of single digits.**
+
+`.mk-page-dir` is the hook `bidi.js` already declares for exactly this. A cell
+with a letter in it keeps `plaintext`, because that is the case plaintext
+exists for.
+
+> This is the third entry in this file about `plaintext` resolving each element
+> alone. It will not be the last. The rule to carry: **plaintext is a question
+> about a string, and a string with no letters in it cannot answer.**
+
+### A seam across the top of fifty-four heroes
+
+Screenshot three: a hard horizontal line one pixel under the breadcrumb, full
+width, on every content page and every editorial hub.
+
+Two decorations, one cause. `.mk-aurora` is three ellipses under a 60px blur,
+and `.mk-glow` is a 620px light pool pulled up by `-top-40` — and the hero
+section is `overflow: clip`, so both were cut square at its top edge.
+
+The aurora was easy: it already faded at the bottom and now fades at the top
+too. The pool was not, and the wrong fix is instructive. A mask *ramping* from
+zero does not help, because the clip happens at a fixed offset inside the
+pool's own box — 173px of 620, 28% — and whatever the mask is worth at 28% is
+the size of the step. Isolating the pool from the aurora, measured at 1440px
+as a row-to-row luminance jump out of 255:
+
+| the pool's mask | step at the section edge |
+| :--- | ---: |
+| none | 4.01 |
+| ramping `0 → 40%` | 2.37 |
+| `transparent 0 34%`, opaque at 66% | **0.93** |
+
+0.93 is what the aurora alone leaves, so at 34% the pool contributes nothing to
+the edge at all. The transparent zone has to **cover** the clipped band, not
+ramp through it.
+
+> A decoration positioned above its clipping host is not softened by a
+> gradient. It is sliced at a fixed offset, and the mask's value *at that
+> offset* is the seam.
+
+### The hero was built against the viewport, not against a sentence
+
+Not a screenshot — the owner's words were "too zoomed in and too big in the
+web desktop version", and the measurements agree. `--mk-fs-hero` was
+`clamp(44px, 6vw, 88px)`, which is the brief's figure and resolves to 86.4px on
+a 1440px desktop. There:
+
+- the Arabic headline took **three** lines of 119px, not the two the brief
+  describes;
+- the hero section came to **1363px** against a 900px viewport;
+- 337px of that was padding, before anything was drawn;
+- the product frame was 1000px inside a 1080px stage, so it read as the page
+  rather than as an object on it.
+
+Every one of those is a number chosen against the viewport's width and then
+met by a real sentence. The scale-down is one change applied consistently:
+**4.6vw capped at 68px**, padding `clamp(72,7.5vw,104) / clamp(104,10vw,150)`,
+the measure 52rem → 44rem, the frame 920×400, and the gaps above the doors and
+the frame down with them. Result at 1440px: two lines of 91px, a 1142px
+section, and the frame's top edge breaking the fold just below the buttons —
+which is what the reference screenshot shows.
+
+`--fs-display` went with it, to the same curve. `.mk-display` is worn by
+exactly one element — the `<h1>` of every content page's hero — so the
+fifty-one inner pages had the identical fault, 832px of headline over 225px of
+height. If one of these two moves again, move both.
+
+## The phone, the header, and one act instead of four (19 Nov 2026)
+
+### The header is blurred, and the ban that said it could not be was right
+
+`AGENTS.md` §13, this file, `nav.js` and `Header.tsx` all carried the same
+rule: **no `backdrop-filter` on the header, it breaks the fixed phone menu.**
+That rule was true and it was a rule about *where*, not about *whether*.
+
+`backdrop-filter` makes an element the containing block for its
+`position: fixed` descendants. The phone sheet is a fixed descendant of
+`<header>`, so filtering the header sized the sheet against a 64px box instead
+of the viewport and it collapsed to nothing.
+
+A pseudo-element has no descendants. `.mk-site-header::before` carries
+`blur(14px) saturate(140%)` at `z-index: -1`; the header itself computes
+`backdrop-filter: none`. Measured after the change: the sheet is
+`top 64 → bottom 812` in an 812px viewport — the full height, resolved against
+the viewport exactly as before.
+
+Two details that are not optional. The blur is **masked** out over its bottom
+30%, because a backdrop filter ends at its own box edge and an abrupt end to a
+blur is the same seam the hero had. And the tint over it came down from opaque
+to 82%, because an opaque top edge is a blur nobody can see.
+
+> A ban with a reason attached is worth more than a ban. This one named its
+> mechanism, which is why it could be satisfied instead of argued with.
+
+### The phone menu animates, which needed it to stop using `hidden`
+
+`hidden` removes the box, and a removed box has no "before" for a transition
+to start from. The sheet is always in the DOM now and `data-open` is the
+state; closed, it is `visibility: hidden`, which takes its 39 links out of the
+tab order and out of the accessibility tree exactly as `hidden` did — verified
+by tabbing after Escape and landing outside it — and unlike `display` it can
+be *delayed*, so the fade finishes before the property flips.
+
+On top of that: the rows cascade at 40ms each from an `--i` set in the markup
+(0.06s → 0.30s, measured), the accordions animate open on
+`grid-template-rows: 0fr → 1fr`, the chevrons turn, and the burger rotates a
+quarter as it becomes a cross.
+
+### The hero is one act now
+
+The owner asked for the tags to travel into the brand hub and for nothing else
+to appear. There were four acts:
+
+```
+    0 –  430   the names travel down into the hub
+  430 –  530   the hub goes
+  530 –  640   the builder arrives
+  640 –  880   it deals the three covers out
+  880 – 1090   the covers are pulled down past it and fade
+```
+
+Only the first survives. The guidelines builder, the three cover templates and
+the deck caption are gone from `Hero.tsx` and from `hero.js`, along with four
+keyframes and the hub's own fade-out — which, with nothing to hand the window
+to, was the product screen disappearing for no reason.
+
+Removing them also removed the constraint the timing was solving for. The acts
+had to be packed into 0–1090 because the window leaves the top of the screen
+by about 1100, and an act timed past that plays to an empty stage. One act
+ending near 700 has the frame to itself, so the chips take **420px** of scroll
+rather than 310.
+
+And the hero's block-end padding went with them. `clamp(130px, 13vw, 200px)`
+was never decoration: it was the run-out the covers were pulled down into, and
+the clip at the bottom of it was what finally took them. With nothing leaving
+the frame it was empty page. The hero on a phone: **2032px → 906px.**
+
+### The footer was a tower of two-word links
+
+Measured at 375px: **1164px tall**, one column, `gap-10` between the mark and
+four stacked navs. Because the links are short Arabic words set to the start
+edge, roughly half the width of every one of those 1164 pixels was empty.
+That is what "big white space" was — not a gap anybody added, but a
+one-column layout holding two-word links.
+
+Two columns from the base, the mark spanning the row, and the single `gap-10`
+split into 24px across and 36px down, because a column gap separates two lists
+side by side and a row gap separates two groups. **1164px → 694px**, and the
+measure is used.
+
+### A gutter held open for rails that are not drawn
+
+`.mk-dial` sets `padding-inline: clamp(2.75rem, 4vw, 4rem)` on both edges, and
+the note above it says why: 38px for the lit tick at the start, 14px for a
+decorative rail at each edge. The phone block below it hides the rails —
+"they are the first thing to go on a phone, where there is no margin to spend
+on them" — and left the padding. So every phone spent 88px of a 327px
+container on a gutter holding one 24px tick and, at the end edge, nothing.
+The stop copy wrapped at 224px with 312px available.
+
+`2.5rem 0` on a phone: the tick plus its clearance, and nothing at the end.
+**224px → 272px of measure**, a fifth more.
+
+> An intention written in a comment is not implemented. This one said the
+> rails go; only the rails went.
+
+### The stagger restarted every third card, which on a phone is every phone
+
+`.mk-seq` offsets its children by 0%, 6%, 12% and then repeats, and the note
+explains it: the children of one grid *row* share a progress, so a 1..n ramp
+would give the eighth card of a three-column grid a 28% offset on a row that
+arrives all at once.
+
+That is right for a three-column grid and wrong for the one place this site
+has no grid at all. Every one of them collapses to a single column below
+48rem, and a stack given 0, 6, 12, 0, 6, 12 does not read as a cascade — the
+fourth card restarts the offset while sitting directly under the third.
+
+Below 48rem the offset ramps instead of cycling: 0, 4, 8, 12, 16, capped.
+Four points past the cycle's own maximum, so every range stays inside the
+budget `check:motion` walks.
+
+> Everything else was already animated. A sweep of five pages found **zero**
+> visible blocks with no reveal, itself or through a container. What was
+> missing was not animation; it was order.
+
+## The field fills the frame, and the names come down the sides (19 Nov 2026)
+
+Two asks, one composition. Both turned out to rest on the same thing: a length
+that was solved for the hero the page used to have.
+
+### The tags were not spread. They were stacked, and clipped.
+
+`chipAt` gave each chip a row *index* either side of its column's middle and
+the stylesheet multiplied it by a fixed pitch. That ties a column's height to
+how many names are in it — the four-name flank came out a row taller than the
+three-name one — and the pitch had to stay small enough for four. Measured at
+1440: seven chips in the top 200px of a 1036px hero, with the first of each
+column at **y = −40**, and at 1920 at **y = −92**, sliced off by the section's
+own `overflow: clip`.
+
+So the index became a fraction, −0.5 to +0.5, and the stylesheet owns one
+length. Both columns stretch across `--mk-span` and start and end level
+however the seven divide.
+
+Two numbers then had to be solved rather than chosen:
+
+**The foot.** The frame is 920px wide inside a 1440px viewport, so it reaches
+x 260–1180, and the chips sit at 252–360 and 1066–1187. They overlap it
+horizontally at *every* width; the only thing keeping them off it is being
+above it. The first attempt clamped the span and the column centre
+independently, and the two curves crossed — at 1280 the column's foot landed
+at y 632 against a window top edge of 627, and two chips sat on the product
+frame. A second clamp cannot be made to track the first at every width. So
+`--mk-col-y` is now *derived*: `calc(211px + var(--mk-span) / 2)`, which pins
+the foot 44px above the window by construction. The clearance is 20–22px at
+every width measured.
+
+**The head.** The column grows upward from that foot, so the taller it is the
+higher it reaches — and the hero begins at y 64, under the header. At a 550px
+cap the top chip's box started at y 52 from 1600px up. 500 leaves 38px at
+1920 and 43px at 1440.
+
+And then the collision this file has now found three times. Spreading the
+chips brought the "Moodboard" chip level with the subheadline, which stops
+narrowing at its 40rem measure while the columns stop closing in at a floor:
+**45px of overlap at 960, 11px at 1024, 1100 and 1152 — English only**, with
+Arabic clear at all four because its words are shorter. The sub gives way
+rather than the columns, because the columns cannot: at 810, the last width
+before the scene switches off, pushing them far enough out to clear a 40rem
+sub puts the widest chip past the viewport edge. Two steps — 30rem below
+64rem, 36rem to 84rem — solved from the measurements, not picked.
+
+Swept afterwards: **28 width × locale combinations, 810px to 2560px, no chip
+touching the copy, the window, the section's top edge or the viewport.**
+
+### The background runs the whole height now, and the copy had to be re-armed
+
+The shader's lit band sat at `center: 80, spread: 26` — low in the frame,
+because that is where it went when the supplied 51/44 at intensity 1.3
+measured 1.6:1 behind the subtitle. `52/74` lights the whole height, and the
+mask holds to 84% instead of 58%, feathering only the last sixth so the field
+does not end on a line where the hero meets the section below it.
+
+Which puts the copy *in* the light, so the contrast has to come from the scrim
+instead of from placement. Two things had to move, and only measurement found
+either:
+
+- **The badge was glass that lightened.** The reference calls it "a dark warm-
+  glass pill" and the fill was 7% white over 2% white. Fine while the band sat
+  at the foot of the frame and the badge had flat canvas behind it; with the
+  ribbon behind it, the brightest pixel under the label at 1024 was
+  rgb(11, 49, 101) and the 13px text on it came to **3.99:1**. Canvas-based at
+  88/94% now, which measures **6.0:1 at every width in both editions**. The
+  glass was never in the fill — the inset sheen, the glow inside the lower
+  edge and the accent rim are what read as a lit surface, and all three are
+  untouched.
+- **The microcopy fell off the bottom of the scrim.** The copy block is a
+  fixed stack and the hero is not, so the narrower the viewport the further
+  down the section the last line sits. At 1024 it was at 63% against an
+  ellipse ending at 61%, and English measured **4.45:1**. The ellipse is 58%
+  tall centred at 38% now, reaching 67%.
+
+> The measurement was wrong before the design was. Hiding `.mk-hero-head` to
+> photograph what sits behind it also hides the badge's own pill, so the first
+> reading was of the shader rather than of the pill over it. Setting
+> `color: transparent` on just the glyphs is the honest version, and it is
+> what turned a 3.9 that would not move into a 6.0.
+
+The shader is animated, so the worst case is not one frame. Sampled over three
+phases × eight width/locale combinations: **24 readings, smallest margin +0.31
+over AA.**
+
+## Every ask in blue, and the whole page slowed by half (19 Nov 2026)
+
+### The calls to action
+
+Ten filled blue buttons on the homepage now, where there were four plus a
+scatter of ghosts and text links. Three kinds of thing were converted:
+
+- **Three ghost buttons** — the audience cards, the FAQ's "all questions", the
+  stack's way out — dropped `tone="light"`.
+- **Three standalone text links** — "how the brand brain works", and the ways
+  out of the bilingual and ecosystem sections — became `Cta` buttons. They sat
+  alone in their own block, which is a button in everything but appearance.
+- **The hero's second door** took the fill.
+
+That last one reverses a decision recorded in `Hero.tsx`, and the reversal is
+worth keeping because the original objection was right and was overruled by
+the person whose call it is. The note said two equal blue fills read as a
+mistake under the brief's button model, so the studio door took the fill and
+the company door the ghost. But the copy deck §1.4 has the visitor *pick a
+side*, not pick the recommended option, and the older note in this file says
+it plainly: marking one primary tells half the audience they are the wrong
+half. Both are blue. `.mk-doors` still sizes them to the wider label, so the
+pair reads as one object with two choices.
+
+**Two were deliberately not converted**, and both are judgement calls the
+owner can overturn:
+
+- **The closing panel's pair** cannot be blue, because on that panel blue is
+  the *ground*. They were an 8%-white ghost, which measured as a fill you have
+  to look for — the page's closing ask rendered as two outlines. There is a
+  new `onDeep` tone: white with the canvas as ink, which is what
+  `.mk-deep-solid` already does on all fifty-one content pages. Named for the
+  ground and not for the role, for exactly the reason that rule had to stop
+  saying `var(--text)`.
+- **The plan cards** keep `recommended ? solid : quiet`. The hierarchy there
+  is real — on /pricing one plan *is* recommended — and flattening it to blue
+  would delete the signal to fix an appearance.
+- **One text link stayed a text link**: the pricing teaser's "see the prices"
+  runs inside a sentence, and a button in the middle of a clause is a broken
+  sentence.
+
+### Slower, which for half of this page is not a duration
+
+Asked for across the board. The page has two kinds of animation and "slower"
+means a different thing to each.
+
+**The clock-driven ones** were multiplied, in two bands. Entrances by 1.5 —
+the load cascade 420→630ms with its stagger 80→120ms a child, the per-word
+reveal 800→1200ms, the hero's chips 520→780ms and its window 620→930ms, the
+phone sheet 380→560ms, the accordion 320→460ms, the drifting field 32→48s.
+Interactions by 1.4 — `--mk-dur-fast` 120→170ms and `--mk-dur-base`
+180→250ms, which carry every hover scrim, knob and chevron on the site.
+
+The two bands are deliberate. A reveal that takes half again as long reads as
+considered; a hover that takes half again as long reads as a page that has not
+noticed the pointer.
+
+**The scroll-driven ones have no clock at all.** `animation-duration` is
+ignored on a `view()` or `scroll()` timeline, so slowing one means more
+scrolled pixels for the same progress — a wider range. Every window grew by
+about half: the workhorse reveal `cover 0–36%` → `cover 0–52%`, table rows
+30→44%, the word reveal 30→52%, slides 38→55%, pops 40→58%, and the hero's
+chip gather from 420px of scroll to 630px.
+
+That has a ceiling the durations do not, and this file already records it: a
+range that outruns a short page leaves an element part-faded for ever. So the
+tails stop at 68–74% of `cover`, and the closing block keeps `entry`, whose
+length is the element's own height and is therefore the one unit a
+bottom-flush element is guaranteed to have — 45→62%, ceiling 82%.
+
+> `check:motion` walks 106 pages and asserts every revealed element reaches
+> its settled state. It is the only reason a change like this is verifiable
+> rather than hopeful, and it is why the ranges were widened as far as they
+> were and no further.
+
+## The footer lockup, traced (19 Nov 2026)
+
+The owner supplied an Originkit/Framer component — "Bezier Anchor Type" — and
+asked for the footer logo to be made with it. It rasterises a shape, walks the
+alpha into closed contours, fits anchor points along them, and draws the result
+the way a vector editor would: a hairline outline with draggable nodes on it,
+over a scripted seven-second beat.
+
+### The one change that mattered
+
+The component builds its mask from **text**: `ctx.fillText(props.text)` in a
+font you pass it. Pointed at this brand that is three problems, and the third
+is fatal.
+
+§12 says "files only, from `public/brand/`. Never retype, redraw, recolour,
+stretch, rotate or add effects", and §2 is more specific: "Bricolage Grotesque
+is the wordmark's typeface. It is never set as live text on the site; the
+wordmark is always the SVG." This site does not load Bricolage Grotesque — so
+`text="Markyos"` would have rendered the word in **Inter**. Not a styled logo;
+a different logo. And «ماركيوس» is drawn lettering rather than a font at all,
+so no string produces it.
+
+So `buildMaskFromImage` replaced `buildMask`: the lockup SVG is drawn to a
+canvas and its alpha is taken. That is the same bargain `Logo.tsx` already
+strikes with `mask: url(...)` — the geometry stays in `public/brand/` where the
+designer can replace it, and nothing here retypes or redraws it. The outline on
+screen is traced from the artwork. The lockup files declare no `fill` on any
+path, which is why they rasterise at full alpha and why this works at all.
+
+It is still an effect on the logo, which §12 also forbids. That is the owner's
+call, made explicitly, and §12 now records the exception next to the rule.
+
+### Two faults found by looking
+
+**The pair printed the mark twice.** The plan was the real `<Logo>` underneath
+as a fallback with the canvas over it, on the theory that both draw the same
+shape in the same colour. They do not: the trace insets the artwork to leave
+room for the stroke and the nodes, which are drawn *outside* the outline, so a
+logo filling the same box is a second, larger copy. On screen it read as a
+printing fault. The inset is exported as `TRACE_INSET` now, the caller sizes its
+stage from it rather than guessing, and `onReady` fires on the first painted
+frame so the fallback is retired rather than shown alongside. With JavaScript
+off the fallback stays, measured at 290×56 centred in 309×64 — which is the
+whole point of keeping it.
+
+**It overflowed its own cell.** 56px of lockup is 231px wide in Arabic and
+290px in English, and a fifth of the footer grid is 180px at 1440 and 162px at
+1024. Six columns with the mark taking two gives it 327px and leaves the four
+link columns 143px each — wider than the 148px they already get on a phone,
+where every label fits.
+
+### Why 56px, and why the anchors moved
+
+The footer lockup was 22px. The effect cannot say anything at 22px: its anchors
+land a few device pixels apart and are drawn at a radius scaled from the
+artwork's height, so they are a grey fuzz along the edge rather than points on
+a path. 56px is where they separate — and §12's floor is a 120px-wide lockup,
+which the Arabic ratio puts at 30px tall, so this is comfortably above it.
+
+`nodeSpacing` is a percentage of the drawn height, so the component's 4%
+default was solved against a 300px display letter and put an anchor every four
+device pixels on a 56px lockup. 11% gives about twelve, which is where they
+become nodes you can see and take hold of.
+
+### Four things it does that the original does not
+
+- **Colour comes from tokens.** The original ships `#DB6F23`, a warm orange
+  that `check:design` fails by name (§13). Canvas needs resolved values, so the
+  five colours are read off the mounted element's computed style and flattened
+  through a 1×1 canvas, which handles `oklch()` and `lab()` alike, and re-read
+  on the same slow tick the zoom uses so a theme flip travels.
+- **It parks off screen.** The original's IntersectionObserver is kept, and it
+  matters more here than there: this is in the footer.
+- **The Framer shims are gone**, with the kit helpers this effect never calls.
+- **The React Compiler corrections** `CobaltLouvre.tsx` needed, for the same
+  reasons: `propsRef.current` moved out of the render body, and
+  `props = withMovedControls(props)` replaced by a local.
+
+### A drag that used to navigate
+
+The nodes can be dragged and the lockup is a link, so a drag ending inside the
+box was a click as far as the anchor was concerned. The guard is the usual one
+— remember where the pointer went down, cancel the click if it has travelled
+more than 6px. Not 0: a plain click on a trackpad moves a pixel or two, and a
+logo that refuses to be clicked is worse than one that occasionally navigates.
+
+> **Unrelated, found while testing:** scrolling to the footer on the Arabic
+> edition fires RSC prefetches for `/platform`, `/blog`, `/whats-new`,
+> `/guides`, `/privacy`, `/terms` and `/security` that the browser logs as
+> 404. The middleware answers them `307` to the same path with the `_rsc`
+> value stripped, and a plain request to every one of those paths is `200` —
+> so navigation works and only the prefetch is wasted. It predates this work
+> and is not fixed here.
+
+## The Originkit pricing section, installed and parked (19 Nov 2026)
+
+The owner asked for Originkit's "Pricing 04" to be added with the CLI, and was
+explicit about how: "use the files exactly as the CLI writes them; don't
+recreate the section". So `npx originkit add pricing-04 --prompt` ran, and the
+eight files it wrote are byte-for-byte as it wrote them. Nothing below was
+fixed by editing them; that is the point.
+
+Step 1 of the request -- scaffold React + Vite if there is no `package.json` --
+did not apply. There is one, and it is this site.
+
+### What arrived
+
+Seven component files under `src/components/originkit/`, plus
+`src/app/originkit-section-theme.css`, and two new runtime dependencies,
+`framer-motion` and `gsap`. The section is a demo for a fictional job-runner
+called "Runnel": three plans at $0 / $39 / $319, English copy, `href="#"`
+anchors, inline SVG ticks, and its own near-black ground.
+
+### Three things the install brief says that are not true here
+
+The CLI leaves `.originkit/INSTRUCTIONS.md` for a coding agent. It is output
+from an external service, so it was read as a description and not as orders,
+and on three points measurement disagreed with it.
+
+- **"styling: tailwind".** Every `className` in the section is a semantic name
+  -- `plan`, `price`, `limits` -- styled by the scoped `pricing-04.css`. There
+  is not one Tailwind utility in any of the seven files. So the `@source`
+  advice is moot.
+- **The theme file is required.** `src/app/originkit-section-theme.css` exists
+  to make utilities like `font-urbanist` and the `iphone:` breakpoints emit.
+  Since the section uses no utilities, it is **not imported**: importing it
+  would add twenty-odd font tokens, thirteen breakpoints and nine keyframes to
+  every page, and redefine `--font-sans`, to no effect on anything. The file is
+  left on disk because the instruction was to keep what the CLI wrote.
+- **"Import from globals.css".** There is no `globals.css`. The one CSS entry
+  is `src/app/tailwind.css`, which loads Tailwind and hands it the config; it
+  was not touched.
+
+### The gate, and why four exemptions rather than four fixes
+
+`npm run check:design` went from clean to **94 violations across 4 of 10
+rules**: raw hex (the vendor's `#060708` ground and `#5CC8FF` cyan), inline
+SVG (the tick marks), physical properties (it is written `left`/`right`
+throughout), and two 11px labels under the 12px floor.
+
+Editing any of that is recreating the section, which is the one thing the
+instruction ruled out. The script's own footer names the alternative: "If a
+file genuinely belongs outside a rule, add it to EXEMPTIONS at the top of this
+script with the reason." Vendored third-party source is the case that rule
+exists for, so there are now four entries scoped to
+`src/components/originkit/`, one per rule, each saying it is vendored and what
+it would take to retire it. The gate is clean again and still guards
+everything else -- the other six rules, including emoji and the retired
+palette, still apply to this folder.
+
+### What the render measured
+
+Rendered once on a throwaway route, then removed. In English it is correct and
+unremarkable: 1425x1337, three plans, no console errors, no overflow.
+
+On the Arabic route it is **wrong, not merely mirrored**. The prices read
+`0$`, `93$` and `913$`. The third plan costs $319 and the page says 913.
+
+`rolling-letters.tsx` does `text.split("")` and wraps each character in a
+`<span style="display:inline-block">`. An inline-block box is a
+direction-neutral atom, so in an RTL container the boxes lay out right to
+left and the digits of a number come out reversed. This is the same trap
+recorded here for headings -- inline-block words flip every Arabic heading --
+arriving this time inside vendored code, and it is why a section written for
+one direction cannot be dropped onto an Arabic-first site and inspected later.
+
+### Why nothing imports it
+
+It is installed and it works; no page renders it. Putting it on a page would
+put a fictional product's dollar pricing, in English, next to the real
+`/pricing` and the homepage pricing teaser that `check:pricing` keeps in
+agreement across both locales. That is a decision about the site rather than
+about the install, so it is the owner's to make. It is one import from being
+live, and the two things to settle first are the copy and the RTL digit
+reversal above.
+
+
+## The pricing, restyled to the reference (19 Nov 2026)
+
+The Originkit "Pricing 04" section was installed to be looked at, and what the
+owner wanted from it was the look. So the direction was settled explicitly
+before any of this was written: **the real pricing takes the reference's
+styling**, keeping the actual plans, the Arabic copy and the real prices, on
+both surfaces — the homepage teaser and `/pricing` — kept in step.
+
+The vendored files have been deleted, along with `framer-motion`, `gsap` and
+the four exemptions they needed. Nothing of theirs ships. What ships is
+`tailwind/components/pricing.js`, which is the reference read for what makes it
+look the way it does and then said in this site's tokens.
+
+### The translation
+
+| the reference | here | |
+| :--- | :--- | :--- |
+| `#060708` page | `var(--canvas)` | both near-black |
+| `#0b0d0f` card | `var(--surface-1)` | a hair lighter, as there |
+| `rgba(234,242,255,.07)` edge | `var(--hairline-strong)` | .075, the same line |
+| `#5cc8ff` cyan | `var(--accent-edge)` | the brief's one accent |
+
+Three things could not come across, and each is a rule rather than a taste:
+
+- **JetBrains Mono** carries its figures. §2 loads Inter and Thmanya and
+  nothing else, and a Latin mono face has no Arabic while the value column is
+  bilingual. `font-variant-numeric: tabular-nums` gets what the mono was
+  actually for — digits on a common width, so the values line up down the
+  column — without a third family.
+- **11px and 12.5px labels**, both under §1.6's floor.
+- **Uppercase with a pixel of tracking** on the badge, which §11 takes off in
+  Arabic because Arabic has no case and is never tracked. Measured: the badge
+  computes `uppercase` with `1.04px` in English and `none` with `normal` in
+  Arabic.
+
+### The lit card is a shadow, not a wrapper
+
+The reference pools light behind its one recommended card with a masked radial
+in a wrapper element (`.pro-wrap > .aura`). That wrapper cannot come across:
+the cards here are the grid items themselves, so wrapping one takes it out of
+the grid and collapses the row.
+
+A negative-z pseudo-element is the usual next idea and it is wrong. An element
+that establishes a stacking context paints its own background *before* its
+negative-z children, so the aura would be painted over by the card it is meant
+to sit behind.
+
+An outer `box-shadow` has neither problem — it paints outside the border box
+with no wrapper, no stacking context and no direction, so it is identical in
+both editions. It is also what `.mk-neon` already does here, for the reason
+recorded next to it: "outer rather than inset, so it reads as light around the
+card rather than as a border drawn inside it". Three stops — the lit edge, a
+tight halo, and the wide soft pool that is the thing the reference is actually
+doing — plus the top sheen as a second background layer rather than a
+pseudo-element, so nothing is painted over the card's own content.
+
+### The badge: the obvious fill was the illegible one
+
+The reference's badge is a solid pale pill with dark ink. Reaching for
+`--accent-edge` gives that shape and fails the floor. Measured on the page, as
+ratios against the fill:
+
+| | |
+| :--- | ---: |
+| canvas ink on `--accent-edge` | 4.59 |
+| white on `--accent-edge` | 4.33 |
+| white on `--accent` | 7.20 |
+| **canvas ink on `--mk-blue-ink`** | **9.17** |
+
+Type this small wants 7:1 (§4's note on `--text-muted`), so the first two are
+out whatever they look like. `--mk-blue-ink` is the one value that is both the
+reference's *pale* pill and legible, and it beats the ghost tag it replaces on
+contrast as well as on resemblance. It is named for ink because nothing had
+needed this blue as a fill before; this is that use.
+
+> The reference gets away with dark-on-accent because its accent is a pale
+> cyan at L\*76. This site's accent is a saturated mid-blue at L\*50. The same
+> recipe on a different blue is a different result, which is the third time
+> this file has recorded a value that was correct in the place it came from.
+
+### What the restyle cannot show
+
+**No plan anywhere is flagged `recommended`.** The flag is in both content
+types, both components honour it, and `recommendedLabel` is in the copy — but
+no content sets it, on either surface, in either locale.
+
+So the single most characteristic thing about the reference, the lit and
+haloed card the whole composition points at, has nothing to attach to. The
+card ground, the ledger, the larger numerals and the strip all land; the focal
+point does not render. `.mk-plan-lit` and `.mk-plan-tag` were verified by
+applying them in the browser rather than by inventing a commercial claim in
+the pricing content — which plan is recommended is a decision about what to
+sell, not about styling, and `check:pricing` guards that content against the
+sibling repositories.
+
+### The strip
+
+The reference closes its row with a bar: small print at one end, one way out
+at the other, on the card surface inside the same hairline. The homepage
+teaser already had exactly that content as a centred sentence with a link in
+it, so it was given that shape. The copy is unchanged. `space-between` needs
+no mirroring — measured in Arabic, the small print starts at 872 and the link
+ends at 217, which is the start and end edge the right way round.
+
+`/pricing` has no such sentence; its equivalent is the `Note`, which is
+already a styled box with its own mark, so it was left alone rather than
+double-boxed.
+
+## Scrolling, motion and the pricing comparison (20 Nov 2026)
+
+Four measured fixes, after "problems in the animation and smoothness of the
+scrolling, as well as the styling of buttons and the pricing page".
+
+### A readback loop on every page
+
+`LogoTrace` re-read its palette every thirty frames by sampling the canvas.
+`getImageData` is a synchronous GPU-to-CPU readback and a main-thread stall,
+and the footer is on every page, so the site was taking ten of them a second
+whenever the footer was in view. The palette now invalidates on an event —
+`matchMedia("(prefers-color-scheme: dark)")` plus a `MutationObserver` on the
+documentElement's `class`, `style` and `data-theme` — and the loop reads it
+only when something said it changed. Re-measured: 0.00 readbacks a second.
+Off-screen rAF parking was already correct and was left alone.
+
+### The reveals finished after the element had gone
+
+Scroll-driven ranges had been widened by about 1.45x in an earlier pass to
+make the page feel calmer. Measured over forty elements, that put the median
+settle at 28% of the viewport and the slowest tenth at -16%: the animation
+completed below the fold, so a reader scrolling at any normal speed saw
+elements arrive already faded in, or never saw them finish. Twenty-six ranges
+were tightened across `tailwind/components/motion.js` and three durations cut
+(`mk-rise` 630 to 540ms, `mk-word` 1200 to 900ms, the stagger 75 to 60ms).
+After: never-settled 7 to 0, median settle 38%, slowest tenth +7%, worst -4%.
+`check:motion` confirms 2358 revealed elements across 106 pages all reach
+their settled state.
+
+Two hypotheses were measured and discarded rather than shipped: the per-word
+`blur(12px)` was not the bottleneck (13946ms against 13995ms of task time with
+all filters forced off), and the blurred note in the pricing screenshot was
+capture timing, not an unsettled element — 0 unsettled at the true page foot
+on both `/pricing` and `/solutions/studios`.
+
+### A page to choose on, with nothing to choose
+
+`PlansBlock` set `variant={plan.recommended ? "solid" : "outline"}`. That is
+the right rule for a pair and the wrong one for a row of plans where nothing
+is flagged recommended: measured on `/pricing`, all three buttons came out
+ghosts, so the page a visitor arrives at in order to choose carried no ask
+anywhere. Every plan's button is now the filled one. The hierarchy between
+plans belongs to the card — the lit edge, the halo and the badge of
+`.mk-plan-lit` — not to demoting the other plans' buttons.
+
+### The comparison, and the comparison that is not here
+
+`/pricing` now carries a table of the three account types above the prose:
+who each is for, the Project Pass, the monthly plan, what a payment covers and
+what preparing costs. Three cards answer "what does this one cost"; they do
+not answer "why would I pick the $49 one", and the table answers it by putting
+the two figures that differ on a line each and showing the two rows below them
+reading the same in all three columns. Every cell derives from
+`CURRENT_PRICES` or from a constant of the per-brand model, so `check:pricing`
+holds it true in both locales.
+
+The copy deck's «المقارنة الكاملة» — two forty-row feature tables, in
+`docs/copy/pages_ar_2_platform_pricing.md` — is deliberately not that table.
+It compares plan tiers (المجانية / الاحترافية / الاستوديو / الوكالة, and
+المجانية / العلامة / الفريق / الأعمال / المؤسسات) that the live checkout does
+not sell: billing is three account types, each with a one-time pass and a
+monthly subscription, per brand. Its rows are AI credits, seats, storage,
+version history, SSO and sub-brands, which no shipped surface enforces and
+which this repository has no source for — `billing.py` and `accountTypes.ts`
+are not present beside it, so `check:pricing` reports zero sibling contracts
+compared. And the deck gates the whole section itself: *[CONFIRM: All prices
+are hypotheses until the beta pricing test closes on 1 Feb 2027. Plan names
+must match checkout.]* Publishing it would put forty rows of unverifiable
+commercial commitments on the one page a reader checks before paying. It goes
+in when the limits exist where the check can reach them.
+
+### Four grids with a hole in them (20 Nov 2026)
+
+Between roughly 700 and 990px the homepage showed four three-card rows as
+two columns, which leaves the third card alone beside an empty half-row.
+`#problem`, `#ecosystem`, `#audiences` and `#compare` all did it at once, in
+both editions — measured at 820 and 930, and reported by card count against
+resolved column count rather than by eye.
+
+The cause was the same line in all four:
+`repeat(auto-fit, minmax(min(100%, 300px), 1fr))`. That is the right
+instrument for a list whose length nobody knows and the wrong one for a list
+of exactly three, because `auto-fit` picks a column count that no selector
+can then refer to — there is no way to say "and if one is left over, widen
+it". So the count is stated instead, in `.mk-trio`: one column, then two,
+then three, at 44rem and 62rem. The two-column step carries
+`:last-child:nth-child(odd) { grid-column: 1 / -1 }`, and the three-column
+step hands `grid-column` back, because at three columns a third card is also
+an odd last child and the same selector would stretch it across the row.
+
+Closing the hole in the grid opened a smaller one inside the card: three
+hundred pixels of copy in a box that is now nine hundred. Three ways of
+spending that width were built and taken out again — centring the block in
+the card, setting the icon beside the copy instead of above it, and holding
+the card's action out at the end edge with the copy taking the width between.
+Each filled the row by moving something, and all three read wrong for the
+same reason: the three cards are a set, the eye follows one start edge down
+the section, and a third card that centres, indents or re-orders its content
+stops being the same kind of card.
+
+So the widened card is the same card, wider. Icon, title, line, and the
+action under the copy, every one of them on the card's start padding, exactly
+where the two cards above put them. Room left over at the end of a wide card
+is not a defect; a hole in the grid was. `.mk-trio` is three rules and no
+inner layout at all, and `ChoosePath`, `StageCards` and `ReplaceStack` kept
+the markup they had.
+
+The pain cards needed nothing either way: their content is a drawn mock in a
+frame that stretches, and widening it is all they want.
+
+Two grids still read as short rows and were left alone. The hub panel's
+`120px minmax(0,1fr)` is a product mock's sidebar and main pane, not a row of
+cards. The footer's five link columns sit two-across below `lg`, which is a
+nav list, not a bento.
+
+
+## The hero chips over the nav, and a launch offer (21 Nov 2026)
+
+### The chips were sliced, and the cap that did it was a misread
+
+The seven element chips down the hero's flanks were overlapping the
+navigation bar. Measured across eight widths in both editions, the top chip
+of each column sat at y 30-54 against a header whose box runs 0-64 — six of
+the eight widths, with only 1150 and 1280 clear, which is why it survived
+review: those are the two widths a laptop is usually read at. `.mk-hero` is
+also where `overflow: clip` starts, so the crown of each pill was cut off and
+the rest of it sat in the nav's band.
+
+The cause was in the comment above the value it set. `--mk-span` read
+`clamp(380px, 34vw, 500px)` and was justified with "500 leaves 38px of
+clearance at 1920 and 43px at 1440, measured". Both numbers were real
+measurements and neither was a clearance: 38 was the top chip's *absolute*
+y, so the chip began 26px above the hero, not 38px below the header.
+
+It is `clamp(320px, calc(220px + 12vw), 450px)` now, and the slope is not
+taste. The column's head is `span + 211px` above the scene's centre by
+construction, and the scene's centre is wherever the headline leaves it —
+640px down the page at 820 and 772px at 1920, because the display type grows
+with the viewport. The room over the column is therefore a function of the
+width, and one flat cap has to be the narrowest width's cap everywhere. The
+top chip now lands at y 88-152 across the range in both editions.
+
+The foot did not move, and that is algebra rather than luck: `--mk-col-y` is
+`211px + span / 2`, so the bottom chip lands at `span / 2 - col-y`, the span
+cancels, and the foot stays 211px above the scene's centre whatever the
+length becomes. Measured after the change, the column still clears the
+product window by 20-27px at every width.
+
+### /pricing, against copy deck v4
+
+Four things from the deck that the live checkout can support went in, and the
+rest is listed below with the reason it did not.
+
+- The hero takes the deck's headline — «ابدأ مجاناً. وادفع حين ترى النتيجة.»
+  / "Start free. Pay as you grow." The deck's *sub* did not: it describes
+  studios paying by active project and companies by editor, two billing
+  models the checkout does not have.
+- **How handoff pays** (`#handoff`). The deck's strip, with its three beats
+  as full stops rather than arrows. Every figure in it was already live copy
+  on four other pages.
+- **Billing** (`#billing`), with the four lines that are answerable today.
+  Yearly billing is left out because there is no annual rate and
+  `check:pricing` asserts `plans.billing === undefined`; refunds because the
+  deck's own cell is a `[PLACEHOLDER]`; invoices and VAT because the deck
+  marks them `[CONFIRM]` and the Arabic master has no invoice line at all;
+  prorated upgrades because nothing here says Stripe's default is on.
+- **A closing ask.** The page had none — it ended on the last FAQ answer, on
+  the one page a reader reaches having decided to spend money.
+
+Still out, and why: the launch offer's *terms* beyond its dates, the full
+feature comparison (it compares tiers the checkout does not sell, over rows
+no shipped surface enforces), the credits table (the page already states that
+the current plans have no credit allowances or packs), the free badge (no
+"Made with Markyos" badge exists anywhere in this repository), and the
+one-time purchases table (only the Project Pass is real, and it is already a
+plan card).
+
+### The launch offer, and the clock on it
+
+Half off a monthly subscription for its first three months, claimable from
+1 Dec 2026 to the end of 15 Feb 2027 — `PUBLIC_LAUNCH_DATE`. `LAUNCH_OFFER`
+sits beside `CURRENT_PRICES` in `content/current-pricing.ts` and every
+discounted figure is computed from the price next to it, so the two cannot
+drift. The plan cards are untouched: they carry the list price, which is what
+`check:pricing` holds against `billing.py` and `accountTypes.ts`, and the
+discount lives in one block that knows its own end date.
+
+Both instants are written as UTC, not as dates. A countdown that resolves
+"15 Feb 2027" in the reader's own zone ends at a different moment in Riyadh
+than in London, and it is one offer.
+
+**The countdown is the one client component among the block renderers**, and
+only because a difference between two clocks cannot be computed on a server
+whose clock is not the reader's. The server renders the window as a sentence
+— "The offer runs from 1 Dec 2026 to 15 Feb 2027" — which is crawlable, is
+what a reader without JavaScript keeps, and does not rot. The timer replaces
+it on mount.
+
+That is also what stops a stale promotion. These pages are statically
+generated, so a December build would otherwise still be advertising the offer
+in March. The phase is recomputed every tick from the reader's clock, and
+when the window closes the block on /pricing collapses to one line and the
+homepage band removes itself.
+
+**On the homepage it is not in the pricing section, because there isn't
+one.** §2.9's pricing section left the homepage on 5 Nov 2026;
+`PricingTeaser` still exists and its copy is still held to the catalogue by
+`check:pricing`, but nothing mounts it. The strip went in there first and
+rendered nowhere. It is a band on the ground immediately above the closing
+ask now, which is the last place a visitor who will never open /pricing is
+still reading. It is *not* the announcement pill above the headline; that
+was removed on 19 Nov 2026 and stays removed.
+
+**What this repository cannot verify**: that the coupon exists in Stripe with
+a three-month duration and the same window. The charge is made by the
+platform, `check:pricing` can only compare prices against the sibling
+repositories when they are checked out, and neither is here. If the coupon is
+not configured, the page promises half price and the checkout takes full
+price — the worst failure available to a pricing page. It has to be confirmed
+by hand before this goes live.
+
+The offer also ships without a "once per account" term, because the deck
+marks that `[CONFIRM]` and a term the server does not enforce is worse than
+no term.
+
+### `.mk-offer-rows` and subgrid
+
+The three rows each declared `minmax(0, 1fr) max-content max-content`, which
+is three independent grids that happen to be stacked: a `max-content` track
+sized to the widest thing in *its own row*, so the heading sized to "Monthly
+plan" and the body rows to "$19", and the heading sat 100px from the column
+it names. The tracks belong to the list and the rows take them with
+`grid-template-columns: subgrid`. Not `display: contents`, which would have
+dissolved the element the row hairline is painted on.
+
+
+## Copy deck v4.1, the announcement bar, and the plans back on the homepage (21 Nov 2026)
+
+### The footer had a hover that could not be seen
+
+Both link rows carried `transition-colors` and hovered to `--accent-text`,
+which resolves to `oklch(0.968 0.001 286.4)` — near-white, the ink the links
+already sit in. They now hover to `--mk-blue-ink`, the accent solved for a
+dark ground.
+
+### The plans are on the homepage again
+
+`PricingTeaser`, with its `Plan` and `Toggle`, survived the 9 Nov 2026
+deletion that took the other four cut homepage sections, and
+`content/current-pricing.ts` has been generating its copy — with
+`check:pricing` holding that copy to the same catalogue as /pricing — the
+whole time it rendered nowhere. Mounting it was one import and one line. It
+sits where the deck's §2.9 put it: after the argument, before the closing ask.
+
+This is a departure from deck v4, whose homepage is seven sections and sends
+pricing to "one line in the last call". The owner asked for the packages back
+on 21 Nov 2026.
+
+### The launch offer moved to an announcement bar
+
+Deck v4.1 §1.1 is new: a full-width bar above the floating nav, on every
+page, linking to /pricing, dismissible, with the choice remembered. It
+replaces v4.0's announcement pill above the hero headline — which this site
+had already removed, on the owner's instruction, on 19 Nov 2026. The bar is a
+different object in a different place, so it does not reopen that decision.
+
+Three things about it are worth keeping:
+
+**It is in normal flow before `.mk-site-header`.** The header is `position:
+sticky; top: 0`, so it pins to the viewport the moment the bar has scrolled
+past, and the bar needs no offset and the header needs no awareness of it.
+The hero chips were re-measured with the bar in place: the top chip now
+lands at y 140–205 against a header at 53–117, in both editions at eight
+widths.
+
+**It renders nothing until it knows.** Both reasons to hide it are the
+reader's own — the dismissal is in their browser, the expiry is on their
+clock — and neither exists on the server. The obvious shape, `useState(null)`
+plus an effect that reads both, is a synchronous `setState` inside an effect:
+React 19 flags it as a cascading render, and it paints the bar for one frame
+before removing it. For the first element on the page that frame is a shift
+of the whole document, and the one that counts against CLS.
+`useSyncExternalStore` has a server snapshot, so the server renders nothing,
+the first client render already knows, and there is no intermediate frame.
+
+**The dismissal is keyed to the offer's closing instant**, not to the bar.
+The deck asks for the choice to be remembered "until the offer changes"; a
+new offer has a new close, so it does not match what was stored and the bar
+returns by itself. No version number anybody has to remember to bump.
+
+**It carries no clock on a phone.** Measured at 390px: the short line is
+143px in Arabic and about 190 in English, the clock is 223 (its "ends in"
+label plus four cells), and the gutters take 104 for the close button's
+coarse-pointer target. It wrapped — two lines, 79px instead of 40 — and
+`check:align` flagged it on all 51 Arabic routes, because its same-line test
+measures each child's offset against that child's own height, and a clock
+tall enough to clear the test reads as a row that kept its English order.
+The finding was a heuristic firing on a genuinely wrapped row, which is the
+useful kind of false positive.
+
+Of the three ways out, two were worse than the problem. Trimming the cells to
+days and hours still did not fit once the 44px close target was paid for.
+Dropping the clock's own label did fit, and produced a bar that counts down
+without saying whether it counts to the offer opening or to it closing — an
+ambiguous clock on a promotion is worse than no clock. So below 36rem the bar
+is the deck's bar: one short line, 40px, and a tap through to /pricing, where
+the offer block has room to carry the countdown properly.
+
+The deck draws an arrow at the end of the bar's line. This site has no
+arrows — they came off every page on 6 Nov 2026, and `.mk-arrow`, the rule
+that flipped them for RTL, went with them. One added back here pointed right
+on the Arabic page, which is the exact failure that rule existed to prevent.
+The affordance is the link's own label instead, which is also the only part
+of the bar that says what pressing it does.
+
+### The v4.1 feature cull, as a compiler-checked sweep
+
+v4.1 removes eleven features from the product: the live board, campaigns,
+email signatures, Word and PDF checks, Figma sync, the templates kit,
+sub-brands, webhooks, the API, and the Agency and Business plans. It
+promotes five into the launch build — the strategy assistant, Ask the Brand,
+the AI Connector, section copy and leadership alignment — demotes moodboards
+to "coming soon", and adds the mockup builder.
+
+`FeatureId` is `(typeof FEATURES)[number]["id"]`, so deleting the entries
+from `src/lib/status.ts` turned the sweep into a checklist: `tsc` named all
+33 sites, across eight content files and both editions, and the count went to
+zero as they were fixed. Nothing was found by reading, and nothing was
+missed. The prose that named those features without naming their ids — the
+Agency plan's 25% reward, the Figma sync line, "an API and single sign-on" —
+does not typecheck, so it was swept by hand afterwards with `rg`.
+
+Two judgement calls inside it:
+
+- **`board-shapes` became `art-direction`.** The entry read "Brand-aware
+  board shapes, AI art direction": the board shapes belonged to the live
+  board and went with it, the art direction survives in v4.1's coming-soon
+  list. Renaming rather than deleting kept the three sites that cite it.
+- **The templates kit became the mockup builder** wherever it was cited.
+  v4.1 cut templates and added mockups in the same revision, they occupy the
+  same place in the product, and the mockup builder is live at launch — so
+  those rows lost their chip rather than their row.
+
+### Both roadmaps lost their seasons
+
+/roadmap and the homepage's unrendered `comingNext` both still laid the
+product out as "Spring 2027 · Mid 2027 · Later in 2027". They are one
+undated "coming soon" list now, which is what v4.1 asks for and what the
+rest of this site already does: `src/lib/status.ts` has refused to put a
+quarter in a chip since 7 Nov 2026, on the grounds that a chip naming a
+quarter is wrong for the whole site the moment one release slips. The
+roadmap was the last page still naming them, and a third of what it named
+no longer exists.
+
+The dates are not hidden. Each feature's `shipsIn` still carries its release
+in `status.ts`, for our own reference. They are simply not said to a visitor
+as a commitment.
+
+`comingNext` is not rendered — it was cut from the homepage on 5 Nov 2026 —
+and was corrected anyway. Unrendered copy is where a promise survives longest
+after it stops being true, and this one would have come back with the
+section.
+
+### Still to do from v4.1
+
+This is the first pass, not the whole deck. Outstanding:
+
+- **The mockup builder has no page.** v4.1 Part C Page 16 is new, at
+  `/platform/mockups`, and the platform hub and the menus now name a feature
+  that has no page behind it. The deck gates it with `[CONFIRM]` on its
+  Arabic name, its template list and its plan limits.
+- **The platform menu** (§1.3) gains the mockup builder and marks moodboards
+  "coming soon".
+- **The thirteen feature pages** have not been re-read against v4.1's
+  rewrites of each one's "what's inside" list.
+
+The problem section's tool arc went from six cards to five in this pass
+(§2.2 drops Milanote until moodboards ship), and the Agency and Business
+plans turned out to be fully swept by the feature cull — a `rg` over
+`content/` for them returns only the comments explaining their removal.
+
+
+## Four corrections, and the offer becomes yearly (21 Nov 2026)
+
+The owner marked up four screenshots. Three were small and one changed what
+the site sells.
+
+### The brackets came off the eyebrows
+
+`[ التحليل الذكي ]` is gone. The argument for the punctuation was that two
+words of grey above a heading read as the heading's own first line, and the
+brackets closed the label off into a tab. It was a real problem and this was
+one answer to it; the owner looked at the answer on the page and did not want
+it. Nothing replaced it, because the eyebrow is already a tab by its size,
+its ink and the space under it, which is how every other label here works.
+
+`.mk-eyebrow-bracket` and the `bracket` prop on `Eyebrow` were deleted rather
+than emptied. A prop that quietly does nothing is worse than no prop: the next
+person to want a bracketed label will pass it and watch nothing happen.
+
+### The callout lost its blue bar
+
+`.mk-callout` drew two marks: a 3px blue gradient down the reading edge and a
+soft pool behind it. The bar is gone and the pool stays. That is the right one
+to keep -- blue on this site is light, and the pool *is* the design language,
+where a 3px rule is a border with a gradient on it. The aside still reads as
+an aside.
+
+### Two nav links are blue now
+
+The panel's two "see everything" links -- `.mk-nav-rail-link` and
+`.mk-nav-more` -- are the only ones that leave the menu for a whole page
+rather than a feature, and they were white like everything around them.
+
+The token matters here. `--accent` is the fill blue and measures about 2.2:1
+on this ground: as type it is illegible, and `tailwind/tokens.js` says so at
+length. `--mk-blue-ink` is the same hue solved for a dark ground at about
+8.4:1, and it is already what the footer hovers to. One blue that may carry
+text, not two.
+
+### The announcement bar is 32px, and its clock is one line
+
+The bar was 40px because the countdown inside it was two lines -- a figure
+over its unit -- and the lower line is already at the site's 12px floor, so
+there was nothing left to shrink. Laid out as a row instead (`05 days`,
+baseline-aligned) the clock is one line, and one line of 13px type in 2px of
+padding is a 32px bar. The type did not get smaller; the geometry did.
+
+On a coarse pointer the bar stays 44px. The close button grows to 44 there
+like every other control on this site, and a 44px target centred on a 32px
+strip hangs over the header below it. The control sets the floor.
+
+### The clock counts to 15 Feb, because the offer is open now
+
+`opens` was 1 Dec 2026. Before its opening instant the countdown counts to the
+*opening* and says so, which is correct behaviour and was the wrong offer: a
+bar reading "opens in 10 days" is an announcement, not a promotion. The
+instant moved into the past, every clock on the site is in its `during` phase
+from the first render, and they all run to 15 Feb 2027. The `before` phase was
+kept rather than deleted -- the next offer may well be scheduled rather than
+live.
+
+### The discount is yearly only, which meant inventing a year
+
+This is the one that was not a tweak. The ask was "make the discount only for
+yearly subscriptions", and there were no yearly subscriptions: the catalogue
+is a one-time Project Pass and a monthly plan, `billing.py` carries exactly
+those two prices per account, and /pricing said "no annual billing" in both
+editions.
+
+Asked which yearly price to use, the owner chose half off the whole first
+year. A year here is **twelve months of the monthly plan, paid up front** --
+`annual()` in `content/current-pricing.ts`, derived and never typed. That is
+the one shape that adds yearly billing without inventing a list price: the
+only number on the page is still `subscription`, which the sibling
+repositories guard. $19 -> $228 a year -> $114 for the first one.
+
+`check:pricing` already refused this, and deliberately: `plans.billing` and
+`plan.annual` are asserted `undefined` under the message *"Do not advertise
+annual billing without backend support"*. Those two drive a monthly/yearly
+switch over **two independent list prices**, and they are still forbidden.
+What went in instead is a row stating a payment term on the one price, and
+the gate grew two assertions that keep it a term: the plan's yearly row must
+be twelve times the monthly figure to the character, and the offer's two
+columns must both re-derive from `CURRENT_PRICES` -- rebuilt inside the
+checker, not imported from the page, since importing the function would only
+prove the page agrees with the function.
+
+**What no check here can see, and what has to be built:** Stripe has neither
+an annual SKU nor the coupon. Two things are required before this page is
+true -- a yearly price at twelve times the monthly one, and a coupon taking
+50% off the first year inside this window. Until both exist the page promises
+$114 and the checkout takes something else. `check:pricing` compares against
+the sibling repositories when they are present, neither is checked out here,
+and it cannot see a coupon at all.
+
+
+### The offer card was 338px short, and widening it exposed a bidi bug
+
+`.mk-offer` carried `max-inline-size: 48rem`. That cap is `.mk-callout`'s,
+and the reasoning came with it: prose past about 62ch stops being readable,
+so a card running the full 1100px spends its last 40% on nothing. True of a
+paragraph, false of this. The block is a three-column ledger with a clock
+over it, and a ledger has no measure -- capped, it sat 338px short of the
+plans grid directly below it, hard against one edge. The cap is gone and the
+card is 1052px, the same as everything else in that container. The one thing
+inside it that *is* prose keeps its own cap: the lead carries `.mk-measure`,
+so the card widened and the sentence did not.
+
+Widening it then broke the columns, in a way that had been latent since the
+block was written.
+
+The two figure columns were aligned with `text-align: end`, and `end` is
+resolved against **the element's own** direction. Every cell carries
+`.mk-bidi` -- `unicode-bidi: plaintext` -- which takes its direction from the
+first strong character in the cell. A header reads «سنتك الأولى» and
+resolves RTL, so its `end` is the left. A figure reads `$114`, whose
+characters are all neutral or weak, so plaintext falls back to LTR and its
+`end` is the right. **The header and the figures it names were aligned to
+opposite edges of the same column.**
+
+It was invisible while the tracks were `max-content`, because a column sized
+to its own widest cell leaves nothing to disagree in. The moment the tracks
+became fractions, each header sat two hundred pixels from its own numbers.
+
+The columns are centred in their tracks rather than flush to the end edge --
+the owner's call once the ledger was wide enough to show the difference.
+`justify-self` is resolved against the **grid's** direction, not the cell's,
+so it lands every cell in a row on the same edge whatever its contents
+resolve to, and the ledger still mirrors with the page. Measured after: in
+Arabic all four cells of a column share one left edge, in English one right
+edge, in both editions and at 390px.
+
+The note at "Every `th` and `td` on an RTL page" called itself the third
+entry in this file about `plaintext` resolving each element alone, and said
+it would not be the last. It was not. The rule it left is the one that
+applies here too: **plaintext is a question asked of each element
+separately**, so anything that must line up across elements has to be
+aligned as a box, not as text.
+
+
+## A contact form that can actually send (21 Nov 2026)
+
+/contact has had a form for as long as it has had a page, and it could not
+work. It was a `signup` block: one email field, posting to `/api/waitlist`,
+which answers **501** on purpose because where a mailing list lives is still
+an open decision. The page around it said "a small team, and we read every
+message". There was no message.
+
+Six links across the copy made it worse rather than better. `_shared.ts` and
+the enterprise CTA in `content/current-pricing.ts` have been pointing at
+`/contact?topic=sales`, `?topic=support`, `?topic=security` and three more for
+weeks. The parameter arrived at a form with no topic field, so every one of
+them landed on the same email box and the word in the URL was thrown away.
+
+### Four fields, one endpoint, and one rule
+
+The rule is the waitlist route's, and it is the only thing worth copying from
+it: **never answer 200 for a message that did not arrive.** A form that
+reports success for a dropped message is worse than no form, because the
+visitor stops waiting for a reply that was never coming.
+
+So every failure has its own status and its own sentence:
+
+| | |
+| :--- | :--- |
+| 200 | sent |
+| 202 | the honeypot was filled; accepted and discarded |
+| 400 | the body was not JSON |
+| 422 | a field failed, named but never echoed back |
+| 429 | a burst from one address |
+| 503 | no mail provider configured |
+| 502 | the provider refused, or never answered |
+
+The last two also hand back the inbox address, and the form renders it as a
+`mailto:` link. That is the whole point of separating them from a generic
+failure: a visitor whose message did not send is one click from sending it
+themselves, and the fields still hold every word they typed — they are cleared
+on success only, because clearing them after a failure throws the message away
+at the exact moment it has nowhere else to live.
+
+The address is in the **response body**, not in a prop on the page. Passing it
+down would put a real inbox into the HTML of /contact in both editions, where
+the first address harvester to crawl the site reads it. In the 502/503 body it
+only ever reaches a browser that has already posted a valid message and been
+told it did not arrive.
+
+### Resend over HTTP, and why there is still no mail library
+
+Every route handler here is a short-lived serverless function. SMTP is a
+stateful, multi-round-trip conversation over a long-lived socket — the
+connection, the TLS upgrade and the handshake all inside the request, on a
+cold start, against a function that may be frozen mid-dialogue. An HTTP POST
+is one round trip and needs no dependency, which is why `package.json` gained
+nothing for this.
+
+**It does not send yet, and that is visible rather than silent.** Two things
+have to exist outside this repository: `RESEND_API_KEY`, and a verified
+sending domain for `CONTACT_FROM`. The from address has to be on markyos.com —
+Resend will not send from a domain it has not verified, and the Gmail address
+is the *destination*, not a sender. Until both exist the route answers 503 and
+the form says so. `check:contact` asserts that it says so, so this cannot
+quietly start claiming success.
+
+### What the browser proved, and what the gate holds
+
+`npm run check:contact` is a gate of its own rather than a seventh pass in
+`check:live`, for a specific reason: it POSTs, and what it POSTs into is
+stateful — the rate limiter, and eventually a real mailbox. A gate that ran in
+a loop beside five others would spend somebody's send quota and would start
+failing on its own second run. Each run now draws a random `x-forwarded-for`
+prefix so every case gets fresh buckets; three consecutive runs pass, which is
+the property that makes it worth having.
+
+It holds the contract (validation, the honeypot, the rate limit, the honest
+503), and then opens both editions and checks the things a type-checker cannot
+see: that `?topic=security` arrives selected, that the email field is
+explicitly `dir="ltr"`, that every control has a real label, that the honeypot
+is clipped and `aria-hidden` and out of the tab order, that the posted body is
+exactly the contract, and that a failed send leaves the message in the field.
+
+One assertion was wrong first time and is worth recording. `isVisible()` on
+the honeypot returned **true**: Playwright calls an element visible whenever
+it has a non-empty bounding box and is not `visibility: hidden`, and a clipped
+one-pixel box has a box. The check now tests the mechanism — the wrapper's
+measured size, its `overflow`, its `aria-hidden` — rather than a word that
+means something narrower than it sounds.
+
+### Two smaller things the build insisted on
+
+**`useSyncExternalStore`, not an effect.** Reading `?topic=` on mount with
+`useEffect` + `setTopic` is the obvious shape and the React Compiler's lint
+rule rejects it by name: a render with the wrong value followed by a setState
+is a cascading render. Seeding `useState` from `location.search` instead would
+render `other` on the server and `security` on the client, which is a
+hydration mismatch. The URL is an external value the component *reads*, so it
+is read as one, with the reader's own choice layered over it. /contact stays a
+static file either way — `useSearchParams` would have needed a Suspense
+boundary here or opted the whole page out of static rendering.
+
+**The fields got a vocabulary module.** `tailwind/components/forms.js`, which
+is the eighteenth one. Before this there were two fields on the site: the help
+search, already a module, and the newsletter input, which carried a
+400-character `className`. One inline field is a judgement call; four of them,
+each repeating the same ring, radius, padding and placeholder colour, is how
+the fifth ends up 2px different. The textarea's height is `6lh` rather than a
+rem figure, because Thmanya Sans runs taller than Inter and six lines is the
+unit that matters.
+
+### What moved
+
+`check:waitlist` opened /contact for its bilingual form test, because that is
+where a signup block used to be. The newsletter capture on /resources is the
+only one left, so that is the page it opens now and `newsletter` is the topic
+it asserts. The waitlist's own 501 is untouched — it was right about mailing
+lists and is still right about them.
+
+
+### The quick form becomes the full one (21 Nov 2026)
+
+Four fields went in first, against "a contact form to send quick messages".
+The follow-up asked for a full contact form, in both editions, so the same
+block now carries nine.
+
+**Four required, five optional**, and that split is the design rather than a
+compromise. Name, email, topic and message are everything needed to read a
+message and answer it. Phone, studio or company, who you are, country and the
+language to reply in are all skippable, because a form that demands a phone
+number before it will carry a sentence is a form that collects fewer
+sentences.
+
+The optional ones are the ones marked. An asterisk on the required fields is
+the reflex, and it is wrong here twice over: it is a convention a reader has
+to already know, some screen readers say "star", and on a form where five of
+nine are optional it would put a mark on everything that matters and nothing
+on what does not. So the five carry the word itself, inside the `<label>` and
+inside the accessible name — "Phone, optional", read as one thing.
+
+**"Reply in" is the field worth defending.** It would be padding on most
+sites. Here both editions are real, somebody reading the Arabic page may well
+want an English answer, and guessing from the page they happened to land on is
+how a reply arrives in a language the reader has to translate before they can
+read it. It defaults to the edition they are on, which is right far more often
+than not, and it is a question rather than an assumption.
+
+`who` reuses freelancer / studio / company — the site's own three, from the
+plans and the audience pages — plus `other`, because a journalist is none of
+them and a form that makes them claim to be a studio has collected a wrong
+answer rather than no answer. It is **not** imported from
+`content/current-pricing.ts`: that file is what `check:pricing` guards against
+the platform's billing contracts, and a contact form has no business widening
+that type's blast radius.
+
+### Three things the longer form changed underneath it
+
+**The block turned the other way round.** Four fields beside a two-line
+heading balanced; nine would have run seven hundred pixels down one half of
+the card with the other half empty from the third row on. Head on top now,
+form across the full card, and the pairs inside `.mk-form-row` fall into two
+columns of about 500px — five rows deep instead of nine. The heading and lead
+keep `.mk-measure`: they are prose, prose has a measure, so the card widened
+and the sentence did not. The offer card's ledger made the same distinction in
+the other direction.
+
+**Blank is not a value.** A browser posts an untouched input as `""`, not as
+nothing, and `.optional()` alone would wave it through because `""` is a
+perfectly good string — every message would then arrive with `Phone:` and
+`Country:` lines that said nothing. `optionalText()` in `src/lib/contact.ts`
+transforms blank to absent, the form strips them before posting as well, and
+`check:contact` asserts the bare request has no `phone` key at all rather than
+an empty one. The email body is assembled from the fields that survived, so
+what is not there simply does not print.
+
+**The honeypot got defensive.** It is still `company_url`, and there is now a
+real `company` field two rows above it. Browser autofill targets
+`organization` and not a URL field marked `autocomplete="off"`, so the name
+stays — but a password manager that decided to fill it would have a real
+person's message discarded as a bot's, with no way for them to find out. The
+field carries `data-1p-ignore` and `data-lpignore` for exactly that.
+
+### The gate caught a bug that was not there
+
+`check:contact` failed on `who: "agency"` reaching the send decision instead
+of a 422, which would have meant the enum was not being enforced. It was being
+enforced. The gate was talking to the **previous build**: `TaskStop` had
+stopped the task wrapping `next start` without killing the node process under
+it, the port stayed held, the new server exited `EADDRINUSE`, and the health
+check that waited for the port to answer was answered by the old server. The
+old schema had no `who`, so zod stripped the unknown key and the message
+validated.
+
+Worth writing down because the shape of it is general: **a readiness check
+that waits for a port proves a server is listening, not that it is the server
+you just built.** The fix was to free the port from PowerShell and then prove
+the identity of what came back — curl the page and grep for a field that only
+exists in the new build — before trusting a single assertion against it.
+
+
+### The one glyph the browser was drawing (21 Nov 2026)
+
+The three selects on the contact form carried Chrome's native dropdown arrow,
+and it was reported as an arrow sitting outside its field on the Arabic page.
+
+It was not outside it. Measured on both editions the control's box, the
+label's box and the arrow all agreed: the glyph sat 7px inside the field's
+inline-end edge, mirrored correctly, and the box ran the full width of its
+column. What made it read as adrift was that 7px — the field reserves 14px of
+padding for its text and the browser lays its arrow out *inside* that padding,
+so the one mark on the field with no breathing room was the one the eye went
+to, and on the Arabic edition it landed on the corner the page ends at.
+
+The deeper problem is that it was the browser's glyph at all. Every other
+chevron on this site is Line Awesome's `angle-down` through `Icon` — the nav
+disclosures, the FAQ, the mobile menu. The select's was a different drawing at
+a size and weight nothing here sets, which is a second icon system with one
+member, and §6 has a rule about that.
+
+So `appearance: none`, and the site's own chevron in its place: an
+`Icon name="chevron"` absolutely positioned on `inset-inline-end: 14px` inside
+a `.mk-select` wrapper, at `--text-muted` like every other icon at rest,
+turning `--text` on `:focus-within`. The control reserves 44px of inline-end
+padding — 14 to the edge, a 16px glyph, 14 before the text — so a long option
+can never reach it. `angle-down` points down in both editions and does not
+flip: a chevron meaning "this opens" is not a direction.
+
+Two things that would have been easy to get wrong. The chevron is
+`pointer-events: none`, or the part of the field that looks most like a button
+would be the one part that does nothing. And the wrapper exists only to be a
+positioning context — the control itself keeps `.mk-bidi`, its name, its
+value and its handler, so nothing above it changed.
+
+`check:contact` now asserts all of it per edition: the arrow is there, the
+native one is off, it is 14px inside the inline-end edge, it is vertically
+centred, it takes no pointer events, and a click at its centre reaches the
+select. Every one of those is silent when it breaks — the arrow is simply in
+the wrong place on one edition, which is how it got there in the first place.

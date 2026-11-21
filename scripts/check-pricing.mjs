@@ -23,7 +23,13 @@ function load(file) {
   vm.runInNewContext(`(function(require,module,exports){${code}\n})`, {}, { filename: file })(requireLocal, loadedModule, loadedModule.exports);
   return loadedModule.exports;
 }
-const { CURRENT_PRICES, currentPricingPage, currentPricingTeaser } = load(path.join(root, "content/current-pricing.ts"));
+const { CURRENT_PRICES, LAUNCH_OFFER, currentPricingPage, currentPricingTeaser } = load(path.join(root, "content/current-pricing.ts"));
+/* The two figures the yearly offer is allowed to show, rebuilt here from
+   the monthly price rather than read from the page, so a year typed into a
+   content file by hand fails instead of shipping. */
+const dollars = (value) => `$${value.toLocaleString("en-US", Number.isInteger(value) ? {} : { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const yearFull = (type) => dollars(CURRENT_PRICES[type].subscription * 12);
+const yearOffer = (type) => dollars((CURRENT_PRICES[type].subscription * 12 * (100 - LAUNCH_OFFER.percent)) / 100);
 const serial = (value) => JSON.parse(JSON.stringify(value));
 let comparisons = 0;
 const backend = path.resolve(root, "../markyos-backend/apps/brands/billing.py");
@@ -59,8 +65,36 @@ for (const locale of ["en", "ar"]) {
     assert.equal(url.searchParams.has("plan"), false, "Signup must not imply a paid purchase");
     assert.equal(plan.price, `$${CURRENT_PRICES[type].pass}`);
     assert(plan.rows[0].value.includes(`$${CURRENT_PRICES[type].subscription}`));
+    /*
+     * The yearly row, added 21 Nov 2026 with the yearly launch offer.
+     *
+     * `plan.annual` and `plans.billing` stay forbidden above: those drive a
+     * monthly/yearly switch over two independent list prices, and there is
+     * still only one list price per account. This row states a payment term
+     * on that price, and the assertion is what keeps it a term -- twelve
+     * times the monthly figure, to the character.
+     */
+    assert(plan.rows[1].value.includes(yearFull(type)), `${type}: yearly row is not twelve months`);
     assert.equal(plan.annual, undefined);
+  }
+  /*
+   * The launch offer, which is the only place a discounted figure appears.
+   *
+   * Both columns are re-derived from CURRENT_PRICES here. This is the gate's
+   * real job on that block: the page cannot invent a yearly price, and it
+   * cannot invent a discount off one either. What this cannot see is whether
+   * Stripe has the annual SKU or the coupon -- see the header comment in
+   * content/current-pricing.ts.
+   */
+  const offer = page.blocks.find((b) => b.kind === "offer");
+  if (offer) {
+    assert.equal(offer.rows.length, 3);
+    ["freelancer", "studio", "company"].forEach((type, i) => {
+      assert.equal(offer.rows[i].was, yearFull(type), `${type}: offer "was" is not the yearly price`);
+      assert.equal(offer.rows[i].now, yearOffer(type), `${type}: offer "now" is not ${LAUNCH_OFFER.percent}% off the year`);
+    });
+    assert(Date.parse(offer.closes) > Date.parse(offer.opens), "The offer closes before it opens");
   }
   for (const plan of [...teaser.studioPlans, ...teaser.companyPlans]) assert.equal(new URL(plan.cta.href, "https://markyos.test").searchParams.has("plan"), false);
 }
-console.log(`Pricing: both locales and homepage agree; ${comparisons} sibling billing contracts compared${comparisons < 2 ? " (missing sibling repositories skipped)" : ""}.`);
+console.log(`Pricing: both locales and homepage agree, yearly figures derived; ${comparisons} sibling billing contracts compared${comparisons < 2 ? " (missing sibling repositories skipped)" : ""}.`);
