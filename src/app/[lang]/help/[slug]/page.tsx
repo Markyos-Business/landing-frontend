@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { articleLocales, content } from "@/lib/content";
 import { DEFAULT_LOCALE, isLocale, LOCALES } from "@/lib/i18n/locales";
 import { routeSlug } from "@/lib/pages/params";
 import { pageMetadata } from "@/lib/seo";
 import { ArticleView } from "@/components/public/editorial";
 import { NotTranslated } from "@/components/public/pages/NotTranslated";
+import { getHelpCategory, getHelpHome, helpPath } from "@/lib/content/help";
+import { localeHref } from "@/lib/i18n/href";
+import type { Locale } from "@/lib/i18n/locales";
+import { HELP_COPY, HelpCategoryView } from "@/components/public/help";
 
 export const revalidate = 3600;
 
 const COLLECTION = "help" as const;
+
+/*
+ * A Help Center topic (C1) or, when the segment isn't a topic, a piece from
+ * the older CMS help collection. Topics are checked first: the two can't share
+ * a route level any other way, and old article links keep working.
+ */
 
 /*
  * A single piece.
@@ -35,6 +45,19 @@ export async function generateMetadata({
   const { lang, slug: encoded } = await params;
   const slug = routeSlug(encoded);
   if (!isLocale(lang)) notFound();
+
+  const topic = await getHelpCategory(lang, slug);
+  if (topic) {
+    return pageMetadata({
+      locale: lang,
+      path: `/help/${slug}`,
+      title: `${topic.title} — ${HELP_COPY[lang].category.breadcrumb} — Markyos`,
+      description: topic.description || HELP_COPY[lang].meta.description,
+      // A topic's slug differs per language, so it declares no pair yet;
+      // C4 links the two editions through the API.
+      available: [lang],
+    });
+  }
 
   const post =
     (await content.getArticle({ locale: lang, collection: COLLECTION, slug })) ??
@@ -72,6 +95,14 @@ export default async function Page({
   const slug = routeSlug(encoded);
   if (!isLocale(lang)) notFound();
 
+  const topic = await getHelpCategory(lang, slug);
+  if (topic) return <HelpCategoryView locale={lang} page={topic} />;
+
+  // The language switch keeps the path, so a topic arrives here with its
+  // slug from the other language: send the reader to this language's slug.
+  const counterpart = await topicIn(lang, slug);
+  if (counterpart) permanentRedirect(localeHref(lang, helpPath(counterpart)));
+
   const post = await content.getArticle({ locale: lang, collection: COLLECTION, slug });
   if (post) return <ArticleView collection={COLLECTION} locale={lang} post={post} />;
 
@@ -103,4 +134,13 @@ export default async function Page({
       fallback={{ label: "Help centre", href: "/help" }}
     />
   );
+}
+
+/** This language's slug for a topic named by its slug in the other language. */
+async function topicIn(lang: Locale, otherSlug: string): Promise<string | null> {
+  const other = await getHelpCategory(lang === "en" ? "ar" : "en", otherSlug);
+  if (!other) return null;
+  const home = await getHelpHome(lang);
+  const all = (home?.categories ?? []).flatMap((c) => [c, ...(c.subcategories ?? [])]);
+  return all.find((c) => c.id === other.id && c.slug)?.slug ?? null;
 }

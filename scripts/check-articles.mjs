@@ -51,8 +51,17 @@ async function linkedArticles(indexPath) {
   return [...found];
 }
 
+/*
+ * The Help Center (21 Nov 2026) has its own check, `check:help`: its topics
+ * and articles have a different slug in each language, so "the same path
+ * under /en" is a redirect there, not a second edition. While /help still
+ * shows the older CMS list, it is checked here as before.
+ */
+const helpCenter = (await (await fetch(`${BASE}/help`)).text()).includes("data-help-center");
+const sections = helpCenter ? SECTIONS.filter((s) => s !== "help") : SECTIONS;
+
 const articles = (
-  await Promise.all(SECTIONS.map((s) => linkedArticles(`/${s}`)))
+  await Promise.all(sections.map((s) => linkedArticles(`/${s}`)))
 ).flat();
 
 // Both editions of each: the language switch in the header offers the other

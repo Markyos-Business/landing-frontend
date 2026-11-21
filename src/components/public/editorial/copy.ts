@@ -26,7 +26,7 @@ function arabicMinutes(count: number): string {
   }
 }
 
-function arabicArticles(count: number): string {
+export function arabicArticles(count: number): string {
   switch (AR_PLURAL.select(count)) {
     case "zero":
       return "لا مقالات";

@@ -316,7 +316,7 @@ export const editorialStyles = [
     "padding-block": "11px",
     "padding-inline": "18px",
     "background": "var(--surface-0)",
-    "box-shadow": "0 0 0 1px var(--hairline-strong),\n    0 14px 30px -22px rgba(11, 20, 60, 0.5)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
   } },
   { ".mk-help-search:focus-within": {
     "box-shadow": "0 0 0 1.5px var(--accent),\n    0 0 0 5px rgba(0, 153, 255, 0.12)",
@@ -497,7 +497,10 @@ export const editorialStyles = [
    */
   { ".mk-help-row-mark": {
     "flex": "none",
-    "rotate": "calc(90deg * var(--mk-dir))",
+    /* angle-down turned a quarter toward the reading direction: −90° points
+     it right (forward in English), +90° left (forward in Arabic). It was
+     +90° × dir until 21 Nov 2026, which pointed backwards in both. */
+    "rotate": "calc(-90deg * var(--mk-dir))",
     "color": "var(--text-faint)",
   } },
   /* ── The article ────────────────────────────────────────────────────────── */
@@ -669,5 +672,55 @@ export const editorialStyles = [
     "font-size": "var(--fs-eyebrow)",
     "font-weight": "500",
     "color": "var(--mk-blue-deep)",
+  } },
+  /* ── The Help Center (C1, 21 Nov 2026) ───────────────────────────────────
+   *
+   * The home and topic pages reuse the help hero, tiles and rows above. What
+   * is new: a larger search that submits (it carries its own button), tiles
+   * that are links with a description, the contact card, and the crumbs.
+   */
+  { ".mk-help-search-lg": {
+    "max-inline-size": "40rem",
+    "padding-block": "8px",
+    "padding-inline-start": "20px",
+    "padding-inline-end": "8px",
+  } },
+  { ".mk-help-search-lg input": {
+    "font-size": "var(--fs-body)",
+    "min-block-size": "2.5rem",
+  } },
+  { ".mk-help-topic": {
+    "align-items": "flex-start",
+    "block-size": "100%",
+  } },
+  { ".mk-help-tile-icon-lg": {
+    "inline-size": "3rem",
+    "block-size": "3rem",
+  } },
+  { ".mk-help-h2": {
+    "font-size": "var(--fs-d3)",
+    "line-height": "1.25",
+    "font-weight": "500",
+    "color": "var(--text)",
+  } },
+  { ".mk-help-contact": {
+    "display": "flex",
+    "flex-wrap": "wrap",
+    "align-items": "center",
+    "gap": "16px",
+    "border-radius": "var(--radius-card)",
+    "padding": "clamp(20px, 3vw, 28px)",
+    "background": "var(--surface-1)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-help-crumb": {
+    "color": "inherit",
+    "text-decoration": "underline",
+    "text-decoration-color": "transparent",
+    "text-underline-offset": "0.2em",
+    "transition": "text-decoration-color var(--mk-dur-fast) var(--mk-ease)",
+  } },
+  { ".mk-help-crumb:hover": {
+    "text-decoration-color": "currentColor",
   } },
 ];

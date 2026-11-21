@@ -100,6 +100,23 @@ export type IconName =
   /* The note block's glyph — `info-circle`, another name added to the
      indirection rather than a drawn icon. */
   | "info"
+  /*
+   * Added for the Help Center, 21 Nov 2026: the category icons an editor can
+   * pick in the platform's admin (its CATEGORY_ICONS list) that this site had
+   * no name for. All Line Awesome 1.3.0 solid glyphs.
+   */
+  | "play"
+  | "creditCard"
+  | "cog"
+  | "shapes"
+  | "image"
+  | "chartLine"
+  | "bullseye"
+  | "sitemap"
+  | "shieldAlt"
+  | "envelope"
+  | "sliders"
+  | "star"
   | "twitter"
   | "linkedin"
   | "whatsapp";
@@ -162,6 +179,18 @@ const LA: Record<IconName, string> = {
   longArrow: "long-arrow-alt-right",
   help: "question-circle",
   info: "info-circle",
+  play: "play",
+  creditCard: "credit-card",
+  cog: "cog",
+  shapes: "shapes",
+  image: "image",
+  chartLine: "chart-line",
+  bullseye: "bullseye",
+  sitemap: "sitemap",
+  shieldAlt: "shield-alt",
+  envelope: "envelope",
+  sliders: "sliders-h",
+  star: "star",
   twitter: "twitter",
   linkedin: "linkedin-in",
   whatsapp: "whatsapp",
