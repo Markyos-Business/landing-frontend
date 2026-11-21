@@ -16,12 +16,19 @@ export { contentApiUrl } from "./connection";
 
 export const contentSiteKey = (): string => process.env.CONTENT_SITE_KEY ?? "";
 
+const KEEP = new Set(["body", "path", "paths"]);
+
 /** Relative media URLs (local development) made absolute against the API's origin. */
 function absolute(value: unknown, origin: string): unknown {
   if (typeof value === "string" && value.startsWith("/") && !value.startsWith("//")) return `${origin}${value}`;
   if (Array.isArray(value)) return value.map((v) => absolute(v, origin));
   if (value && typeof value === "object") {
-    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, k === "body" ? v : absolute(v, origin)]));
+    // `body` is HTML, and `path`/`paths` are this site's own routes (the
+    // sitemaps): neither is a media URL. Rewriting the sitemap paths sent
+    // every editorial entry to the API's origin until 21 Nov 2026.
+    return Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [k, KEEP.has(k) ? v : absolute(v, origin)]),
+    );
   }
   return value;
 }
