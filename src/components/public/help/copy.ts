@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/i18n/locales";
-import { arabicArticles } from "../editorial/copy";
+import { arabicArticles, arabicMinutes } from "../editorial/copy";
 
 /*
  * The Help Center's words, one key per string, named screen.element(.state):
@@ -53,6 +53,25 @@ const en = {
     empty: "No articles in this topic yet.",
     subcategories: "In this topic",
   },
+  article: {
+    breadcrumb: "Breadcrumb",
+    updated: "Updated",
+    readingTime: (m: number) => `${m} min read`,
+    toc: "On this page",
+    anchor: (heading: string) => `Link to “${heading}”`,
+    video: (n: number) => `Video ${n}`,
+    related: "Related articles",
+    pager: "More in this topic",
+    previous: "Previous",
+    next: "Next",
+    notTranslated: {
+      eyebrow: "Not in English yet",
+      title: "This article isn't available in English yet",
+      body: "It's written in Arabic. You can read it there, or go back to the Help Center.",
+      read: "اقرأ المقالة بالعربية",
+      back: "Help Center",
+    },
+  },
   count: {
     articles: (n: number) => (n === 1 ? "1 article" : `${n} articles`),
   },
@@ -91,6 +110,25 @@ const ar: HelpCopy = {
     breadcrumb: "مركز المساعدة",
     empty: "لا مقالات في هذا الموضوع بعد.",
     subcategories: "ضمن هذا الموضوع",
+  },
+  article: {
+    breadcrumb: "مسار التنقل",
+    updated: "آخر تحديث",
+    readingTime: arabicMinutes,
+    toc: "في هذه الصفحة",
+    anchor: (heading: string) => `رابط إلى «${heading}»`,
+    video: (n: number) => `فيديو ${n}`,
+    related: "مقالات ذات صلة",
+    pager: "المزيد في هذا الموضوع",
+    previous: "السابق",
+    next: "التالي",
+    notTranslated: {
+      eyebrow: "غير متاحة بالعربية",
+      title: "هذه المقالة غير متاحة بالعربية بعد",
+      body: "كُتبت بالإنجليزية. يمكنك قراءتها بالإنجليزية أو العودة إلى مركز المساعدة.",
+      read: "Read the article in English",
+      back: "مركز المساعدة",
+    },
   },
   count: {
     articles: arabicArticles,

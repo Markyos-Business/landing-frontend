@@ -56,8 +56,39 @@ for (const path of topics.ar ?? []) {
   if (landed.status !== 200) fail(`/en${path} redirects to ${to}, which answers ${landed.status}`);
 }
 
+// Articles (C4).
+let articleCount = 0;
+for (const [lang, root] of Object.entries(ROOTS)) {
+  const html = await (await fetch(`${BASE}${root}/help`)).text();
+  const pattern = new RegExp(`href="(${root}/help/[^"/#?]+/[^"/#?]+)"`, "g");
+  const paths = [...new Set([...html.matchAll(pattern)].map((m) => m[1]))];
+  for (const path of paths) {
+    articleCount += 1;
+    const res = await fetch(BASE + path, { redirect: "manual" });
+    const page = await res.text();
+    if (res.status !== 200) {
+      fail(`${path} → ${res.status}`);
+      continue;
+    }
+    if ((page.match(/<h1[\s>]/g) ?? []).length !== 1) fail(`${path}: not exactly one h1`);
+    if (!page.includes('"@type":"Article"')) fail(`${path}: no Article structured data`);
+    if (!page.includes('"@type":"BreadcrumbList"')) fail(`${path}: no BreadcrumbList`);
+    if (!/<link rel="canonical"/.test(page)) fail(`${path}: no canonical`);
+    if (!/hrefLang="x-default"|hreflang="x-default"/i.test(page)) fail(`${path}: no hreflang`);
+
+    // The same path in the other language: a redirect, or the notice.
+    const otherRoot = lang === "en" ? "" : "/en";
+    const swapped = otherRoot + path.slice(root.length);
+    const swap = await fetch(BASE + swapped, { redirect: "manual" });
+    const ok = [301, 307, 308].includes(swap.status) || (swap.status === 200 && (await swap.text()).includes("noindex"));
+    if (!ok) fail(`${swapped} → ${swap.status} (expected a redirect or the not-translated notice)`);
+  }
+}
+
 if (failures.length) {
   console.error(`\n✗ Help Center: ${failures.length} problem(s):\n\n${failures.join("\n")}\n`);
   process.exit(1);
 }
-console.log(`\n  ✓ Help Center home and ${(topics.ar?.length ?? 0) + (topics.en?.length ?? 0)} topic pages answer in both languages.\n`);
+console.log(
+  `\n  ✓ Help Center home, ${(topics.ar?.length ?? 0) + (topics.en?.length ?? 0)} topic pages and ${articleCount} article pages answer in both languages.\n`,
+);

@@ -117,6 +117,8 @@ export type IconName =
   | "envelope"
   | "sliders"
   | "star"
+  /* The anchor beside a heading in a help article. */
+  | "link"
   | "twitter"
   | "linkedin"
   | "whatsapp";
@@ -191,6 +193,7 @@ const LA: Record<IconName, string> = {
   envelope: "envelope",
   sliders: "sliders-h",
   star: "star",
+  link: "link",
   twitter: "twitter",
   linkedin: "linkedin-in",
   whatsapp: "whatsapp",

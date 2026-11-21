@@ -70,3 +70,44 @@ export function getHelpCategory(locale: Locale, slug: string): Promise<HelpCateg
 /** The site path of an article or category, before the locale prefix. */
 export const helpPath = (category: string, article?: string): string =>
   `/help/${encodeURIComponent(category)}${article ? `/${encodeURIComponent(article)}` : ""}`;
+
+type Crumb = { title: string; slug: string };
+type Address = { categorySlug: string; slug: string };
+
+/** One published article as the website shows it (C4). */
+export type HelpArticle = {
+  id: string;
+  locale: Locale;
+  slug: string;
+  title: string;
+  summary: string;
+  bodyHtml: string;
+  seoTitle: string;
+  seoDescription: string;
+  ogImage: { url: string; alt: string } | null;
+  type: HelpCard["type"];
+  categorySlug: string;
+  author: string | null;
+  tags: string[];
+  lastReviewed: string | null;
+  publishedAt: string | null;
+  category: Crumb | null;
+  parentCategory: Crumb | null;
+  /** The same article's address in each language it is published in. */
+  alternates: Partial<Record<Locale, Address>>;
+  related: HelpCard[];
+  previous: HelpCard | null;
+  next: HelpCard | null;
+};
+
+/** `slug` decoded, as `routeSlug` returns it. */
+export function getHelpArticle(locale: Locale, slug: string): Promise<HelpArticle | null> {
+  return read<HelpArticle>(`/help/public/articles/${encodeURIComponent(slug)}/?locale=${locale}`);
+}
+
+/** Every public Help Center page, with its path (below the locale) per language. */
+export type HelpSitemapEntry = { paths: Partial<Record<Locale, string>>; lastModified?: string | null };
+
+export async function getHelpSitemap(): Promise<HelpSitemapEntry[]> {
+  return (await read<{ results: HelpSitemapEntry[] }>("/help/public/sitemap/"))?.results ?? [];
+}

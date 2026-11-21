@@ -714,6 +714,11 @@ export const editorialStyles = [
     "box-shadow": "0 0 0 1px var(--hairline-strong)",
   } },
   { ".mk-help-crumb": {
+    /* 24px tall at least (WCAG 2.2 target size): these sit in lists, not
+       inside running text, so the inline-link exception doesn't cover them. */
+    "display": "inline-block",
+    "min-block-size": "24px",
+    "padding-block": "3px",
     "color": "inherit",
     "text-decoration": "underline",
     "text-decoration-color": "transparent",
@@ -722,5 +727,151 @@ export const editorialStyles = [
   } },
   { ".mk-help-crumb:hover": {
     "text-decoration-color": "currentColor",
+  } },
+  /* ── The Help Center article (C4, 21 Nov 2026) ──────────────────────────
+   *
+   * The body beside its table of contents on a wide screen; the contents
+   * are a disclosure above the body below 64rem. Headings stop under the
+   * sticky header when a contents link or an anchor is followed.
+   */
+  { ".mk-help-article": {
+    "display": "grid",
+    "gap": "clamp(2rem, 4vw, 3.5rem)",
+  } },
+  { "@media (width >= 64rem)": {
+    ".mk-help-article": {
+      "grid-template-columns": "minmax(0, 1fr) 15rem",
+    },
+    ".mk-help-toc-inline": {
+      "display": "none",
+    },
+  } },
+  { ".mk-help-toc": {
+    "display": "none",
+  } },
+  { "@media (width >= 64rem)": {
+    ".mk-help-toc": {
+      "display": "block",
+      "position": "sticky",
+      "inset-block-start": "calc(var(--mk-header-h) + 1.5rem)",
+      "align-self": "start",
+      "max-block-size": "calc(100vh - var(--mk-header-h) - 3rem)",
+      "overflow": "auto",
+      "padding-inline-start": "1.25rem",
+      "box-shadow": "inset 1px 0 0 var(--hairline-strong)",
+    },
+    "[dir=\"rtl\"] .mk-help-toc": {
+      "box-shadow": "inset -1px 0 0 var(--hairline-strong)",
+    },
+  } },
+  { ".mk-help-toc-inline": {
+    "border-radius": "var(--radius-card)",
+    "padding": "14px 16px",
+    "background": "var(--surface-1)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-help-toc-inline summary": {
+    "cursor": "pointer",
+    "font-size": "var(--fs-ui)",
+    "font-weight": "500",
+    "color": "var(--text)",
+  } },
+  { ".mk-help-meta": {
+    "display": "flex",
+    "flex-wrap": "wrap",
+    "gap": "6px 18px",
+    "font-size": "var(--fs-ui)",
+    "color": "var(--text-muted)",
+  } },
+  { ".mk-help-body :is(h2, h3)": {
+    "scroll-margin-block-start": "calc(var(--mk-header-h) + 1.5rem)",
+  } },
+  { ".mk-anchor": {
+    "display": "inline-grid",
+    "place-items": "center",
+    "inline-size": "1.75rem",
+    "block-size": "1.75rem",
+    "margin-inline-start": "0.4rem",
+    "vertical-align": "middle",
+    "border-radius": "var(--mk-r-button)",
+    "font-size": "16px",
+    "color": "var(--text-muted)",
+    "text-decoration": "none",
+    "opacity": "0",
+    "transition": "opacity var(--mk-dur-fast) var(--mk-ease)",
+  } },
+  { ":is(h2, h3):hover > .mk-anchor, .mk-anchor:focus-visible": {
+    "opacity": "1",
+  } },
+  { "@media (hover: none)": {
+    ".mk-anchor": {
+      "opacity": "1",
+    },
+  } },
+  { ".mk-prose .mk-anchor:hover": {
+    "color": "var(--text)",
+  } },
+  { ".mk-video": {
+    "display": "block",
+    "aspect-ratio": "16 / 9",
+    "overflow": "hidden",
+    "border-radius": "var(--radius-widget)",
+    "background": "var(--surface-2)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-video iframe": {
+    "display": "block",
+    "inline-size": "100%",
+    "block-size": "100%",
+    "border": "0",
+  } },
+  { ".mk-video-print": {
+    "display": "none",
+  } },
+  { ".mk-help-body aside": {
+    "border-radius": "var(--radius-widget)",
+    "padding": "14px 18px",
+    "box-shadow": "inset 3px 0 0 var(--accent)",
+    "background": "var(--accent-soft)",
+  } },
+  { "[dir=\"rtl\"] .mk-help-body aside": {
+    "box-shadow": "inset -3px 0 0 var(--accent)",
+  } },
+  { ".mk-help-body aside.callout-warning": {
+    "box-shadow": "inset 3px 0 0 var(--mk-state-expiring)",
+    "background": "var(--mk-state-expiring-soft)",
+  } },
+  { "[dir=\"rtl\"] .mk-help-body aside.callout-warning": {
+    "box-shadow": "inset -3px 0 0 var(--mk-state-expiring)",
+  } },
+  { ".mk-help-pager": {
+    "display": "grid",
+    "gap": "12px",
+  } },
+  { "@media (width >= 40rem)": {
+    ".mk-help-pager": {
+      "grid-template-columns": "1fr 1fr",
+    },
+    ".mk-help-pager-next": {
+      "grid-column": "2",
+      "text-align": "end",
+      "justify-content": "flex-end",
+    },
+  } },
+  { "@media print": {
+    "header, footer, .mk-no-print, .mk-anchor, .mk-video": {
+      "display": "none !important",
+    },
+    ".mk-video-print": {
+      "display": "inline",
+    },
+    ".mk-help-article": {
+      "display": "block",
+    },
+    ".mk-help-body a[href^=\"http\"]::after": {
+      "content": "\" (\" attr(href) \")\"",
+      "font-size": "0.8em",
+      "overflow-wrap": "anywhere",
+    },
   } },
 ];
