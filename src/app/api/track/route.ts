@@ -1,8 +1,8 @@
-import { createHash, randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { contentApiUrl, contentSiteKey } from "@/lib/content/djangoClient";
 import { LOCALES } from "@/lib/i18n/locales";
+import { visitorHash } from "@/lib/visitor";
 
 /*
  * The tracking endpoint.
@@ -25,38 +25,6 @@ const BodySchema = z.object({
   referrer: z.string().max(2048).optional(),
 });
 
-/*
- * The daily salt.
- *
- * Regenerated whenever the date changes, and never written anywhere. Once it
- * rolls over, yesterday's hashes cannot be matched to today's even by us —
- * which is the property that makes this safe to run without asking consent.
- *
- * In-memory means each server instance has its own salt, so a visitor spread
- * across instances may count more than once. That is a deliberate trade:
- * counting slightly high on unique visitors is a much smaller problem than
- * persisting a key that could link a person across days.
- */
-let salt = randomBytes(32);
-let saltDay = "";
-
-function dailySalt(): Buffer {
-  const today = new Date().toISOString().slice(0, 10);
-  if (today !== saltDay) {
-    salt = randomBytes(32);
-    saltDay = today;
-  }
-  return salt;
-}
-
-function visitorHash(ip: string, userAgent: string): string {
-  return createHash("sha256")
-    .update(dailySalt())
-    .update(ip)
-    .update(userAgent)
-    .digest("hex")
-    .slice(0, 32);
-}
 
 /** Coarse device class from the user agent. Three buckets is all a marketing dashboard needs. */
 function deviceOf(userAgent: string): "mobile" | "tablet" | "desktop" {

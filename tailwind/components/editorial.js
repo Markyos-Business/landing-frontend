@@ -874,4 +874,48 @@ export const editorialStyles = [
       "overflow-wrap": "anywhere",
     },
   } },
+  /* ── Help Center search (C5, 21 Nov 2026) ────────────────────────────── */
+  { ".mk-help-hit mark": {
+    "background": "var(--accent-soft)",
+    "color": "var(--text)",
+    "border-radius": "3px",
+    "padding-inline": "1px",
+  } },
+  /* The result the arrow keys are on: the same ring as a focused control. */
+  { ".mk-help-hit.is-active": {
+    "background": "var(--surface-2)",
+    "box-shadow": "0 0 0 1.5px var(--accent), 0 0 0 5px rgba(0, 153, 255, 0.12)",
+  } },
+  /* Filter pills: the site's one pill-shaped control besides avatars (§7). */
+  { ".mk-help-chip": {
+    "display": "inline-flex",
+    "align-items": "center",
+    "gap": "6px",
+    "min-block-size": "32px",
+    "border-radius": "var(--radius-pill)",
+    "padding-inline": "12px",
+    "font-size": "var(--fs-ui)",
+    "color": "var(--text-muted)",
+    "background": "var(--surface-1)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+    "transition": "background-color var(--mk-dur-fast) var(--mk-ease), color var(--mk-dur-fast) var(--mk-ease)",
+  } },
+  { ".mk-help-chip:hover": {
+    "color": "var(--text)",
+    "background": "var(--surface-2)",
+  } },
+  { ".mk-help-chip[aria-pressed=\"true\"]": {
+    "color": "var(--text)",
+    "background": "var(--accent-soft)",
+    "box-shadow": "0 0 0 1.5px var(--accent)",
+  } },
+  { ".mk-help-chip-count": {
+    "font-size": "var(--fs-eyebrow)",
+    "color": "var(--text-muted)",
+  } },
+  { "@media (pointer: coarse)": {
+    ".mk-help-chip": {
+      "min-block-size": "44px",
+    },
+  } },
 ];

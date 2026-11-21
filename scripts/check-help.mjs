@@ -85,6 +85,23 @@ for (const [lang, root] of Object.entries(ROOTS)) {
   }
 }
 
+// Search (C5): the page answers with results for a word from the first
+// article's title, is never indexed, and the instant-results route answers.
+for (const [lang, root] of Object.entries(ROOTS)) {
+  const home = await (await fetch(`${BASE}${root}/help`)).text();
+  const title = home.match(/class="mk-bidi block[^"]*font-medium[^"]*mk-underline-reveal">([^<]+)</)?.[1] ?? "";
+  const word = title.split(/\s+/).find((w) => w.length > 3) ?? "";
+  if (!word) continue;
+  const page = await fetch(`${BASE}${root}/help/search?q=${encodeURIComponent(word)}`);
+  const html = await page.text();
+  if (page.status !== 200) fail(`${root}/help/search → ${page.status}`);
+  if (!html.includes("noindex")) fail(`${root}/help/search is indexable`);
+  if (!html.includes('role="option"')) fail(`${root}/help/search?q=${word}: no results rendered`);
+  const api = await fetch(`${BASE}/api/help/search?q=${encodeURIComponent(word)}&locale=${lang}`);
+  const data = api.ok ? await api.json() : null;
+  if (!data || !(data.total > 0)) fail(`/api/help/search?q=${word}&locale=${lang} → ${api.status}, ${data?.total ?? "no"} results`);
+}
+
 if (failures.length) {
   console.error(`\n✗ Help Center: ${failures.length} problem(s):\n\n${failures.join("\n")}\n`);
   process.exit(1);

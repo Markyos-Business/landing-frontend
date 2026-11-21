@@ -17,6 +17,23 @@ import { arabicArticles, arabicMinutes } from "../editorial/copy";
 
 type ArticleType = "guide" | "tutorial" | "faq" | "troubleshooting";
 
+const AR_PLURAL = new Intl.PluralRules("ar");
+
+function arabicResults(count: number): string {
+  switch (AR_PLURAL.select(count)) {
+    case "zero":
+      return "لا نتائج";
+    case "one":
+      return "نتيجة واحدة";
+    case "two":
+      return "نتيجتان";
+    case "few":
+      return `${count} نتائج`;
+    default:
+      return `${count} نتيجة`;
+  }
+}
+
 const ARTICLE_TYPES: Record<Locale, Record<ArticleType, string>> = {
   en: { guide: "Guide", tutorial: "Tutorial", faq: "FAQ", troubleshooting: "Troubleshooting" },
   ar: { guide: "دليل", tutorial: "شرح خطوة بخطوة", faq: "سؤال شائع", troubleshooting: "حل مشكلة" },
@@ -71,6 +88,22 @@ const en = {
       read: "اقرأ المقالة بالعربية",
       back: "Help Center",
     },
+  },
+  search: {
+    meta: { title: "Search — Help Center — Markyos", description: "Search the Markyos Help Center." },
+    title: "Search the Help Center",
+    label: "Search the Help Center",
+    placeholder: "Search for an answer…",
+    clear: "Clear search",
+    results: "Search results",
+    status: (n: number, q: string) => (n === 1 ? `1 result for “${q}”` : `${n} results for “${q}”`),
+    searching: "Searching…",
+    hint: "Type at least two letters.",
+    error: "Search isn't available right now. Try again in a moment.",
+    filters: { label: "Filter results", topic: "Topic", type: "Type", all: "All" },
+    none: (q: string) => `No articles match “${q}”.`,
+    suggestions: "Did you mean",
+    popular: "Popular articles",
   },
   count: {
     articles: (n: number) => (n === 1 ? "1 article" : `${n} articles`),
@@ -129,6 +162,22 @@ const ar: HelpCopy = {
       read: "Read the article in English",
       back: "مركز المساعدة",
     },
+  },
+  search: {
+    meta: { title: "البحث — مركز المساعدة — ماركيوس", description: "ابحث في مركز مساعدة ماركيوس." },
+    title: "ابحث في مركز المساعدة",
+    label: "ابحث في مركز المساعدة",
+    placeholder: "ابحث عن إجابة…",
+    clear: "امسح البحث",
+    results: "نتائج البحث",
+    status: (n: number, q: string) => `${arabicResults(n)} لـ«${q}»`,
+    searching: "جارٍ البحث…",
+    hint: "اكتب حرفين على الأقل.",
+    error: "البحث غير متاح الآن. حاول بعد قليل.",
+    filters: { label: "تصفية النتائج", topic: "الموضوع", type: "النوع", all: "الكل" },
+    none: (q: string) => `لا توجد مقالات تطابق «${q}».`,
+    suggestions: "ربما تقصد",
+    popular: "الأكثر قراءة",
   },
   count: {
     articles: arabicArticles,

@@ -1,6 +1,7 @@
 import "server-only";
 import type { Locale } from "@/lib/i18n/locales";
-import { CONTENT_TAG, contentApi } from "./djangoClient";
+import { CONTENT_TAG, contentApi, contentApiUrl } from "./djangoClient";
+import { upstreamHeaders } from "./helpSearch";
 
 /*
  * The Help Center, read from the platform's help API (`/help/public/...`).
@@ -110,4 +111,48 @@ export type HelpSitemapEntry = { paths: Partial<Record<Locale, string>>; lastMod
 
 export async function getHelpSitemap(): Promise<HelpSitemapEntry[]> {
   return (await read<{ results: HelpSitemapEntry[] }>("/help/public/sitemap/"))?.results ?? [];
+}
+
+/** One search result: a card with the matching stretch of the body. */
+export type HelpSearchHit = HelpCard & { snippet: string };
+
+export type HelpSearchResponse = {
+  query: string;
+  total: number;
+  results: HelpSearchHit[];
+  facets: {
+    categories: { id: number; title: string; count: number }[];
+    types: { type: HelpCard["type"]; count: number }[];
+  };
+  suggestions: HelpCard[];
+  popular?: HelpCard[];
+  queryId?: number;
+};
+
+/**
+ * A search for the page's first render (C5). Never logged and never cached:
+ * the browser logs the query itself once the reader settles on it, so link
+ * prefetches and crawlers don't count as searches.
+ */
+export async function searchHelp(
+  locale: Locale,
+  params: { q: string; category?: string; type?: string },
+  /** The visitor's request headers: the call is signed and limited per visitor. */
+  incoming: Headers,
+): Promise<HelpSearchResponse | null> {
+  const root = contentApiUrl();
+  if (!root) return null;
+  const query = new URLSearchParams({ q: params.q.slice(0, 200), locale });
+  if (params.category && /^\d+$/.test(params.category)) query.set("category", params.category);
+  if (params.type && /^[a-z]+$/.test(params.type)) query.set("type", params.type);
+  try {
+    const response = await fetch(`${root}/help/public/search/?${query}`, {
+      headers: upstreamHeaders(new Request("http://site.invalid", { headers: incoming })),
+      cache: "no-store",
+      signal: AbortSignal.timeout(5000),
+    });
+    return response.ok ? ((await response.json()) as HelpSearchResponse) : null;
+  } catch {
+    return null;
+  }
 }
