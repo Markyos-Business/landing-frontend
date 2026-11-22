@@ -3,7 +3,7 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { Words } from "@/components/ui";
 import { useState } from "react";
-import type { PricingTeaserCopy } from "@/content/types";
+import type { PricingTeaserCopy, PricingTeaserPlans } from "@/content/types";
 import { TextLink, Display, INK_55, Lead, Pool, TRACK } from "../landing";
 import { Toggle } from "./Toggle";
 import { Plan } from "./Plan";
@@ -14,8 +14,8 @@ import { Plan } from "./Plan";
  * ── Two audiences, one grid ──────────────────────────────────────────────
  *
  * Account types determine the current per-brand price. Studios and freelancers
- * share a panel; companies have their own. Both use the same pricing catalog
- * as the full pricing page.
+ * share a panel; companies have their own. The cards come from the backend's
+ * plans (`teaserPlans`, read by the homepage), like the full pricing page.
  *
  * It is a real radio group, not two buttons: the two options are mutually
  * exclusive states of one control, so arrow keys move between them and a
@@ -25,11 +25,11 @@ import { Plan } from "./Plan";
  *
  */
 
-export function PricingTeaser({ copy, locale }: {
-  locale: Locale; copy: PricingTeaserCopy }) {
+export function PricingTeaser({ copy, cards, locale }: {
+  locale: Locale; copy: PricingTeaserCopy; cards: PricingTeaserPlans }) {
   const [audience, setAudience] = useState<"studio" | "company">("studio");
   const studio = audience === "studio";
-  const plans = studio ? copy.studioPlans : copy.companyPlans;
+  const plans = studio ? cards.studioPlans : cards.companyPlans;
 
   return (
     <section

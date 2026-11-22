@@ -66,8 +66,12 @@ export type TermItem = {
 
 export type PlanCard = {
   name: string;
-  /** Rendered as written: "24 دولاراً" or "مجاناً". Never computed. */
-  price: string;
+  /**
+   * The amount, rendered as written. Absent when the figure is unknown: the
+   * current plans come from the backend (`/billing/plans/`), and a page built
+   * while it was unreachable shows the plan without inventing a number.
+   */
+  price?: string;
   /** "شهرياً" — the unit under the figure. */
   period?: string;
   /**
@@ -388,6 +392,23 @@ export type PageBlock =
       from: { label: string; icon: IconName }[];
       /** The nine solutions, short enough to be a chip. */
       to: string[];
+    }
+  /**
+   * A section whose figures are the backend's current plans.
+   *
+   * The copy is here; the prices and limits are not. The block renderer reads
+   * `/billing/plans/` and turns this into a `plans` or `table` block with
+   * `resolvePriced` (content/current-pricing.ts), so the site never keeps a
+   * second copy of what the app charges.
+   */
+  | {
+      kind: "priced";
+      id?: string;
+      /** `plans`: the three account cards. `compare`: free vs each type. `audience`: free vs one type. */
+      part: "plans" | "compare" | "audience";
+      /** Which account type an `audience` table is about. */
+      type?: "freelancer" | "studio" | "company";
+      title?: string;
     }
   /** The closing call to action. One per page, last. */
   | {

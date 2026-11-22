@@ -8,6 +8,8 @@ import { ChoosePath } from "@/components/public/home/ChoosePath";
 import { Bilingual } from "@/components/public/home/bilingual";
 import { PricingTeaser } from "@/components/public/home/pricing-teaser";
 import { Faq } from "@/components/public/home/Faq";
+import { teaserPlans } from "@/content/current-pricing";
+import { getPlans } from "@/lib/billing/plans";
 
 /*
  * The homepage — `Landing Copy/Markyos Landing AR (readable).html`.
@@ -53,6 +55,8 @@ export default async function HomePage() {
   const locale = await getLocale();
   const copy = await getCopyFor(locale);
   const { home, chips } = copy;
+  // The pricing cards' figures are the backend's; see src/lib/billing/plans.ts.
+  const cards = teaserPlans(locale, await getPlans());
 
   return (
     <>
@@ -81,7 +85,7 @@ export default async function HomePage() {
       {/* 6 */} <ReplaceStack locale={locale} copy={home.replaceStack} chips={chips} />
       {/* 7 */} <AiAlongside locale={locale} copy={home.aiAlongside} chips={chips} />
       {/* 8 */} <Bilingual copy={home.bilingual} locale={locale} />
-      {/* 9 */} <PricingTeaser locale={locale} copy={home.pricingTeaser} />
+      {/* 9 */} <PricingTeaser locale={locale} copy={home.pricingTeaser} cards={cards} />
       {/* 9 */} <Faq locale={locale} copy={home.faq} chips={chips} />
 
       {/*

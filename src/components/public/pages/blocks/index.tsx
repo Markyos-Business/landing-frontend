@@ -16,6 +16,7 @@ import { WebBlock } from "./WebBlock";
 import { ExplorerBlock } from "./ExplorerBlock";
 import { FaqBlock } from "./FaqBlock";
 import { PlansBlock } from "./PlansBlock";
+import { PricedBlock } from "./PricedBlock";
 import { CtaBlock } from "./CtaBlock";
 
 /*
@@ -85,6 +86,8 @@ export function Block({
       return <FaqBlock block={block} ctx={ctx} headingId={headingId} white={white} />;
     case "plans":
       return <PlansBlock block={block} ctx={ctx} headingId={headingId} white={white} />;
+    case "priced":
+      return <PricedBlock block={block} ctx={ctx} headingId={headingId} white={white} />;
     case "cta":
       return <CtaBlock block={block} ctx={ctx} headingId={headingId} />;
     case "audience":

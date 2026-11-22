@@ -99,27 +99,31 @@ export function PlansBlock({
                 belongs to and the switch above shows one of them. A plan with
                 no annual rate has no `data-bill` at all, so it is shown in
                 both — see BillingSwitch, and `[data-billing]` in tailwind/. */}
-            <p className="@container/plan mt-4 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-              <span
-                data-bill={plan.annual ? "monthly" : undefined}
-                className="mk-bidi whitespace-nowrap text-[1.25rem] font-medium leading-none tracking-[-0.04em] text-[var(--text)] @[10rem]/plan:text-[1.5rem] @[17rem]/plan:text-[length:var(--fs-d3)]"
-              >
-                {plan.price}
-              </span>
-              {plan.annual ? (
+            {/* No amount without a figure: a page built while the backend's
+                plans were unreachable shows the card and its sign-up link. */}
+            {plan.price ? (
+              <p className="@container/plan mt-4 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
                 <span
-                  data-bill="annual"
+                  data-bill={plan.annual ? "monthly" : undefined}
                   className="mk-bidi whitespace-nowrap text-[1.25rem] font-medium leading-none tracking-[-0.04em] text-[var(--text)] @[10rem]/plan:text-[1.5rem] @[17rem]/plan:text-[length:var(--fs-d3)]"
                 >
-                  {plan.annual.price}
+                  {plan.price}
                 </span>
-              ) : null}
-              {plan.period ? (
-                <span className="mk-bidi whitespace-nowrap text-[length:var(--fs-ui)] font-medium leading-none text-[var(--text-muted)]">
-                  {plan.period}
-                </span>
-              ) : null}
-            </p>
+                {plan.annual ? (
+                  <span
+                    data-bill="annual"
+                    className="mk-bidi whitespace-nowrap text-[1.25rem] font-medium leading-none tracking-[-0.04em] text-[var(--text)] @[10rem]/plan:text-[1.5rem] @[17rem]/plan:text-[length:var(--fs-d3)]"
+                  >
+                    {plan.annual.price}
+                  </span>
+                ) : null}
+                {plan.period ? (
+                  <span className="mk-bidi whitespace-nowrap text-[length:var(--fs-ui)] font-medium leading-none text-[var(--text-muted)]">
+                    {plan.period}
+                  </span>
+                ) : null}
+              </p>
+            ) : null}
             {plan.annual?.note ? (
               <p
                 data-bill="annual"
@@ -134,22 +138,24 @@ export function PlansBlock({
               </p>
             ) : null}
 
-            <dl className="mt-5 space-y-3 border-t border-[var(--hairline)] pt-4">
-              {plan.rows.map((row) => (
-                <div key={row.label} className="flex items-baseline justify-between gap-4">
-                  <dt className="mk-bidi text-[length:var(--fs-ui)] leading-[1.5] text-[var(--text-muted)]">
-                    {row.label}
-                  </dt>
-                  <dd
-                    className={`mk-bidi shrink-0 text-[length:var(--fs-ui)] font-medium ${
-                      row.strong ? "text-[var(--accent-text)]" : "text-[var(--text)]"
-                    }`}
-                  >
-                    {row.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            {plan.rows.length ? (
+              <dl className="mt-5 space-y-3 border-t border-[var(--hairline)] pt-4">
+                {plan.rows.map((row) => (
+                  <div key={row.label} className="flex items-baseline justify-between gap-4">
+                    <dt className="mk-bidi text-[length:var(--fs-ui)] leading-[1.5] text-[var(--text-muted)]">
+                      {row.label}
+                    </dt>
+                    <dd
+                      className={`mk-bidi shrink-0 text-[length:var(--fs-ui)] font-medium ${
+                        row.strong ? "text-[var(--accent-text)]" : "text-[var(--text)]"
+                      }`}
+                    >
+                      {row.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
 
             {plan.features?.length ? (
               <ul className="mt-4 space-y-2.5">

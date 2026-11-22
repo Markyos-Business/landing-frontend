@@ -2,7 +2,7 @@ import { currentPricingPage } from "../../current-pricing.ts";
 import type { PageDoc } from "../types";
 import { CTA, HOME, LINK } from "./_shared";
 
-/** Prices and copy reflect the current per-brand checkout, shared with the homepage. */
+/** Pricing copy, shared with the homepage; the figures are the backend's /billing/plans/ at render. */
 
 const pricing = currentPricingPage("en");
 

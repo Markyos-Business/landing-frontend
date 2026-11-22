@@ -4,7 +4,21 @@ import path from "node:path";
 import vm from "node:vm";
 import ts from "typescript";
 
+/*
+ * Pricing has one source: the backend's `GET /billing/plans/`, read at render
+ * by src/lib/billing/plans.ts. This check keeps it that way.
+ *
+ *   1. No price figure is written into the pricing content or components.
+ *   2. Nothing sells what isn't sold: no Stripe, no Project Pass, no annual
+ *      billing, no `?plan=` on a sign-up link.
+ *   3. The account types the site lays out are the backend's PRICES keys
+ *      (when ../markyos-backend is checked out beside this repo).
+ *   4. The builders render both locales with figures from a sample payload,
+ *      and without any when the backend was unreachable.
+ */
+
 const root = path.resolve(import.meta.dirname, "..");
+const rel = (file) => path.relative(root, file);
 const cache = new Map();
 function load(file) {
   file = path.resolve(file);
@@ -20,35 +34,112 @@ function load(file) {
     if (!fs.existsSync(target)) target += ".ts";
     return load(target);
   };
-  vm.runInNewContext(`(function(require,module,exports){${code}\n})`, {}, { filename: file })(requireLocal, loadedModule, loadedModule.exports);
+  vm.runInNewContext(`(function(require,module,exports){${code}\n})`, { Intl }, { filename: file })(requireLocal, loadedModule, loadedModule.exports);
   return loadedModule.exports;
 }
-const { CURRENT_PRICES, CURRENT_LIMITS, currentPricingPage, currentPricingTeaser } = load(path.join(root, "content/current-pricing.ts"));
+// Comments may still explain history; only shipped strings count.
+const withoutComments = (code) =>
+  ts.transpileModule(code, { compilerOptions: { removeComments: true, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.Preserve } }).outputText;
+const walk = (dir) =>
+  fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) return walk(full);
+    return /\.(ts|tsx|md|mdx|json)$/.test(entry.name) ? [full] : [];
+  });
+const shipped = (file) => {
+  const raw = fs.readFileSync(file, "utf8");
+  return /\.(ts|tsx)$/.test(file) ? withoutComments(raw) : raw;
+};
+
+const pricing = load(path.join(root, "content/current-pricing.ts"));
+const { ACCOUNT_TYPES, currentPricingPage, currentPricingTeaser, resolvePriced, teaserPlans } = pricing;
+assert.equal(pricing.CURRENT_PRICES, undefined, "CURRENT_PRICES is back: prices come from /billing/plans/");
+assert.equal(pricing.CURRENT_LIMITS, undefined, "CURRENT_LIMITS is back: limits come from /billing/plans/");
+
+// 1. No hard-coded price figures where pricing is written or drawn.
+const PRICING_FILES = [
+  "content/current-pricing.ts",
+  "content/pages/en/pricing.ts",
+  "content/pages/ar/pricing.ts",
+  "src/components/public/home/pricing-teaser",
+  "src/components/public/pages/blocks/PlansBlock.tsx",
+  "src/components/public/pages/blocks/PricedBlock.tsx",
+  "src/lib/billing",
+].flatMap((p) => {
+  const full = path.join(root, p);
+  return fs.statSync(full).isDirectory() ? walk(full) : [full];
+});
+const CURRENCY_FIGURE = [
+  /[$€£]\s?\d/, // $29, $ 29
+  /\d+(\.\d+)?\s?(USD|usd|SAR|دولار|ريال)/, // 29 USD, 29 دولاراً
+  /(USD|SAR)\s?\d/, // USD 29
+  /\b\d{3,5}\s*(cents|سنت)/, // 2900 cents
+];
+// A literal amount in a number slot: { monthly: 2900 }, subscription: 29.
+const AMOUNT_FIELD = /\b(monthly|subscription|price|amount)\s*:\s*\d/;
+const figures = [];
+for (const file of PRICING_FILES) {
+  const text = shipped(file);
+  for (const pattern of [...CURRENCY_FIGURE, AMOUNT_FIELD]) {
+    const hit = text.match(pattern);
+    if (hit) figures.push(`${rel(file)}: "${hit[0]}"`);
+  }
+}
+assert.deepEqual(figures, [], `Hard-coded price figures; read them from /billing/plans/:\n${figures.join("\n")}`);
+
+// The current plan amounts, written as money anywhere on the site.
+const backendFile = path.resolve(root, "../markyos-backend/apps/brands/billing.py");
+const backendSource = fs.existsSync(backendFile) ? fs.readFileSync(backendFile, "utf8") : null;
+const amounts = new Set([19, 29, 99]);
+if (backendSource) {
+  for (const [, cents] of backendSource.matchAll(/"subscription":\s*(\d+)/g)) amounts.add(Number(cents) / 100);
+}
+const list = [...amounts].join("|");
+const PLAN_AMOUNT = [new RegExp(`\\$\\s?(${list})(?![\\d.,])`), new RegExp(`(?<![\\d.])(${list})\\s?(USD|دولار)`)];
+const stray = [];
+for (const file of [...walk(path.join(root, "content")), ...walk(path.join(root, "src"))]) {
+  const text = shipped(file);
+  for (const pattern of PLAN_AMOUNT) {
+    const hit = text.match(pattern);
+    if (hit) stray.push(`${rel(file)}: "${hit[0]}"`);
+  }
+}
+assert.deepEqual(stray, [], `A current plan price is written into the site:\n${stray.join("\n")}`);
+
+// 2. Retired products and providers never appear on the site again.
+const RETIRED = [/project pass/i, /تصريح (ال)?مشروع/, /\bstripe\b/i];
+const offenders = [];
+for (const file of [...walk(path.join(root, "content")), ...walk(path.join(root, "src/components"))]) {
+  const text = shipped(file);
+  for (const pattern of RETIRED) if (pattern.test(text)) offenders.push(`${rel(file)}: ${pattern}`);
+}
+assert.deepEqual(offenders, [], `Retired pricing still on the site:\n${offenders.join("\n")}`);
+
+// 3. The account types are the backend's.
+let compared = false;
+if (backendSource) {
+  const literal = backendSource.match(/^PRICES = \{([\s\S]*?)\n\}/m);
+  assert(literal, "PRICES not found in markyos-backend/apps/brands/billing.py");
+  const keys = [...literal[1].matchAll(/^\s{4}"([a-z_]+)":/gm)].map((m) => m[1]);
+  assert.deepEqual([...keys].sort(), ["company", "freelancer", "studio"], "backend PRICES keys must be studio/freelancer/company");
+  assert.deepEqual([...ACCOUNT_TYPES].sort(), [...keys].sort(), "site account types drift from backend PRICES");
+  compared = true;
+}
+
+// 4. Both locales render from a payload, and without one.
 const serial = (value) => JSON.parse(JSON.stringify(value));
-let comparisons = 0;
-
-// The app sells one thing: a monthly PayPal plan per brand. Every figure on
-// the site must be the backend's, and nothing may sell what isn't sold.
-const backend = path.resolve(root, "../markyos-backend/apps/brands/billing.py");
-if (fs.existsSync(backend)) {
-  const literal = fs.readFileSync(backend, "utf8").match(/PRICES = (\{[\s\S]*?\n\})/)[1];
-  const cents = JSON.parse(literal.replace(/,\s*([}\]])/g, "$1"));
-  assert.deepEqual(Object.keys(cents).sort(), Object.keys(CURRENT_PRICES).sort(), "account types drift from backend PRICES");
-  for (const [account, prices] of Object.entries(cents)) {
-    assert.equal(CURRENT_PRICES[account].subscription * 100, prices.subscription, `${account}: backend monthly price drift`);
-  }
-  comparisons++;
-}
-const platform = path.resolve(root, "../markyos-frontend/src/constants/accountTypes.ts");
-if (fs.existsSync(platform)) {
-  const { ACCOUNT_TYPES } = load(platform);
-  for (const [account, prices] of Object.entries(CURRENT_PRICES)) {
-    assert.equal(prices.subscription, ACCOUNT_TYPES[account].prices.subscription, `${account}: platform monthly price drift`);
-    assert.deepEqual(serial(CURRENT_LIMITS[account]), serial(ACCOUNT_TYPES[account].limits), `${account}: platform limits drift`);
-  }
-  comparisons++;
-}
-
+const SAMPLE = {
+  currency: "usd",
+  interval: "month",
+  perBrand: true,
+  free: { brands: 1, editors: 0 },
+  types: {
+    studio: { monthly: 4100, limits: { brands: null, editors: null } },
+    freelancer: { monthly: 3100, limits: { brands: 3, editors: 0 } },
+    company: { monthly: 13100, limits: { brands: 1, editors: null } },
+  },
+};
+const asText = (value) => JSON.stringify(value);
 for (const locale of ["en", "ar"]) {
   const { pricingPages } = load(path.join(root, `content/pages/${locale}/pricing.ts`));
   const page = pricingPages.find((p) => p.path === "/pricing");
@@ -56,40 +147,46 @@ for (const locale of ["en", "ar"]) {
   const home = load(path.join(root, `content/${locale}/${locale === "en" ? "index" : "overrides"}.ts`));
   const teaser = (home.copy ?? home.overrides).home.pricingTeaser;
   assert.deepEqual(serial(teaser), serial(currentPricingTeaser(locale)));
-  const plans = page.blocks.find((b) => b.kind === "plans");
+
+  const priced = page.blocks.filter((b) => b.kind === "priced");
+  assert.deepEqual(serial(priced.map((b) => b.part).sort()), ["compare", "plans"], "/pricing shows the plans and the free-vs-paid comparison");
+  for (const block of priced) {
+    const withFigures = asText(resolvePriced(block, locale, SAMPLE));
+    const without = asText(resolvePriced(block, locale, null));
+    for (const figure of ["$41", "$31", "$131"]) {
+      assert(withFigures.includes(figure), `${locale} ${block.part}: ${figure} from the payload is not shown`);
+      assert(!without.includes(figure), `${locale} ${block.part}: a figure shown without plans`);
+    }
+    assert(!/[$]\s?\d/.test(without), `${locale} ${block.part}: a figure shown without plans`);
+  }
+
+  const plans = resolvePriced(priced.find((b) => b.part === "plans"), locale, SAMPLE);
   assert.equal(plans.plans.length, 3);
   assert.equal(plans.billing, undefined, "Do not advertise annual billing without backend support");
   for (const plan of plans.plans) {
     const url = new URL(plan.cta.href, "https://markyos.test");
     const type = url.searchParams.get("type");
-    assert(type in CURRENT_PRICES);
+    assert(ACCOUNT_TYPES.includes(type));
     assert.equal(url.searchParams.has("plan"), false, "Signup must not imply a paid purchase");
-    assert.equal(plan.price, `$${CURRENT_PRICES[type].subscription}`);
+    assert.equal(plan.price, `$${SAMPLE.types[type].monthly / 100}`);
     assert.equal(plan.annual, undefined);
   }
-  for (const plan of [...teaser.studioPlans, ...teaser.companyPlans]) {
-    assert.equal(new URL(plan.cta.href, "https://markyos.test").searchParams.has("plan"), false);
-    assert(plan.price.startsWith("$"));
+
+  const compare = resolvePriced(priced.find((b) => b.part === "compare"), locale, SAMPLE);
+  assert.equal(compare.head.length, 2 + ACCOUNT_TYPES.length, "free column plus one per account type");
+  assert.equal(compare.rows[1][1], String(SAMPLE.free.brands), "free brands come from the payload");
+
+  for (const plans of [SAMPLE, null]) {
+    const cards = teaserPlans(locale, plans);
+    for (const plan of [...cards.studioPlans, ...cards.companyPlans]) {
+      assert.equal(new URL(plan.cta.href, "https://markyos.test").searchParams.has("plan"), false);
+      assert.equal(Boolean(plan.price), Boolean(plans));
+    }
   }
 }
 
-// Retired products and providers never appear on the site again.
-const RETIRED = [/project pass/i, /تصريح (ال)?مشروع/, /\bstripe\b/i];
-const walk = (dir) =>
-  fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) return walk(full);
-    return /\.(ts|tsx|md|mdx|json)$/.test(entry.name) ? [full] : [];
-  });
-// Comments may still explain history; only shipped strings count.
-const withoutComments = (code) =>
-  ts.transpileModule(code, { compilerOptions: { removeComments: true, target: ts.ScriptTarget.ES2022 } }).outputText;
-const offenders = [];
-for (const file of walk(path.join(root, "content"))) {
-  const raw = fs.readFileSync(file, "utf8");
-  const text = /\.(ts|tsx)$/.test(file) ? withoutComments(raw) : raw;
-  for (const pattern of RETIRED) if (pattern.test(text)) offenders.push(`${path.relative(root, file)}: ${pattern}`);
-}
-assert.deepEqual(offenders, [], `Retired pricing still on the site:\n${offenders.join("\n")}`);
-
-console.log(`Pricing: both locales and homepage agree, no retired products; ${comparisons} sibling billing contracts compared${comparisons < 2 ? " (missing sibling repositories skipped)" : ""}.`);
+console.log(
+  `Pricing: no hard-coded figures, no retired products; both locales render from /billing/plans/ and without it; ${
+    compared ? "account types match backend PRICES" : "markyos-backend not found, PRICES keys skipped"
+  }.`,
+);

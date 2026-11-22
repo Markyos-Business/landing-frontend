@@ -57,11 +57,14 @@ export function Plan({
       </div>
 
       {/* The number carries the weight, the unit does not — §11. */}
-      <p style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "18px 0 0" }}>
-        <span className="mk-bidi" style={{ fontSize: 44, fontWeight: 500, lineHeight: 1 }}>
-          {plan.price}
-        </span>
-      </p>
+      {/* Absent when the backend's plans were unreachable at build. */}
+      {plan.price ? (
+        <p style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "18px 0 0" }}>
+          <span className="mk-bidi" style={{ fontSize: 44, fontWeight: 500, lineHeight: 1 }}>
+            {plan.price}
+          </span>
+        </p>
+      ) : null}
 
       <dl style={{ display: "flex", flexDirection: "column", margin: "22px 0 0", flex: 1 }}>
         {plan.rows.map((row) => (
