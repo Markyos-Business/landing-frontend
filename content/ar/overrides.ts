@@ -1,21 +1,16 @@
-import { CURRENT_PRICES, currentPricingTeaser } from "../current-pricing.ts";
+import { LOWEST_PAID_MONTHLY, currentPricingTeaser } from "../current-pricing.ts";
 import type { DeepPartial, SiteCopy } from "../types";
 
 /*
- * The cheapest monthly subscription on offer, read from the prices the
- * checkout actually charges rather than typed out here.
+ * The lowest paid price on the site, read from the plan catalogue rather than
+ * typed out here.
  *
- * v4 §2.7 moves pricing off the homepage and into one line in the last call.
- * The deck writes that line as "from $24 a month", which belongs to v4's own
- * proposed plans; those have no checkout behind them yet, so the line quotes
- * the live floor instead. Derived rather than typed, because a price written
- * into a sentence is a price nothing checks — `check:pricing` guards
- * `CURRENT_PRICES` against the backend's `billing.py` and the platform's
- * `accountTypes.ts`, and this sentence now moves with them.
+ * v4 §2.7 moves pricing off the homepage and into one line in the last call,
+ * and copy deck v4.3 keeps that line at $12 — Solo and Starter, which are
+ * the cheapest paid plan there is. Derived rather than typed, because a price
+ * written into a sentence is a price nothing checks: `check:pricing` holds the
+ * catalogue together, and this sentence now moves with it.
  */
-const MIN_SUBSCRIPTION = Math.min(
-  ...Object.values(CURRENT_PRICES).map((plan) => plan.subscription),
-);
 
 /*
  * Arabic copy — the primary edition.
@@ -537,7 +532,7 @@ export const overrides: DeepPartial<SiteCopy> = {
           headline: "احصل على قراءة خبير استراتيجي للإجابات. والتحليل الأول مجاني.",
           body: "يقرأ ماركيوس الاستبيان وملاحظات مكالمتك، ويقدّم لك تقريراً منظّماً: الأهداف، والجمهور، والمنافسون، وملامح الشخصية، ثم الأمرين اللذين قد يفوتان مصمماً مبتدئاً: التناقضات في كلام العميل، والأسئلة التي ما زال عليك أن تطرحها. ويختم باتجاهين أو ثلاثة اتجاهات استراتيجية يمكن أن تسلكها العلامة. وكل نتيجة تصلك مسودةً، تقبل منها ما يفيدك، ولا يدخل شيء إلى الاستراتيجية دون موافقتك.",
           smallPrint:
-            "تحليل مجاني واحد في كل مشروع، وفي كل الخطط. وإعادة التحليل تُخصم من الرصيد.",
+            "تحليل مجاني واحد في كل مشروع، وفي كل الخطط. وإعادة التحليل ضمن حدّ خطتك الشهري.",
         },
         {
           name: "الاستراتيجية",
@@ -765,7 +760,7 @@ export const overrides: DeepPartial<SiteCopy> = {
         },
         {
           term: "لا فواتير مفاجئة",
-          line: "يعمل الذكاء الاصطناعي برصيد تراه أمامك. وإن نفد، يتوقف ويستأذنك. ولا يحاسبك على شيء من وراء ظهرك.",
+          line: "لكل أداة ذكية حدّ شهري تراه أمامك. وإن نفد، تتوقف ويستأذنك. ولا يحاسبك على شيء من وراء ظهرك.",
         },
       ],
     },
@@ -1136,8 +1131,8 @@ export const overrides: DeepPartial<SiteCopy> = {
               line: "20% مما يدفعه عميلك في سنته الأولى، رصيداً في اشتراكك.",
             },
             {
-              name: "سنة العميل مقدّماً",
-              line: "ادفع سنته الأولى في خطة «العلامة» بـ 190 دولاراً بدلاً من 228، وأضفها إلى قيمة مشروعك.",
+              name: "والوكالات 25%",
+              line: "حصة خطة «الوكالة» من سنة العميل الأولى ربعُ ما يدفعه، لا خُمسه.",
             },
           ],
           link: { label: "التسليم ومكافأة الشريك", href: "/platform/handoff" },
@@ -1424,7 +1419,7 @@ export const overrides: DeepPartial<SiteCopy> = {
         {
           question: "هل أستطيع ربط ChatGPT أو Claude بعلامتي؟",
           answer:
-            "نعم، في كل الخطط المدفوعة. تقرأ أداتك استراتيجيتك وصوتك ومصطلحاتك وملفاتك المعتمدة ولوحاتك واستبياناتك قبل أن تكتب. تقرأ فقط، ولا تغيّر شيئاً، ولا تستهلك رصيدك. ومالك المساحة يحدد من يستطيع الربط.",
+            "نعم، في كل الخطط المدفوعة. تقرأ أداتك استراتيجيتك وصوتك ومصطلحاتك وملفاتك المعتمدة ولوحاتك واستبياناتك قبل أن تكتب. تقرأ فقط، ولا تغيّر شيئاً، ولا تمسّ حدودك. ومالك المساحة يحدد من يستطيع الربط.",
           coming: "ai-connector",
         },
         {
@@ -1461,7 +1456,7 @@ export const overrides: DeepPartial<SiteCopy> = {
         {
           question: "كيف أدفع؟",
           answer:
-            "بالبطاقة عبر Stripe، وبالدولار الأمريكي. البطاقات التي تعمل على شبكة مدى فقط غير مدعومة حالياً.",
+            "عبر PayPal، وبالدولار الأمريكي. والاشتراك السنوي يوفّر نحو 20%.",
         },
       ],
       link: { label: "كل الأسئلة", href: "/pricing#faq" },
@@ -1487,7 +1482,7 @@ export const overrides: DeepPartial<SiteCopy> = {
         "علامتك كلها في مكان واحد، بالعربية والإنجليزية. من يفتحها بعد سنة يجدها كما تركتها، لا نُسخاً منها.",
       studioCta: { label: "أصمّم هويات لعملائي", href: "/start?type=studio" },
       companyCta: { label: "أدير علامة شركتي", href: "/start?type=company" },
-      microcopy: `ابدأ مجاناً. والخطط المدفوعة من ${MIN_SUBSCRIPTION} دولاراً شهرياً.`,
+      microcopy: `ابدأ مجاناً. والخطط المدفوعة من ${LOWEST_PAID_MONTHLY} دولاراً شهرياً.`,
       beta: {
         studioCta: { label: "احجز مكان استوديوك", href: "/start?type=studio" },
         companyCta: { label: "احجز مكان شركتك", href: "/start?type=company" },

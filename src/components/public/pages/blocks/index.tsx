@@ -1,6 +1,7 @@
 import { Words, Eyebrow, Section, SectionHead } from "@/components/ui";
 import type { PageBlock } from "@/content/pages/types";
 import { AudienceTabs } from "../AudienceTabs";
+import { Chooser } from "../Chooser";
 import { SignupForm } from "@/components/features/waitlist";
 import { ContactForm } from "@/components/features/contact";
 import { T, Note, type Ctx } from "./shared";
@@ -91,6 +92,32 @@ export function Block({
       return <CtaBlock block={block} ctx={ctx} headingId={headingId} />;
     case "offer":
       return <OfferBlock block={block} ctx={ctx} headingId={headingId} white={white} />;
+    /*
+     * The chooser sits between the switch and the cards, so it is tight at
+     * both ends for the same reason the switch is: it belongs to the grid
+     * below it and a full band above would float it in an empty one.
+     */
+    case "chooser":
+      return (
+        <Section
+          id={block.id}
+          labelledBy={headingId}
+          white={white}
+          className="pb-0 pt-[clamp(2rem,5vw,3.5rem)]"
+        >
+          <div className="mk-seq flex flex-col items-center text-center">
+            <h2 id={headingId} className="mk-h2 mk-bidi">
+              <T>
+                <Words>{block.title}</Words>
+              </T>
+            </h2>
+            {block.lead ? (
+              <p className="mk-lead mk-bidi mt-4 max-w-[37.5rem]">{block.lead}</p>
+            ) : null}
+            <Chooser label={block.label} options={block.options} />
+          </div>
+        </Section>
+      );
     case "audience":
       return (
         <AudienceTabs
@@ -98,6 +125,7 @@ export function Block({
           headingId={block.title ? headingId : undefined}
           label={block.label}
           white={white}
+          param={block.param}
           head={
             block.title ? (
               <>

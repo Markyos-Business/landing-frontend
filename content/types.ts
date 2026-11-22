@@ -714,14 +714,22 @@ export type PricingTeaserCopy = {
   headline: string;
   /** v3 §2.9: what is free, in one line, above the toggle and the cards. */
   body?: string;
-  studioToggle: string;
-  companyToggle: string;
-  studioPlans: PlanCopy[];
-  companyPlans: PlanCopy[];
+  /*
+   * One entry per audience, in the order the switch shows them.
+   *
+   * It was two named pairs — `studioToggle`/`studioPlans` against
+   * `companyToggle`/`companyPlans` — until copy deck v4.3 split freelancers
+   * off from studios. Three is not a special case of two, and a third pair of
+   * fields would have been the fourth place on the site that had to be found
+   * and edited the next time an audience moved. A list has none of those
+   * problems and the switch is already written for any number of options.
+   *
+   * `id` is the audience's id on /pricing, so a card on the homepage and the
+   * tab it sends a reader to cannot drift apart.
+   */
+  audiences: { id: string; label: string; plans: PlanCopy[]; note: string }[];
   /** The badge under the recommended plan's price. */
   recommendedLabel: string;
-  studioNote: string;
-  companyNote: string;
   underBoth: string;
   link: Cta;
 };

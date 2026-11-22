@@ -1,21 +1,16 @@
-import { CURRENT_PRICES, currentPricingTeaser } from "../current-pricing.ts";
+import { LOWEST_PAID_MONTHLY, currentPricingTeaser } from "../current-pricing.ts";
 import type { SiteCopy } from "../types";
 
 /*
- * The cheapest monthly subscription on offer, read from the prices the
- * checkout actually charges rather than typed out here.
+ * The lowest paid price on the site, read from the plan catalogue rather than
+ * typed out here.
  *
- * v4 §2.7 moves pricing off the homepage and into one line in the last call.
- * The deck writes that line as "from $24 a month", which belongs to v4's own
- * proposed plans; those have no checkout behind them yet, so the line quotes
- * the live floor instead. Derived rather than typed, because a price written
- * into a sentence is a price nothing checks — `check:pricing` guards
- * `CURRENT_PRICES` against the backend's `billing.py` and the platform's
- * `accountTypes.ts`, and this sentence now moves with them.
+ * v4 §2.7 moves pricing off the homepage and into one line in the last call,
+ * and copy deck v4.3 keeps that line at $12 — Solo and Starter, which are
+ * the cheapest paid plan there is. Derived rather than typed, because a price
+ * written into a sentence is a price nothing checks: `check:pricing` holds the
+ * catalogue together, and this sentence now moves with it.
  */
-const MIN_SUBSCRIPTION = Math.min(
-  ...Object.values(CURRENT_PRICES).map((plan) => plan.subscription),
-);
 
 /*
  * English page copy — markyos_landing_page_copy.md v1.0 (16 Oct 2026).
@@ -551,7 +546,7 @@ export const copy: SiteCopy = {
           feature: "brief-analysis",
           headline: "Get a senior strategist's read on the answers. The first one's free.",
           body: "Markyos reads the brief and your call notes and gives you a structured report: goals, audience, competitors, personality signals, and the two things a junior designer would miss: the contradictions in what the client said, and the questions you still need to ask. It ends with two or three strategic routes the brand could take. Every finding lands as a draft. You accept what's useful. Nothing goes into the strategy without you.",
-          smallPrint: "One free analysis in every project, on every plan. Re-runs use credits.",
+          smallPrint: "One free analysis in every project, on every plan. Re-runs come with your plan's monthly limit.",
         },
         {
           name: "Strategize",
@@ -796,7 +791,7 @@ export const copy: SiteCopy = {
         },
         {
           term: "No surprise bills",
-          line: "AI runs on credits you can see. If you run out, it stops and asks. It never charges you on the side.",
+          line: "Every AI tool has a monthly limit you can see. If one runs out, it stops and asks. It never charges you on the side.",
         },
       ],
     },
@@ -1197,8 +1192,8 @@ export const copy: SiteCopy = {
               line: "20% of what your client pays in their first year, as credit on your subscription.",
             },
             {
-              name: "Their first year up front",
-              line: "Pay their first year on the Brand plan at $190 instead of $228, and add it to your project's value.",
+              name: "And agencies earn 25%",
+              line: "On the Agency plan the partner reward is a quarter of the client's first year, not a fifth.",
             },
           ],
           link: { label: "Handoff and the partner reward", href: "/platform/handoff" },
@@ -1520,7 +1515,7 @@ export const copy: SiteCopy = {
       studioCta: { label: "I make brands for clients", href: "/start?type=studio" },
       companyCta: { label: "I run my company's brand", href: "/start?type=company" },
       // CONFIRM: same free-plan line as the hero. Keep the two in step.
-      microcopy: `Start free. Paid plans from $${MIN_SUBSCRIPTION} a month.`,
+      microcopy: `Start free. Paid plans from $${LOWEST_PAID_MONTHLY} a month.`,
       beta: {
         studioCta: { label: "Save my studio spot", href: "/start?type=studio" },
         companyCta: { label: "Save my company spot", href: "/start?type=company" },

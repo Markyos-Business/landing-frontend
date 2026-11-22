@@ -39,6 +39,11 @@ const roadmap: PageDoc = {
        * the Agency and Business plans from the product, so the ladder was
        * promising nine things nobody is building.
        *
+       * Agency and Business came back in v4.3, as capacity plans: more
+       * projects, seats, brands, editors and AI, at $119. What they were
+       * removed for -- a white-label portal and sub-brands -- stayed out,
+       * and nothing on this page or on /pricing implies either.
+       *
        * The dates have not gone into hiding: each feature's `shipsIn` in
        * status.ts still carries its release for our own reference. They are
        * simply not said to a visitor as a commitment.
@@ -185,7 +190,7 @@ const security: PageDoc = {
       kind: "prose",
       title: "Account and payment",
       body: [
-        "Payments go through Stripe, and we never see your card number. Passwords are hashed, and repeated sign-in attempts are limited.",
+        "Payments go through PayPal, and we never see your card details. Passwords are hashed, and repeated sign-in attempts are limited.",
       ],
     },
     {

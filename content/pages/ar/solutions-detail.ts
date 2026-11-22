@@ -1,6 +1,21 @@
 import type { PageDoc } from "../types";
 import { CTA, LINK, SOLUTION_TRAIL } from "./_shared";
 
+import { AI_LIMITS } from "../../current-pricing.ts";
+
+/*
+ * The monthly allowances, from the one catalogue.
+ *
+ * Copy deck v4.2 retired AI credits: each tool carries its own monthly number
+ * now, and those numbers live in content/current-pricing.ts beside the plans
+ * they belong to. Typed here once, they drift -- the Team quick-check figure
+ * on this page was still 3,000 a full deck after it became 2,500.
+ */
+const C = AI_LIMITS.companies;
+/** An absent allowance is "لا", not a zero. */
+const limit = (value: number | null): string =>
+  value === null ? "لا" : value.toLocaleString("en-US");
+
 /*
  * The nine solution pages — docs/copy/pages_ar_1_solutions.md, pages 5 to 13.
  *
@@ -89,6 +104,7 @@ const clientProjects: PageDoc = {
       title: "تدفع مقابل ما تعمل عليه الآن.",
       body: [
         "المشروع يُحتسب «نشطاً» ما دمت تستطيع تعديله. وحين تسلّمه لعميلك أو تؤرشفه، يتوقف احتسابه وتتحرر حصته فوراً. فكلما أنهيت عملاً، اتسعت خطتك لعمل جديد.",
+        "مشروع واحد في الخطة المجانية، واثنان في «الفردية»، وخمسة في «الاحترافية»، وعشرة في «الاستوديو»، وخمسة وعشرون في «الوكالة».",
       ],
       align: "start",
     },
@@ -239,7 +255,7 @@ const discovery: PageDoc = {
         },
         {
           term: "إعادة التحليل",
-          body: "بعد إجابات جديدة أو ملاحظات مكالمة إضافية: 15 وحدة من الرصيد.",
+          body: "بعد إجابات جديدة أو ملاحظات مكالمة إضافية، ضمن حدّ إعادة التحليل في خطتك.",
         },
       ],
     },
@@ -486,7 +502,7 @@ const clientHandoff: PageDoc = {
       eyebrow: "مكافأة الشريك",
       title: "سلّمت العلامة. والعائد مستمر.",
       body: [
-        "حين يرقّي عميلك مركزاً سلّمته إلى خطة مدفوعة، تحصل على 20% مما يدفعه خلال أول 12 شهراً، رصيداً في اشتراكك أنت.",
+        "حين يرقّي عميلك مركزاً سلّمته إلى خطة مدفوعة، تحصل على 20% مما يدفعه خلال أول 12 شهراً، رصيداً في اشتراكك أنت. وفي خطة «الوكالة» الحصة 25%.",
       ],
     },
     {
@@ -505,8 +521,8 @@ const clientHandoff: PageDoc = {
       cols: 2,
       items: [
         {
-          term: "ادفع سنة عميلك الأولى مقدّماً",
-          body: "تريد أن يدخل فريق عميلك كله من اليوم الأول؟ ادفع سنته الأولى في خطة «العلامة» عند التسليم بـ 190 دولاراً بدلاً من 228، وأضفها إلى قيمة مشروعك.",
+          term: "والوكالات تكسب أكثر",
+          body: "خطة «الوكالة» ترفع الحصة إلى 25%. وكالة تسلّم اثنتي عشرة علامة في السنة على خطة «العلامة» تكسب 72 دولاراً شهرياً، أي أكثر من نصف اشتراكها.",
         },
         {
           term: "ابقَ معه بعد التسليم",
@@ -722,7 +738,7 @@ const toneChecker: PageDoc = {
           "الدرجة، وسمات الصوت، والجمل المظلّلة، والمصطلحات، ومستوى العربية",
           "كل ما في السريعة، مع شرح سبب كل ملاحظة، واقتراح صياغة لكل جملة",
         ],
-        ["التكلفة", "ضمن حصتك الشهرية", "4 وحدات من الرصيد"],
+        ["التكلفة", "ضمن المراجعات السريعة", "تُحتسب مهمة كتابة واحدة"],
       ],
     },
     {
@@ -759,11 +775,13 @@ const toneChecker: PageDoc = {
       kind: "table",
       title: "الحصص الشهرية",
       numeric: true,
-      head: ["الخطة", "المراجعات السريعة", "رصيد للمعمّقة وإعادة الصياغة والترجمة"],
+      head: ["الخطة", "المراجعات السريعة شهرياً", "مهام الكتابة شهرياً"],
       rows: [
-        ["المجانية", "25", "لا"],
-        ["العلامة", "1000", "150 وحدة"],
-        ["الفريق", "3000", "500 وحدة"],
+        ["المجانية", limit(C.quickChecks.free), limit(C.writingTasks.free)],
+        ["البداية", limit(C.quickChecks.starter), limit(C.writingTasks.starter)],
+        ["العلامة", limit(C.quickChecks.brand), limit(C.writingTasks.brand)],
+        ["الفريق", limit(C.quickChecks.team), limit(C.writingTasks.team)],
+        ["الأعمال", limit(C.quickChecks.business), limit(C.writingTasks.business)],
       ],
       note: "المشاهدون يستخدمون حصة الشركة، مع حد يومي لكل شخص حتى لا يستهلكها أحد وحده.",
     },
@@ -862,7 +880,7 @@ const companyRollout: PageDoc = {
         ],
         [
           "التكلفة",
-          "ضمن الخطة، والمحرّر الإضافي 8 دولارات شهرياً (من خطة «الفريق»)",
+          "ضمن الخطة، والمحرّر الإضافي 8 دولارات شهرياً (في «الفريق» و«الأعمال»)",
           { text: "مجاناً", strong: true },
         ],
       ],
@@ -988,7 +1006,7 @@ const leadershipAlignment: PageDoc = {
       items: [
         {
           term: "التقرير الأول لكل علامة: مجاني",
-          body: "وإعادة التحليل بعد إجابات جديدة: 20 وحدة من الرصيد.",
+          body: "وإعادة التحليل بعد إجابات جديدة، ضمن حدّ خطتك الشهري.",
         },
         {
           term: "ثم ماذا؟",

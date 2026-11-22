@@ -516,6 +516,62 @@ the real version, worth building when there is evidence it is needed.
 
 ---
 
+## 9. The catalogue is on the site and not in billing — OPEN, and the page knows it
+
+**Status: v4.2 shipped 22 Nov 2026 and v4.3 replaced it the same day. Two
+external systems have to catch up before a single visitor can pay what the
+page says.**
+
+Copy deck v4.3 sells eleven plans across three audiences: Free, Solo $12 and
+Pro $24 to freelancers; Free, Studio $59 and Agency $119 to studios and
+agencies; Free, Starter $12, Brand $24, Team $59 and Business $119 to
+companies, with Enterprise behind a contract. Every AI tool carries a monthly
+limit instead of drawing on a pool of credits, and billing moves to PayPal.
+
+**None of it exists in billing.** The platform sells what `CURRENT_PRICES`
+describes — one one-time pass and one monthly subscription per account type,
+at freelancer $15/$19, studio $19/$29, company $49/$99 — and `check:pricing`
+still holds that constant against the backend's `billing.py` and the
+platform's `accountTypes.ts`. The two catalogues share no price and no plan.
+
+### What keeps the page honest in the meantime
+
+Nothing on it takes money. Every plan CTA creates a free account at `/start`
+with the account type its audience signs up as; Enterprise opens
+`/contact?topic=sales`. `check:pricing` asserts exactly that: each plan CTA
+resolves to `/start`, carries the right known account type, and carries no
+`plan` parameter. A visitor can read $12 and act on it without the checkout
+contradicting the page, because the only thing the page asks them to do is
+sign up for nothing.
+
+**Delete that assertion the day the plans are real in billing. Not before.**
+
+### What has to happen outside this repository
+
+| # | What | Who |
+| :-: | :--- | :--- |
+| 1 | The eleven plans exist in billing, at v4.3's prices, monthly and yearly — including Agency and Business at $119, which v4.1 had removed from the product | Platform + backend |
+| 2 | PayPal is connected, and the launch offer is set up as a discounted trial of three monthly cycles at half price — tested in sandbox before launch | Billing |
+| 3 | Card payments through PayPal without an account, in Saudi Arabia and Malaysia | Billing (deck Open item 2) |
+| 4 | The Arabic and English cost test, before 1 February 2027. If Arabic quick checks need the larger model, the quick-check numbers drop on every plan | Product |
+| 5 | The mockup renderer composites the approved logo file onto the AI scene | Product (deck Open item 3) |
+| 6 | The partner reward is recorded during the PayPal months and applied as billing credit once billing moves to Stripe — including the 25% rate on Agency | Billing (deck Open item 5) |
+| 7 | The prepaid client year ($190) returns with Stripe. It is off the site until then, and `check:pricing` fails on the figure | Billing |
+
+Items 3 and 5 are why two of the deck's FAQ answers are not on the site: "do I
+need a card to start?" and "does the AI draw my logo?" Both are written in
+v4.3 and both are gated on a fact nobody has established. Refunds are a
+[PLACEHOLDER] in the deck itself, and the tax and VAT clause on the receipts
+line is a [CONFIRM]; both are likewise absent.
+
+### What the site still says about the old model
+
+`CURRENT_PRICES` is on no page. It stays in `content/current-pricing.ts`
+because it is the only record here of what a card is actually charged, and the
+sibling comparison is what will tell us the day billing moves.
+
+---
+
 ## Decisions already made, for the record
 
 These were judgment calls made while building. Each is reversible; say so if

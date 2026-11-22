@@ -66,6 +66,16 @@ export type TermItem = {
 };
 
 export type PlanCard = {
+  /**
+   * A DOM id for the card, so something else on the page can point at it.
+   *
+   * Only the chooser uses it: a chip answers "how many clients at once?" and
+   * the card it names is the one that lights up. It has to be unique across
+   * the whole document and not just the block, because the free plan appears
+   * in all three audience panels and every panel is in the HTML — so these are
+   * written as `plan-<audience>-<plan>` by whoever builds both ends.
+   */
+  id?: string;
   name: string;
   /** Rendered as written: "24 دولاراً" or "مجاناً". Never computed. */
   price: string;
@@ -87,6 +97,20 @@ export type PlanCard = {
   annual?: { price: string; note?: string };
   /** One line on who the plan is for. */
   who?: string;
+  /**
+   * The two sentences that decide a plan, from copy deck v4.3.
+   *
+   * A price and a list of limits answer "what do I get"; they do not answer
+   * "is this one mine", which is the only question a visitor on this page
+   * actually has. `pick` is the condition that makes this the right card and
+   * `moveUp` is the condition that ends it — so a reader can run down one
+   * column and stop at the first card whose `pick` describes them.
+   *
+   * Their labels are the block's, not the card's: eleven cards would
+   * otherwise carry eleven copies of the same two words.
+   */
+  pick?: string;
+  moveUp?: string;
   rows: { label: string; value: string; strong?: boolean }[];
   cta?: Cta;
   /** Set when the plan itself has not shipped: the CTA becomes a chip. */
@@ -292,8 +316,39 @@ export type PageBlock =
        * four cards that all ignore it is a control that does nothing.
        */
       billing?: { label: string; monthly: string; annual: string };
+      /** The two headings for every card's `pick` and `moveUp`. */
+      labels?: { pick: string; moveUp: string };
       plans: PlanCard[];
       note?: string;
+    }
+  /*
+   * One question, and the card that answers it.
+   *
+   * Copy deck v4.3 added this because the page it describes has eleven plans
+   * in it. A visitor who has already said which of the three audiences they
+   * belong to still faces three to five cards, and the thing that decides
+   * between them is never the price — it is one fact about how they work:
+   * how many clients at once, how many people on the team, how many brands
+   * and editors. So the page asks that one question, in the tab, above the
+   * cards, and the answer lights the card.
+   *
+   * It is not navigation and it is not a filter: nothing is hidden, and a
+   * reader who ignores it sees exactly the page they would have seen anyway,
+   * with the recommended card already lit. Each option names a `target`:
+   * either a `PlanCard.id` in the same panel, or `tab:<audience>` for the
+   * answer that means "you are on the wrong tab" — the deck's "others work
+   * with me", which belongs on the studios tab rather than anywhere on this
+   * one.
+   */
+  | {
+      kind: "chooser";
+      id?: string;
+      /** The question itself, set as the section's heading. */
+      title: string;
+      lead?: string;
+      /** Names the group of chips for a screen reader. */
+      label: string;
+      options: { label: string; target: string; note?: string }[];
     }
   /** Email capture. Posts to /api/waitlist, which is honest about being 501. */
   | {
@@ -365,6 +420,15 @@ export type PageBlock =
       lead?: string;
       /** Accessible name for the group — "who are you", not "pricing". */
       label: string;
+      /**
+       * A query parameter that names the options, for a link somebody shares.
+       *
+       * `"for"` on /pricing, so copy deck v4.3's `/pricing?for=studios` opens
+       * on studios and every pick writes itself back into the address bar. Omit
+       * it and the switch is hash-only, which is what /platform wants: its two
+       * tool tables are not something anybody sends to a colleague.
+       */
+      param?: string;
       options: { id: string; label: string; blocks: PageBlock[] }[];
     }
   /*

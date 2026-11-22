@@ -164,30 +164,41 @@ const studios: PageDoc = {
       kind: "prose",
       title: "Hand over a brand, not a folder.",
       body: [
-        "Your client gets a hub with their name on it, and you keep the role you agreed. When they upgrade, you get 20% of what they pay in their first year, as credit on your plan.",
+        "Your client gets a hub with their name on it, and you keep the role you agreed. When they upgrade, you get 20% of what they pay in their first year, or 25% on Agency, as credit on your plan.",
       ],
       links: [LINK.handoff],
     },
     {
       kind: "table",
       numeric: true,
-      head: [{ text: "Clients on the Brand plan" }, { text: "You earn a month" }],
+      head: [
+        { text: "Clients on the Brand plan" },
+        { text: "You earn a month" },
+        { text: "On Agency" },
+      ],
       rows: [
-        [{ text: "5" }, { text: "$24, your whole Pro plan" }],
-        [{ text: "12" }, { text: "$57.60" }],
+        [{ text: "5" }, { text: "$24" }, { text: "$30" }],
+        [{ text: "12" }, { text: "$57.60" }, { text: "$72, most of an Agency plan" }],
       ],
     },
     {
       kind: "table",
-      title: "One project free. Three on Pro. Ten with a team.",
+      title: "Ten projects for a team of five. Twenty-five for a team of twelve.",
       numeric: true,
-      head: [{ text: "" }, { text: "Free" }, { text: "Pro" }, { text: "Studio" }],
+      head: [{ text: "" }, { text: "Free" }, { text: "Studio" }, { text: "Agency" }],
       rows: [
-        [{ text: "Price" }, { text: "$0" }, { text: "$24/mo" }, { text: "$59/mo" }],
-        [{ text: "Active projects" }, { text: "1" }, { text: "3" }, { text: "10" }],
-        [{ text: "Seats" }, { text: "1" }, { text: "1" }, { text: "5" }],
+        [{ text: "Price" }, { text: "$0" }, { text: "$59/mo" }, { text: "$119/mo" }],
+        [{ text: "Active projects" }, { text: "1" }, { text: "10" }, { text: "25" }],
+        [{ text: "Seats" }, { text: "1" }, { text: "5" }, { text: "12" }],
+        [{ text: "Extra seat" }, { text: "No" }, { text: "$8/mo" }, { text: "$8/mo" }],
+        [{ text: "Partner reward" }, { text: "20%" }, { text: "20%" }, { text: "25%" }],
       ],
-      note: "Handed-off projects don't count. The slot frees up the moment your client takes the hub.",
+      note: "Handed-off projects don't count. The slot frees up the moment your client takes the hub. Working alone? Freelancer plans start at $12.",
+    },
+    {
+      kind: "prose",
+      body: [],
+      links: [{ label: "Studio and agency plans", href: "/pricing#studios" }],
     },
     {
       kind: "faq",
@@ -271,7 +282,7 @@ const freelancers: PageDoc = {
         },
         {
           title: "Project Pass",
-          body: ["One more project for $19, when it comes in."],
+          body: ["One more project for $19, when it comes in. Or $12 a month on Solo."],
           cta: LINK.seePricing,
         },
         {
@@ -289,18 +300,26 @@ const freelancers: PageDoc = {
     },
     {
       kind: "table",
-      title: "Pay when the work comes.",
+      title: "One project free. Two on Solo. Five on Pro.",
       numeric: true,
-      head: [{ text: "" }, { text: "Free" }, { text: "Project Pass" }, { text: "Pro" }],
+      head: [{ text: "" }, { text: "Free" }, { text: "Solo" }, { text: "Pro" }],
       rows: [
-        [{ text: "Price" }, { text: "$0" }, { text: "$19 once" }, { text: "$24/mo" }],
+        [{ text: "Price" }, { text: "$0" }, { text: "$12/mo" }, { text: "$24/mo" }],
         [
           { text: "Fits" },
           { text: "Your first project" },
-          { text: "One extra project" },
-          { text: "Three clients at once" },
+          { text: "Two clients at once" },
+          { text: "Three to five clients" },
         ],
+        [{ text: "Active projects" }, { text: "1" }, { text: "2" }, { text: "5" }],
+        [{ text: "All looks, no badge" }, { text: "No" }, { text: "Yes" }, { text: "Yes" }],
       ],
+      note: "One extra project, just this once? A Project Pass is $19, with Pro features until you hand it off.",
+    },
+    {
+      kind: "prose",
+      body: [],
+      links: [{ label: "Freelancer plans", href: "/pricing#freelancers" }],
     },
     {
       kind: "faq",
@@ -420,14 +439,49 @@ const companies: PageDoc = {
     },
     {
       kind: "table",
-      title: "Pay for who edits it. Not who uses it.",
+      title: "From $12 for a small team. Team for three brands, Business for five.",
       numeric: true,
-      head: [{ text: "" }, { text: "Free" }, { text: "Brand" }, { text: "Team" }],
-      rows: [
-        [{ text: "Price" }, { text: "$0" }, { text: "$24/mo" }, { text: "$59/mo" }],
-        [{ text: "Editors" }, { text: "2" }, { text: "5" }, { text: "15" }],
-        [{ text: "Viewers" }, { text: "25" }, { text: "Unlimited" }, { text: "Unlimited" }],
+      head: [
+        { text: "" },
+        { text: "Free" },
+        { text: "Starter" },
+        { text: "Brand" },
+        { text: "Team" },
+        { text: "Business" },
       ],
+      rows: [
+        [
+          { text: "Price" },
+          { text: "$0" },
+          { text: "$12" },
+          { text: "$24" },
+          { text: "$59" },
+          { text: "$119" },
+        ],
+        [{ text: "Brands" }, { text: "1" }, { text: "1" }, { text: "1" }, { text: "3" }, { text: "5" }],
+        [
+          { text: "Editors" },
+          { text: "2" },
+          { text: "3" },
+          { text: "5" },
+          { text: "15" },
+          { text: "30" },
+        ],
+        [
+          { text: "Viewers" },
+          { text: "25" },
+          { text: "100" },
+          { text: "Unlimited" },
+          { text: "Unlimited" },
+          { text: "Unlimited" },
+        ],
+      ],
+      note: "Prices are monthly, and paying yearly saves about 20%. Viewers are free on every paid plan.",
+    },
+    {
+      kind: "prose",
+      body: [],
+      links: [{ label: "Company plans", href: "/pricing#companies" }],
     },
     {
       kind: "faq",
@@ -435,7 +489,7 @@ const companies: PageDoc = {
       items: [
         {
           q: "Do we pay for everyone?",
-          a: "No. Viewers are free on paid plans.",
+          a: "No. You pay for editors. Viewers are free and unlimited from Brand up, 100 on Starter, 25 on Free.",
         },
         {
           q: "What happens to the text we check?",

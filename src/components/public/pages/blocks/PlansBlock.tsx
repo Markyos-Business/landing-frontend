@@ -56,6 +56,8 @@ export function PlansBlock({
           <Card
             key={plan.name}
             as="li"
+            id={plan.id}
+            tabIndex={plan.id ? -1 : undefined}
             className={`mk-plan flex flex-col ${plan.cta ? "mk-reach " : ""}${
               plan.recommended
                 ? // The one selected object in the section, lit rather than
@@ -133,6 +135,33 @@ export function PlansBlock({
               <p className="mk-bidi mt-3 text-[length:var(--fs-ui)] leading-[1.6] text-[var(--text-muted)]">
                 {plan.who}
               </p>
+            ) : null}
+
+            {/*
+             * "Pick it if" and "Move up when", from copy deck v4.3.
+             *
+             * A second ledger above the limits, ruled the same way, because
+             * they are the same shape: a short label and the thing it
+             * resolves to. The label is set in page ink and the condition in
+             * muted, the reverse of the limits below — down there the eye is
+             * hunting figures, up here it is reading two sentences and the
+             * figure-coloured word would be the wrong one to catch it.
+             */}
+            {block.labels && (plan.pick || plan.moveUp) ? (
+              <dl className="mk-plan-limits mt-5">
+                {plan.pick ? (
+                  <div className="mk-plan-fit">
+                    <dt className="mk-bidi">{block.labels.pick}</dt>
+                    <dd className="mk-bidi">{plan.pick}</dd>
+                  </div>
+                ) : null}
+                {plan.moveUp ? (
+                  <div className="mk-plan-fit">
+                    <dt className="mk-bidi">{block.labels.moveUp}</dt>
+                    <dd className="mk-bidi">{plan.moveUp}</dd>
+                  </div>
+                ) : null}
+              </dl>
             ) : null}
 
             {/* Ruled above and below, the reference's ledger — `.mk-plan-limits`. */}

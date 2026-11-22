@@ -2,7 +2,7 @@
 
 import type { Locale } from "@/lib/i18n/locales";
 import { Words } from "@/components/ui";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { PricingTeaserCopy } from "@/content/types";
 import { TextLink, Display, Lead, Pool, TRACK } from "../landing";
 import { Toggle } from "./Toggle";
@@ -11,15 +11,17 @@ import { Plan } from "./Plan";
 /*
  * One subscription instead of seven. And start free.
  *
- * ── Two audiences, one grid ──────────────────────────────────────────────
+ * ── Three audiences, one grid ────────────────────────────────────────────
  *
- * Account types determine the current per-brand price. Studios and freelancers
- * share a panel; companies have their own. Both use the same pricing catalog
- * as the full pricing page.
+ * Freelancers, studios and agencies, and companies — the same three /pricing
+ * has, from the same catalogue, in the same order. It was two until copy deck
+ * v4.3 split freelancers off from studios, and the count is the copy's now
+ * rather than this component's: the track, the knob and the keyboard all read
+ * `copy.audiences.length`.
  *
- * It is a real radio group, not two buttons: the two options are mutually
+ * It is a real radio group, not three buttons: the options are mutually
  * exclusive states of one control, so arrow keys move between them and a
- * screen reader announces "1 of 2". The sliding knob is a separate
+ * screen reader announces "1 of 3". The sliding knob is a separate
  * absolutely-positioned element behind the labels — that way the labels
  * never move, and only `transform` animates.
  *
@@ -27,9 +29,14 @@ import { Plan } from "./Plan";
 
 export function PricingTeaser({ copy, locale }: {
   locale: Locale; copy: PricingTeaserCopy }) {
-  const [audience, setAudience] = useState<"studio" | "company">("studio");
-  const studio = audience === "studio";
-  const plans = studio ? copy.studioPlans : copy.companyPlans;
+  const [active, setActive] = useState(copy.audiences[0]?.id ?? "");
+  const count = copy.audiences.length;
+  const index = Math.max(
+    0,
+    copy.audiences.findIndex((audience) => audience.id === active),
+  );
+  const audience = copy.audiences[index];
+  const groupRef = useRef<HTMLDivElement>(null);
 
   return (
     <section
@@ -87,12 +94,13 @@ export function PricingTeaser({ copy, locale }: {
           ) : null}
 
           <div
+            ref={groupRef}
             role="radiogroup"
             aria-label={copy.headline}
             style={{
               position: "relative",
               display: "inline-grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: `repeat(${count}, 1fr)`,
               marginBlockStart: 40,
               padding: 4,
               borderRadius: 999,
@@ -106,45 +114,61 @@ export function PricingTeaser({ copy, locale }: {
                * -- the same fault this codebase keeps finding, a width chosen
                * against one language's words.
                *
-               * `inline-grid` with `1fr 1fr` and no width sizes both columns
-               * to the widest label in either of them, so the two halves stay
-               * equal (which the knob at `calc(50% - 4px)` depends on) and the
-               * track grows to whatever the copy needs, in either locale.
+               * `inline-grid` with equal `1fr` tracks and no width sizes every
+               * column to the widest label in any of them, so the segments stay
+               * equal (which the knob's width depends on) and the track grows
+               * to whatever the copy needs, in either locale.
                */
               maxInlineSize: "100%",
             }}
           >
             {/*
-             * The knob. Placed at the start edge and moved by `--mk-knob`,
-             * which tailwind/ flips for RTL — so it starts at the right in
+             * The knob. Placed at the start edge and moved by `--mk-dir`,
+             * which tailwind/ sets to -1 in RTL — so it starts at the right in
              * Arabic and travels leftwards, and this component never has to
              * know which locale it is in.
+             *
+             * `--mk-knob` was the token for this and is one travel of 100%:
+             * right for a two-way switch, and silent about a three-way one.
+             * The distance is `index * 100%` of the knob's own width now,
+             * which is the same arithmetic the /pricing switch does.
              */}
             <span
               aria-hidden="true"
               style={{
                 position: "absolute",
+                /* Anchored at both ends, not given a height, so a label that
+                   wraps to two lines on a narrow screen grows the track and
+                   the knob with it. */
                 top: 4,
+                bottom: 4,
                 insetInlineStart: 4,
-                inlineSize: "calc(50% - 4px)",
-                blockSize: 44,
+                inlineSize: `calc((100% - 8px) / ${count})`,
                 borderRadius: 999,
                 background: "var(--surface-1)",
                 boxShadow: "0 1px 2px rgba(255,255,255,0.12),0 6px 14px -6px rgba(0,0,0,.6)",
                 transition: "transform 420ms cubic-bezier(.32,.72,0,1)",
-                transform: studio ? "none" : "translateX(var(--mk-knob))",
+                transform: `translateX(calc(${index * 100}% * var(--mk-dir)))`,
               }}
             />
-            <Toggle
-              label={copy.studioToggle}
-              checked={studio}
-              onSelect={() => setAudience("studio")}
-            />
-            <Toggle
-              label={copy.companyToggle}
-              checked={!studio}
-              onSelect={() => setAudience("company")}
-            />
+            {copy.audiences.map((option, i) => (
+              <Toggle
+                key={option.id}
+                label={option.label}
+                checked={i === index}
+                onSelect={() => setActive(option.id)}
+                onMove={(delta) => {
+                  const next = (i + delta + count) % count;
+                  setActive(copy.audiences[next].id);
+                  /* And take focus with it. The pick carries `tabIndex={0}`,
+                     so leaving focus behind would strand it on a button the
+                     tab key can no longer reach. */
+                  groupRef.current
+                    ?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[next]
+                    ?.focus();
+                }}
+              />
+            ))}
           </div>
         </div>
 
@@ -161,7 +185,7 @@ export function PricingTeaser({ copy, locale }: {
             textAlign: "start",
           }}
         >
-          {plans.map((plan) => (
+          {audience.plans.map((plan) => (
             <Plan
               key={plan.name}
               plan={plan}
@@ -184,7 +208,7 @@ export function PricingTeaser({ copy, locale }: {
             lineHeight: 1.7,
           }}
         >
-          {studio ? copy.studioNote : copy.companyNote}
+          {audience.note}
         </Lead>
         {/*
          * The reference section closes its row with a bar: the small print at
