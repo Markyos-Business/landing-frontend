@@ -1,30 +1,39 @@
 import type { PageBlock, PageDoc, PlanCard } from "./pages/types";
-import type { PricingTeaserCopy } from "./types";
+import type { PlanCopy, PricingTeaserCopy, PricingTeaserPlans } from "./types";
 
-type AccountType = "freelancer" | "studio" | "company";
+/*
+ * Pricing copy, and the one place it meets the backend's figures.
+ *
+ * The app sells a monthly PayPal plan per brand, priced by the brand owner's
+ * account type. What it charges and what each type may have are the
+ * backend's (`GET /billing/plans/`, read by src/lib/billing/plans.ts); this
+ * file keeps only the words, in both languages, and the functions that set
+ * the figures into them at render time. There is no second copy of a price
+ * here to drift: check:pricing fails if one comes back.
+ *
+ * Every builder takes `plans: BillingPlans | null`. `null` is a build that
+ * could not reach the backend; it renders the same sections without figures
+ * and with the sign-up links, never a guessed number.
+ */
+
+export type AccountType = "freelancer" | "studio" | "company";
 type Locale = "en" | "ar";
 
-/**
- * Monthly USD price per brand, by the brand owner's account type.
- * Guarded against Django's billing.PRICES and the app by check:pricing.
- */
-export const CURRENT_PRICES = {
-  freelancer: { subscription: 19 },
-  studio: { subscription: 29 },
-  company: { subscription: 99 },
-} as const;
+/** What a brand may have. `null` is no limit. */
+export type PlanLimits = { brands: number | null; editors: number | null };
 
-/**
- * What each account type may have (null = no limit). Guarded against the
- * app's ACCOUNT_TYPES limits by check:pricing. Plans don't change these.
- */
-export const CURRENT_LIMITS = {
-  freelancer: { brands: 3, editors: 0 },
-  studio: { brands: null, editors: null },
-  company: { brands: 1, editors: null },
-} as const;
+/** `GET /billing/plans/`, as the backend sends it. Amounts are cents. */
+export type BillingPlans = {
+  currency: string;
+  interval: "month";
+  perBrand: boolean;
+  /** A brand without a plan: the account may own this many, with these editors. */
+  free: PlanLimits;
+  types: Record<AccountType, { monthly: number; limits: PlanLimits }>;
+};
 
-const TYPES = ["freelancer", "studio", "company"] as const;
+/** Card order on the page and in the comparison: the recommended one in the middle. */
+export const ACCOUNT_TYPES = ["freelancer", "studio", "company"] as const satisfies readonly AccountType[];
 
 const copy = {
   en: {
@@ -44,6 +53,29 @@ const copy = {
     popular: "Most popular",
     payNote:
       "Pay with PayPal or a card through PayPal. Cancel any time and keep access to the end of the month you paid for.",
+    noFigures: "Sign up free to see the current monthly price for your account type before you subscribe.",
+    plansTitle: "Choose your account type.",
+    plansLead: "The price follows the brand owner's account type. Each plan covers one brand.",
+    compareTitle: "A free brand next to each paid plan.",
+    freeBrand: "Free brand",
+    plan: (name: string) => `${name} plan`,
+    priceRow: "Monthly price per brand",
+    priceShort: "Price",
+    freePrice: "Free",
+    yes: "Yes",
+    firstFree: "First run free",
+    build: "Build strategy, identity and guideline",
+    share: "Share links",
+    publish: "Publish the guideline site",
+    draftOnly: "Draft only",
+    site: "Guideline site",
+    live: "Live for your client",
+    badge: "“Made with Markyos” badge",
+    shown: "Shown",
+    removed: "Removed",
+    ai: "AI brief analysis",
+    compareNote: "Your account owns one free brand. Each plan covers one brand, and your other brands stay free until you share them.",
+    audienceNote: "Each plan covers one brand.",
   },
   ar: {
     names: { freelancer: "مستقل", studio: "استوديو", company: "شركة" },
@@ -62,34 +94,154 @@ const copy = {
     popular: "الأكثر اختياراً",
     payNote:
       "ادفع عبر PayPal، أو ببطاقتك من خلال PayPal. ألغِ متى شئت، ويبقى وصولك حتى نهاية الشهر الذي دفعت عنه.",
+    noFigures: "سجّل مجاناً لترى السعر الشهري الحالي لنوع حسابك قبل أن تشترك.",
+    plansTitle: "اختر نوع حسابك.",
+    plansLead: "السعر حسب نوع حساب مالك العلامة، وكل اشتراك يخص علامة واحدة.",
+    compareTitle: "علامة مجانية بجانب كل خطة مدفوعة.",
+    freeBrand: "علامة مجانية",
+    plan: (name: string) => `خطة ${name}`,
+    priceRow: "السعر الشهري لكل علامة",
+    priceShort: "السعر",
+    freePrice: "مجاناً",
+    yes: "نعم",
+    firstFree: "التحليل الأول مجاني",
+    build: "بناء الاستراتيجية والهوية والدليل",
+    share: "روابط المشاركة",
+    publish: "نشر موقع الدليل",
+    draftOnly: "مسودة فقط",
+    site: "موقع الدليل",
+    live: "منشور لعميلك",
+    badge: "شارة «صُنع بماركيوس»",
+    shown: "تظهر",
+    removed: "تُزال",
+    ai: "تحليل الموجز بالذكاء الاصطناعي",
+    compareNote: "يملك حسابك علامة مجانية واحدة. كل اشتراك يخص علامة واحدة، وتبقى علاماتك الأخرى مجانية حتى تشاركها.",
+    audienceNote: "كل اشتراك يخص علامة واحدة.",
   },
-} as const;
+};
 
-const limit = (value: number | null, locale: Locale) => (value === null ? copy[locale].unlimited : String(value));
+/** "$29" in both languages, as the app and PayPal show it. */
+function amount(cents: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
+  }).format(cents / 100);
+}
 
-/** The brand owner's account type selects the price; a paid plan covers one brand. */
-function accountPlan(type: AccountType, locale: Locale): PlanCard & { cta: { label: string; href: string } } {
+const limitText = (value: number | null, locale: Locale) => (value === null ? copy[locale].unlimited : String(value));
+const editorsText = (value: number | null, locale: Locale) => (value === 0 ? copy[locale].alone : limitText(value, locale));
+
+const signup = (type: AccountType) => `/start?type=${type}`;
+
+/** One account type's card. Without plans it keeps its name, who-line, features and sign-up link. */
+function accountPlan(type: AccountType, locale: Locale, plans: BillingPlans | null): PlanCard & { cta: { label: string; href: string } } {
   const c = copy[locale];
-  const limits = CURRENT_LIMITS[type];
+  const figures = plans?.types[type];
   return {
     name: c.names[type],
-    price: `$${CURRENT_PRICES[type].subscription}`,
-    period: c.period,
+    price: figures && plans ? amount(figures.monthly, plans.currency) : undefined,
+    period: figures ? c.period : undefined,
     who: c.who[type],
-    rows: [
-      { label: c.brands, value: limit(limits.brands, locale) },
-      { label: c.editors, value: limits.editors === 0 ? c.alone : limit(limits.editors, locale) },
-    ],
+    rows: figures
+      ? [
+          { label: c.brands, value: limitText(figures.limits.brands, locale) },
+          { label: c.editors, value: editorsText(figures.limits.editors, locale) },
+        ]
+      : [],
     features: [...c.features],
     recommended: type === "studio",
-    cta: { label: c.cta, href: `/start?type=${type}` },
+    cta: { label: c.cta, href: signup(type) },
   };
+}
+
+/** The account-type cards. */
+function plansBlock(id: string | undefined, locale: Locale, plans: BillingPlans | null): PageBlock {
+  const c = copy[locale];
+  return {
+    kind: "plans",
+    id,
+    title: c.plansTitle,
+    lead: c.plansLead,
+    recommendedLabel: c.popular,
+    plans: ACCOUNT_TYPES.map((type) => accountPlan(type, locale, plans)),
+    note: plans ? c.payNote : `${c.payNote} ${c.noFigures}`,
+  };
+}
+
+/** Free vs each paid account type: price, brands, editors, then what a plan unlocks. */
+function compareBlock(id: string | undefined, title: string | undefined, locale: Locale, plans: BillingPlans | null): PageBlock {
+  const c = copy[locale];
+  const paid = (value: string) => ACCOUNT_TYPES.map(() => value);
+  const figureRows = plans
+    ? [
+        [c.priceRow, c.freePrice, ...ACCOUNT_TYPES.map((t) => amount(plans.types[t].monthly, plans.currency))],
+        [c.brands, limitText(plans.free.brands, locale), ...ACCOUNT_TYPES.map((t) => limitText(plans.types[t].limits.brands, locale))],
+        [c.editors, editorsText(plans.free.editors, locale), ...ACCOUNT_TYPES.map((t) => editorsText(plans.types[t].limits.editors, locale))],
+      ]
+    : [];
+  return {
+    kind: "table",
+    id,
+    title: title ?? c.compareTitle,
+    numeric: true,
+    head: ["", c.freeBrand, ...ACCOUNT_TYPES.map((t) => ({ text: c.plan(c.names[t]), strong: true }))],
+    rows: [
+      ...figureRows,
+      [c.build, c.yes, ...paid(c.yes)],
+      [c.share, c.yes, ...paid(c.yes)],
+      [c.publish, c.draftOnly, ...paid(c.yes)],
+      [c.badge, c.shown, ...paid(c.removed)],
+      [c.ai, c.firstFree, ...paid(c.firstFree)],
+    ],
+    note: plans ? c.compareNote : `${c.compareNote} ${c.noFigures}`,
+  };
+}
+
+/** An audience page's table: a free brand next to that account type's paid brand. */
+function audienceBlock(type: AccountType, id: string | undefined, title: string | undefined, locale: Locale, plans: BillingPlans | null): PageBlock {
+  const c = copy[locale];
+  const figures = plans?.types[type];
+  const figureRows = plans && figures
+    ? [
+        [c.priceShort, c.freePrice, { text: `${amount(figures.monthly, plans.currency)} ${c.period}`, strong: true }],
+        [c.brands, limitText(plans.free.brands, locale), { text: limitText(figures.limits.brands, locale), strong: true }],
+        [c.editors, editorsText(plans.free.editors, locale), { text: editorsText(figures.limits.editors, locale), strong: true }],
+      ]
+    : [];
+  return {
+    kind: "table",
+    id,
+    title,
+    numeric: true,
+    head: ["", c.freeBrand, { text: c.plan(c.names[type]), strong: true }],
+    rows: [
+      ...figureRows,
+      [c.site, c.draftOnly, { text: c.live, strong: true }],
+      [c.badge, c.shown, { text: c.removed, strong: true }],
+    ],
+    note: plans ? c.audienceNote : `${c.audienceNote} ${c.noFigures}`,
+  };
+}
+
+/** A `priced` block, with the backend's figures set into its copy. */
+export function resolvePriced(
+  block: Extract<PageBlock, { kind: "priced" }>,
+  locale: Locale,
+  plans: BillingPlans | null,
+): Extract<PageBlock, { kind: "plans" | "table" }> {
+  switch (block.part) {
+    case "plans":
+      return plansBlock(block.id, locale, plans) as Extract<PageBlock, { kind: "plans" }>;
+    case "compare":
+      return compareBlock(block.id, block.title, locale, plans) as Extract<PageBlock, { kind: "table" }>;
+    case "audience":
+      return audienceBlock(block.type ?? "studio", block.id, block.title, locale, plans) as Extract<PageBlock, { kind: "table" }>;
+  }
 }
 
 export function currentPricingPage(locale: Locale): PageDoc {
   const ar = locale === "ar";
-  const yes = ar ? "نعم" : "Yes";
-  const firstFree = ar ? "التحليل الأول مجاني" : "First run free";
   return {
     path: "/pricing",
     shortTitle: ar ? "الأسعار" : "Pricing",
@@ -107,30 +259,8 @@ export function currentPricingPage(locale: Locale): PageDoc {
           ? "أعدّ الاستراتيجية والهوية والدليل دون أن تدفع. وحين تريد مشاركة الدليل مع عميلك، اشترك شهرياً لتلك العلامة وحدها."
           : "Set up the strategy, identity and guideline without paying. When you share the guideline with your client, subscribe that one brand monthly.",
       },
-      {
-        kind: "plans",
-        id: "plans",
-        title: ar ? "اختر نوع حسابك." : "Choose your account type.",
-        lead: ar
-          ? "السعر حسب نوع حساب مالك العلامة، وكل اشتراك يخص علامة واحدة."
-          : "The price follows the brand owner's account type. Each plan covers one brand.",
-        recommendedLabel: copy[locale].popular,
-        plans: TYPES.map((type) => accountPlan(type, locale)),
-        note: copy[locale].payNote,
-      },
-      {
-        kind: "table",
-        id: "compare",
-        title: ar ? "علامة مجانية أم مدفوعة." : "Free brand vs paid brand.",
-        head: ["", ar ? "علامة مجانية" : "Free brand", { text: ar ? "علامة مدفوعة" : "Paid brand", strong: true }],
-        rows: [
-          [ar ? "بناء الاستراتيجية والهوية والدليل" : "Build strategy, identity and guideline", yes, { text: yes, strong: true }],
-          [ar ? "روابط المشاركة" : "Share links", yes, { text: yes, strong: true }],
-          [ar ? "نشر موقع الدليل" : "Publish the guideline site", ar ? "مسودة فقط" : "Draft only", { text: yes, strong: true }],
-          [ar ? "شارة «صُنع بماركيوس»" : "“Made with Markyos” badge", ar ? "تظهر" : "Shown", { text: ar ? "تُزال" : "Removed", strong: true }],
-          [ar ? "تحليل الموجز بالذكاء الاصطناعي" : "AI brief analysis", firstFree, { text: firstFree, strong: true }],
-        ],
-      },
+      { kind: "priced", part: "plans", id: "plans" },
+      { kind: "priced", part: "compare", id: "compare" },
       {
         kind: "cards",
         id: "faq",
@@ -167,42 +297,14 @@ export function currentPricingPage(locale: Locale): PageDoc {
   };
 }
 
-/** An audience page's price table: a free brand next to that account type's paid brand. */
-export function audiencePlanTable(type: AccountType, locale: Locale, title: string): PageBlock {
-  const ar = locale === "ar";
-  const c = copy[locale];
-  const limits = CURRENT_LIMITS[type];
-  const brands = limits.brands === null ? (ar ? "عدد غير محدود من العلامات" : "any number of brands") : ar ? `${limits.brands === 1 ? "علامة واحدة" : `حتى ${limits.brands} علامات`}` : `${limits.brands === 1 ? "one brand" : `up to ${limits.brands} brands`}`;
-  const team = limits.editors === 0 ? (ar ? "ويعمل وحده" : "and works alone") : ar ? "مع فريق من المحرّرين" : "with a team of editors";
-  return {
-    kind: "table",
-    title,
-    numeric: true,
-    head: ["", ar ? "علامة مجانية" : "Free brand", { text: ar ? `خطة ${c.names[type]}` : `${c.names[type]} plan`, strong: true }],
-    rows: [
-      [ar ? "السعر" : "Price", "$0", { text: `$${CURRENT_PRICES[type].subscription} ${c.period}`, strong: true }],
-      [ar ? "موقع الدليل" : "Guideline site", ar ? "مسودة فقط" : "Draft only", { text: ar ? "منشور لعميلك" : "Live for your client", strong: true }],
-      [ar ? "شارة «صُنع بماركيوس»" : "“Made with Markyos” badge", ar ? "تظهر" : "Shown", { text: ar ? "تُزال" : "Removed", strong: true }],
-    ],
-    note: ar
-      ? `حساب ${c.names[type]} يملك ${brands} ${team}. كل اشتراك يخص علامة واحدة.`
-      : `A ${c.names[type]} account owns ${brands} ${team}. Each plan covers one brand.`,
-  };
+/** An audience page's price table, filled in from the backend's plans at render time. */
+export function audiencePlanTable(type: AccountType, _locale: Locale, title: string): PageBlock {
+  return { kind: "priced", part: "audience", type, title };
 }
 
+/** The homepage teaser's words. Its cards are `teaserPlans`. */
 export function currentPricingTeaser(locale: Locale): PricingTeaserCopy {
   const ar = locale === "ar";
-  const teaser = (type: AccountType) => {
-    const plan = accountPlan(type, locale);
-    return {
-      name: plan.name,
-      price: `${plan.price} ${plan.period}`,
-      rows: plan.rows,
-      line: plan.who ?? "",
-      recommended: plan.recommended,
-      cta: plan.cta,
-    };
-  };
   return {
     headline: ar ? "ابنِ علامتك مجاناً. وادفع لكل علامة حين تشاركها." : "Build your brand free. Pay per brand when you share it.",
     body: ar
@@ -210,12 +312,26 @@ export function currentPricingTeaser(locale: Locale): PricingTeaserCopy {
       : "Prepare your guideline free, then subscribe monthly to share it with your client. Each plan covers one brand, in US dollars.",
     studioToggle: ar ? "للاستوديوهات والمستقلين" : "For studios and freelancers",
     companyToggle: ar ? "للشركات" : "For companies",
-    studioPlans: [teaser("freelancer"), teaser("studio")],
-    companyPlans: [teaser("company")],
     recommendedLabel: copy[locale].popular,
     studioNote: ar ? "اختر نوع حسابك عند التسجيل، واشترك من إعدادات كل علامة." : "Choose your account type at signup, and subscribe in each brand's settings.",
     companyNote: ar ? "الاشتراك الشهري يخص علامة شركتك وحدها." : "The monthly plan covers your company's brand only.",
     underBoth: ar ? "فوترة شهرية عبر PayPal، وإلغاء متى شئت." : "Monthly billing through PayPal. Cancel any time.",
     link: { label: ar ? "اطّلع على الأسعار" : "See full pricing", href: "/pricing" },
   };
+}
+
+/** The homepage teaser's cards, from the backend's plans (no figures when `null`). */
+export function teaserPlans(locale: Locale, plans: BillingPlans | null): PricingTeaserPlans {
+  const card = (type: AccountType): PlanCopy => {
+    const plan = accountPlan(type, locale, plans);
+    return {
+      name: plan.name,
+      price: plan.price ? `${plan.price} ${plan.period}` : undefined,
+      rows: plan.rows,
+      line: plan.who ?? "",
+      recommended: plan.recommended,
+      cta: plan.cta,
+    };
+  };
+  return { studioPlans: [card("freelancer"), card("studio")], companyPlans: [card("company")] };
 }
