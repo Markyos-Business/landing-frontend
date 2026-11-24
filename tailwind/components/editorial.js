@@ -497,7 +497,10 @@ export const editorialStyles = [
    */
   { ".mk-help-row-mark": {
     "flex": "none",
-    "rotate": "calc(90deg * var(--mk-dir))",
+    /* angle-down turned a quarter toward the reading direction: −90° points
+     it right (forward in English), +90° left (forward in Arabic). It was
+     +90° × dir until 21 Nov 2026, which pointed backwards in both. */
+    "rotate": "calc(-90deg * var(--mk-dir))",
     "color": "var(--text-faint)",
   } },
   /* ── The article ────────────────────────────────────────────────────────── */
@@ -669,5 +672,306 @@ export const editorialStyles = [
     "font-size": "var(--fs-eyebrow)",
     "font-weight": "500",
     "color": "var(--mk-blue-ink)",
+  } },
+  /* ── The Help Center (C1, 21 Nov 2026) ───────────────────────────────────
+   *
+   * The home and topic pages reuse the help hero, tiles and rows above. What
+   * is new: a larger search that submits (it carries its own button), tiles
+   * that are links with a description, the contact card, and the crumbs.
+   */
+  { ".mk-help-search-lg": {
+    "max-inline-size": "40rem",
+    "padding-block": "8px",
+    "padding-inline-start": "20px",
+    "padding-inline-end": "8px",
+  } },
+  { ".mk-help-search-lg input": {
+    "font-size": "var(--fs-body)",
+    "min-block-size": "2.5rem",
+  } },
+  { ".mk-help-topic": {
+    "align-items": "flex-start",
+    "block-size": "100%",
+  } },
+  { ".mk-help-tile-icon-lg": {
+    "inline-size": "3rem",
+    "block-size": "3rem",
+  } },
+  { ".mk-help-h2": {
+    "font-size": "var(--fs-d3)",
+    "line-height": "1.25",
+    "font-weight": "500",
+    "color": "var(--text)",
+  } },
+  { ".mk-help-contact": {
+    "display": "flex",
+    "flex-wrap": "wrap",
+    "align-items": "center",
+    "gap": "16px",
+    "border-radius": "var(--radius-card)",
+    "padding": "clamp(20px, 3vw, 28px)",
+    "background": "var(--surface-1)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-help-crumb": {
+    /* 24px tall at least (WCAG 2.2 target size): these sit in lists, not
+       inside running text, so the inline-link exception doesn't cover them. */
+    "display": "inline-block",
+    "min-block-size": "24px",
+    "padding-block": "3px",
+    "color": "inherit",
+    "text-decoration": "underline",
+    "text-decoration-color": "transparent",
+    "text-underline-offset": "0.2em",
+    "transition": "text-decoration-color var(--mk-dur-fast) var(--mk-ease)",
+  } },
+  { ".mk-help-crumb:hover": {
+    "text-decoration-color": "currentColor",
+  } },
+  /* ── The Help Center article (C4, 21 Nov 2026) ──────────────────────────
+   *
+   * The body beside its table of contents on a wide screen; the contents
+   * are a disclosure above the body below 64rem. Headings stop under the
+   * sticky header when a contents link or an anchor is followed.
+   */
+  { ".mk-help-article": {
+    "display": "grid",
+    "gap": "clamp(2rem, 4vw, 3.5rem)",
+  } },
+  { "@media (width >= 64rem)": {
+    ".mk-help-article": {
+      "grid-template-columns": "minmax(0, 1fr) 15rem",
+    },
+    ".mk-help-toc-inline": {
+      "display": "none",
+    },
+  } },
+  { ".mk-help-toc": {
+    "display": "none",
+  } },
+  { "@media (width >= 64rem)": {
+    ".mk-help-toc": {
+      "display": "block",
+      "position": "sticky",
+      "inset-block-start": "calc(var(--mk-header-h) + 1.5rem)",
+      "align-self": "start",
+      "max-block-size": "calc(100vh - var(--mk-header-h) - 3rem)",
+      "overflow": "auto",
+      "padding-inline-start": "1.25rem",
+      "box-shadow": "inset 1px 0 0 var(--hairline-strong)",
+    },
+    "[dir=\"rtl\"] .mk-help-toc": {
+      "box-shadow": "inset -1px 0 0 var(--hairline-strong)",
+    },
+  } },
+  { ".mk-help-toc-inline": {
+    "border-radius": "var(--radius-card)",
+    "padding": "14px 16px",
+    "background": "var(--surface-1)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-help-toc-inline summary": {
+    "cursor": "pointer",
+    "font-size": "var(--fs-ui)",
+    "font-weight": "500",
+    "color": "var(--text)",
+  } },
+  { ".mk-help-meta": {
+    "display": "flex",
+    "flex-wrap": "wrap",
+    "gap": "6px 18px",
+    "font-size": "var(--fs-ui)",
+    "color": "var(--text-muted)",
+  } },
+  { ".mk-help-body :is(h2, h3)": {
+    "scroll-margin-block-start": "calc(var(--mk-header-h) + 1.5rem)",
+  } },
+  { ".mk-anchor": {
+    "display": "inline-grid",
+    "place-items": "center",
+    "inline-size": "1.75rem",
+    "block-size": "1.75rem",
+    "margin-inline-start": "0.4rem",
+    "vertical-align": "middle",
+    "border-radius": "var(--mk-r-button)",
+    "font-size": "16px",
+    "color": "var(--text-muted)",
+    "text-decoration": "none",
+    "opacity": "0",
+    "transition": "opacity var(--mk-dur-fast) var(--mk-ease)",
+  } },
+  { ":is(h2, h3):hover > .mk-anchor, .mk-anchor:focus-visible": {
+    "opacity": "1",
+  } },
+  { "@media (hover: none)": {
+    ".mk-anchor": {
+      "opacity": "1",
+    },
+  } },
+  { ".mk-prose .mk-anchor:hover": {
+    "color": "var(--text)",
+  } },
+  { ".mk-video": {
+    "display": "block",
+    "aspect-ratio": "16 / 9",
+    "overflow": "hidden",
+    "border-radius": "var(--radius-widget)",
+    "background": "var(--surface-2)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-video iframe": {
+    "display": "block",
+    "inline-size": "100%",
+    "block-size": "100%",
+    "border": "0",
+  } },
+  { ".mk-video-print": {
+    "display": "none",
+  } },
+  { ".mk-help-body aside": {
+    "border-radius": "var(--radius-widget)",
+    "padding": "14px 18px",
+    "box-shadow": "inset 3px 0 0 var(--accent)",
+    "background": "var(--accent-soft)",
+  } },
+  { "[dir=\"rtl\"] .mk-help-body aside": {
+    "box-shadow": "inset -3px 0 0 var(--accent)",
+  } },
+  { ".mk-help-body aside.callout-warning": {
+    "box-shadow": "inset 3px 0 0 var(--mk-state-expiring)",
+    "background": "var(--mk-state-expiring-soft)",
+  } },
+  { "[dir=\"rtl\"] .mk-help-body aside.callout-warning": {
+    "box-shadow": "inset -3px 0 0 var(--mk-state-expiring)",
+  } },
+  { ".mk-help-pager": {
+    "display": "grid",
+    "gap": "12px",
+  } },
+  { "@media (width >= 40rem)": {
+    ".mk-help-pager": {
+      "grid-template-columns": "1fr 1fr",
+    },
+    ".mk-help-pager-next": {
+      "grid-column": "2",
+      "text-align": "end",
+      "justify-content": "flex-end",
+    },
+  } },
+  { "@media print": {
+    "header, footer, .mk-no-print, .mk-anchor, .mk-video": {
+      "display": "none !important",
+    },
+    ".mk-video-print": {
+      "display": "inline",
+    },
+    ".mk-help-article": {
+      "display": "block",
+    },
+    ".mk-help-body a[href^=\"http\"]::after": {
+      "content": "\" (\" attr(href) \")\"",
+      "font-size": "0.8em",
+      "overflow-wrap": "anywhere",
+    },
+  } },
+  /* ── Help Center search (C5, 21 Nov 2026) ────────────────────────────── */
+  { ".mk-help-hit mark": {
+    "background": "var(--accent-soft)",
+    "color": "var(--text)",
+    "border-radius": "3px",
+    "padding-inline": "1px",
+  } },
+  /* The result the arrow keys are on: the same ring as a focused control. */
+  { ".mk-help-hit.is-active": {
+    "background": "var(--surface-2)",
+    "box-shadow": "0 0 0 1.5px var(--accent), 0 0 0 5px rgba(0, 153, 255, 0.12)",
+  } },
+  /* Filter pills: the site's one pill-shaped control besides avatars (§7). */
+  { ".mk-help-chip": {
+    "display": "inline-flex",
+    "align-items": "center",
+    "gap": "6px",
+    "min-block-size": "32px",
+    "border-radius": "var(--radius-pill)",
+    "padding-inline": "12px",
+    "font-size": "var(--fs-ui)",
+    "color": "var(--text-muted)",
+    "background": "var(--surface-1)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+    "transition": "background-color var(--mk-dur-fast) var(--mk-ease), color var(--mk-dur-fast) var(--mk-ease)",
+  } },
+  { ".mk-help-chip:hover": {
+    "color": "var(--text)",
+    "background": "var(--surface-2)",
+  } },
+  { ".mk-help-chip[aria-pressed=\"true\"]": {
+    "color": "var(--text)",
+    "background": "var(--accent-soft)",
+    "box-shadow": "0 0 0 1.5px var(--accent)",
+  } },
+  { ".mk-help-chip-count": {
+    "font-size": "var(--fs-eyebrow)",
+    "color": "var(--text-muted)",
+  } },
+  { "@media (pointer: coarse)": {
+    ".mk-help-chip": {
+      "min-block-size": "44px",
+    },
+  } },
+  /* ── Help Center feedback (C6, 21 Nov 2026) ──────────────────────────── */
+  { ".mk-help-feedback": {
+    "margin-block-start": "clamp(2.5rem, 5vw, 3.5rem)",
+    "border-radius": "var(--radius-card)",
+    "padding": "clamp(20px, 3vw, 28px)",
+    "background": "var(--surface-1)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-help-feedback h2:focus": {
+    "outline": "none",
+  } },
+  { ".mk-help-check": {
+    "display": "flex",
+    "align-items": "center",
+    "gap": "10px",
+    "min-block-size": "40px",
+    "border-radius": "var(--radius-widget)",
+    "padding-inline": "12px",
+    "font-size": "var(--fs-ui)",
+    "color": "var(--text)",
+    "cursor": "pointer",
+    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-help-check:has(input:checked)": {
+    "background": "var(--accent-soft)",
+    "box-shadow": "0 0 0 1.5px var(--accent)",
+  } },
+  { ".mk-help-check input": {
+    "inline-size": "18px",
+    "block-size": "18px",
+    "accent-color": "var(--accent)",
+    "flex": "none",
+  } },
+  { ".mk-help-textarea": {
+    "inline-size": "100%",
+    "resize": "vertical",
+    "border-radius": "var(--radius-widget)",
+    "padding": "10px 14px",
+    "font-size": "var(--fs-ui)",
+    "color": "var(--text)",
+    "background": "var(--canvas)",
+    "box-shadow": "inset 0 0 0 1px var(--hairline-strong)",
+  } },
+  { ".mk-help-textarea:focus-visible": {
+    "outline": "2px solid var(--accent)",
+    "outline-offset": "2px",
+  } },
+  /* The honeypot: present for bots, absent for people. */
+  { ".mk-honeypot": {
+    "position": "absolute",
+    "inline-size": "1px",
+    "block-size": "1px",
+    "overflow": "hidden",
+    "clip-path": "inset(50%)",
+    "white-space": "nowrap",
   } },
 ];

@@ -1,9 +1,21 @@
 import type { Metadata } from "next";
 import { LOCALES, LOCALE_HREFLANG, DEFAULT_LOCALE, type Locale } from "./i18n/locales";
 import { localePrefix } from "./i18n/href";
+import { byDeployment } from "./deployEnv";
 
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "http://localhost:3000";
+/**
+ * The site's own origin, for canonicals, hreflang, the sitemap and Open
+ * Graph: NEXT_PUBLIC_SITE_URL, else this deployment's public address. It
+ * used to fall back to localhost on every deployment that forgot the var.
+ */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+  byDeployment({
+    production: "https://markyos.com",
+    preview: "https://staging.markyos.com",
+    local: "http://localhost:3000",
+  })
+).replace(/\/+$/, "");
 
 /**
  * The absolute URL of a page, in the shape the site actually publishes.
@@ -55,16 +67,23 @@ export function alternates(
    * page that is a "not translated yet" notice — see src/lib/pages/registry.ts.
    */
   available: readonly Locale[] = LOCALES,
+  /**
+   * The page's path in each language, when it differs between them — a help
+   * article's slug is written per language. Overrides `path` for the
+   * languages it names.
+   */
+  paths?: Partial<Record<Locale, string>>,
 ): Metadata["alternates"] {
+  const at = (l: Locale) => paths?.[l] ?? path;
   const languages: Record<string, string> = {};
   for (const l of available) {
-    languages[LOCALE_HREFLANG[l]] = pageUrl(l, path);
+    languages[LOCALE_HREFLANG[l]] = pageUrl(l, at(l));
   }
   const fallback = available.includes(DEFAULT_LOCALE) ? DEFAULT_LOCALE : available[0];
-  if (fallback) languages["x-default"] = pageUrl(fallback, path);
+  if (fallback) languages["x-default"] = pageUrl(fallback, at(fallback));
 
   return {
-    canonical: pageUrl(locale, path),
+    canonical: pageUrl(locale, at(locale)),
     languages,
   };
 }
@@ -87,6 +106,10 @@ type PageMetaInput = {
   ogDescription?: string;
   /** Which locales this page exists in. See `alternates`. */
   available?: readonly Locale[];
+  /** Per-language paths, when they differ. See `alternates`. */
+  paths?: Partial<Record<Locale, string>>;
+  /** Open Graph type: "article" for articles. */
+  ogType?: "website" | "article";
   /** Keep the page out of the index — placeholders and legal frames. */
   noindex?: boolean;
 };
@@ -104,9 +127,11 @@ export function pageMetadata({
   ogImage,
   ogDescription,
   available,
+  paths,
+  ogType = "website",
   noindex,
 }: PageMetaInput): Metadata {
-  const url = pageUrl(locale, path);
+  const url = pageUrl(locale, paths?.[locale] ?? path);
 
   return {
     // Set here rather than as a static `metadata` export in the layout: a
@@ -116,10 +141,10 @@ export function pageMetadata({
     metadataBase: new URL(SITE_URL),
     title,
     description,
-    alternates: alternates(locale, path, available),
+    alternates: alternates(locale, path, available, paths),
     ...(noindex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
-      type: "website",
+      type: ogType,
       url,
       siteName: "Markyos",
       title: ogTitle ?? title,

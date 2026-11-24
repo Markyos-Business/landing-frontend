@@ -1,3 +1,8 @@
+> Current implementation, 16 November 2026: item 2 is resolved. Website
+> signups are stored in the shared Django backend, and the active CMS is the
+> app's `/admin/cms`. Earlier Payload/provider discussions below are historical;
+> follow [CMS guide](CMS-GUIDE.md) for current setup.
+
 # Open decisions
 
 > **Updated 17 Oct 2026 (second pass).** Item 4 is resolved — analytics is
@@ -23,8 +28,7 @@
 > is complete (127 of 127), and a new item 7 records what happens to the
 > English edition of those pages.
 
-**One thing still needs your call** — item 2. Nothing here is urgent today: the
-site builds, runs and is styled without it answered.
+**The signup storage decision is resolved:** the shared Django backend stores website submissions.
 
 See `docs/DESIGN.md` for how the reference maps onto the code, and for the
 four places the build deliberately departs from it.
@@ -124,7 +128,7 @@ rather than an open question.
 
 ---
 
-## 2. Where does a beta signup go?
+## 2. Where does a beta signup go? — RESOLVED
 
 > **Narrowed 21 Nov 2026.** This section is about *addresses captured for a
 > list*. Messages are no longer one of them: /contact has its own form, its
@@ -133,42 +137,18 @@ rather than an open question.
 > block left on the site is the newsletter on /resources, which is what
 > `check:waitlist` now opens.
 
-`/api/waitlist` validates the submission, catches bots with a honeypot, and
-returns **501** rather than storing anything.
+`/api/waitlist` validates and forwards submissions to the platform's Django
+`/content/public/signups/` endpoint. The WebsiteSignup table deduplicates each
+normalized email/topic pair. Newsletter, contact and studio/company beta
+requests are stored separately. Filled honeypots are discarded with the same
+202 response. Invalid requests, backend failures and rate limits do not claim
+success. No confirmation or campaign email is sent automatically.
 
-The shared request contract is `src/lib/waitlist.ts`: public forms send
-`email`, `topic` (`newsletter` or `contact`) and `locale`; beta requests send
-`email` and `type` (`studio` or `company`), with optional locale/country.
-Both reach the honest unconnected state. A filled `company_url` honeypot is
-accepted with 202 and discarded. No form claims that an address was saved
-locally or subscribed when the route returns 501. Use `npm run check:waitlist`
-against an isolated running build when changing this contract.
+The app backend migration must be applied before deployment. Review entries
+through Django admin; use `npm run check:waitlist` against an isolated build
+connected to a test backend. The browser form says saved, not subscribed to an
+external email provider. Mailing-provider integration can be added separately.
 
-That is deliberate. A silent 200 that drops the email is the one failure mode
-worth engineering against — the form would look like it worked, and the 25
-studio spots would fill with people nobody can reach.
-
-The options, roughly in order of how much they cost to build:
-
-| Option | Why | Cost |
-| :--- | :--- | :--- |
-| A table in the platform's Postgres | It is already there, already budgeted, and the beta cohort is product data you will want to query | A Prisma model and a connection string |
-| An email tool (Resend, Loops, Mailchimp) | You need to *email* these people — a confirmation now, an invite later — and a database row does not do that | An API key, no schema |
-| Both | The table is the record; the email tool is the channel | Both of the above |
-
-**Recommendation:** the email tool first, because the thing you actually have
-to do with a beta signup is email them, and a row in Postgres that nobody has
-built a mailer for is a list you cannot use. Add the table when the beta
-cohort becomes something you want to segment.
-
-**Also needs deciding:** whether the form is on the homepage or on `/start` in
-the platform app. Today every CTA redirects to `NEXT_PUBLIC_APP_URL/start`,
-which means the platform app currently owns beta signup and this endpoint is
-unused. If the marketing site should capture the email instead — which is
-usually right pre-launch, because it is one field instead of an account — the
-hero CTAs should open a dialog here rather than redirecting away.
-
----
 
 ## 3. Light theme, dark theme, or both? — CLOSED by the design system
 
@@ -513,6 +493,62 @@ decision with its own consequences.
 it is partial on a serverless deployment. It is burst control, not a spam
 defence — the honeypot and the message floor are. Shared state in Postgres is
 the real version, worth building when there is evidence it is needed.
+
+---
+
+## 9. The catalogue is on the site and not in billing — OPEN, and the page knows it
+
+**Status: v4.2 shipped 22 Nov 2026 and v4.3 replaced it the same day. Two
+external systems have to catch up before a single visitor can pay what the
+page says.**
+
+Copy deck v4.3 sells eleven plans across three audiences: Free, Solo $12 and
+Pro $24 to freelancers; Free, Studio $59 and Agency $119 to studios and
+agencies; Free, Starter $12, Brand $24, Team $59 and Business $119 to
+companies, with Enterprise behind a contract. Every AI tool carries a monthly
+limit instead of drawing on a pool of credits, and billing moves to PayPal.
+
+**None of it exists in billing.** The platform sells what `CURRENT_PRICES`
+describes — one one-time pass and one monthly subscription per account type,
+at freelancer $15/$19, studio $19/$29, company $49/$99 — and `check:pricing`
+still holds that constant against the backend's `billing.py` and the
+platform's `accountTypes.ts`. The two catalogues share no price and no plan.
+
+### What keeps the page honest in the meantime
+
+Nothing on it takes money. Every plan CTA creates a free account at `/start`
+with the account type its audience signs up as; Enterprise opens
+`/contact?topic=sales`. `check:pricing` asserts exactly that: each plan CTA
+resolves to `/start`, carries the right known account type, and carries no
+`plan` parameter. A visitor can read $12 and act on it without the checkout
+contradicting the page, because the only thing the page asks them to do is
+sign up for nothing.
+
+**Delete that assertion the day the plans are real in billing. Not before.**
+
+### What has to happen outside this repository
+
+| # | What | Who |
+| :-: | :--- | :--- |
+| 1 | The eleven plans exist in billing, at v4.3's prices, monthly and yearly — including Agency and Business at $119, which v4.1 had removed from the product | Platform + backend |
+| 2 | PayPal is connected, and the launch offer is set up as a discounted trial of three monthly cycles at half price — tested in sandbox before launch | Billing |
+| 3 | Card payments through PayPal without an account, in Saudi Arabia and Malaysia | Billing (deck Open item 2) |
+| 4 | The Arabic and English cost test, before 1 February 2027. If Arabic quick checks need the larger model, the quick-check numbers drop on every plan | Product |
+| 5 | The mockup renderer composites the approved logo file onto the AI scene | Product (deck Open item 3) |
+| 6 | The partner reward is recorded during the PayPal months and applied as billing credit once billing moves to Stripe — including the 25% rate on Agency | Billing (deck Open item 5) |
+| 7 | The prepaid client year ($190) returns with Stripe. It is off the site until then, and `check:pricing` fails on the figure | Billing |
+
+Items 3 and 5 are why two of the deck's FAQ answers are not on the site: "do I
+need a card to start?" and "does the AI draw my logo?" Both are written in
+v4.3 and both are gated on a fact nobody has established. Refunds are a
+[PLACEHOLDER] in the deck itself, and the tax and VAT clause on the receipts
+line is a [CONFIRM]; both are likewise absent.
+
+### What the site still says about the old model
+
+`CURRENT_PRICES` is on no page. It stays in `content/current-pricing.ts`
+because it is the only record here of what a card is actually charged, and the
+sibling comparison is what will tell us the day billing moves.
 
 ---
 

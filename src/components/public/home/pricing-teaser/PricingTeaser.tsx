@@ -3,8 +3,8 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { Words } from "@/components/ui";
 import { useState } from "react";
-import type { PricingTeaserCopy } from "@/content/types";
-import { TextLink, Display, Lead, Pool, TRACK } from "../landing";
+import type { PricingTeaserCopy, PricingTeaserPlans } from "@/content/types";
+import { TextLink, Display, INK_55, Lead, Pool, TRACK } from "../landing";
 import { Toggle } from "./Toggle";
 import { Plan } from "./Plan";
 
@@ -14,8 +14,8 @@ import { Plan } from "./Plan";
  * ── Two audiences, one grid ──────────────────────────────────────────────
  *
  * Account types determine the current per-brand price. Studios and freelancers
- * share a panel; companies have their own. Both use the same pricing catalog
- * as the full pricing page.
+ * share a panel; companies have their own. The cards come from the backend's
+ * plans (`teaserPlans`, read by the homepage), like the full pricing page.
  *
  * It is a real radio group, not two buttons: the two options are mutually
  * exclusive states of one control, so arrow keys move between them and a
@@ -25,11 +25,11 @@ import { Plan } from "./Plan";
  *
  */
 
-export function PricingTeaser({ copy, locale }: {
-  locale: Locale; copy: PricingTeaserCopy }) {
+export function PricingTeaser({ copy, cards, locale }: {
+  locale: Locale; copy: PricingTeaserCopy; cards: PricingTeaserPlans }) {
   const [audience, setAudience] = useState<"studio" | "company">("studio");
   const studio = audience === "studio";
-  const plans = studio ? copy.studioPlans : copy.companyPlans;
+  const plans = studio ? cards.studioPlans : cards.companyPlans;
 
   return (
     <section
@@ -38,8 +38,8 @@ export function PricingTeaser({ copy, locale }: {
       style={{
         position: "relative",
         padding: "clamp(72px,10vw,120px) 24px",
-        background: "var(--surface-1)",
-        boxShadow: "0 0 0 1px rgba(255,255,255,0.06)",
+        background: "#fff",
+        boxShadow: "0 0 0 1px rgba(11,11,15,.04)",
         /* clip, not hidden: `overflow: hidden` makes a scroll container, and
            a scroll-driven `view()` timeline resolves against the nearest one
            — so every reveal inside this section was pinned at full progress
@@ -97,21 +97,7 @@ export function PricingTeaser({ copy, locale }: {
               padding: 4,
               borderRadius: 999,
               background: TRACK,
-              /*
-               * Sized by its labels, not by a number.
-               *
-               * This was a flat `inlineSize: 300`, which gives each half about
-               * 146px. «للاستديوهات والمستقلين» does not fit in 146px at 15px,
-               * so the Arabic label was overrunning its own half of the track
-               * -- the same fault this codebase keeps finding, a width chosen
-               * against one language's words.
-               *
-               * `inline-grid` with `1fr 1fr` and no width sizes both columns
-               * to the widest label in either of them, so the two halves stay
-               * equal (which the knob at `calc(50% - 4px)` depends on) and the
-               * track grows to whatever the copy needs, in either locale.
-               */
-              maxInlineSize: "100%",
+              inlineSize: 300,
             }}
           >
             {/*
@@ -129,8 +115,8 @@ export function PricingTeaser({ copy, locale }: {
                 inlineSize: "calc(50% - 4px)",
                 blockSize: 44,
                 borderRadius: 999,
-                background: "var(--surface-1)",
-                boxShadow: "0 1px 2px rgba(255,255,255,0.12),0 6px 14px -6px rgba(0,0,0,.6)",
+                background: "#fff",
+                boxShadow: "0 1px 2px rgba(11,11,15,.08),0 6px 14px -6px rgba(11,20,60,.2)",
                 transition: "transform 420ms cubic-bezier(.32,.72,0,1)",
                 transform: studio ? "none" : "translateX(var(--mk-knob))",
               }}
@@ -186,24 +172,21 @@ export function PricingTeaser({ copy, locale }: {
         >
           {studio ? copy.studioNote : copy.companyNote}
         </Lead>
-        {/*
-         * The reference section closes its row with a bar: the small print at
-         * one end, the one way out at the other, on the card surface inside
-         * the same hairline. The copy is unchanged — this is the sentence that
-         * was already here, given the shape the rest of the row now has.
-         *
-         * `space-between` rather than a side, so it needs no mirroring: the
-         * small print starts at the start edge and the link ends at the end
-         * edge in both editions.
-         */}
-        <div className="mk-plan-strip" style={{ marginBlockStart: 18 }}>
-          <p className="mk-bidi mk-plan-strip-items" style={{ margin: 0 }}>
-            {copy.underBoth}
-          </p>
-          <TextLink locale={locale} href={copy.link.href} style={{ fontSize: 15 }}>
+        <p
+          className="mk-bidi"
+          style={{
+            margin: "6px auto 0",
+            maxWidth: "40em",
+            textAlign: "center",
+            fontSize: 14,
+            color: INK_55,
+          }}
+        >
+          {copy.underBoth}{" "}
+          <TextLink locale={locale} href={copy.link.href} style={{ fontSize: 14 }}>
             {copy.link.label}
           </TextLink>
-        </div>
+        </p>
       </div>
     </section>
   );

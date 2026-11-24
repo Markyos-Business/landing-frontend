@@ -1,8 +1,8 @@
-import { createHash, randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { payloadClient } from "@/lib/content/payloadClient";
+import { contentApiUrl, contentSiteKey } from "@/lib/content/djangoClient";
 import { LOCALES } from "@/lib/i18n/locales";
+import { visitorHash } from "@/lib/visitor";
 
 /*
  * The tracking endpoint.
@@ -25,38 +25,6 @@ const BodySchema = z.object({
   referrer: z.string().max(2048).optional(),
 });
 
-/*
- * The daily salt.
- *
- * Regenerated whenever the date changes, and never written anywhere. Once it
- * rolls over, yesterday's hashes cannot be matched to today's even by us —
- * which is the property that makes this safe to run without asking consent.
- *
- * In-memory means each server instance has its own salt, so a visitor spread
- * across instances may count more than once. That is a deliberate trade:
- * counting slightly high on unique visitors is a much smaller problem than
- * persisting a key that could link a person across days.
- */
-let salt = randomBytes(32);
-let saltDay = "";
-
-function dailySalt(): Buffer {
-  const today = new Date().toISOString().slice(0, 10);
-  if (today !== saltDay) {
-    salt = randomBytes(32);
-    saltDay = today;
-  }
-  return salt;
-}
-
-function visitorHash(ip: string, userAgent: string): string {
-  return createHash("sha256")
-    .update(dailySalt())
-    .update(ip)
-    .update(userAgent)
-    .digest("hex")
-    .slice(0, 32);
-}
 
 /** Coarse device class from the user agent. Three buckets is all a marketing dashboard needs. */
 function deviceOf(userAgent: string): "mobile" | "tablet" | "desktop" {
@@ -105,22 +73,33 @@ export async function POST(request: Request) {
     const forwarded = request.headers.get("x-forwarded-for") ?? "";
     const ip = forwarded.split(",")[0]?.trim() || "0.0.0.0";
 
-    const payload = await payloadClient();
-    await payload.create({
-      collection: "pageviews",
-      data: {
-        path: path.slice(0, 512),
-        locale,
-        device: deviceOf(userAgent),
-        referrerHost: referrerHost(referrer, request.headers.get("host")),
-        visitor: visitorHash(ip, userAgent),
-        // Set by Vercel and Cloudflare. Absent elsewhere, which is fine.
-        country:
-          request.headers.get("x-vercel-ip-country") ??
-          request.headers.get("cf-ipcountry") ??
-          undefined,
-      },
+    const view = {
+      path: path.slice(0, 512),
+      locale,
+      device: deviceOf(userAgent),
+      referrerHost: referrerHost(referrer, request.headers.get("host")),
+      visitor: visitorHash(ip, userAgent),
+      // Set by Vercel and Cloudflare. Absent elsewhere, which is fine.
+      country:
+        request.headers.get("x-vercel-ip-country") ??
+        request.headers.get("cf-ipcountry") ??
+        undefined,
+    };
+
+    // With the platform as the content source, views are counted there
+    // (its CMS shows them under Website traffic). The call is signed with
+    // the shared key; the hash and the trimming above stay on this side, so
+    // the platform never sees an IP address or a full referrer either.
+    const api = contentApiUrl();
+    if (!contentSiteKey()) return ok; // Analytics is opt-in via a shared server key.
+    const response = await fetch(`${api}/content/public/pageviews/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Content-Key": contentSiteKey() },
+      body: JSON.stringify(Object.fromEntries(Object.entries(view).filter(([, v]) => v !== undefined))),
+      cache: "no-store",
+      signal: AbortSignal.timeout(3000),
     });
+    if (!response.ok) throw new Error(`platform answered ${response.status}`);
 
     return ok;
   } catch (error) {

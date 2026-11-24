@@ -434,4 +434,82 @@ export const pricingStyles = [
     "color": "var(--text)",
     "text-align": "center",
   } },
+
+  /* -- "Pick it if" and "Move up when" -------------------------------------
+   *
+   * Copy deck v4.3 puts two sentences above the limits on every card. They
+   * reuse `.mk-plan-limits` for the rule above and below, because they are the
+   * same ledger, but a pair here does not fit on one line: "You work alone,
+   * with one or two clients at a time" beside a 70px label in a card 200px
+   * wide would be four words a line. So the label sits over its sentence
+   * rather than beside it, and the two colours swap -- the label is the
+   * secondary thing to read here, where in the limits below the label is what
+   * the eye runs down.
+   */
+  { ".mk-plan-fit": {
+    "display": "grid",
+    "gap": "0.1875rem",
+    "font-size": "var(--fs-ui)",
+  } },
+  { ".mk-plan-fit dt": {
+    "font-size": "var(--fs-eyebrow)",
+    "font-weight": "500",
+    "color": "var(--text-faint)",
+  } },
+  { ".mk-plan-fit dd": {
+    "margin": "0",
+    "line-height": "1.5",
+    "color": "var(--text-muted)",
+  } },
+
+  /* -- The chooser ---------------------------------------------------------
+   *
+   * One question above the cards, answered by a row of chips. Not the
+   * segmented switch: that control is "which of these am I", exclusive and
+   * permanent, with a knob that travels. This one starts with nothing picked
+   * -- the recommended card is already lit -- and the answers are of different
+   * lengths, which a track of equal columns handles badly and a wrapping row
+   * handles well.
+   *
+   * The chips are the brief's buttons at the small size, in the ghost fill,
+   * so they read as the same family as everything else on the page. The picked
+   * one takes the accent edge, matching the card it just lit.
+   */
+  { ".mk-choice-row": {
+    "display": "flex",
+    "flex-wrap": "wrap",
+    "justify-content": "center",
+    "gap": "0.625rem",
+  } },
+  { ".mk-choice": {
+    "display": "inline-flex",
+    "align-items": "center",
+    "min-block-size": "2.75rem",
+    "padding-inline": "1rem",
+    "border": "0",
+    "border-radius": "var(--radius-btn)",
+    "background": "var(--surface-2)",
+    "box-shadow": "inset 0 0 0 1px var(--hairline-strong)",
+    "color": "var(--text-muted)",
+    "font-size": "var(--fs-ui)",
+    "font-weight": "500",
+    "line-height": "1.3",
+    "cursor": "pointer",
+    "transition":
+      "color var(--mk-dur-base) var(--mk-ease), box-shadow var(--mk-dur-base) var(--mk-ease)",
+  } },
+  { "@media (prefers-reduced-motion: reduce)": {
+    ".mk-choice": {
+      "transition": "none",
+    },
+  } },
+  { ".mk-choice:hover": {
+    "color": "var(--text)",
+  } },
+  { ".mk-choice[aria-checked=\"true\"]": {
+    "color": "var(--text)",
+    "box-shadow":
+      "inset 0 0 0 1px color-mix(in oklab, var(--accent-edge) 45%, transparent)," +
+      "0 0 0 4px color-mix(in oklab, var(--accent-edge) 8%, transparent)",
+  } },
 ];

@@ -5132,3 +5132,265 @@ native one is off, it is 14px inside the inline-end edge, it is vertically
 centred, it takes no pointer events, and a click at its centre reaches the
 select. Every one of those is silent when it breaks — the arrow is simply in
 the wrong place on one edition, which is how it got there in the first place.
+
+
+## The pricing page becomes v4.2 (22 Nov 2026)
+
+Copy deck v4.2 replaced the pricing model, not just its prices. Three things
+moved under every figure: plans instead of account types, a monthly limit per
+AI tool instead of one pool of credits, and PayPal instead of Stripe -- which
+is why the launch offer is now half off three monthly cycles rather than half
+off a year.
+
+`content/current-pricing.ts` is still the one file the page, the homepage
+teaser and the announcement bar are all built from. What changed inside it is
+what the file is a source of truth *for*.
+
+### The page states prices the checkout cannot take
+
+This is the fact that shaped everything else. `CURRENT_PRICES` -- freelancer
+$15/$19, studio $19/$29, company $49/$99 -- is what the platform charges, and
+`check:pricing` has guarded it against the backend's `billing.py` and the
+platform's `accountTypes.ts` since the gate existed. **None of v4.2's plans is
+in that catalogue**, PayPal is not connected, and the deck's own Open item 8
+says the prices and limits are hypotheses until the cost test closes in
+February 2027.
+
+So the page advertises the new catalogue and **no CTA on it goes to a paid
+checkout.** Every plan button creates a free account; Enterprise opens a
+conversation. That is the one shape where the page can say $12 while billing
+still says $19 without the two ever meeting at the moment somebody pays.
+`check:pricing` asserts it -- every plan CTA resolves to `/start`, carries a
+known account type, and carries no `plan` parameter -- and that assertion is
+the one to delete the day the plans are real in billing, not before.
+
+`CURRENT_PRICES` stays for the same reason it always existed. It appears
+nowhere on the site now, but it is still the only record in this repository of
+what a card is actually charged, and the day either sibling moves to the v4.2
+catalogue it is what fails and says so.
+
+### What is derived, and what is typed
+
+The discipline from the yearly offer held: a figure a reader can check is
+derived from the figure the gate guards.
+
+- **Launch prices** are `monthly / 2`, which is where `$29.50` comes from and
+  why `money()` keeps both cent digits. Typing $29.50 would have been one
+  character from $29.5, which reads as a typo.
+- **The partner reward** is `clients x the plan's monthly price x 20%`. Five
+  clients on Brand is $24 a month, which is exactly a Pro plan -- the claim
+  /solutions/freelancers has made since October, still true, now computed.
+- **The yearly rates are typed**, because "save about 20%" is the deck's
+  rounding of three different real discounts: 20.8% on $24, 16.9% on $59,
+  16.7% on $12. Computing them would print $19.20 where the deck says $19. The
+  gate holds them to a band instead -- between 15% and 25% off -- so the
+  toggle's own label cannot quietly become a lie.
+- **The AI limits** live in two tables that both the plan cards and the
+  comparison tables read. They disagreed in the deck's own history: the Team
+  quick-check figure was 3,000 in v4.1 and 2,500 in v4.2, and the 3,000 was
+  still on /solutions/companies when this started.
+
+### Two grids, not a toggle
+
+v4.2 asks for a `?for=studios` / `?for=companies` switch above the cards. The
+page vocabulary has no toggle block, and adding one means a client component, a
+URL parameter and a second render of a page that is otherwise fully static --
+for a control whose whole job is to hide four cards a reader can scroll past.
+Two labelled sections say the same thing, stay in the page for a crawler and a
+printed copy, and let somebody comparing a studio plan against a company plan
+see both at once. The monthly/yearly switch *is* built, because that one
+redraws figures rather than hiding them.
+
+Enterprise appears once, as its own block before the last call, rather than as
+a fifth card. The deck's own design note asks for a strip under the four cards
+for exactly this reason; a block the page already has beats a fifth column that
+reads "contact us" where the others read a price.
+
+### The deck's own unfinished business, left unfinished
+
+Four things in v4.2 are marked [CONFIRM] or [PLACEHOLDER] against a fact
+nobody has yet established, and none of them shipped:
+
+- **Refunds.** A [PLACEHOLDER] in the deck. A billing section that answers
+  "what about refunds?" with a blank is worse than one that never raised it.
+- **Tax and VAT on receipts.** The receipts line ships; its tax clause does
+  not.
+- **"Do I need a card to start?"** Depends on whether PayPal takes card
+  payments without an account in Saudi Arabia and Malaysia, which is Open
+  item 2.
+- **"Does the AI draw my logo?"** The deck gates its own answer: it is only
+  true if the mockup renderer composites the approved logo file on top of the
+  AI scene. If the image model receives the logo and redraws it, the answer is
+  false, so it is not on the site.
+
+The end date is the one placeholder that was filled rather than dropped. v4.2
+leaves it [PLACEHOLDER]; the offer keeps the instant the site has carried since
+21 November -- the end of 15 Feb 2027, which is `PUBLIC_LAUNCH_DATE` -- so the
+bar, the block and the countdown still run to one moment.
+
+### A card row is short, and now it has to be
+
+The four-up company grid clipped three values at the card's edge, in both
+editions: "3 brands, 15 editors, extra $8", "All 8, no badge, with a password"
+and "3 per brand, 3 domains". `PlansBlock` puts `shrink-0` on the value so a
+figure like "2,500" can never break across two lines, which is right -- the
+cost is that a long value runs out of the card instead of wrapping.
+
+The fix is in the content, because a short value is what `PlanCard.rows`
+documents itself as taking. The detail those rows wanted to carry was already
+in the comparison table, which has a column for it.
+
+The gate now has two caps rather than one, and the second exists because the
+first was not enough: a 22-character value still spilled beside a
+25-character label, since the label takes the width first. 24 characters for
+the value, 40 for the pair, both measured in the browser at 1440px. Nothing
+about this failure was visible in a diff, a type or a test -- only on the page.
+
+### "AI credits" is gone, "billing credit" is not
+
+v4.2 retires AI credits and keeps billing credit for the partner reward, which
+makes a blanket ban on the word wrong in eight true sentences. `check:pricing`
+walks the whole content tree for the *priced* forms instead -- a count of
+credits, a credit pack, an AI-credit allowance -- and each pattern it holds is
+a sentence that was live on 21 November. It strips comments first, which is the
+trap `check-design-rules.mjs` already fell into once: the catalogue's own
+header explains what AI credits was and why it is gone.
+
+The sweep reached further than /pricing, because that was never where these
+lived: the brief analysis quoted 15 credits a re-run, the alignment report 20,
+the tone checker 4 per deep check, and the homepage promised "AI runs on
+credits you can see". All of them now say what the plan's monthly limit is,
+and the two Arabic allowance tables read the catalogue rather than their own
+copies of it.
+
+
+## Three audiences, eleven plans (22 Nov 2026)
+
+Copy deck v4.3 landed hours after v4.2 shipped, and it changes who the pricing
+page is talking to rather than what it charges. Freelancers come out from
+under "studios and freelancers" and get their own tab and their own plans;
+Agency and Business come back as capacity plans at $119; Pro goes from three
+projects to five; and every card carries every limit plus the two sentences
+that actually decide a plan.
+
+### The page is a switch now, not a stack
+
+v4.2 stacked two plan grids and two comparison tables, so a freelancer read a
+studio's seat prices and a company's editor counts on the way to the FAQ.
+Three audiences makes that worse by half again: eleven cards and three
+comparisons in one column.
+
+The `audience` block already existed for exactly this -- it was built when
+/pricing was 10,700px of the same thing twice -- and it was written for any
+number of options rather than for two. So /pricing is one switch with three
+panels: every panel is in the HTML, so all eleven plans are indexed and
+findable in a browser's own search, and only one is shown.
+
+Two consequences follow from "every panel is in the HTML", and both are now
+enforced rather than remembered:
+
+- **No block inside a panel carries an `id`.** An id in one panel is either a
+  duplicate of its opposite number -- the free plan is in all three -- or an
+  anchor that scrolls into something hidden. `check:pricing` walks the whole
+  block tree, collects every id including the plan cards', and fails on a
+  repeat.
+- **The tab is the deep link.** `/pricing#studios` opens the studios panel and
+  scrolls to the switch. v4.3 also asks for `?for=studios`, which survives
+  being pasted into a message with a full stop after it, so the switch reads
+  that on arrival and writes it back on every pick. The query form does not
+  scroll: somebody arriving from a link should land at the top of the page
+  with the right panel open, not a third of the way down.
+
+### The chooser, and why it moves a class
+
+Eleven plans across three tabs still leaves three to five cards per tab, and
+what decides between them is never the price -- it is one fact: clients at
+once, people on the team, brands and editors. So each tab asks that one
+question above its cards, and the answer lights the card.
+
+The cards are server components in a sibling block, rendered once and never
+re-rendered. There is no client-side owner of "which plan is lit" to lift this
+into, and making one would turn eleven cards, every limit and every price into
+client-rendered markup to carry a single class. The chooser reaches for the
+card by the id the content file gave both ends instead -- the same contract
+`AudienceTabs` has with the hash -- and it is safe for the reason it looks
+unsafe: nothing else ever rewrites those elements, so React will not undo it.
+
+`check:pricing` resolves every chip: the target is a card in that same panel,
+or `tab:` an id the switch actually has. A renamed plan is otherwise a chip
+that silently does nothing.
+
+The one answer that is not a card is the freelancers tab's "others work with
+me", which is a real answer whose plan is on another tab. It sets the hash,
+which is the switch's own deep link, so the panel changes and the page scrolls
+exactly as a link from the nav does. Writing that hash took three attempts:
+assigning `location.hash` is writing to something outside the component as far
+as the React compiler is concerned, and `location.assign` with a relative
+target is how an internal Next.js navigation happens by accident. It is
+`replaceState` plus a dispatched `hashchange` -- which is the honest instrument
+anyway, since this is a filter on one page and not a page to come back from.
+
+### A card row has two caps, and they depend on the grid
+
+The cap `check:pricing` learned in v4.2 -- 24 characters for a value, 40 for
+the label and value together -- was measured on a four-card grid. The
+companies tab is five cards: an 1100px container leaves about 145px of content
+per card against about 265px at three. So the cap is now a function of the
+grid, 14/30 at five columns and 24/40 below that, and the company cards carry
+figures and marks only. The rows that need a phrase -- support, partner links,
+who counts as a collaborator -- are in the comparison table directly below,
+which has the width for them.
+
+This is still the rule nothing but the browser can check. Measured again at
+1440px and 375px, both editions, all three tabs: no row leaves its card.
+
+### What the deck asks for and the page does differently
+
+- **The full comparison is a table under the cards, not a modal.** v4.3 asks
+  for a button that opens a full-screen sheet, because its cards now carry
+  every limit and a table under them would repeat it. The table stays: it is
+  the one place the rows line up across plans, it prints, it is crawled, and
+  the sheet would be a new overlay component with its own focus trap for a
+  gain of some scrolling. Each tab shows only its own, so a reader sees one
+  audience's cards and one audience's table, never three.
+- **The "more than that" chip is gone from the companies chooser.** Its answer
+  is Enterprise, which is not a card. Lighting Business for somebody who needs
+  Enterprise would be worse than not answering, so the Business card's "move
+  up when" carries it and the Enterprise strip is immediately below.
+- **Four [CONFIRM] answers still do not ship**: refunds, the tax clause on
+  receipts, "do I need a card to start?" and "does the AI draw my logo?". Same
+  reasoning as v4.2 -- each is gated on a fact nobody has established, and the
+  last one the deck gates itself.
+
+### The homepage had to move too
+
+The teaser was two named pairs of fields: `studioToggle`/`studioPlans` against
+`companyToggle`/`companyPlans`. A third pair would have been the fourth place
+on the site that has to be found and edited the next time an audience moves,
+so it is a list now, and the count is the copy's rather than the component's --
+the track, the knob and the keyboard all read `copy.audiences.length`. The knob
+travels `index * 100%` of its own width times `--mk-dir`, which is the
+arithmetic the /pricing switch already does; `--mk-knob` was a token for one
+travel of 100% and said nothing about a three-way control.
+
+`check:pricing` asserts the homepage's three audiences are /pricing's three, by
+id, so the two cannot drift.
+
+### The sweep, which was most of the work
+
+The prices were never only on /pricing. Changed in both editions:
+
+- The three audience pages' pricing strips -- freelancers to Free/Solo/Pro,
+  studios to Free/Studio/Agency, companies to five columns -- each now linking
+  to its own tab rather than to the top of /pricing.
+- The studio board's project counts: 1 free, 2 on Solo, 5 on Pro, 10 on
+  Studio, 25 on Agency.
+- The tone checker's allowance table, which gained Business.
+- The partner reward, which is 25% on Agency and 20% everywhere else.
+- **The prepaid client year is gone.** It was one charge of $190 for a year of
+  somebody else's subscription, which is the one thing PayPal cannot be asked
+  to do here. The deck says it returns with Stripe; `check:pricing` fails on
+  `$190` until then, alongside the AI-credit patterns.
+- **Stripe is gone from the two security pages and the homepage FAQ**, which
+  were still telling a reader to expect a card form. The same check now fails
+  on the word.

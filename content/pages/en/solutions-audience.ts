@@ -1,4 +1,5 @@
 import type { PageDoc } from "../types";
+import { audiencePlanTable } from "../../current-pricing.ts";
 import { CTA, HOME, LINK, SOLUTION_TRAIL } from "./_shared";
 
 /*
@@ -164,31 +165,24 @@ const studios: PageDoc = {
       kind: "prose",
       title: "Hand over a brand, not a folder.",
       body: [
-        "Your client gets a hub with their name on it, and you keep the role you agreed. When they upgrade, you get 20% of what they pay in their first year, as credit on your plan.",
+        "Your client gets a hub with their name on it, and you keep the role you agreed. When they upgrade, you get 20% of what they pay in their first year, or 25% on Agency, as credit on your plan.",
       ],
       links: [LINK.handoff],
     },
     {
       kind: "table",
       numeric: true,
-      head: [{ text: "Clients on the Brand plan" }, { text: "You earn a month" }],
+      head: [
+        { text: "Clients on the Brand plan" },
+        { text: "You earn a month" },
+        { text: "On Agency" },
+      ],
       rows: [
-        [{ text: "5" }, { text: "$24, your whole Pro plan" }],
-        [{ text: "12" }, { text: "$57.60" }],
+        [{ text: "5" }, { text: "$24" }, { text: "$30" }],
+        [{ text: "12" }, { text: "$57.60" }, { text: "$72, most of an Agency plan" }],
       ],
     },
-    {
-      kind: "table",
-      title: "One project free. Three on Pro. Ten with a team.",
-      numeric: true,
-      head: [{ text: "" }, { text: "Free" }, { text: "Pro" }, { text: "Studio" }],
-      rows: [
-        [{ text: "Price" }, { text: "$0" }, { text: "$24/mo" }, { text: "$59/mo" }],
-        [{ text: "Active projects" }, { text: "1" }, { text: "3" }, { text: "10" }],
-        [{ text: "Seats" }, { text: "1" }, { text: "1" }, { text: "5" }],
-      ],
-      note: "Handed-off projects don't count. The slot frees up the moment your client takes the hub.",
-    },
+    audiencePlanTable("studio", "en", "Free to build. Pay per brand you share."),
     {
       kind: "faq",
       title: "Questions",
@@ -270,8 +264,8 @@ const freelancers: PageDoc = {
           feature: "discovery-forms",
         },
         {
-          title: "Project Pass",
-          body: ["One more project for $19, when it comes in."],
+          title: "Pay per brand",
+          body: ["A monthly plan for one brand, only when you share it."],
           cta: LINK.seePricing,
         },
         {
@@ -287,21 +281,7 @@ const freelancers: PageDoc = {
         },
       ],
     },
-    {
-      kind: "table",
-      title: "Pay when the work comes.",
-      numeric: true,
-      head: [{ text: "" }, { text: "Free" }, { text: "Project Pass" }, { text: "Pro" }],
-      rows: [
-        [{ text: "Price" }, { text: "$0" }, { text: "$19 once" }, { text: "$24/mo" }],
-        [
-          { text: "Fits" },
-          { text: "Your first project" },
-          { text: "One extra project" },
-          { text: "Three clients at once" },
-        ],
-      ],
-    },
+    audiencePlanTable("freelancer", "en", "Pay when the work is shared."),
     {
       kind: "faq",
       title: "Questions",
@@ -418,24 +398,14 @@ const companies: PageDoc = {
         [{ text: "A studio you work with" }, { text: "Invite them to set it up." }],
       ],
     },
-    {
-      kind: "table",
-      title: "Pay for who edits it. Not who uses it.",
-      numeric: true,
-      head: [{ text: "" }, { text: "Free" }, { text: "Brand" }, { text: "Team" }],
-      rows: [
-        [{ text: "Price" }, { text: "$0" }, { text: "$24/mo" }, { text: "$59/mo" }],
-        [{ text: "Editors" }, { text: "2" }, { text: "5" }, { text: "15" }],
-        [{ text: "Viewers" }, { text: "25" }, { text: "Unlimited" }, { text: "Unlimited" }],
-      ],
-    },
+    audiencePlanTable("company", "en", "Free to build. Pay when you publish."),
     {
       kind: "faq",
       title: "Questions",
       items: [
         {
           q: "Do we pay for everyone?",
-          a: "No. Viewers are free on paid plans.",
+          a: "No. You pay for editors. Viewers are free and unlimited from Brand up, 100 on Starter, 25 on Free.",
         },
         {
           q: "What happens to the text we check?",

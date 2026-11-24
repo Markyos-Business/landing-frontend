@@ -661,7 +661,8 @@ export type ComingNextCopy = {
 
 export type PlanCopy = {
   name: string;
-  price: string;
+  /** Absent when the backend's plans could not be read; see current-pricing.ts. */
+  price?: string;
   /** Plan-shape rows: "Active projects: 3" / "Editors: 5". */
   rows: { label: string; value: string }[];
   line: string;
@@ -716,14 +717,18 @@ export type PricingTeaserCopy = {
   body?: string;
   studioToggle: string;
   companyToggle: string;
-  studioPlans: PlanCopy[];
-  companyPlans: PlanCopy[];
   /** The badge under the recommended plan's price. */
   recommendedLabel: string;
   studioNote: string;
   companyNote: string;
   underBoth: string;
   link: Cta;
+};
+
+/** The teaser's cards, built from the backend's plans at render time. */
+export type PricingTeaserPlans = {
+  studioPlans: PlanCopy[];
+  companyPlans: PlanCopy[];
 };
 
 // ── §4.17 Founder note ──────────────────────────────────────────────────────

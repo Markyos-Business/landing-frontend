@@ -5,14 +5,7 @@ import type { SignupTopic } from "@/lib/waitlist";
 import type { Locale } from "@/lib/i18n/locales";
 import { useWaitlistSignup } from "../hooks/useWaitlistSignup";
 
-/*
- * Email capture — newsletter, beta waitlist, "tell me when it ships".
- *
- * The request and its deliberate 501 are in `services/waitlistService.ts`;
- * the state is `useWaitlistSignup`. The form is a client island rather than a
- * plain POST because a native submit would navigate to that JSON 501 body,
- * which is the worst version of this.
- */
+/** Email capture using the shared backend; the status reports saved or failed. */
 
 export function SignupForm({
   placeholder,

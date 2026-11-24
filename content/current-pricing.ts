@@ -1,130 +1,243 @@
-import type { PageDoc, PlanCard } from "./pages/types";
-import type { OfferBarCopy, PricingTeaserCopy } from "./types";
-
-type AccountType = "freelancer" | "studio" | "company";
-type Locale = "en" | "ar";
-
-/** Current USD checkout prices, per brand. Guarded against Django and the app by check:pricing. */
-export const CURRENT_PRICES = {
-  freelancer: { pass: 15, subscription: 19 },
-  studio: { pass: 19, subscription: 29 },
-  company: { pass: 49, subscription: 99 },
-} as const;
-
-const names = {
-  en: { freelancer: "Freelancer", studio: "Studio", company: "Company" },
-  ar: { freelancer: "مستقل", studio: "استوديو", company: "شركة" },
-};
+import type { PageBlock, PageDoc, PlanCard } from "./pages/types";
+import type { OfferBarCopy, PlanCopy, PricingTeaserCopy, PricingTeaserPlans } from "./types";
 
 /*
- * The launch offer.
+ * Pricing copy, and the one place it meets the backend's figures.
  *
- * Half off the first year of a yearly subscription, claimable between the
- * two instants below. It discounts CURRENT_PRICES and never replaces them:
- * the list price is what check:pricing holds against billing.py and
- * accountTypes.ts, and every figure the offer shows is computed from it
- * here, so the two cannot drift apart.
+ * The app sells a monthly PayPal plan per brand, priced by the brand owner's
+ * account type. What it charges and what each type may have are the
+ * backend's (`GET /billing/plans/`, read by src/lib/billing/plans.ts); this
+ * file keeps only the words, in both languages, and the functions that set
+ * the figures into them at render time. There is no second copy of a price
+ * here to drift: check:pricing fails if one comes back.
  *
- * ── Yearly, as of 21 Nov 2026 ────────────────────────────────────────────
- *
- * The owner asked for the discount to apply to yearly subscriptions only.
- * There was no yearly subscription: the catalogue is a one-time pass and a
- * monthly plan, and the page said so in both editions. A year here is
- * therefore twelve months of the monthly plan paid up front -- `annual()`
- * below, derived and never typed -- and not a new list price. That is the
- * one shape that adds yearly billing without inventing a figure: the only
- * number on the page is still `subscription`, which the sibling
- * repositories guard.
- *
- * ── What this repository cannot guarantee ────────────────────────────────
- *
- * That any of this exists in Stripe. This is a marketing site; the charge
- * is made by the platform, and billing.py carries exactly two prices per
- * account -- `pass` and `subscription`. There is no annual SKU and no
- * coupon. **Two things have to be built before this page is true:** a
- * yearly price at twelve times the monthly one, and a coupon taking 50% off
- * the first year inside this window. Until both exist the page promises
- * $114 and the checkout takes something else, which is the worst failure
- * available to a pricing page. check:pricing compares prices against the
- * sibling repositories when they are present, neither is checked out here,
- * and it cannot see a coupon at all. It has to be verified by hand before
- * this goes live.
- *
- * ── The window ───────────────────────────────────────────────────────────
- *
- * Open now, closing at the end of 15 Feb 2027, which is PUBLIC_LAUNCH_DATE
- * in src/lib/launch.ts. The close is deliberately the launch day itself and
- * not a date after it: that is what was asked for.
- *
- * `opens` was 1 Dec 2026 until 21 Nov 2026, and the owner asked for a clock
- * that counts to 15 Feb. Before its opening instant the countdown counts to
- * the *opening* and says so -- which is correct behaviour and was the wrong
- * offer: a bar that reads "opens in 10 days" is an announcement, not a
- * promotion. Moving the instant into the past puts the window in its
- * `during` phase from the first render, so every clock on the site now runs
- * to the close. The `before` phase is kept rather than deleted because the
- * next offer may well be scheduled rather than live.
- *
- * Both are written as explicit UTC instants rather than dates. A countdown
- * that resolves "15 Feb 2027" in the reader's own zone ends at a different
- * moment in Riyadh than in London, and the offer is one offer.
+ * Every builder takes `plans: BillingPlans | null`. `null` is a build that
+ * could not reach the backend; it renders the same sections without figures
+ * and with the sign-up links, never a guessed number.
  */
-export const LAUNCH_OFFER = {
-  /** Per cent off the first year of a yearly plan. Monthly and the pass are not discounted. */
-  percent: 50,
-  /** Months in the billing term the discount applies to: a year, paid up front. */
-  months: 12,
-  opens: "2026-11-21T00:00:00Z",
-  closes: "2027-02-15T23:59:59Z",
-} as const;
 
-/**
- * A year, in dollars: twelve months of the monthly plan.
- *
- * check:pricing does not import this. It rebuilds the same figure from
- * CURRENT_PRICES itself and compares, which is the only version of the
- * check worth having: importing the function would prove the page agrees
- * with the function rather than that either agrees with the price.
- */
-function annual(type: AccountType): number {
-  return CURRENT_PRICES[type].subscription * LAUNCH_OFFER.months;
+export type AccountType = "freelancer" | "studio" | "company";
+type Locale = "en" | "ar";
+
+/** What a brand may have. `null` is no limit. */
+export type PlanLimits = { brands: number | null; editors: number | null };
+
+/** `GET /billing/plans/`, as the backend sends it. Amounts are cents. */
+export type BillingPlans = {
+  currency: string;
+  interval: "month";
+  perBrand: boolean;
+  /** A brand without a plan: the account may own this many, with these editors. */
+  free: PlanLimits;
+  types: Record<AccountType, { monthly: number; limits: PlanLimits }>;
+};
+
+/** Card order on the page and in the comparison: the recommended one in the middle. */
+export const ACCOUNT_TYPES = ["freelancer", "studio", "company"] as const satisfies readonly AccountType[];
+
+const copy = {
+  en: {
+    names: { freelancer: "Freelancer", studio: "Studio", company: "Company" },
+    who: {
+      freelancer: "For one person running a few client brands.",
+      studio: "For studios running client brands with a team.",
+      company: "For a company running its own brand.",
+    },
+    period: "/ month, per brand",
+    brands: "Brands",
+    editors: "Editors",
+    unlimited: "Unlimited",
+    alone: "Works alone",
+    features: ["Share the guideline with your client", "No “Made with Markyos” badge"],
+    cta: "Get started free",
+    popular: "Most popular",
+    payNote:
+      "Pay with PayPal or a card through PayPal. Cancel any time and keep access to the end of the month you paid for.",
+    noFigures: "Sign up free to see the current monthly price for your account type before you subscribe.",
+    plansTitle: "Choose your account type.",
+    plansLead: "The price follows the brand owner's account type. Each plan covers one brand.",
+    compareTitle: "A free brand next to each paid plan.",
+    freeBrand: "Free brand",
+    plan: (name: string) => `${name} plan`,
+    priceRow: "Monthly price per brand",
+    priceShort: "Price",
+    freePrice: "Free",
+    yes: "Yes",
+    firstFree: "First run free",
+    build: "Build strategy, identity and guideline",
+    share: "Share links",
+    publish: "Publish the guideline site",
+    draftOnly: "Draft only",
+    site: "Guideline site",
+    live: "Live for your client",
+    badge: "“Made with Markyos” badge",
+    shown: "Shown",
+    removed: "Removed",
+    ai: "AI brief analysis",
+    compareNote: "Your account owns one free brand. Each plan covers one brand, and your other brands stay free until you share them.",
+    audienceNote: "Each plan covers one brand.",
+  },
+  ar: {
+    names: { freelancer: "مستقل", studio: "استوديو", company: "شركة" },
+    who: {
+      freelancer: "لمن يعمل وحده على علامات عدد من العملاء.",
+      studio: "للاستوديوهات التي تدير علامات عملائها مع فريق.",
+      company: "للشركات التي تدير علامتها الخاصة.",
+    },
+    period: "شهرياً، لكل علامة",
+    brands: "العلامات",
+    editors: "المحرّرون",
+    unlimited: "بلا حدود",
+    alone: "تعمل وحدك",
+    features: ["مشاركة الدليل مع عميلك", "دون شارة «صُنع بماركيوس»"],
+    cta: "ابدأ مجاناً",
+    popular: "الأكثر اختياراً",
+    payNote:
+      "ادفع عبر PayPal، أو ببطاقتك من خلال PayPal. ألغِ متى شئت، ويبقى وصولك حتى نهاية الشهر الذي دفعت عنه.",
+    noFigures: "سجّل مجاناً لترى السعر الشهري الحالي لنوع حسابك قبل أن تشترك.",
+    plansTitle: "اختر نوع حسابك.",
+    plansLead: "السعر حسب نوع حساب مالك العلامة، وكل اشتراك يخص علامة واحدة.",
+    compareTitle: "علامة مجانية بجانب كل خطة مدفوعة.",
+    freeBrand: "علامة مجانية",
+    plan: (name: string) => `خطة ${name}`,
+    priceRow: "السعر الشهري لكل علامة",
+    priceShort: "السعر",
+    freePrice: "مجاناً",
+    yes: "نعم",
+    firstFree: "التحليل الأول مجاني",
+    build: "بناء الاستراتيجية والهوية والدليل",
+    share: "روابط المشاركة",
+    publish: "نشر موقع الدليل",
+    draftOnly: "مسودة فقط",
+    site: "موقع الدليل",
+    live: "منشور لعميلك",
+    badge: "شارة «صُنع بماركيوس»",
+    shown: "تظهر",
+    removed: "تُزال",
+    ai: "تحليل الموجز بالذكاء الاصطناعي",
+    compareNote: "يملك حسابك علامة مجانية واحدة. كل اشتراك يخص علامة واحدة، وتبقى علاماتك الأخرى مجانية حتى تشاركها.",
+    audienceNote: "كل اشتراك يخص علامة واحدة.",
+  },
+};
+
+/** "$29" in both languages, as the app and PayPal show it. */
+function amount(cents: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
+  }).format(cents / 100);
 }
 
-/** `$1,188`, with the separator: a four-figure price without one misreads. */
-function money(value: number): string {
-  /* A cent figure keeps both its digits -- `$9.50`, never `$9.5`, which
-     reads as a typo -- and a whole figure keeps none, because `$114.00` on a
-     yearly price is noise. Every current figure is whole; the branch is here
-     so an odd future price cannot quietly lose a cent. */
-  const digits = Number.isInteger(value) ? 0 : 2;
-  return `$${value.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
-}
+const limitText = (value: number | null, locale: Locale) => (value === null ? copy[locale].unlimited : String(value));
+const editorsText = (value: number | null, locale: Locale) => (value === 0 ? copy[locale].alone : limitText(value, locale));
 
-/** A discounted first year, as a label. Always derived, never typed. */
-function discountedYear(type: AccountType): string {
-  return money((annual(type) * (100 - LAUNCH_OFFER.percent)) / 100);
-}
+const signup = (type: AccountType) => `/start?type=${type}`;
 
-
-/** Account type selects the price; paid plans always cover one brand. */
-function accountPlan(type: AccountType, locale: Locale): PlanCard & { cta: { label: string; href: string } } {
-  const ar = locale === "ar";
-  const prices = CURRENT_PRICES[type];
+/** One account type's card. Without plans it keeps its name, who-line, features and sign-up link. */
+function accountPlan(type: AccountType, locale: Locale, plans: BillingPlans | null): PlanCard & { cta: { label: string; href: string } } {
+  const c = copy[locale];
+  const figures = plans?.types[type];
   return {
-    name: names[locale][type],
-    price: `$${prices.pass}`,
-    period: ar ? "لمرة واحدة، لكل علامة" : "once, per brand",
-    who: ar ? "تصريح المشروع يفتح رابط العميل لدليل علامة واحدة." : "A Project Pass opens the client link for one brand's guideline.",
-    rows: [
-      { label: ar ? "الاشتراك الشهري" : "Monthly brand plan", value: ar ? `$${prices.subscription} / شهر` : `$${prices.subscription} / month` },
-      /* A year is the monthly price twelve times over, which is why it is
-         written as `annual()` and not as a figure: there is one list price
-         per account, and this is a term on it rather than a second one. */
-      { label: ar ? "أو سنة مقدماً" : "Or a year up front", value: ar ? `${money(annual(type))} / سنة` : `${money(annual(type))} / year` },
-      { label: ar ? "نطاق الخطة المدفوعة" : "Each paid plan covers", value: ar ? "علامة واحدة" : "One brand" },
-    ],
-    cta: { label: ar ? "أنشئ حسابك" : "Create your account", href: `/start?type=${type}` },
+    name: c.names[type],
+    price: figures && plans ? amount(figures.monthly, plans.currency) : undefined,
+    period: figures ? c.period : undefined,
+    who: c.who[type],
+    rows: figures
+      ? [
+          { label: c.brands, value: limitText(figures.limits.brands, locale) },
+          { label: c.editors, value: editorsText(figures.limits.editors, locale) },
+        ]
+      : [],
+    features: [...c.features],
+    recommended: type === "studio",
+    cta: { label: c.cta, href: signup(type) },
   };
+}
+
+/** The account-type cards. */
+function plansBlock(id: string | undefined, locale: Locale, plans: BillingPlans | null): PageBlock {
+  const c = copy[locale];
+  return {
+    kind: "plans",
+    id,
+    title: c.plansTitle,
+    lead: c.plansLead,
+    recommendedLabel: c.popular,
+    plans: ACCOUNT_TYPES.map((type) => accountPlan(type, locale, plans)),
+    note: plans ? c.payNote : `${c.payNote} ${c.noFigures}`,
+  };
+}
+
+/** Free vs each paid account type: price, brands, editors, then what a plan unlocks. */
+function compareBlock(id: string | undefined, title: string | undefined, locale: Locale, plans: BillingPlans | null): PageBlock {
+  const c = copy[locale];
+  const paid = (value: string) => ACCOUNT_TYPES.map(() => value);
+  const figureRows = plans
+    ? [
+        [c.priceRow, c.freePrice, ...ACCOUNT_TYPES.map((t) => amount(plans.types[t].monthly, plans.currency))],
+        [c.brands, limitText(plans.free.brands, locale), ...ACCOUNT_TYPES.map((t) => limitText(plans.types[t].limits.brands, locale))],
+        [c.editors, editorsText(plans.free.editors, locale), ...ACCOUNT_TYPES.map((t) => editorsText(plans.types[t].limits.editors, locale))],
+      ]
+    : [];
+  return {
+    kind: "table",
+    id,
+    title: title ?? c.compareTitle,
+    numeric: true,
+    head: ["", c.freeBrand, ...ACCOUNT_TYPES.map((t) => ({ text: c.plan(c.names[t]), strong: true }))],
+    rows: [
+      ...figureRows,
+      [c.build, c.yes, ...paid(c.yes)],
+      [c.share, c.yes, ...paid(c.yes)],
+      [c.publish, c.draftOnly, ...paid(c.yes)],
+      [c.badge, c.shown, ...paid(c.removed)],
+      [c.ai, c.firstFree, ...paid(c.firstFree)],
+    ],
+    note: plans ? c.compareNote : `${c.compareNote} ${c.noFigures}`,
+  };
+}
+
+/** An audience page's table: a free brand next to that account type's paid brand. */
+function audienceBlock(type: AccountType, id: string | undefined, title: string | undefined, locale: Locale, plans: BillingPlans | null): PageBlock {
+  const c = copy[locale];
+  const figures = plans?.types[type];
+  const figureRows = plans && figures
+    ? [
+        [c.priceShort, c.freePrice, { text: `${amount(figures.monthly, plans.currency)} ${c.period}`, strong: true }],
+        [c.brands, limitText(plans.free.brands, locale), { text: limitText(figures.limits.brands, locale), strong: true }],
+        [c.editors, editorsText(plans.free.editors, locale), { text: editorsText(figures.limits.editors, locale), strong: true }],
+      ]
+    : [];
+  return {
+    kind: "table",
+    id,
+    title,
+    numeric: true,
+    head: ["", c.freeBrand, { text: c.plan(c.names[type]), strong: true }],
+    rows: [
+      ...figureRows,
+      [c.site, c.draftOnly, { text: c.live, strong: true }],
+      [c.badge, c.shown, { text: c.removed, strong: true }],
+    ],
+    note: plans ? c.audienceNote : `${c.audienceNote} ${c.noFigures}`,
+  };
+}
+
+/** A `priced` block, with the backend's figures set into its copy. */
+export function resolvePriced(
+  block: Extract<PageBlock, { kind: "priced" }>,
+  locale: Locale,
+  plans: BillingPlans | null,
+): Extract<PageBlock, { kind: "plans" | "table" }> {
+  switch (block.part) {
+    case "plans":
+      return plansBlock(block.id, locale, plans) as Extract<PageBlock, { kind: "plans" }>;
+    case "compare":
+      return compareBlock(block.id, block.title, locale, plans) as Extract<PageBlock, { kind: "table" }>;
+    case "audience":
+      return audienceBlock(block.type ?? "studio", block.id, block.title, locale, plans) as Extract<PageBlock, { kind: "table" }>;
+  }
 }
 
 export function currentPricingPage(locale: Locale): PageDoc {
@@ -133,358 +246,103 @@ export function currentPricingPage(locale: Locale): PageDoc {
     path: "/pricing",
     shortTitle: ar ? "الأسعار" : "Pricing",
     title: ar ? "الأسعار · ماركيوس" : "Pricing · Markyos",
-    description: ar ? "ابدأ بإنشاء علامتك مجاناً. تصريح لمرة واحدة أو اشتراك شهري لكل علامة، بالدولار الأمريكي." : "Create your brand free. Choose a one-time Project Pass or a monthly plan for each brand, in US dollars.",
+    description: ar
+      ? "ابنِ علامتك مجاناً، وادفع شهرياً لكل علامة حين تشارك دليلها مع عميلك. بالدولار الأمريكي، عبر PayPal."
+      : "Build your brand free, and pay monthly per brand when you share its guideline with your client. In US dollars, through PayPal.",
     breadcrumbs: [{ label: ar ? "الرئيسية" : "Home", href: "/" }],
     priority: 0.9,
     blocks: [
       {
         kind: "hero",
-        /*
-         * The deck's headline, and why the lead is not the deck's.
-         *
-         * docs/copy/pages_ar_2_platform_pricing.md §17 heads this page
-         * «ابدأ مجاناً. وادفع حين ترى النتيجة.» and the v4 English file
-         * carries "Start free. Pay as you grow." Both are true of the live
-         * checkout: the brand is built and its guideline laid out before
-         * anything is paid, and the payment is what opens it to the client.
-         *
-         * The deck's *sub* is not shipped. It reads "studios pay for the
-         * projects they are working on now, companies pay for the people
-         * who edit the brand" -- two billing models the checkout does not
-         * have. What it has is three account types, each with a one-time
-         * pass and a monthly subscription, per brand, which is what the
-         * lead below says and what CURRENT_PRICES is checked against.
-         */
-        title: ar ? "ابدأ مجاناً. وادفع حين ترى النتيجة." : "Start free. Pay as you grow.",
-        lead: ar ? "أنشئ علامتك وأعدّ دليلها قبل الدفع. لمشاركة الدليل، اختر تصريح المشروع لمرة واحدة أو اشتراكاً شهرياً لتلك العلامة." : "Create your brand and prepare its guideline before paying. To share the guideline, choose a one-time Project Pass or a monthly plan for that brand.",
-      },
-      /*
-       * The offer, above the prices it changes.
-       *
-       * The deck's page order puts it here, second, and that is the right
-       * place for a reason the deck does not state: a visitor who reads
-       * three cards and then finds out the figures on them were not the
-       * figures they would pay has been made to do the arithmetic twice.
-       * The offer is read first and the cards are read knowing it.
-       *
-       * The cards themselves are untouched. They carry the list price,
-       * which is the price after three months and the price check:pricing
-       * guards; the discount lives in one block that knows its own end
-       * date and takes itself down.
-       */
-      {
-        kind: "offer",
-        id: "launch-offer",
-        eyebrow: ar ? "عرض الإطلاق" : "Launch offer",
-        title: ar
-          ? "نصف السعر، لسنتك الأولى كاملة."
-          : "Half price, for your whole first year.",
+        title: ar ? "ابنِ علامتك مجاناً. وادفع لكل علامة حين تشاركها." : "Build your brand free. Pay per brand when you share it.",
         lead: ar
-          ? "ادفع سنة مقدماً قبل يوم الإطلاق، فتحصل على سنتك الأولى بنصف سعرها، أياً كان نوع حسابك. الخصم للاشتراك السنوي وحده."
-          : "Pay for a year up front before launch day and your first year is half price, whichever account type you are on. The discount is for yearly billing only.",
-        opens: LAUNCH_OFFER.opens,
-        closes: LAUNCH_OFFER.closes,
-        window: ar
-          ? "العرض مفتوح الآن، وينتهي في 15 فبراير 2027."
-          : "The offer is open now and ends on 15 Feb 2027.",
-        countdown: {
-          before: ar ? "يبدأ العرض بعد" : "The offer opens in",
-          during: ar ? "ينتهي العرض بعد" : "The offer ends in",
-          after: ar ? "انتهى عرض الإطلاق." : "The launch offer has ended.",
-          units: ar
-            ? { days: "يوم", hours: "ساعة", minutes: "دقيقة", seconds: "ثانية" }
-            : { days: "days", hours: "hours", minutes: "mins", seconds: "secs" },
-        },
-        rowHead: ar
-          ? ["نوع الحساب", "سنة كاملة", "سنتك الأولى"]
-          : ["Account type", "One year", "Your first year"],
-        rows: (["freelancer", "studio", "company"] as const).map((type) => ({
-          label: names[locale][type],
-          was: money(annual(type)),
-          now: discountedYear(type),
-        })),
-        terms: [
-          ar
-            ? "الخصم للاشتراك السنوي وحده. الاشتراك الشهري يبقى بسعره المعتاد."
-            : "The discount is for yearly billing only. Monthly plans stay at their usual price.",
-          ar
-            ? "السنة هي اثنا عشر شهراً من الخطة الشهرية تُدفع مقدماً، وتتجدّد بعد السنة الأولى بسعرها المعتاد."
-            : "A year is twelve months of the monthly plan, paid up front. After the first year it renews at the usual yearly price.",
-          ar
-            ? "يُطبّق الخصم تلقائياً عند الاشتراك داخل مدة العرض. وتصريح المشروع دفعة واحدة، ولا يشمله الخصم."
-            : "The discount is applied automatically when you subscribe inside the window. The Project Pass is a one-time payment and is not discounted.",
-        ],
-        cta: { label: ar ? "أنشئ حسابك" : "Create your account", href: "/start" },
+          ? "أعدّ الاستراتيجية والهوية والدليل دون أن تدفع. وحين تريد مشاركة الدليل مع عميلك، اشترك شهرياً لتلك العلامة وحدها."
+          : "Set up the strategy, identity and guideline without paying. When you share the guideline with your client, subscribe that one brand monthly.",
       },
+      { kind: "priced", part: "plans", id: "plans" },
+      { kind: "priced", part: "compare", id: "compare" },
       {
-        kind: "plans",
-        id: "plans",
-        title: ar ? "اختر نوع حسابك." : "Choose your account type.",
-        lead: ar ? "السعر حسب نوع حساب مالك العلامة. كل تصريح أو اشتراك مدفوع يخص علامة واحدة، وليس جميع علامات الحساب." : "The price follows the brand owner's account type. Each paid pass or subscription covers one brand, not every brand in the account.",
-        recommendedLabel: ar ? "موصى بها" : "Recommended",
-        plans: (["freelancer", "studio", "company"] as const).map((type) => accountPlan(type, locale)),
-        note: ar ? "كل الأسعار بالدولار الأمريكي. ادفع شهرياً أو سنة مقدماً؛ ولا توجد رسوم مقاعد إضافية ضمن هذه الخطط." : "All prices are in US dollars. Pay monthly, or pay for a year up front; these plans have no extra-seat charges.",
-      },
-      /*
-       * The three types side by side.
-       *
-       * Three cards answer "what does this one cost"; they do not answer the
-       * question a visitor actually arrives with, which is "why would I pick
-       * the $49 one". The table answers it by putting the only two figures
-       * that differ on one line each, and by showing that the two rows below
-       * them read the same in all three columns — the account type sets the
-       * price and nothing else. Every cell is derived from CURRENT_PRICES or
-       * is a constant of the per-brand model, so check:pricing keeps it true.
-       *
-       * The copy deck's full feature comparison is deliberately not this
-       * table: see docs/copy/pages_ar_2_platform_pricing.md, "المقارنة
-       * الكاملة". It compares plan tiers (المجانية / الاحترافية / الاستوديو /
-       * الوكالة) that the live checkout does not sell, over rows — AI credits,
-       * seats, storage, version history, SSO — that no shipped surface
-       * enforces, and the deck gates it with [CONFIRM: prices are hypotheses
-       * until the beta pricing test closes]. It goes in when the real limits
-       * exist in billing.py and accountTypes.ts, where check:pricing can hold
-       * them to account.
-       */
-      {
-        kind: "table",
-        id: "compare",
-        title: ar ? "الأنواع الثلاثة، جنباً إلى جنب." : "The three account types, side by side.",
-        lead: ar
-          ? "نوع الحساب يحدد السعر. وما تحصل عليه مقابل كل دفعة واحد في الحالات الثلاث: علامة واحدة."
-          : "Account type sets the price. What each payment buys is the same in all three: one brand.",
-        numeric: true,
-        head: [
-          ar ? "حسب نوع الحساب" : "By account type",
-          ...(["freelancer", "studio", "company"] as const).map((type) => names[locale][type]),
-        ],
-        rows: [
-          [
-            ar ? "لمن هو" : "Who it is for",
-            ar ? "تعمل وحدك" : "Working on your own",
-            ar ? "فريق يصمّم للعملاء" : "A team making brands for clients",
-            ar ? "تدير علامة شركتك" : "Running your company's brand",
-          ],
-          [
-            ar ? "تصريح المشروع، لمرة واحدة" : "Project Pass, once",
-            ...(["freelancer", "studio", "company"] as const).map((type) => ({
-              text: `$${CURRENT_PRICES[type].pass}`,
-              strong: true,
-            })),
-          ],
-          [
-            ar ? "الاشتراك الشهري" : "Monthly plan",
-            ...(["freelancer", "studio", "company"] as const).map((type) => ({
-              text: `$${CURRENT_PRICES[type].subscription}`,
-              strong: true,
-            })),
-          ],
-          [
-            ar ? "ما تغطيه كل دفعة" : "What each payment covers",
-            ...(["freelancer", "studio", "company"] as const).map(() =>
-              ar ? "علامة واحدة" : "One brand",
-            ),
-          ],
-          [
-            ar ? "الإعداد قبل المشاركة" : "Preparing before you share",
-            ...(["freelancer", "studio", "company"] as const).map(() => (ar ? "مجاني" : "Free")),
-          ],
-        ],
-      },
-      {
-        kind: "prose",
-        title: ar ? "أنشئ حسابك أولاً، ثم اختر خطة لعلامتك." : "Create your account, then choose a plan for your brand.",
-        body: [
-          ar ? "إنشاء الحساب لا يشتري خطة. بعد إعداد علامتك، افتح إعداداتها لاختيار تصريح المشروع أو الاشتراك الشهري. تتحقق المنصة من الدفع قبل تفعيل الخطة." : "Signing up does not purchase a plan. After setting up your brand, open its settings to choose a Project Pass or monthly plan. The platform verifies payment before activating access.",
-          ar ? "لا تشمل الخطط الحالية أرصدة شهرية أو حزم أرصدة مدفوعة." : "The current plans do not include monthly credit allowances or paid credit packs.",
-        ],
-      },
-      /*
-       * How handoff pays, on the page where money is the question.
-       *
-       * The deck puts this strip on /pricing (§17, «شريط: كيف يعمل
-       * التسليم») and it earns its place: a studio reading the three cards
-       * is working out whether its client's plan is a cost to it or a
-       * return. Nothing here is a new claim -- the same 20% of the client's
-       * first year, as credit, is already live copy on /solutions/studios,
-       * /solutions/freelancers, /platform/handoff and the homepage. This
-       * page repeats the site rather than extending it.
-       *
-       * The deck writes the three beats with arrows between them. They are
-       * full stops here, as they are everywhere else a deck arrow reached
-       * this site.
-       */
-      {
-        kind: "prose",
-        id: "handoff",
-        title: ar
-          ? "الاستوديو يبني. العميل يملك. الاستوديو يكسب."
-          : "The studio builds. The client owns. The return keeps coming.",
-        body: [
-          ar
-            ? "يسلّم الاستوديو المركز مجاناً، فيبقى حيّاً على الخطة المجانية للعميل. وحين يرقّي العميل خطته، يحصل الاستوديو على 20% مما يدفعه في سنته الأولى، رصيداً في اشتراكه."
-            : "Handoff is free, and the hub stays live on the client's free plan. When the client upgrades, the studio earns 20% of what they pay in their first year, as credit on its own subscription.",
-        ],
-        links: [
-          {
-            label: ar ? "التسليم ومكافأة الشريك" : "How handoff works",
-            href: "/platform/handoff",
-          },
-        ],
-      },
-      /*
-       * Billing, with the four lines that are answerable today.
-       *
-       * The deck's billing block has eight. Four are left out, each for a
-       * reason written down rather than guessed at:
-       *
-       *   - Yearly billing, "save about 20%". There is no annual rate in
-       *     the checkout, and check:pricing asserts `plans.billing ===
-       *     undefined` precisely so this page cannot advertise one.
-       *   - Refunds. The deck's own cell is [PLACEHOLDER: refund policy,
-       *     to be decided].
-       *   - Invoices, and the tax and VAT lines on them. The deck marks
-       *     those [CONFIRM], and the Arabic master, which leads, has no
-       *     invoice line at all.
-       *   - Prorated upgrades. True of Stripe by default, but nothing in
-       *     this repository says it is switched on.
-       *
-       * The Mada sentence is not a [CONFIRM] in the Arabic master -- it is
-       * an answer in its own FAQ -- and it is the one line here a Gulf
-       * reader most needs before reaching for a card.
-       */
-      {
-        kind: "terms",
-        id: "billing",
-        title: ar ? "الفوترة." : "Billing.",
-        lead: ar
-          ? "كل ما يخص الدفع، في أربعة أسطر."
-          : "Everything about paying, in four lines.",
+        kind: "cards",
+        id: "faq",
+        title: ar ? "أسئلة عن الدفع." : "Payment questions.",
         cols: 2,
         items: [
           {
-            term: ar ? "العملة" : "Currency",
-            body: ar ? "الدولار الأمريكي." : "US dollars.",
+            title: ar ? "متى أدفع؟" : "When do I pay?",
+            body: ar
+              ? "حين تريد مشاركة دليل علامة مع عميلك فقط. البناء مجاني، ودون مهلة."
+              : "Only when you want to share a brand's guideline with your client. Building it is free, with no time limit.",
           },
           {
-            term: ar ? "الدفع" : "Payment",
+            title: ar ? "هل الاشتراك لكل علامة؟" : "Is it per brand?",
             body: ar
-              ? "بالبطاقة عبر Stripe. لا نرى رقم بطاقتك ولا نحفظه. والبطاقات التي تعمل على شبكة مدى فقط غير مدعومة حالياً."
-              : "By card, through Stripe. We never see or store your card number. Cards that run on the Mada network only are not supported yet.",
+              ? "نعم. كل اشتراك يخص علامة واحدة، بسعر نوع حسابك. وتبقى علاماتك الأخرى مجانية حتى تشاركها."
+              : "Yes. Each plan covers one brand, priced by your account type. Your other brands stay free until you share them.",
           },
           {
-            term: ar ? "الاشتراك" : "Subscription",
+            title: ar ? "هل يمكنني الإلغاء؟" : "Can I cancel?",
             body: ar
-              ? "شهري، يتجدد تلقائياً، وتلغيه متى شئت من إعدادات العلامة."
-              : "Monthly, renews automatically, and you cancel it whenever you like from the brand's settings.",
+              ? "متى شئت، من إعدادات الفوترة. تبقى الخطة مفعّلة حتى نهاية الشهر الذي دفعت عنه، ثم يتوقف موقع الدليل. ويبقى عملك كما هو."
+              : "Any time, from billing settings. The plan stays active to the end of the month you paid for, then the site goes offline. Your work stays.",
           },
           {
-            term: ar ? "الإلغاء" : "Cancelling",
+            title: ar ? "كيف أدفع؟" : "How do I pay?",
             body: ar
-              ? "لا يُحذف شيء. تبقى علامتك ودليلها كما أعددتهما، ويتوقف عرض الدليل للزوار حتى تعود."
-              : "Nothing is deleted. Your brand and its guideline stay as you prepared them, and the published guideline stops being served until you come back.",
+              ? "عبر PayPal، أو ببطاقتك من خلال PayPal، بالدولار الأمريكي. ويرسل لك PayPal إيصالاً عن كل دفعة."
+              : "With PayPal, or a card through PayPal, in US dollars. PayPal emails you a receipt for every payment.",
           },
         ],
-      },
-      {
-        kind: "faq",
-        id: "faq",
-        /* The deck's own heading for this section. These answer what a
-           price means, not only how a card is charged. */
-        title: ar ? "أسئلة عن الأسعار." : "Pricing questions.",
-        items: [
-          { q: ar ? "ما الفرق بين التصريح والاشتراك؟" : "How do the pass and subscription differ?", a: ar ? "تصريح المشروع دفعة واحدة لفتح رابط العميل لدليل علامة واحدة. الاشتراك خطة شهرية لدليل تلك العلامة، ويمكن إدارته من إعداداتها." : "A Project Pass is a one-time payment to open the client link for one guideline. A subscription is a monthly plan for that brand's guideline, managed from its settings." },
-          { q: ar ? "هل يغطي الاشتراك كل علاماتي؟" : "Does a subscription cover all my brands?", a: ar ? "لا. كل عملية شراء تخص علامة واحدة. يحدد نوع الحساب عدد العلامات والمحررين المسموح بهم، وليس مستوى الاشتراك." : "No. Each purchase covers one brand. Account type determines the brand and editor limits; it is separate from the paid plan." },
-          { q: ar ? "هل نشر الدليل متاح مجاناً؟" : "Can I publish a guideline for free?", a: ar ? "يمكنك إعداد الدليل قبل الدفع. عرض الدليل المنشور يتطلب تصريحاً مدفوعاً تم التحقق منه أو اشتراكاً نشطاً لتلك العلامة." : "You can prepare the guideline before paying. Serving the published guideline requires a verified paid pass or active subscription for that brand." },
-          { q: ar ? "كيف أدفع؟" : "How do I pay?", a: ar ? "من إعدادات العلامة عبر Stripe، بالدولار الأمريكي. تعرض صفحة الدفع الخطة والسعر قبل تأكيد الشراء." : "From the brand's settings through Stripe, in US dollars. Checkout shows the plan and price before you confirm the purchase." },
-          /* The studio's question, from the deck's FAQ. It is the one a
-             studio asks before agreeing to hand a brand over at all. */
-          { q: ar ? "ماذا يحدث لمركز عميلي إن لم يدفع؟" : "What happens to my client's hub if they don't pay?", a: ar ? "يبقى قابلاً للتعديل على الخطة المجانية، ولا يُحذف منه شيء. وعرض الدليل لزوار العميل هو ما يحتاج تصريحاً أو اشتراكاً لتلك العلامة." : "It stays editable on the free plan and nothing in it is deleted. Serving the guideline to their visitors is the part that needs a pass or a subscription for that brand." },
-        ],
-      },
-      /*
-       * The closing ask.
-       *
-       * The page had none: it ended on the last FAQ answer, on the one page
-       * of this site a reader reaches having decided to spend money. The
-       * deck closes it on «ابدأ مجاناً اليوم.» and the two doors, which are
-       * the same two doors as the homepage hero and the sign-up fork, word
-       * for word.
-       *
-       * The enterprise route is the deck's own closing line, as a link
-       * rather than a plan: §17 ends «تحتاج أكثر من ذلك؟» and sends the
-       * reader to the team. It names no price, because the deck's $299
-       * floor sits inside the same [CONFIRM] as the rest of its tiers.
-       */
-      {
-        kind: "cta",
-        title: ar ? "ابدأ مجاناً اليوم." : "Start free today.",
-        lead: ar
-          ? "تحتاج أكثر مما تراه هنا؟ تواصل معنا، ونبني خطة على مقاس حجمك."
-          : "Need more than you see here? Talk to us, and we will build a plan around your size.",
-        buttons: [
-          { label: ar ? "أصمّم هويات لعملائي" : "I make brands for clients", href: "/start?type=studio" },
-          { label: ar ? "أدير علامة شركتي" : "I run my company's brand", href: "/start?type=company" },
-        ],
-        links: [{ label: ar ? "تواصل معنا" : "Talk to us", href: "/contact?topic=sales" }],
       },
     ],
   };
 }
 
-/**
- * The launch offer, for the announcement bar on every page.
- *
- * Returns null when no offer is running, which is what makes the bar absent
- * rather than empty. The same two instants as the block on /pricing, from
- * the same constant, so the bar and the page cannot disagree about when the
- * window closes.
- */
-export function currentLaunchOffer(locale: Locale): OfferBarCopy | null {
+/** An audience page's price table, filled in from the backend's plans at render time. */
+export function audiencePlanTable(type: AccountType, _locale: Locale, title: string): PageBlock {
+  return { kind: "priced", part: "audience", type, title };
+}
+
+/** The homepage teaser's words. Its cards are `teaserPlans`. */
+export function currentPricingTeaser(locale: Locale): PricingTeaserCopy {
   const ar = locale === "ar";
   return {
-    label: ar
-      ? `عرض الإطلاق: خصم ${LAUNCH_OFFER.percent}% على سنتك الأولى بالاشتراك السنوي`
-      : `Launch offer: ${LAUNCH_OFFER.percent}% off your first year, paid yearly`,
-    /* The deck's own short form (§1.1), not a truncation of the line above. */
-    short: ar
-      ? `خصم ${LAUNCH_OFFER.percent}% على سنتك الأولى`
-      : `${LAUNCH_OFFER.percent}% off your first year`,
-    opens: LAUNCH_OFFER.opens,
-    closes: LAUNCH_OFFER.closes,
-    window: ar
-      ? "ينتهي العرض في 15 فبراير 2027."
-      : "The offer ends on 15 Feb 2027.",
-    countdown: {
-      before: ar ? "يبدأ بعد" : "Opens in",
-      during: ar ? "ينتهي بعد" : "Ends in",
-      after: ar ? "انتهى عرض الإطلاق." : "The launch offer has ended.",
-      units: ar
-        ? { days: "يوم", hours: "ساعة", minutes: "دقيقة", seconds: "ثانية" }
-        : { days: "days", hours: "hours", minutes: "mins", seconds: "secs" },
-    },
-    link: { label: ar ? "اطّلع على العرض" : "See the offer", href: "/pricing#launch-offer" },
-    close: ar ? "إغلاق" : "Close",
+    headline: ar ? "ابنِ علامتك مجاناً. وادفع لكل علامة حين تشاركها." : "Build your brand free. Pay per brand when you share it.",
+    body: ar
+      ? "أعدّ دليلك مجاناً، ثم اشترك شهرياً لتشاركه مع عميلك. كل اشتراك يخص علامة واحدة، بالدولار الأمريكي."
+      : "Prepare your guideline free, then subscribe monthly to share it with your client. Each plan covers one brand, in US dollars.",
+    studioToggle: ar ? "للاستوديوهات والمستقلين" : "For studios and freelancers",
+    companyToggle: ar ? "للشركات" : "For companies",
+    recommendedLabel: copy[locale].popular,
+    studioNote: ar ? "اختر نوع حسابك عند التسجيل، واشترك من إعدادات كل علامة." : "Choose your account type at signup, and subscribe in each brand's settings.",
+    companyNote: ar ? "الاشتراك الشهري يخص علامة شركتك وحدها." : "The monthly plan covers your company's brand only.",
+    underBoth: ar ? "فوترة شهرية عبر PayPal، وإلغاء متى شئت." : "Monthly billing through PayPal. Cancel any time.",
+    link: { label: ar ? "اطّلع على الأسعار" : "See full pricing", href: "/pricing" },
   };
 }
 
-export function currentPricingTeaser(locale: Locale): PricingTeaserCopy {
-  const ar = locale === "ar";
-  const teaser = (type: AccountType) => {
-    const plan = accountPlan(type, locale);
-    return { name: plan.name, price: `${plan.price} ${ar ? "لمرة واحدة" : "once"}`, rows: plan.rows, line: ar ? "تصريح المشروع لكل علامة" : "Project Pass per brand", cta: plan.cta };
+/** The homepage teaser's cards, from the backend's plans (no figures when `null`). */
+export function teaserPlans(locale: Locale, plans: BillingPlans | null): PricingTeaserPlans {
+  const card = (type: AccountType): PlanCopy => {
+    const plan = accountPlan(type, locale, plans);
+    return {
+      name: plan.name,
+      price: plan.price ? `${plan.price} ${plan.period}` : undefined,
+      rows: plan.rows,
+      line: plan.who ?? "",
+      recommended: plan.recommended,
+      cta: plan.cta,
+    };
   };
-  return {
-    headline: ar ? "ابدأ مجاناً. وادفع لكل علامة." : "Start free. Pay per brand.",
-    body: ar ? "أعدّ دليلك مجاناً، ثم اختر تصريحاً لمرة واحدة أو اشتراكاً شهرياً لمشاركته. كل خطة مدفوعة تخص علامة واحدة، بالدولار الأمريكي." : "Prepare your guideline free, then choose a one-time pass or monthly plan to share it. Each paid plan covers one brand, in US dollars.",
-    studioToggle: ar ? "للاستوديوهات والمستقلين" : "For studios and freelancers",
-    companyToggle: ar ? "للشركات" : "For companies",
-    studioPlans: [teaser("freelancer"), teaser("studio")],
-    companyPlans: [teaser("company")],
-    recommendedLabel: ar ? "موصى بها" : "Recommended",
-    studioNote: ar ? "اختر نوع حسابك عند التسجيل، والخطة من إعدادات كل علامة." : "Choose your account type at signup and a plan in each brand's settings.",
-    companyNote: ar ? "الاشتراك الشهري يخص علامة شركتك وحدها." : "The monthly plan covers your company's brand only.",
-    underBoth: ar ? "ادفع شهرياً أو سنة مقدماً؛ ولا توجد حزم أرصدة مدفوعة ضمن هذه الخطط." : "Pay monthly or a year up front; these plans do not include paid credit packs.",
-    link: { label: ar ? "اطّلع على الأسعار" : "See full pricing", href: "/pricing" },
-  };
+  return { studioPlans: [card("freelancer"), card("studio")], companyPlans: [card("company")] };
+}
+
+/**
+ * The launch offer for the announcement bar above the nav, or null when none
+ * is running — and none is. An offer has to be something checkout charges
+ * (promo codes, planned in markyos-backend/docs/promo-codes-plan.md), not
+ * copy the site promises on its own, so the bar stays hidden until then.
+ */
+export function currentLaunchOffer(locale: Locale): OfferBarCopy | null {
+  void locale;
+  return null;
 }

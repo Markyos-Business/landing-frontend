@@ -4,6 +4,8 @@ import { content } from "@/lib/content";
 import { isLocale } from "@/lib/i18n/locales";
 import { pageMetadata } from "@/lib/seo";
 import { ArticleIndex, COLLECTIONS } from "@/components/public/editorial";
+import { getHelpHome, type HelpHome as HomeData } from "@/lib/content/help";
+import { HELP_COPY, HelpHome } from "@/components/public/help";
 
 /*
  * The help centre — the index.
@@ -21,6 +23,14 @@ export const revalidate = 3600;
 const COLLECTION = "help" as const;
 const PATH = "/help";
 
+/*
+ * The Help Center (C1) when the platform's help API has anything published;
+ * the older CMS help index otherwise. The fallback keeps the page whole while
+ * the new Help Center is being filled, and if the API is unreachable.
+ */
+const live = (home: HomeData | null): home is HomeData =>
+  !!home && home.categories.some((c) => c.articleCount > 0);
+
 export async function generateMetadata({
   params,
 }: {
@@ -28,6 +38,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
+
+  if (live(await getHelpHome(lang))) {
+    const meta = HELP_COPY[lang].meta;
+    return pageMetadata({ locale: lang, path: PATH, title: meta.title, description: meta.description });
+  }
 
   const copy = COLLECTIONS[COLLECTION][lang];
   const posts = await content.listArticles({ locale: lang, collection: COLLECTION });
@@ -52,6 +67,9 @@ export async function generateMetadata({
 export default async function Page({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
+
+  const home = await getHelpHome(lang);
+  if (live(home)) return <HelpHome locale={lang} data={home} />;
 
   const posts = await content.listArticles({ locale: lang, collection: COLLECTION });
   return <ArticleIndex collection={COLLECTION} locale={lang} posts={posts} />;

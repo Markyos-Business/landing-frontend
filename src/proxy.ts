@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { redirectFor } from "@/lib/content/redirects";
 
 /*
  * Locale routing.
@@ -38,8 +39,21 @@ import type { NextRequest } from "next/server";
 const AR = "/ar";
 const EN = "/en";
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Redirects an editor added in the CMS come first: a moved page should
+  // move whether or not something still renders at its old address. They
+  // are written without the language and apply to both.
+  if (request.method === "GET" || request.method === "HEAD") {
+    const english = pathname === EN || pathname.startsWith(`${EN}/`);
+    const rule = await redirectFor(english ? pathname.slice(EN.length) || "/" : pathname);
+    if (rule) {
+      const url = request.nextUrl.clone();
+      url.pathname = english ? `${EN}${rule.to === "/" ? "" : rule.to}` : rule.to;
+      return NextResponse.redirect(url, rule.status);
+    }
+  }
 
   // English keeps its segment and matches a route as written.
   if (pathname === EN || pathname.startsWith(`${EN}/`)) {

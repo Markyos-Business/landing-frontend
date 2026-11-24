@@ -1,0 +1,10 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+if (process.env.VERCEL || process.env.NODE_ENV === "production") throw new Error("Seed the local app backend only.");
+const backend = path.resolve(import.meta.dirname, "../../markyos-backend");
+const python = ["venv/bin/python", ".venv/bin/python", "venv/Scripts/python.exe"].map(p => path.join(backend,p)).find(existsSync);
+if (!python || !existsSync(path.join(backend,"manage.py"))) throw new Error("Use the sibling markyos-backend checkout and its virtual environment to seed local content.");
+const result = spawnSync(python,["manage.py","seed_web_content"],{cwd:backend,stdio:"inherit",env:{...process.env,DJANGO_SETTINGS_MODULE:"config.settings.dev"}});
+if (result.error) throw result.error;
+process.exitCode = result.status ?? 1;

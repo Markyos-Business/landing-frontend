@@ -13,7 +13,7 @@ import type { Locale } from "@/lib/i18n/locales";
  */
 const AR_PLURAL = new Intl.PluralRules("ar");
 
-function arabicMinutes(count: number): string {
+export function arabicMinutes(count: number): string {
   switch (AR_PLURAL.select(count)) {
     case "one":
       return "دقيقة واحدة للقراءة";
@@ -26,7 +26,7 @@ function arabicMinutes(count: number): string {
   }
 }
 
-function arabicArticles(count: number): string {
+export function arabicArticles(count: number): string {
   switch (AR_PLURAL.select(count)) {
     case "zero":
       return "لا مقالات";

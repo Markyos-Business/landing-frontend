@@ -1,4 +1,4 @@
-import { Words, Button, Card, CardTitle, Chip, Section, SectionHead } from "@/components/ui";
+import { Words, Button, Card, CardTitle, Chip, Icon, Section, SectionHead } from "@/components/ui";
 import type { PageBlock } from "@/content/pages/types";
 import { BillingSwitch } from "../BillingSwitch";
 import { T, Note, type Ctx } from "./shared";
@@ -56,23 +56,22 @@ export function PlansBlock({
           <Card
             key={plan.name}
             as="li"
-            className={`mk-plan flex flex-col ${plan.cta ? "mk-reach " : ""}${
+            className={`flex flex-col ${plan.cta ? "mk-reach " : ""}${
               plan.recommended
-                ? // The one selected object in the section, lit rather than
-                  // scaled: a lifted card in a row of five clips its
-                  // neighbours' hover targets and shifts the row on load.
-                  // `.mk-plan-lit` carries the edge, the tight halo and the
-                  // wide pool that the reference section puts behind this one
-                  // card — see tailwind/components/pricing.js for why that is
-                  // an outer shadow and not a wrapper with a radial in it.
-                  "mk-plan-lit"
+                ? // The one selected object in the section, marked with the
+                  // neon edge rather than a scale transform: a lifted card in
+                  // a row of five clips its neighbours' hover targets and
+                  // shifts the row on load.
+                  "mk-neon"
                 : ""
             }`}
           >
             <div className="flex items-start justify-between gap-3">
               <CardTitle as="h3">{plan.name}</CardTitle>
               {plan.recommended ? (
-                <span className="mk-bidi mk-plan-tag">{block.recommendedLabel}</span>
+                <span className="mk-bidi shrink-0 rounded-[var(--mk-r-status)] bg-[var(--accent-soft)] px-2.5 py-1 text-[length:var(--fs-eyebrow)] font-medium leading-none text-[var(--accent-on-soft)]">
+                  {block.recommendedLabel}
+                </span>
               ) : null}
             </div>
 
@@ -100,27 +99,31 @@ export function PlansBlock({
                 belongs to and the switch above shows one of them. A plan with
                 no annual rate has no `data-bill` at all, so it is shown in
                 both — see BillingSwitch, and `[data-billing]` in tailwind/. */}
-            <p className="@container/plan mt-4 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-              <span
-                data-bill={plan.annual ? "monthly" : undefined}
-                className="mk-bidi mk-plan-amount text-[1.375rem] text-[var(--text)] @[10rem]/plan:text-[1.75rem] @[17rem]/plan:text-[2.5rem]"
-              >
-                {plan.price}
-              </span>
-              {plan.annual ? (
+            {/* No amount without a figure: a page built while the backend's
+                plans were unreachable shows the card and its sign-up link. */}
+            {plan.price ? (
+              <p className="@container/plan mt-4 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
                 <span
-                  data-bill="annual"
-                  className="mk-bidi mk-plan-amount text-[1.375rem] text-[var(--text)] @[10rem]/plan:text-[1.75rem] @[17rem]/plan:text-[2.5rem]"
+                  data-bill={plan.annual ? "monthly" : undefined}
+                  className="mk-bidi whitespace-nowrap text-[1.25rem] font-medium leading-none tracking-[-0.04em] text-[var(--text)] @[10rem]/plan:text-[1.5rem] @[17rem]/plan:text-[length:var(--fs-d3)]"
                 >
-                  {plan.annual.price}
+                  {plan.price}
                 </span>
-              ) : null}
-              {plan.period ? (
-                <span className="mk-bidi whitespace-nowrap text-[length:var(--fs-ui)] font-medium leading-none text-[var(--text-muted)]">
-                  {plan.period}
-                </span>
-              ) : null}
-            </p>
+                {plan.annual ? (
+                  <span
+                    data-bill="annual"
+                    className="mk-bidi whitespace-nowrap text-[1.25rem] font-medium leading-none tracking-[-0.04em] text-[var(--text)] @[10rem]/plan:text-[1.5rem] @[17rem]/plan:text-[length:var(--fs-d3)]"
+                  >
+                    {plan.annual.price}
+                  </span>
+                ) : null}
+                {plan.period ? (
+                  <span className="mk-bidi whitespace-nowrap text-[length:var(--fs-ui)] font-medium leading-none text-[var(--text-muted)]">
+                    {plan.period}
+                  </span>
+                ) : null}
+              </p>
+            ) : null}
             {plan.annual?.note ? (
               <p
                 data-bill="annual"
@@ -135,21 +138,35 @@ export function PlansBlock({
               </p>
             ) : null}
 
-            {/* Ruled above and below, the reference's ledger — `.mk-plan-limits`. */}
-            <dl className="mk-plan-limits mt-5">
-              {plan.rows.map((row) => (
-                <div key={row.label} className="mk-plan-limit">
-                  <dt className="mk-bidi">{row.label}</dt>
-                  <dd
-                    className={`mk-bidi shrink-0 ${
-                      row.strong ? "text-[var(--accent-text)]" : "text-[var(--text)]"
-                    }`}
-                  >
-                    {row.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            {plan.rows.length ? (
+              <dl className="mt-5 space-y-3 border-t border-[var(--hairline)] pt-4">
+                {plan.rows.map((row) => (
+                  <div key={row.label} className="flex items-baseline justify-between gap-4">
+                    <dt className="mk-bidi text-[length:var(--fs-ui)] leading-[1.5] text-[var(--text-muted)]">
+                      {row.label}
+                    </dt>
+                    <dd
+                      className={`mk-bidi shrink-0 text-[length:var(--fs-ui)] font-medium ${
+                        row.strong ? "text-[var(--accent-text)]" : "text-[var(--text)]"
+                      }`}
+                    >
+                      {row.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+
+            {plan.features?.length ? (
+              <ul className="mt-4 space-y-2.5">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-2.5">
+                    <Icon name="check" size={16} className="mt-0.5 shrink-0 text-[var(--text-muted)]" />
+                    <span className="mk-bidi text-[length:var(--fs-ui)] leading-[1.5] text-[var(--text)]">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
 
             <div className="mt-auto pt-6">
               {plan.feature ? (
@@ -158,24 +175,7 @@ export function PlansBlock({
                 <Button
                   cta={plan.cta}
                   locale={ctx.locale}
-                  /*
-                   * Every plan's button is the filled one.
-                   *
-                   * It used to be `recommended ? solid : outline`, which is the
-                   * right rule for a pair — `.mk-outline` is a ghost with no
-                   * edge precisely so that two CTAs side by side differ by fill
-                   * alone and the filled one reads as the ask. It is the wrong
-                   * rule for a row of plans where nothing is flagged
-                   * recommended: measured on /pricing, all three buttons came
-                   * out ghosts, so the page a visitor comes to in order to
-                   * choose had no ask on it anywhere.
-                   *
-                   * The hierarchy between plans is carried by the card — the
-                   * lit edge, the halo and the badge of `.mk-plan-lit` — not by
-                   * demoting the other plans' buttons. Each card's action is
-                   * the same action, so each one is stated the same way.
-                   */
-                  variant="solid"
+                  variant={plan.recommended ? "solid" : "outline"}
                   size="sm"
                   block
                 />

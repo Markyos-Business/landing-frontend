@@ -6,7 +6,10 @@ import { ReplaceStack } from "@/components/public/home/ReplaceStack";
 import { AiAlongside } from "@/components/public/home/ai-alongside";
 import { ChoosePath } from "@/components/public/home/ChoosePath";
 import { Bilingual } from "@/components/public/home/bilingual";
-import { PricingTeaser } from "@/components/public/home/pricing-teaser/PricingTeaser";
+import { PricingTeaser } from "@/components/public/home/pricing-teaser";
+import { Faq } from "@/components/public/home/Faq";
+import { teaserPlans } from "@/content/current-pricing";
+import { getPlans } from "@/lib/billing/plans";
 
 /*
  * The homepage — `Landing Copy/Markyos Landing AR (readable).html`.
@@ -52,6 +55,8 @@ export default async function HomePage() {
   const locale = await getLocale();
   const copy = await getCopyFor(locale);
   const { home, chips } = copy;
+  // The pricing cards' figures are the backend's; see src/lib/billing/plans.ts.
+  const cards = teaserPlans(locale, await getPlans());
 
   return (
     <>
@@ -80,24 +85,8 @@ export default async function HomePage() {
       {/* 6 */} <ReplaceStack locale={locale} copy={home.replaceStack} chips={chips} />
       {/* 7 */} <AiAlongside locale={locale} copy={home.aiAlongside} chips={chips} />
       {/* 8 */} <Bilingual copy={home.bilingual} locale={locale} />
-
-      {/*
-       * 9 — the plans, on the homepage.
-       *
-       * Deck v4 cut this section: §2 is seven sections and sends pricing to
-       * "one line in the last call". The owner asked for the packages back
-       * on the homepage on 21 Nov 2026, so it is section 9 again, in the
-       * deck's own position — after the argument and before the closing ask,
-       * where a reader who has just been convinced asks what it costs.
-       *
-       * Nothing here was rebuilt. `PricingTeaser` and its `Plan` and
-       * `Toggle` survived the 9 Nov deletion that took the other four cut
-       * sections, and `content/current-pricing.ts` has been generating its
-       * copy — and check:pricing has been holding that copy to the same
-       * catalogue as /pricing — the whole time it rendered nowhere. This is
-       * one import and one line.
-       */}
-      {/* 9 */} <PricingTeaser copy={home.pricingTeaser} locale={locale} />
+      {/* 9 */} <PricingTeaser locale={locale} copy={home.pricingTeaser} cards={cards} />
+      {/* 9 */} <Faq locale={locale} copy={home.faq} chips={chips} />
 
       {/*
        * 10 — the page ends on its sharpest line, not on the footer.
