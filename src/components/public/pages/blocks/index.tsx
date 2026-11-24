@@ -1,7 +1,9 @@
 import { Words, Eyebrow, Section, SectionHead } from "@/components/ui";
 import type { PageBlock } from "@/content/pages/types";
 import { AudienceTabs } from "../AudienceTabs";
+import { Chooser } from "../Chooser";
 import { SignupForm } from "@/components/features/waitlist";
+import { ContactForm } from "@/components/features/contact";
 import { T, Note, type Ctx } from "./shared";
 import { TermList } from "./TermList";
 import { HeroBlock } from "./HeroBlock";
@@ -18,6 +20,7 @@ import { FaqBlock } from "./FaqBlock";
 import { PlansBlock } from "./PlansBlock";
 import { PricedBlock } from "./PricedBlock";
 import { CtaBlock } from "./CtaBlock";
+import { OfferBlock } from "./OfferBlock";
 
 /*
  * The block renderers — one file per `PageBlock` kind, dispatched here.
@@ -90,6 +93,34 @@ export function Block({
       return <PricedBlock block={block} ctx={ctx} headingId={headingId} white={white} />;
     case "cta":
       return <CtaBlock block={block} ctx={ctx} headingId={headingId} />;
+    case "offer":
+      return <OfferBlock block={block} ctx={ctx} headingId={headingId} white={white} />;
+    /*
+     * The chooser sits between the switch and the cards, so it is tight at
+     * both ends for the same reason the switch is: it belongs to the grid
+     * below it and a full band above would float it in an empty one.
+     */
+    case "chooser":
+      return (
+        <Section
+          id={block.id}
+          labelledBy={headingId}
+          white={white}
+          className="pb-0 pt-[clamp(2rem,5vw,3.5rem)]"
+        >
+          <div className="mk-seq flex flex-col items-center text-center">
+            <h2 id={headingId} className="mk-h2 mk-bidi">
+              <T>
+                <Words>{block.title}</Words>
+              </T>
+            </h2>
+            {block.lead ? (
+              <p className="mk-lead mk-bidi mt-4 max-w-[37.5rem]">{block.lead}</p>
+            ) : null}
+            <Chooser label={block.label} options={block.options} />
+          </div>
+        </Section>
+      );
     case "audience":
       return (
         <AudienceTabs
@@ -97,6 +128,7 @@ export function Block({
           headingId={block.title ? headingId : undefined}
           label={block.label}
           white={white}
+          param={block.param}
           head={
             block.title ? (
               <>
@@ -186,6 +218,43 @@ export function Block({
               topic={block.topic}
               locale={ctx.locale}
             />
+          </div>
+        </Section>
+      );
+    /*
+     * The message form.
+     *
+     * Head on top, form across the full card beneath it — not the two-column
+     * card the `signup` block uses. That block is one email field beside a
+     * line of text, which balances. This form is nine fields: set beside a
+     * two-line heading it would run some seven hundred pixels down one half
+     * of the card with the other half empty from the third row on.
+     *
+     * Across the full width instead, the pairs inside `.mk-form-row` fall
+     * into two columns of about 500px, which is a comfortable field, and the
+     * form is five rows deep rather than nine. The heading and the lead keep
+     * `.mk-measure`, because they are prose and prose has a measure — the
+     * card widens, the sentence does not. The same distinction the offer
+     * card's ledger turns on, in the other direction.
+     */
+    case "contact":
+      return (
+        <Section id={block.id} labelledBy={block.title ? headingId : undefined} white={white}>
+          <div className="mk-pop mk-card mk-card-pad">
+            {block.title || block.lead ? (
+              <div className="mk-measure">
+                {block.title ? (
+                  <h2 id={headingId} className="mk-h3 mk-bidi">
+                    {block.title}
+                  </h2>
+                ) : null}
+                {block.lead ? <p className="mk-body mk-bidi mt-2.5">{block.lead}</p> : null}
+              </div>
+            ) : null}
+            <div className={block.title || block.lead ? "mt-8" : ""}>
+              <ContactForm locale={ctx.locale} topic={block.topic} submitLabel={block.submit} />
+            </div>
+            {block.note ? <Note className="mt-7">{block.note}</Note> : null}
           </div>
         </Section>
       );

@@ -201,13 +201,13 @@ const contact: PageDoc = {
       ],
     },
     {
-      kind: "signup",
+      // Was a `signup` block posting to the 501 waitlist endpoint. See the
+      // note on the Arabic edition of this page, which is written first.
+      kind: "contact",
       title: "Send us a message.",
-      lead: "Tell us what you need and we'll come back to you.",
-      placeholder: "Work email",
-      submit: "Send",
-      note: "We reply to every message.",
-      topic: "contact",
+      lead: "Pick a topic, tell us what you need, and we'll come back to you.",
+      submit: "Send message",
+      note: "We read every message. The reply comes to the email you give here.",
     },
   ],
 };

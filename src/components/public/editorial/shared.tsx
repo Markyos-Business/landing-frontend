@@ -103,7 +103,11 @@ export function IndexHero({ copy }: { copy: CollectionCopy }) {
       aria-labelledby="coll-heading"
       className="relative overflow-clip pt-[clamp(3rem,7vw,5rem)] pb-[clamp(2.5rem,5vw,4rem)]"
     >
-      <Glow className="mk-center-x -top-32 w-[min(54rem,110%)]" />
+      {/* The site-wide hero background. The blog, guides and help hubs are
+          heroes too, and were the one set of pages still opening on flat
+          canvas after HeroBlock took the aurora. */}
+      <div className="mk-aurora" aria-hidden="true" />
+      <Glow className="mk-hero-wash mk-center-x -top-32 w-[min(54rem,110%)]" />
       {/* Centred, like every other hub on the site. The articles below stay
           on the start edge, where long-form belongs. */}
       <div className="mk-seq-load mk-container relative flex flex-col items-center text-center">

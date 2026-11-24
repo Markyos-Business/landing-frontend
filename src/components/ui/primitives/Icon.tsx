@@ -211,6 +211,30 @@ const LA: Record<IconName, string> = {
  */
 const BRAND = new Set<IconName>(["twitter", "linkedin", "whatsapp"]);
 
+/*
+ * The two glyphs Line Awesome 1.3.0 ships lying on their side.
+ *
+ * `la-folder` and `la-folder-open` are drawn rotated 90° clockwise in the
+ * font: the tab that belongs on the top edge points out of the right-hand
+ * side instead, so the tile on the homepage funnel read as a broken icon
+ * rather than a folder. `la-folder-plus` and `la-folder-minus` have the
+ * same fault — they are not in the map, and they inherit the correction if
+ * they ever are. Every other glyph in `LA` was rendered and checked; these
+ * two are the only ones.
+ *
+ * Turning them back is not drawing one. The geometry is still Line
+ * Awesome's, and the alternative — swapping in `la-archive` or `la-box` —
+ * would put a storage crate where four sections mean a folder.
+ *
+ * The tab lands at the top left and stays there on /ar. This is the same
+ * call `la-file-alt` and `la-file-pdf` already make beside it in the funnel
+ * — their folded corner does not move either. §13 bans mirroring product
+ * mocks, logos and media controls; a picture of an object is not a thing
+ * that points, and a folder that changed hands between editions would be
+ * the only icon on the site that did.
+ */
+const ROTATED = new Set<IconName>(["folder", "folderOpen"]);
+
 export function Icon({
   name,
   label,
@@ -239,6 +263,8 @@ export function Icon({
         textAlign: "center",
         flex: "none",
         display: "inline-block",
+        /* See `ROTATED`: two glyphs in the font are lying on their side. */
+        ...(ROTATED.has(name) ? { transform: "rotate(-90deg)" } : null),
         ...props.style,
       }}
       aria-hidden={label ? undefined : true}

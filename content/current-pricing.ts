@@ -1,5 +1,5 @@
 import type { PageBlock, PageDoc, PlanCard } from "./pages/types";
-import type { PlanCopy, PricingTeaserCopy, PricingTeaserPlans } from "./types";
+import type { OfferBarCopy, PlanCopy, PricingTeaserCopy, PricingTeaserPlans } from "./types";
 
 /*
  * Pricing copy, and the one place it meets the backend's figures.
@@ -334,4 +334,15 @@ export function teaserPlans(locale: Locale, plans: BillingPlans | null): Pricing
     };
   };
   return { studioPlans: [card("freelancer"), card("studio")], companyPlans: [card("company")] };
+}
+
+/**
+ * The launch offer for the announcement bar above the nav, or null when none
+ * is running — and none is. An offer has to be something checkout charges
+ * (promo codes, planned in markyos-backend/docs/promo-codes-plan.md), not
+ * copy the site promises on its own, so the bar stays hidden until then.
+ */
+export function currentLaunchOffer(locale: Locale): OfferBarCopy | null {
+  void locale;
+  return null;
 }

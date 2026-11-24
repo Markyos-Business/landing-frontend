@@ -35,7 +35,7 @@ export const disclosureStyles = [
       "details::details-content": {
         "block-size": "0",
         "overflow": "clip",
-        "transition": "block-size 320ms var(--mk-ease),\n        content-visibility 320ms allow-discrete",
+        "transition": "block-size 460ms var(--mk-ease),\n        content-visibility 460ms allow-discrete",
       },
       "details[open]::details-content": {
         "block-size": "auto",

@@ -249,7 +249,7 @@ export const widgetsStyles = [
     "position": "absolute",
     "inset-block": "0",
     "inline-size": "0.875rem",
-    "background": "repeating-linear-gradient(\n    to bottom,\n    rgba(11, 11, 15, 0.2) 0 1px,\n    transparent 1px 9px\n  )",
+    "background": "repeating-linear-gradient(\n    to bottom,\n    rgba(255, 255, 255, 0.22) 0 1px,\n    transparent 1px 9px\n  )",
     "pointer-events": "none",
   } },
   { ".mk-dial::before": {
@@ -293,7 +293,7 @@ export const widgetsStyles = [
     "translate": "0 -50%",
     "inline-size": "0.625rem",
     "block-size": "2px",
-    "background": "rgba(11, 11, 15, 0.2)",
+    "background": "rgba(255, 255, 255, 0.22)",
     "transition": "inline-size var(--mk-dur-base) var(--mk-ease),\n    block-size var(--mk-dur-base) var(--mk-ease),\n    background-color var(--mk-dur-base) var(--mk-ease)",
   } },
   { ".mk-dial [data-on]::before": {
@@ -319,12 +319,17 @@ export const widgetsStyles = [
     "line-height": "1.14",
     "letter-spacing": "0",
     "text-align": "start",
-    "color": "rgba(11, 11, 15, 0.46)",
+    /* The unlit stop. `--text-muted` is solved for this ground at about
+       6.9:1; the old value was #0B0B0F at 46%, which on a near-black page
+       is black on black -- "Discovery" and "Inspiration" were rendering
+       invisible. */
+    "color": "var(--text-muted)",
     "cursor": "pointer",
     "transition": "color var(--mk-dur-base) var(--mk-ease)",
   } },
   { ".mk-dial [data-on] .mk-dial-term": {
-    "color": "#0b0b0f",
+    /* ...and the lit one, which was the darkest ink on the page. */
+    "color": "var(--text)",
   } },
   /*
    * What the stop costs you, beside the word.
@@ -396,6 +401,22 @@ export const widgetsStyles = [
   { "@media (max-width: 47.99rem)": {
     ".mk-dial::before, .mk-dial::after": {
       "display": "none",
+    },
+    /*
+     * …and the gutter they stood in goes with them.
+     *
+     * `padding-inline` is `clamp(2.75rem, 4vw, 4rem)` on both edges, and the
+     * note above it says why: 38px for the lit tick at the start, 14px for a
+     * rail at each edge. The rails are `display: none` here and the padding
+     * was not, so every phone spent 88px of a 327px container on a gutter
+     * holding one 24px tick and, on the end edge, nothing at all. Measured on
+     * /: the stop copy wrapped at 224px with 312px available.
+     *
+     * 40px at the start is the tick plus its 14px clearance, rounded up by
+     * two. The end edge needs none.
+     */
+    ".mk-dial": {
+      "padding-inline": "2.5rem 0",
     },
     ".mk-dial > div": {
       "display": "block",
@@ -486,7 +507,7 @@ export const widgetsStyles = [
     "inset-inline-start": "4px",
     "border-radius": "var(--radius-pill)",
     "background": "var(--surface-1)",
-    "box-shadow": "0 1px 2px rgba(11, 11, 15, 0.08),\n    0 6px 14px -6px rgba(11, 20, 60, 0.2)",
+    "box-shadow": "0 1px 2px rgba(255, 255, 255, 0.128),\n    0 6px 14px -6px rgba(0, 0, 0, 0.6)",
     "transition": "transform 420ms cubic-bezier(0.32, 0.72, 0, 1)",
   } },
   { "@media (prefers-reduced-motion: reduce)": {

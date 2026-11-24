@@ -8,7 +8,7 @@ import { AccentedTitle, type Ctx } from "./shared";
 /*
  * The feature, as it looks in the product.
  *
- * The head is centred under a bracketed label and the picture sits in a
+ * The head is centred under a small label and the picture sits in a
  * lifted frame over a pool of the brand's light — the reference's rhythm,
  * built out of this site's own parts rather than imported from it: the
  * eyebrow is `Eyebrow`, the two-tone heading is `AccentedTitle` (the same
@@ -37,7 +37,7 @@ export function ShowcaseBlock({
     <Section id={block.id} labelledBy={headingId} white={white}>
       <div className="mk-rise flex flex-col items-center text-center">
         {block.eyebrow ? (
-          <Eyebrow bracket className="mb-4">
+          <Eyebrow className="mb-4">
             {block.eyebrow}
           </Eyebrow>
         ) : null}

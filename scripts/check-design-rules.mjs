@@ -96,6 +96,11 @@ const EXEMPTIONS = [
   },
   {
     rule: "raw-hex",
+    path: "src/components/ui/primitives/CobaltLouvre.tsx",
+    why: "A WebGL fragment shader. Its two colours are numeric uniforms handed to the GPU (`gl.uniform3f`), not CSS a token could carry: `parseColor` turns a hex string into three floats, and there is no form of `var(--accent)` a shader can read. The values are the accent and the canvas, kept in step with tailwind/tokens.js by hand, and the GLSL constants beside them are geometry rather than palette.",
+  },
+  {
+    rule: "raw-hex",
     path: "src/components/ui/brand/",
     why: "§12: the logo is its files. Logo.tsx is `public/brand/*.svg` inlined so the mark can inherit `currentColor`, and the SVG's own path data and fills are the brand asset, not a colour decision made here. §14's grep excludes this folder for the same reason.",
   },
@@ -271,7 +276,16 @@ function stripComments(source, { lineComments }) {
  * ─────────────────────────────────────────────────────────────────────────── */
 
 const TYPE_FLOOR_PX = 12;
-const WEIGHT_CEILING = 500;
+/*
+ * The heaviest weight the site allows.
+ *
+ * 500 until 18 Nov 2026, when the 21st.dev-style brief (docs/design-brief.md)
+ * was adopted: its display type is 700 and its card titles are 600, and that
+ * choice was made explicitly over the design system cap. The rule still
+ * exists, and still fails 800 and 900 -- it is the ceiling that moved, not the
+ * check.
+ */
+const WEIGHT_CEILING = 700;
 
 /** Every match of `re` in `text`, as {index, groups}. */
 function* scan(re, text) {
@@ -289,7 +303,7 @@ const RULES = [
   {
     id: "weight",
     ref: "§1.5, §7, §13",
-    title: "No weight above 500",
+    title: `No weight above ${WEIGHT_CEILING}`,
     roots: ["src/app", "tailwind", "src/components", "content", "cms"],
     find(text) {
       const hits = [];
@@ -297,11 +311,11 @@ const RULES = [
       // Tailwind: font-semibold, font-bold, font-black, and the arbitrary
       // form font-[600].
       for (const m of scan(/\bfont-(semibold|bold|extrabold|black)\b/, text)) {
-        hits.push({ index: m.index, detail: `Tailwind \`${m[0]}\` — the heaviest weight on this site is 500 (\`font-medium\`)` });
+        hits.push({ index: m.index, detail: `Tailwind \`${m[0]}\` — the heaviest weight on this site is ${WEIGHT_CEILING}` });
       }
       for (const m of scan(/\bfont-\[\s*(\d{3})\s*\]/, text)) {
         if (Number(m[1]) > WEIGHT_CEILING) {
-          hits.push({ index: m.index, detail: `Tailwind \`${m[0]}\` — ${m[1]} is above the 500 ceiling` });
+          hits.push({ index: m.index, detail: `Tailwind \`${m[0]}\` — ${m[1]} is above the ${WEIGHT_CEILING} ceiling` });
         }
       }
 
@@ -317,7 +331,7 @@ const RULES = [
           const raw = m[1].toLowerCase();
           const numeric = /^\d+$/.test(raw) ? Number(raw) : raw === "bold" || raw === "bolder" ? 700 : null;
           if (numeric !== null && numeric > WEIGHT_CEILING) {
-            hits.push({ index: m.index, detail: `\`${m[0].trim()}\` — ${numeric} is above the 500 ceiling` });
+            hits.push({ index: m.index, detail: `\`${m[0].trim()}\` — ${numeric} is above the ${WEIGHT_CEILING} ceiling` });
           }
         }
       }

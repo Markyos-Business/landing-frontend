@@ -2,46 +2,40 @@ export const controlsStyles = [
   /* Controls: fills, bands, tables and the billing switch. Registered by tailwind.config.js, in order. */
   /* ── Controls ────────────────────────────────────────────────────────────── */
   /*
-   * The primary action: flat white, black label.
+   * The primary action: the electric blue, white label.
    *
-   * No gradient and no hover colour of its own. Every filled control on this
-   * site states hover and press the same way — one 35% black scrim laid over
-   * the resting fill by `.mk-btn::after` — so a variant only has to declare
-   * what it looks like at rest.
+   * White-on-near-black until 18 Nov 2026. The brief makes the one accent the
+   * primary button, and white on this blue measures about 8.6:1, so the label
+   * is comfortable at 13px as well as 15.
+   *
+   * The inset lip is the brief's detail and worth keeping: a 1px white
+   * highlight along the top edge at 22%, which reads as a light source above
+   * the page and is the difference between a blue rectangle and a button.
    */
   { ".mk-solid": {
     "background": "var(--solid)",
     "color": "var(--solid-ink)",
+    "box-shadow": "var(--solid-lip)",
   } },
   /*
-   * The secondary action.
+   * The secondary action: a ghost fill, no edge.
    *
-   * "The fill is the affordance, and an edge as well would read as two" was true
-   * on the black site, where `--surface-2` was #1A1A1A against a #000 ground — a
-   * step you could see. Re-pointed for the light page it is #F4F6FA against
-   * #F7F8FA, which is a 1.01:1 step: the fill stopped being an affordance and
-   * these buttons became floating labels. The second CTA beside the closing ask
-   * on nine pages, and the plan buttons on /pricing, were all reading as text.
+   * This has now been three things. On the black site it was `--surface-2`
+   * (#1A1A1A on #000), a step you could see. Re-pointed for the light page it
+   * became #F4F6FA on #F7F8FA -- a 1.01:1 step, so the fill stopped being an
+   * affordance and these buttons read as floating labels; the fix then was to
+   * make the edge the affordance.
    *
-   * So the edge is the affordance now, and the fill is white — which also means
-   * the control reads the same whether its section is on the ground or on the
-   * white band, where a tinted fill would have had the opposite problem.
+   * On this ground the fill works again, and the brief is explicit that the
+   * secondary button has a fill and *no* border: white at 8% over a near-black
+   * page is a clearly visible object, and dropping the ring means the two CTAs
+   * beside each other differ by fill alone, which is what makes the pair read
+   * as one control with a primary.
    */
   { ".mk-outline": {
-    "background": "var(--surface-1)",
+    "background": "var(--ghost-fill)",
     "border": "0",
-    "box-shadow": "0 0 0 1px var(--hairline-strong)",
     "color": "var(--text)",
-  } },
-  /*
-   * …and its press scrim runs the other way.
-   *
-   * `.mk-btn::after` lays white at 14% over the resting fill, which is the right
-   * direction for the solid CTA (near-black) and no direction at all on a white
-   * one. One variant, one override — the rest of the state model is unchanged.
-   */
-  { ".mk-btn.mk-outline::after": {
-    "background": "rgba(11, 11, 15, 0.05)",
   } },
   /*
    * The white band.
@@ -56,8 +50,13 @@ export const controlsStyles = [
    * edge cannot be covered by a child.
    */
   { ".mk-band": {
-    "background": "#fff",
-    "box-shadow": "0 0 0 1px rgba(11, 11, 15, 0.04)",
+    /* The lighter field, not a white one. On the light page the ground was
+       #F7F8FA and the band was white; on this ground the band is the card
+       surface, so the alternation still reads the same way round -- the band
+       is always the lighter of the two -- instead of being a sheet of white
+       across a near-black page. */
+    "background": "var(--surface-1)",
+    "box-shadow": "0 0 0 1px rgba(255, 255, 255, 0.064)",
   } },
   /*
    * Centre an absolutely-positioned decoration on the inline axis.

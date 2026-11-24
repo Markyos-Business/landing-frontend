@@ -28,6 +28,33 @@ function CellView({ cell, ctx }: { cell: Cell; ctx: Ctx }) {
   );
 }
 
+/*
+ * A cell with no letter in it cannot resolve its own direction.
+ *
+ * Every `th` and `td` on an RTL page is `unicode-bidi: plaintext` (see
+ * tailwind/components/bidi.js), which resolves direction from the cell's first
+ * *strong* character. A cell holding "5" has none: digits are weak, so the
+ * algorithm falls back to left-to-right and `text-align: start` sends the
+ * digit to the left -- the far end of an Arabic row.
+ *
+ * It only shows when a column is mixed, which is why it survived. Measured on
+ * /solutions/discovery, whose ten-row table marks rows 6 and 7 `strong`: those
+ * two render through the `Cell` object branch, which is `.mk-atomic` and takes
+ * the page direction, and landed at x=1195. The eight plain-string rows landed
+ * at x=1159. Thirty-six pixels of rag down one column of single digits.
+ *
+ * `.mk-page-dir` is the hook bidi.js already declares for exactly this -- "a
+ * column takes the page's direction, not each cell's". A cell with a letter in
+ * it keeps `plaintext`, because that is the case plaintext exists for: a Latin
+ * string ending in a full stop still needs to resolve as Latin.
+ */
+const HAS_LETTER = /\p{L}/u;
+
+function neutral(cell: Cell) {
+  const text = typeof cell === "string" ? cell : (cell.text ?? "");
+  return text.trim().length > 0 && !HAS_LETTER.test(text);
+}
+
 export function TableBlock({
   block,
   ctx,
@@ -86,7 +113,7 @@ export function TableBlock({
                     scope="col"
                     className={`px-5 py-3 align-bottom text-[length:var(--fs-eyebrow)] font-normal leading-[1.45] text-[var(--text-muted)] ${
                       i === 0 || !block.numeric ? "text-start" : "text-center"
-                    }`}
+                    }${neutral(cell) ? " mk-page-dir" : ""}`}
                   >
                     <CellView cell={cell} ctx={ctx} />
                   </th>
@@ -109,14 +136,18 @@ export function TableBlock({
                     <th
                       key={c}
                       scope="row"
-                      className="px-5 py-3 text-start align-top text-[0.9375rem] font-medium leading-[1.55] text-[var(--text)]"
+                      className={`px-5 py-3 text-start align-top text-[0.9375rem] font-medium leading-[1.55] text-[var(--text)]${
+                        neutral(cell) ? " mk-page-dir" : ""
+                      }`}
                     >
                       <CellView cell={cell} ctx={ctx} />
                     </th>
                   ) : (
                     <td
                       key={c}
-                      className={`px-5 py-3 align-top text-[0.875rem] leading-[1.6] text-[var(--text-muted)] ${bodyAlign}`}
+                      className={`px-5 py-3 align-top text-[0.875rem] leading-[1.6] text-[var(--text-muted)] ${bodyAlign}${
+                        neutral(cell) ? " mk-page-dir" : ""
+                      }`}
                     >
                       <CellView cell={cell} ctx={ctx} />
                     </td>

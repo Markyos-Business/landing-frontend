@@ -4,7 +4,7 @@ import { Words, wordCount } from "@/components/ui";
 import { useState } from "react";
 import type { BilingualCopy } from "@/content/types";
 import type { Locale } from "@/lib/i18n/locales";
-import { Accent, TextLink, Display, INK, INK_45, IconTile, Lead, PANEL, TRACK } from "../landing";
+import { Accent, Cta, Display, INK, INK_45, IconTile, Lead, PANEL, TRACK } from "../landing";
 import { LangTab } from "./LangTab";
 import { HubPanel } from "./HubPanel";
 
@@ -55,8 +55,8 @@ export function Bilingual({ copy, locale }: { copy: BilingualCopy; locale: Local
       style={{
         position: "relative",
         padding: "clamp(72px,10vw,120px) 24px",
-        background: "#fff",
-        boxShadow: "0 0 0 1px rgba(11,11,15,.04)",
+        background: "var(--surface-1)",
+        boxShadow: "0 0 0 1px rgba(255,255,255,0.06)",
         /*
          * The light pool below is `inset: -40px`, so it reaches 40px past
          * this section on every side. Without this it added 16px to the
@@ -125,7 +125,9 @@ export function Bilingual({ copy, locale }: { copy: BilingualCopy; locale: Local
 
           {copy.link ? (
             <div style={{ marginBlockStart: 36 }}>
-              <TextLink locale={locale} href={copy.link.href}>{copy.link.label}</TextLink>
+              <Cta locale={locale} href={copy.link.href} size="sm">
+                {copy.link.label}
+              </Cta>
             </div>
           ) : null}
         </div>
@@ -189,8 +191,8 @@ export function Bilingual({ copy, locale }: { copy: BilingualCopy; locale: Local
                   inlineSize: "calc(50% - 4px)",
                   blockSize: 44,
                   borderRadius: 999,
-                  background: "#fff",
-                  boxShadow: "0 1px 2px rgba(11,11,15,.08),0 6px 14px -6px rgba(11,20,60,.2)",
+                  background: "var(--surface-1)",
+                  boxShadow: "0 1px 2px rgba(255,255,255,0.12),0 6px 14px -6px rgba(0,0,0,.6)",
                   transition: "transform 420ms cubic-bezier(.32,.72,0,1)",
                   transform: arabic ? "none" : "translateX(var(--mk-knob))",
                 }}
@@ -212,7 +214,7 @@ export function Bilingual({ copy, locale }: { copy: BilingualCopy; locale: Local
               borderRadius: 28,
               background: PANEL,
               padding: 12,
-              boxShadow: "0 0 0 1px rgba(11,11,15,.05),0 40px 80px -40px rgba(0,85,255,.35)",
+              boxShadow: "0 0 0 1px rgba(255,255,255,0.075),0 40px 80px -40px rgba(0,85,255,.35)",
             }}
           >
             <HubPanel active={arabic} locale="ar" />

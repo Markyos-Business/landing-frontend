@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import type { NavCopy } from "@/content/types";
 import { localeHref } from "@/lib/i18n/href";
 import type { Locale } from "@/lib/i18n/locales";
-import { Icon, Spark } from "@/components/ui";
+import { Icon } from "@/components/ui";
 import { LangSwitch } from "./LangSwitch";
 
 /*
@@ -26,6 +26,15 @@ import { LangSwitch } from "./LangSwitch";
  * audiences, each closed, each holding its four solutions. Fifteen links
  * unfolded at once is a scroll nobody reads.
  */
+
+/*
+ * A row's place in the cascade.
+ *
+ * Capped at the tenth, which is `.mk-seq-load`'s reasoning applied to a
+ * different list: 40ms a row is a cascade for a dozen rows and a queue for
+ * twenty, and a sheet opened on a small phone can hold either.
+ */
+const row = (i: number) => ({ "--i": Math.min(i, 9) }) as CSSProperties;
 
 export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
   const [open, setOpen] = useState(false);
@@ -96,44 +105,54 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
          * minimum but is small for the one control that dismisses a
          * full-screen overlay.
          */
-        className="relative z-50 -me-1 grid size-9 place-items-center rounded-[var(--mk-r-button)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)] [@media(pointer:coarse)]:size-11 lg:hidden"
+        className="mk-nav-toggle relative z-50 -me-1 grid size-9 place-items-center rounded-[var(--mk-r-button)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)] [@media(pointer:coarse)]:size-11 lg:hidden"
       >
-        <Icon name={open ? "close" : "menu"} size={20} label={copy.menuLabel} />
+        {/* The glyph swaps and the box turns a quarter -- see `.mk-nav-toggle-icon`.
+            The rotation is on the wrapper rather than the icon so the swap and
+            the turn are one movement rather than two. */}
+        <span className="mk-nav-toggle-icon">
+          <Icon name={open ? "close" : "menu"} size={20} label={copy.menuLabel} />
+        </span>
       </button>
 
       <div
         id={panelId}
-        hidden={!open}
         /*
-         * The top edge is measured — see the effect above. The class is the
+         * `data-open`, not `hidden`.
+         *
+         * `hidden` removes the box, and a removed box has no "before" for a
+         * transition to start from -- the sheet appeared and disappeared with
+         * nothing in between. It is always in the DOM now and `.mk-nav-sheet`
+         * carries the state: closed, it is `visibility: hidden`, which takes
+         * every link in it out of the tab order and out of the accessibility
+         * tree exactly as `hidden` did, and unlike `display` it can be delayed
+         * so the fade finishes first.
+         *
+         * `aria-hidden` says the same thing to assistive technology without
+         * depending on how a given engine treats `visibility` on a fixed box.
+         */
+        data-open={open}
+        aria-hidden={!open}
+        /*
+         * The top edge is measured -- see the effect above. The class is the
          * fallback for the first paint, before the measurement lands: the
          * header's own token, which is at least the right number when the
          * announcement bar is absent.
          */
         style={panelTop === null ? undefined : { insetBlockStart: `${panelTop}px` }}
-        className="fixed inset-x-0 bottom-0 top-[var(--mk-header-h)] z-40 overflow-y-auto overscroll-contain border-t border-[var(--hairline)] bg-[var(--canvas)] lg:hidden"
-        /*
-         * Following a link closes the panel.
-         *
-         * These are client-side transitions, so the panel would otherwise
-         * stay open over the page it just took you to. Keyed off the click
-         * rather than off a pathname change, because the two are not the same
-         * thing: a link to an anchor on the page you are already on changes
-         * no path, and it still has to close the menu. The `closest("a")`
-         * test is what keeps a tap on a `<summary>` from closing it.
-         */
+        className="mk-nav-sheet top-[var(--mk-header-h)] lg:hidden"
         onClick={(event) => {
           if ((event.target as Element).closest("a")) setOpen(false);
         }}
       >
         <nav aria-label="Main" className="mk-container py-6">
           <ul className="divide-y divide-[var(--hairline)]">
-            {copy.items.map((item) => {
+            {copy.items.map((item, i) => {
               const hasMenu = Boolean(item.groups?.length || item.links?.length);
 
               if (!hasMenu) {
                 return (
-                  <li key={item.href}>
+                  <li key={item.href} className="mk-nav-row" style={row(i)}>
                     <Link
                       href={localeHref(locale, item.href)}
                       className="mk-bidi block py-4 text-[0.9375rem] font-medium text-[var(--text)]"
@@ -145,7 +164,7 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
               }
 
               return (
-                <li key={item.href}>
+                <li key={item.href} className="mk-nav-row" style={row(i)}>
                   <details className="group">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4">
                       <span className="mk-bidi text-[0.9375rem] font-medium text-[var(--text)]">
@@ -154,11 +173,12 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
                       <Icon
                         name="chevron"
                         size={16}
-                        className="flex-none text-[var(--text-muted)] transition-transform group-open:rotate-180"
+                        className="mk-nav-chev flex-none text-[var(--text-muted)]"
                       />
                     </summary>
 
-                    <div className="pb-4">
+                    <div className="mk-nav-fold">
+                      <div className="pb-4">
                       {/*
                        * The desktop rail's way in, which on a phone is just a
                        * link — there is no room for the claim above it, and a
@@ -190,11 +210,11 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
                             <Icon
                               name="chevron"
                               size={14}
-                              className="flex-none text-[var(--text-muted)] transition-transform group-open/g:rotate-180"
+                              className="mk-nav-chev flex-none text-[var(--text-muted)]"
                             />
                           </summary>
 
-                          <ul className="pb-3">
+                          <ul className="mk-nav-fold pb-3">
                             {group.items.map((solution) => (
                               <li key={solution.title}>
                                 <Link
@@ -253,13 +273,14 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
                           ))}
                         </ul>
                       ) : null}
+                      </div>
                     </div>
                   </details>
                 </li>
               );
             })}
 
-            <li>
+            <li className="mk-nav-row" style={row(copy.items.length)}>
               <Link
                 href={localeHref(locale, "/login")}
                 prefetch={false}
@@ -280,7 +301,10 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
              * secondary navigation — but only once the menu actually has it.
              * Log in is here for the same reason.
              */}
-            <li className="flex items-center justify-between gap-4 py-4">
+            <li
+              className="mk-nav-row flex items-center justify-between gap-4 py-4"
+              style={row(copy.items.length + 1)}
+            >
               <span className="mk-bidi text-[0.9375rem] font-medium text-[var(--text)]">
                 {copy.languageLabel}
               </span>
@@ -288,13 +312,17 @@ export function MobileNav({ copy, locale }: { copy: NavCopy; locale: Locale }) {
             </li>
           </ul>
 
-          {/* The margin and the width belong to the wrapper now — it is the
-              flex item — and the pill fills it from `.mk-spark > a`. */}
-          <Spark full>
-            <Link href={localeHref(locale, "/start")} prefetch={false} className="mk-btn mk-solid mt-6 w-full">
+          {/* The button is the flex item again, now that there is no wrapper
+              to be one. Flat blue, no glow -- see the note in landing.tsx. */}
+          <div className="mk-nav-row" style={row(copy.items.length + 2)}>
+            <Link
+              href={localeHref(locale, "/start")}
+              prefetch={false}
+              className="mk-btn mk-solid mt-6 w-full"
+            >
               <span className="mk-bidi">{copy.startFree}</span>
             </Link>
-          </Spark>
+          </div>
         </nav>
       </div>
     </>

@@ -22,9 +22,9 @@ export function OldLogoSlide({ label, locale }: { label: string; locale: Locale 
            * the width instead of the box clipping the slide.
            */
           maxBlockSize: "calc(100% - 56px)",
-          background: "#fff",
+          background: "var(--surface-1)",
           borderRadius: 12,
-          boxShadow: "0 0 0 1px rgba(11,11,15,.06),0 16px 30px -18px rgba(11,20,60,.3)",
+          boxShadow: "0 0 0 1px rgba(255,255,255,0.09),0 16px 30px -18px rgba(0,0,0,.6)",
           padding: 14,
           display: "flex",
           flexDirection: "column",
@@ -42,13 +42,13 @@ export function OldLogoSlide({ label, locale }: { label: string; locale: Locale 
               blockSize: 14,
               borderRadius: 3,
               background:
-                "repeating-linear-gradient(45deg,rgba(11,11,15,.12) 0 4px,rgba(11,11,15,.04) 4px 8px)",
+                "repeating-linear-gradient(45deg,rgba(255,255,255,0.16) 0 4px,rgba(255,255,255,0.06) 4px 8px)",
             }}
           />
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <span style={{ blockSize: 10, inlineSize: "70%", borderRadius: 4, background: "rgba(11,11,15,.1)" }} />
-          <span style={{ blockSize: 10, inlineSize: "46%", borderRadius: 4, background: "rgba(11,11,15,.06)" }} />
+          <span style={{ blockSize: 10, inlineSize: "70%", borderRadius: 4, background: "rgba(255,255,255,0.15)" }} />
+          <span style={{ blockSize: 10, inlineSize: "46%", borderRadius: 4, background: "rgba(255,255,255,0.09)" }} />
         </div>
       </div>
       {/*
@@ -71,10 +71,12 @@ export function OldLogoSlide({ label, locale }: { label: string; locale: Locale 
           blockSize: 28,
           padding: "0 10px",
           borderRadius: 999,
-          background: "#fff",
+          background: "var(--surface-1)",
           boxShadow: "0 0 0 1px rgba(255,0,102,.18)",
           fontSize: 12,
-          color: "#C2004E",
+          /* The state hues follow the ground: these were the light page's
+             darkened variants, which on near-black are muddy and under AA. */
+          color: "var(--mk-state-rejected)",
         }}
       >
         <Icon name="history" size={15} />

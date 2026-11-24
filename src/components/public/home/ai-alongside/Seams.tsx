@@ -1,6 +1,6 @@
 import type { AiAlongsideCopy, SiteCopy } from "@/content/types";
 import { Chip, Icon } from "@/components/ui";
-import { BLUE_DEEP, INK_62, RING_6 } from "../landing";
+import { BLUE_INK, INK_62, RING_6 } from "../landing";
 
 /* The six seams where the parts of a brand come apart. */
 export function Seams({ copy, chips }: { copy: AiAlongsideCopy; chips: SiteCopy["chips"] }) {
@@ -38,14 +38,14 @@ export function Seams({ copy, chips }: { copy: AiAlongsideCopy; chips: SiteCopy[
             style={{
               padding: 20,
               borderRadius: 20,
-              background: "#fff",
+              background: "var(--surface-1)",
               boxShadow: RING_6,
             }}
           >
             <div
               style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10 }}
             >
-              <Icon name="exchange" size={16} style={{ color: BLUE_DEEP }} />
+              <Icon name="exchange" size={16} style={{ color: BLUE_INK }} />
               {seam.chip ? <Chip feature={seam.chip} chips={chips} /> : null}
             </div>
             <p

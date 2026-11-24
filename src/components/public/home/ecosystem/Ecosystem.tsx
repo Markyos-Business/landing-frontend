@@ -1,7 +1,7 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { Words, wordCount } from "@/components/ui";
 import type { EcosystemCopy } from "@/content/types";
-import { Accent, TextLink, Display, Lead, Pool } from "../landing";
+import { Accent, Cta, Display, Lead, Pool } from "../landing";
 import { Funnel } from "./Funnel";
 import { ToolChips } from "./ToolChips";
 import { IntoMark, IntoStages } from "./Connectors";
@@ -53,8 +53,8 @@ export function Ecosystem({ copy, locale }: {
            being scrollable, which is also closer to what this was for. */
         overflow: "clip",
         padding: "40px 24px clamp(72px,10vw,120px)",
-        background: "#fff",
-        boxShadow: "0 0 0 1px rgba(11,11,15,.04)",
+        background: "var(--surface-1)",
+        boxShadow: "0 0 0 1px rgba(255,255,255,0.06)",
         /* The section's own text is centred — the heading, the lead and the
            closing line. The stage cards below opt back out. */
         textAlign: "center",
@@ -112,7 +112,7 @@ export function Ecosystem({ copy, locale }: {
             textAlign: "center",
             fontSize: 17,
             lineHeight: 1.9,
-            color: "rgba(11,11,15,.64)",
+            color: "var(--text-muted)",
             textWrap: "pretty",
           }}
         >
@@ -123,7 +123,9 @@ export function Ecosystem({ copy, locale }: {
         {copy.link ? (
           <p style={{ margin: "28px 0 0" }}>
             <span className="mk-atomic">
-              <TextLink locale={locale} href={copy.link.href}>{copy.link.label}</TextLink>
+              <Cta locale={locale} href={copy.link.href} size="sm">
+                {copy.link.label}
+              </Cta>
             </span>
           </p>
         ) : null}

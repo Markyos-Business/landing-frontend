@@ -2,6 +2,17 @@ import { currentPricingTeaser } from "../current-pricing.ts";
 import type { SiteCopy } from "../types";
 
 /*
+ * The lowest paid price on the site, read from the plan catalogue rather than
+ * typed out here.
+ *
+ * v4 §2.7 moves pricing off the homepage and into one line in the last call,
+ * and copy deck v4.3 keeps that line at $12 — Solo and Starter, which are
+ * the cheapest paid plan there is. Derived rather than typed, because a price
+ * written into a sentence is a price nothing checks: `check:pricing` holds the
+ * catalogue together, and this sentence now moves with it.
+ */
+
+/*
  * English page copy — markyos_landing_page_copy.md v1.0 (16 Oct 2026).
  *
  * This is approved copy. Edits are copy decisions, not code changes: keep the
@@ -535,7 +546,7 @@ export const copy: SiteCopy = {
           feature: "brief-analysis",
           headline: "Get a senior strategist's read on the answers. The first one's free.",
           body: "Markyos reads the brief and your call notes and gives you a structured report: goals, audience, competitors, personality signals, and the two things a junior designer would miss: the contradictions in what the client said, and the questions you still need to ask. It ends with two or three strategic routes the brand could take. Every finding lands as a draft. You accept what's useful. Nothing goes into the strategy without you.",
-          smallPrint: "One free analysis in every project, on every plan. Re-runs use credits.",
+          smallPrint: "One free analysis in every project, on every plan. Re-runs come with your plan's monthly limit.",
         },
         {
           name: "Strategize",
@@ -547,9 +558,9 @@ export const copy: SiteCopy = {
           headline: "Find the direction with your client, not just for them.",
           body: "Collect references on a moodboard and Markyos pulls the palette out of the real pixels in your images. Group them, cull them, and show the client a direction they can react to.",
           coming: {
-            feature: "whiteboard",
-            headline: "Real-time whiteboard.",
-            body: "Sketch directions with your team and your client live, on the same canvas, with your approved logo, colours and type as live pieces. Clients join from a link, no account needed. And AI art direction turns a board into mood words, a palette rationale, and Arabic and Latin type pairings.",
+            feature: "art-direction",
+            headline: "AI art direction.",
+            body: "Brand Brain reads your board and turns it into mood words, a rationale for the palette, and Arabic and Latin type pairings.",
           },
         },
         {
@@ -693,8 +704,7 @@ export const copy: SiteCopy = {
         "Your text is checked, not kept. We store the score, not the words, unless you choose to save it (for 30 days).",
       comingHeading: "Coming next for the checker",
       coming: [
-        { feature: "document-checks", label: "Check whole Word and PDF documents" },
-        { feature: "integrations", label: "Check text anywhere you write, from a Chrome extension" },
+        { feature: "chrome-extension", label: "Check text anywhere you write, from a Chrome extension" },
       ],
       cta: { label: "Run your first tone check free", href: "/start?type=company" },
       smallPrint: "25 quick checks a month on the free plan. 1,000 a month on Brand.",
@@ -781,7 +791,7 @@ export const copy: SiteCopy = {
         },
         {
           term: "No surprise bills",
-          line: "AI runs on credits you can see. If you run out, it stops and asks. It never charges you on the side.",
+          line: "Every AI tool has a monthly limit you can see. If one runs out, it stops and asks. It never charges you on the side.",
         },
       ],
     },
@@ -797,9 +807,13 @@ export const copy: SiteCopy = {
       headline: "Right here.",
       headlineAccent: "Right everywhere.",
       body: "Forms, strategy, files, guidelines and voice, in one place. Change a colour once, and it's right on every page that uses it.",
+      /* Five tools, not six. Deck v4.1 §2.2 drops the Moodboards card and
+         its Milanote caption until moodboards ship: the arc is the list of
+         things Markyos replaces today, and naming one it does not replace
+         yet is the one claim this section cannot afford. It comes back with
+         the feature. */
       tools: [
         { label: "Form", tool: "Google Forms", icon: "form" },
-        { label: "Board", tool: "Milanote", icon: "grid" },
         { label: "Document", tool: "Word", icon: "fileAlt" },
         { label: "Folder", tool: "Drive", icon: "folder" },
         { label: "Guideline", tool: "PDF", icon: "filePdf" },
@@ -906,7 +920,7 @@ export const copy: SiteCopy = {
         {
           title: "Between the strategy and the visual direction",
           line: "AI art direction, from your moodboards.",
-          chip: "board-shapes",
+          chip: "art-direction",
         },
         {
           title: "Between your guideline and what people ask",
@@ -1045,19 +1059,9 @@ export const copy: SiteCopy = {
               line: "Inspiration references never appear on a public page.",
             },
             {
-              name: "A live shared board",
-              line: "You, your team and your client on the same board at the same time, the client joining by link with no account.",
-              chip: "whiteboard",
-            },
-            {
-              name: "Live brand pieces",
-              line: "Your approved logo, colours and fonts as objects on the board, updating when they change.",
-              chip: "board-shapes",
-            },
-            {
               name: "AI art direction",
               line: "The brand brain reads the board and suggests mood words, colours, and Arabic/Latin font pairings.",
-              chip: "board-shapes",
+              chip: "art-direction",
             },
           ],
           link: { label: "Moodboards", href: "/platform/moodboards" },
@@ -1188,8 +1192,8 @@ export const copy: SiteCopy = {
               line: "20% of what your client pays in their first year, as credit on your subscription.",
             },
             {
-              name: "Their first year up front",
-              line: "Pay their first year on the Brand plan at $190 instead of $228, and add it to your project's value.",
+              name: "And agencies earn 25%",
+              line: "On the Agency plan the partner reward is a quarter of the client's first year, not a fifth.",
             },
           ],
           link: { label: "Handoff and the partner reward", href: "/platform/handoff" },
@@ -1256,7 +1260,7 @@ export const copy: SiteCopy = {
               line: "Your studio works inside your brand without counting against your editors.",
             },
             {
-              name: "Department playbooks and email signatures",
+              name: "Department playbooks",
               line: "Voice and key messages per department, and a bilingual signature for every employee.",
               chip: "department-playbooks",
             },
@@ -1334,8 +1338,7 @@ export const copy: SiteCopy = {
           job: "Moodboards",
           usually: "Milanote · Pinterest · Miro",
           markyos: "A moodboard that pulls the palette out of your real images",
-          change: "The board turns into decisions: colours and drafts. And a live board with your client",
-          changeChip: "whiteboard",
+          change: "The board turns into decisions: colours and drafts",
         },
         {
           job: "Files",
@@ -1408,43 +1411,37 @@ export const copy: SiteCopy = {
       ],
     },
 
+    /*
+     * One undated list, not three dated seasons.
+     *
+     * Copy deck v4.1 collapsed the roadmap, here and on /roadmap, for the
+     * two reasons written at the roadmap block in content/pages/en/pricing.ts:
+     * a dated promise is the one thing src/lib/status.ts exists to keep off
+     * this site, and nine of the entries below named features v4.1 removed
+     * from the product.
+     *
+     * This section is not rendered -- it was cut from the homepage on
+     * 5 Nov 2026 with four others, and its copy stayed. That is exactly why
+     * it was worth correcting: unrendered copy is where a promise survives
+     * longest after it stops being true, and this one would have come back
+     * with the section.
+     */
     comingNext: {
       headline: "The ecosystem is growing. Here's what comes next.",
-      subheadline: "We ship in the open. Here's what's next, in the order it's coming.",
+      subheadline: "We ship in the open, and without dates: each one arrives when it is real.",
       phases: [
         {
-          season: "Spring 2027",
-          theme: "Explore together",
+          season: "Coming soon",
+          theme: "Already being built",
           items: [
-            "A real-time whiteboard you share with your client",
-            "Your brand's logo, colours and type as live pieces on the board",
-            "AI art direction from a board",
+            "Moodboards, with the palette pulled from your real images",
+            "Art direction from Brand Brain",
             "Department playbooks",
-            "Campaigns and launches inside a brand",
-            "Email signatures in Arabic and English for every employee",
-          ],
-        },
-        {
-          season: "Mid 2027",
-          theme: "Think, ask, present",
-          items: [
-            "Ask the Brand for every employee",
-            "A strategy assistant and brainstorm",
-            "Connect ChatGPT or Claude to your brand",
-            "Check whole Word and PDF documents",
             "Turn an old PDF guideline into a living hub",
-            "Ready-made brand templates: social posts, slides, letterheads, business cards",
-          ],
-        },
-        {
-          season: "Later in 2027",
-          theme: "Run a whole brand team",
-          items: [
-            "Review requests and approvals",
-            "A brand health dashboard you can show management",
             "Check your writing anywhere with a Chrome extension",
-            "Sub-brands that inherit from a master brand",
-            "Figma sync, an API, and single sign-on",
+            "Reviews and approvals, and a brand health dashboard",
+            "Download tracking on partner links",
+            "The Enterprise plan, with single sign-on and audit logs",
           ],
         },
       ],
@@ -1518,7 +1515,7 @@ export const copy: SiteCopy = {
       studioCta: { label: "I make brands for clients", href: "/start?type=studio" },
       companyCta: { label: "I run my company's brand", href: "/start?type=company" },
       // CONFIRM: same free-plan line as the hero. Keep the two in step.
-      microcopy: "Free plan. No card needed.",
+      microcopy: "Start free. Pay per brand when you share it.",
       beta: {
         studioCta: { label: "Save my studio spot", href: "/start?type=studio" },
         companyCta: { label: "Save my company spot", href: "/start?type=company" },

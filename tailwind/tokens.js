@@ -90,8 +90,18 @@ export const designSystemTokens = [
     "--mk-header-h": "64px",
     /* motion */
     "--mk-ease": "cubic-bezier(0.4, 0, 0.2, 1)",
-    "--mk-dur-fast": "120ms",
-    "--mk-dur-base": "180ms",
+    /*
+     * Slowed on 19 Nov 2026, with everything else on the page.
+     *
+     * These two are the *interaction* clocks -- a hover scrim, a knob
+     * travelling, a chevron turning -- not the entrance ones, and they get
+     * the smaller share of the slowdown deliberately. A reveal that takes
+     * half again as long reads as considered; a hover that takes half again
+     * as long reads as a page that has not noticed the pointer. 1.4x here
+     * against 1.5x on the entrances.
+     */
+    "--mk-dur-fast": "170ms",
+    "--mk-dur-base": "250ms",
     /* fades into the canvas — for product imagery */
     "--mk-fade-bottom": "linear-gradient(#000 55%, transparent 100%)",
     "--mk-fade-band": "linear-gradient(transparent 0%, #000 25% 72%, transparent 100%)",
@@ -101,176 +111,217 @@ export const designSystemTokens = [
 
 export const themeTokens = [
   /*
-   * The marketing site's token names, pointed at the Markyos Landing design.
+   * The marketing site's token names, pointed at the 21st.dev-style dark
+   * design (docs/design-brief.md).
    *
-   * ── What changed, and why this file no longer reads from tailwind/tokens.js ───
+   * -- What changed, 18 Nov 2026 --------------------------------------------
    *
-   * `MARKYOS-DESIGN-SYSTEM.md` describes a black site: "Black is the brand.
-   * Light is the colour." The landing design the site is now built to —
-   * `Landing Copy/Markyos Landing AR (readable).html` — is a *light* page:
-   * #F7F8FA canvas, #0B0B0F ink, white cards lifted on soft blue-grey shadows.
-   * Both cannot be true, and the page that ships is the light one.
+   * The site was a light page: #F7F8FA ground, #0B0B0F ink, white cards on
+   * long blue-grey shadows. The brief replaces that with a near-black canvas,
+   * one electric-blue accent, hairline-bordered cards and no card shadows at
+   * all. Dark is now the only mode.
    *
-   * So the values below are the design file's own, read off its markup, rather
-   * than mapped onto the `--mk-*` identity layer. `tailwind/tokens.js` is still
-   * imported and still holds the blue-light scale, which the design file uses
-   * unchanged (#0099FF core, #0055FF falloff) — but its canvas, panel and text
-   * ramps now describe a site that does not exist, and nothing here reads them.
+   * Colours are OKLCH, as the brief specifies. The names are unchanged, which
+   * is the whole point: forty-two components read `var(--text-muted)` and
+   * `var(--surface-1)`, so the chrome, the blog and every page under
+   * `content/pages/` turn dark from this one file.
    *
-   * ── Why the mapping still exists ──────────────────────────────────────────
+   * -- Two departures from the brief, both deliberate ------------------------
    *
-   * Forty-two components read names like `var(--text-muted)` and
-   * `var(--surface-1)`. Keeping those names and re-pointing them means the
-   * chrome, the blog, and every data-driven page under `content/pages/` turn
-   * light from this one file. The homepage sections under `src/components/public/home/`
-   * are a literal trace of the design file and carry their own values inline;
-   * everything else still comes through here.
+   * **The fonts stay.** The brief asks for General Sans. This site is Arabic
+   * first -- `/` is Arabic, `/en` is English -- and General Sans has no Arabic
+   * glyphs, so adopting it would leave the default edition unset. Inter keeps
+   * the Latin and Thmanya Sans keeps the Arabic, which is what was approved.
    *
-   * `tailwind/base-tokens.js` is the base layer underneath. Where one of its
-   * names needs the design system's value, it is re-pointed below, so the
-   * base keeps one meaning and the site's identity lives in one place.
+   * **Blue is never ink.** `--primary` is oklch(0.485 0.291 264.1), which
+   * measures about 2.2:1 against this canvas -- it fails as text at any size.
+   * The brief only ever asks for it as a fill, a selection, an underline and a
+   * glow, so that is all it does here. Where a blue *label* is needed,
+   * `--accent-on-soft` and `--mk-blue-ink` carry a lighter blue solved for the
+   * dark ground.
    *
-   * ── The art direction, in one line ────────────────────────────────────────
+   * -- The art direction, in one line ---------------------------------------
    *
-   * Paper, not ink. A near-white ground, white cards that lift off it on long
-   * soft shadows, near-black type at three opacities, and blue used twice: as
-   * the gradient inside a headline's second clause, and as the light pooled
-   * behind whatever the section is about.
+   * Ink, not paper. A near-black ground with a cool tint, cards a hair lighter
+   * than the page and edged in white at 7%, type at three steps of near-white,
+   * and the one blue used as light: button fills, selection, the underline
+   * under a number, and soft glows seaming the sections together.
    */
-  { ":root": {
-    /* ground + surfaces */
-    "--canvas": "#f7f8fa",
-    "--surface-0": "#ffffff",
-    "--surface-1": "#ffffff",
-    /* cards */
-    "--surface-2": "#f4f6fa",
+  { ":root, .dark": {
+    /* ground + surfaces -- the brief's section 1 surfaces */
+    "--background": "oklch(0.141 0.004 285.8)",
+    "--canvas": "oklch(0.141 0.004 285.8)",
+    /* page, near-black with a cool tint */
+    "--card": "oklch(0.158 0.003 286)",
+    "--surface-0": "oklch(0.158 0.003 286)",
+    "--surface-1": "oklch(0.158 0.003 286)",
+    /* bento cell, a hair lighter than the page */
+    "--surface-2": "oklch(0.21 0.006 285.9)",
     /* inputs, secondary buttons, table heads, segmented tracks */
-    "--surface-3": "#f0f2f6",
+    "--surface-3": "oklch(0.274 0.005 286)",
     /* hover / selected row only */
-    "--card-top": "#ffffff",
-    /* flat: the gradient is retired */
-    "--card-bottom": "#ffffff",
-    /* lines — the design file draws edges with ring shadows, not borders */
-    "--hairline": "rgba(11, 11, 15, 0.05)",
+    "--popover": "oklch(0.204 0 0)",
+    "--muted": "oklch(0.21 0.006 285.9)",
+    "--secondary": "oklch(0.274 0.005 286)",
+    "--card-top": "oklch(0.158 0.003 286)",
+    /* flat: cards are edged, never lifted */
+    "--card-bottom": "oklch(0.158 0.003 286)",
+    /*
+     * Lines -- hairlines, white at low alpha. The brief is explicit that cards
+     * carry a ~0.8px border at about 7% white and no drop shadow, so the
+     * ladder that used to describe shadow depth now describes edge strength.
+     */
+    "--hairline": "oklch(0.975 0.002 286 / 0.055)",
     /* dividers inside a card */
-    "--hairline-strong": "rgba(11, 11, 15, 0.07)",
+    "--hairline-strong": "oklch(0.975 0.002 286 / 0.075)",
     /* card edges, rows, header rule */
-    /* text — hierarchy by opacity of the one ink */
-    "--text": "#0b0b0f",
-    "--text-secondary": "rgba(11, 11, 15, 0.72)",
+    "--border": "oklch(0.274 0.005 286)",
+    "--ghost-fill": "oklch(0.975 0.002 286 / 0.08)",
+    /* secondary button fill */
+    /*
+     * Text -- three steps of near-white, never pure white for body.
+     *
+     * --text-muted is the one worth the arithmetic: oklch(0.654 0.014 286) is
+     * about 6.9:1 on this canvas, so it clears AA for body copy, which the
+     * brief's section 7 asks for by name.
+     */
+    "--foreground": "oklch(0.968 0.001 286.4)",
+    "--text": "oklch(0.968 0.001 286.4)",
+    "--card-foreground": "oklch(0.985 0 0)",
+    "--text-secondary": "oklch(0.86 0.004 286)",
     /* long-form prose */
-    "--text-muted": "rgba(11, 11, 15, 0.64)",
-    /* body copy under a heading */
-    /* .55 measures 4.34:1 on this ground — under AA for text below 24px.
-     See the note on INK_55 in src/components/public/home/landing.tsx. */
-    "--text-faint": "rgba(11, 11, 15, 0.62)",
-    /* meta, captions, column heads */
-    /* accent */
-    "--accent": "#0055ff",
-    /* INK on light: icons, active labels, links */
-    "--accent-text": "#0055ff",
-    "--accent-soft": "rgba(0, 153, 255, 0.08)",
-    "--accent-on-soft": "#0055ff",
-    "--accent-ink": "#ffffff",
-    "--accent-edge": "#0099ff",
+    "--text-muted": "oklch(0.654 0.014 286)",
+    /* subtitles, captions, body under a heading */
+    "--text-faint": "oklch(0.654 0.014 286)",
+    /* meta, column heads -- the same step; nothing dimmer passes AA */
     /*
-     * The blue the page is allowed to set *text* in.
-     *
-     * The design system's core blue is #0099FF and it is defined as light —
-     * glow, ring, fill — never ink, and the arithmetic says why: #0099FF on
-     * #F7F8FA measures 2.82:1, under the 3:1 that WCAG AA asks even of text at
-     * 24px and over. The landing design departs from that rule in one place, the
-     * gradient on a headline's closing clause, and so inherited the problem: the
-     * light end of that gradient was under the threshold on every headline that
-     * carries one.
-     *
-     * #0077FF is 3.89:1 on this ground and 4.09:1 on white, still reads as the
-     * brand blue, and runs into --mk-blue-deep (5.28:1) without a visible seam.
-     * Fills and glows keep #0099FF; only ink moved.
+     * The one accent. A fill and a light, not an ink -- see the header note.
      */
-    "--mk-blue-ink": "#0077ff",
-    /* primary CTA — flat near-black, white label */
-    "--solid": "#0b0b0f",
-    "--solid-from": "#0b0b0f",
-    "--solid-to": "#0b0b0f",
-    "--solid-ink": "#ffffff",
-    "--track": "#f0f2f6",
-    "--glow": "rgba(0, 153, 255, 0.11)",
-    /* the light pool's core */
-    /* the design file's two lifts, as tokens so cards agree with each other */
-    "--lift-card": "0 0 0 1px rgba(11, 11, 15, 0.05), 0 30px 70px -40px rgba(11, 20, 60, 0.28)",
-    "--lift-ring": "0 0 0 1px rgba(11, 11, 15, 0.06)",
-    "--lift-blue": "0 0 0 1px rgba(11, 11, 15, 0.06), 0 40px 80px -44px rgba(0, 85, 255, 0.4)",
+    "--primary": "oklch(0.485 0.291 264.1)",
+    "--primary-foreground": "oklch(1 0 0)",
+    "--accent": "oklch(0.485 0.291 264.1)",
+    "--ring": "oklch(0.485 0.291 264.1)",
+    "--accent-edge": "oklch(0.6 0.24 264)",
+    "--accent-soft": "oklch(0.485 0.291 264.1 / 0.16)",
+    "--accent-ink": "oklch(1 0 0)",
     /*
-     * The deep panel — the one dark object on a light page.
+     * Blue that is allowed to carry text, solved for this ground.
      *
-     * A page that is paper all the way down has nothing to close on. The
-     * closing CTA used to end on `.mk-horizon`, an enormous pale ellipse lit
-     * from below, which ends a page by fading out of it: at the moment the
-     * visitor is being asked to decide, the design was dissolving. The ask is
-     * now a panel of the brand's own blue, inset on the ground, with the light
-     * moving inside it rather than pooling behind it.
-     *
-     * Both stops are solved for white text, not picked by eye. The design
-     * system's core #0099FF measures 2.9:1 against white and #0055FF 5.6:1 —
-     * enough for a display line, under AA for the 17px lead beneath it — so the
-     * ground behind the copy stops at #0040E0 (7.5:1) and deepens to #0A1F8C
-     * (13.2:1) at the reading edge. The brighter blues appear only in the light
-     * that plays across the far side, where no copy goes.
-     *
-     * --mk-on-deep-soft carries the lead and the eyebrow: #C9D8FF is 5.25:1 on
-     * the lighter stop and 9.3:1 on the darker one. A pale blue rather than a
-     * grey, because a grey over blue reads as faded where a tint reads as quiet.
+     * oklch(0.76 0.14 255) measures about 8.4:1 on the canvas and still reads
+     * as the brand blue. --accent-text is white, because the design language
+     * sets links in white with an arrow and keeps blue for the fill behind
+     * them.
      */
-    "--mk-deep-near": "#0a1f8c",
-    "--mk-deep-far": "#0040e0",
-    "--mk-on-deep": "#ffffff",
-    "--mk-on-deep-soft": "#c9d8ff",
-    "--lift-deep": "0 0 0 1px rgba(11, 11, 15, 0.04), 0 40px 80px -40px rgba(0, 64, 224, 0.45)",
-    /* type */
+    "--accent-text": "oklch(0.968 0.001 286.4)",
+    "--accent-on-soft": "oklch(0.76 0.14 255)",
+    "--mk-blue-ink": "oklch(0.76 0.14 255)",
+    /* primary CTA -- the blue fill, white label, with the brief's inset lip */
+    "--solid": "oklch(0.485 0.291 264.1)",
+    "--solid-from": "oklch(0.485 0.291 264.1)",
+    "--solid-to": "oklch(0.485 0.291 264.1)",
+    "--solid-ink": "oklch(1 0 0)",
+    "--solid-lip": "inset 0 1px 0 oklch(1 0 0 / 0.22)",
+    "--track": "oklch(0.274 0.005 286)",
+    "--glow": "oklch(0.485 0.291 264.1 / 0.38)",
+    /* the light pool's core, and the section seams */
+    /*
+     * The brief replaces lifted cards with edged ones, so these three stay as
+     * names (components read them) and now describe rings, not shadows.
+     */
+    "--lift-card": "0 0 0 1px oklch(0.975 0.002 286 / 0.075)",
+    "--lift-ring": "0 0 0 1px oklch(0.975 0.002 286 / 0.075)",
+    "--lift-blue":
+      "0 0 0 1px oklch(0.6 0.24 264 / 0.35), 0 40px 80px -44px oklch(0.485 0.291 264.1 / 0.55)",
+    /*
+     * The deep panel -- the final CTA of the brief's section 4.7.
+     *
+     * On a light page this was the one dark object. On a dark page it inverts:
+     * the panel is the one *lit* object, a deep blue tint with a faded collage
+     * behind it. Both stops are solved for white: oklch(0.32 0.2 264) is about
+     * 9.6:1 and oklch(0.42 0.26 264) about 6.4:1, so the display line and the
+     * lead under it both clear AA.
+     */
+    "--mk-deep-near": "oklch(0.32 0.2 264)",
+    "--mk-deep-far": "oklch(0.42 0.26 264)",
+    "--mk-on-deep": "oklch(1 0 0)",
+    "--mk-on-deep-soft": "oklch(0.86 0.07 264)",
+    "--lift-deep": "0 0 0 1px oklch(0.975 0.002 286 / 0.09)",
+    /*
+     * The state hues, back to the bright values a dark ground wants.
+     *
+     * The light page had to darken these to be legible on near-white; on
+     * near-black the opposite is true, so these return to the design system's
+     * own values, which were picked for black in the first place.
+     */
+    "--mk-state-approved": "#00de68",
+    "--mk-state-review": "#8a58ff",
+    "--mk-state-expiring": "#ffbb00",
+    "--mk-state-rejected": "#ff0066",
+    "--mk-state-info": "#00ccff",
+    /* type -- the brief's section 2 scale, on Inter and Thmanya */
     "--font-display": "var(--font-inter), \"Inter\", var(--font-thmanya), var(--font-plex-arabic), system-ui,\n    sans-serif",
     "--font-arabic": "var(--font-thmanya), var(--font-plex-arabic), system-ui, sans-serif",
-    "--fs-display": "clamp(2.375rem, 6vw, 4.75rem)",
-    /* 38 → 76 */
-    "--fs-h2-lg": "clamp(1.875rem, 4.6vw, 3.5rem)",
-    /* 30 → 56 */
-    "--fs-h2": "clamp(1.875rem, 4.2vw, 3.25rem)",
-    /* 30 → 52 */
-    "--fs-d3": "clamp(1.75rem, 3.6vw, 2.75rem)",
-    /* 28 → 44 — founder, faq */
-    "--fs-h3": "1.375rem",
-    /* 22 — card titles */
-    "--fs-lead": "clamp(1.0625rem, 1.6vw, 1.25rem)",
-    /* 17 → 20 */
-    "--fs-body": "1rem",
-    /* 16 */
-    "--fs-ui": "0.9375rem",
-    /* 15 */
-    "--fs-eyebrow": "0.8125rem",
-    /* 13 — column heads, meta */
-    "--g-hero-tracking": "-0.01em",
+    "--font-mono": "ui-monospace, \"SF Mono\", \"Cascadia Code\", Consolas, monospace",
     /*
-     * The state hues, re-pointed for a light ground.
+     * Scaled down with the homepage hero, 19 Nov 2026.
      *
-     * `tailwind/tokens.js` sets these for black: #FFBB00 amber, #00DE68 green,
-     * #00CCFF cyan. On near-white they are almost invisible as text — the tone
-     * checker's "Flag" label measured 1.6:1 — because a hue picked to glow on
-     * black has nowhere to go on white.
+     * This was clamp(2.75rem, 6vw, 5.5rem) -- the same curve
+     * `--mk-fs-hero` had, and 86.4px on a 1440px desktop. `.mk-display`
+     * is worn by exactly one element, the `<h1>` of every content
+     * page's hero, so the fifty-one inner pages opened at the same
+     * size the homepage did and had the same fault: 832px of headline
+     * over 225px of height, before the lead or the buttons.
      *
-     * The darker values below are the design file's own: it draws the same
-     * states as #C2004E, #00799A and #6A3BE0 in its mock rows. So this is the
-     * light page's palette, not an invention — the tokens simply had not been
-     * re-pointed yet. Fills stay bright; only the ink darkens, which is why the
-     * `-soft` tints are left alone.
+     * It follows `--mk-fs-hero` to 4.6vw/68px so the two kinds of hero
+     * still open at one size. If one moves again, move both.
      */
-    "--mk-state-approved": "#007a42",
-    "--mk-state-review": "#6a3be0",
-    "--mk-state-expiring": "#8a6200",
-    "--mk-state-rejected": "#c2004e",
-    "--mk-state-info": "#00799a",
-    /* shape — the design file's radii are much larger than the product's */
-    "--radius-card": "28px",
-    "--radius-widget": "16px",
+    "--fs-display": "clamp(2.375rem, 4.6vw, 4.25rem)",
+    /* 44 -> 88, hero display */
+    "--fs-h2-lg": "clamp(1.75rem, 3.6vw, 2.75rem)",
+    /* 28 -> 44, and the big statement line */
+    "--fs-h2": "clamp(1.75rem, 3.6vw, 2.75rem)",
+    /* 28 -> 44, one h2 size */
+    "--fs-d3": "clamp(1.75rem, 3.6vw, 2.75rem)",
+    /* 28 -> 44 -- founder, faq */
+    "--fs-h3": "1.125rem",
+    /* 18 -- card titles, at weight 600 */
+    "--fs-lead": "clamp(1.0625rem, 1.4vw, 1.1875rem)",
+    /* 17 -> 19 -- hero subtitle, card subtitles */
+    "--fs-body": "1.125rem",
+    /* 18 -- the brief's desktop body base */
+    "--fs-ui": "0.875rem",
+    /* 14 -- nav, buttons */
+    "--fs-eyebrow": "0.8125rem",
+    /* 13 -- column heads, meta */
+    /*
+     * Weights. The brief wins on this: display is 700 and card titles are 600,
+     * where the design system capped everything at 500. `WEIGHT_CEILING` in
+     * scripts/check-design-rules.mjs was raised to 700 to match, so the gate
+     * still fails 800 and 900.
+     */
+    "--mk-weight-display": "700",
+    "--mk-weight-card-title": "600",
+    "--mk-weight-text-medium": "500",
+    "--mk-weight-text": "400",
+    "--g-hero-tracking": "-0.05em",
+    /* very tight, Latin only -- Arabic is never tracked */
+    "--g-h2-tracking": "-0.022em",
+    /* shape -- the brief's section 1 radii */
+    "--radius": "0.5rem",
+    "--radius-btn": "10px",
+    "--radius-card": "20px",
+    "--radius-frame": "28px",
+    /* big outer frames around product previews */
+    "--radius-widget": "14px",
+    /* the inner media panel of a bento cell */
     "--radius-pill": "999px",
+    /* motion -- the brief's section 5 curves, used instead of the defaults */
+    "--ease-out-expo": "cubic-bezier(0.22, 1, 0.36, 1)",
+    /* reveals, cards sliding in */
+    "--ease-smooth": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+    /* hover, small UI */
+    "--ease-in-out": "cubic-bezier(0.65, 0, 0.35, 1)",
+    /* carousels, progress bars */
+    "--ease-standard": "cubic-bezier(0.4, 0, 0.2, 1)",
   } },
 ];

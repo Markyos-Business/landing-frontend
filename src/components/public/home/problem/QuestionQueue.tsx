@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { mockCopy } from "@/content/mocks";
-import { INK_45, RING, BLUE_DEEP } from "../landing";
+import { INK_45, RING, BLUE_INK } from "../landing";
 
 /* Every brand question lands on one desk. */
 export function QuestionQueue({ first, locale }: { first: string; locale: Locale }) {
@@ -11,9 +11,9 @@ export function QuestionQueue({ first, locale }: { first: string; locale: Locale
    * English homepage came to show an Arabic chat under an English heading.
    */
   const style = [
-    { tint: "rgba(0,153,255,.1)", ink: BLUE_DEEP, indent: 0, fade: 1 },
-    { tint: "rgba(0,204,255,.12)", ink: "#00799A", indent: 14, fade: 0.85 },
-    { tint: "rgba(138,88,255,.12)", ink: "#6A3BE0", indent: 28, fade: 0.7 },
+    { tint: "rgba(0,153,255,.1)", ink: BLUE_INK, indent: 0, fade: 1 },
+    { tint: "rgba(0,204,255,.12)", ink: "var(--mk-state-info)", indent: 14, fade: 0.85 },
+    { tint: "rgba(138,88,255,.12)", ink: "var(--mk-state-review)", indent: 28, fade: 0.7 },
   ];
   const rows = [
     { who: p.firstWho, q: first, when: p.firstWhen, ...style[0] },
@@ -44,7 +44,7 @@ export function QuestionQueue({ first, locale }: { first: string; locale: Locale
             gap: 10,
             padding: "9px 12px",
             borderRadius: 14,
-            background: "#fff",
+            background: "var(--surface-1)",
             boxShadow: RING,
             opacity: row.fade,
             marginInlineStart: row.indent,

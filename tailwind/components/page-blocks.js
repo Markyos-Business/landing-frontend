@@ -106,7 +106,7 @@ export const pageBlocksStyles = [
     "padding-inline-end": "18px",
     "border-radius": "var(--radius-widget)",
     "background": "var(--surface-1)",
-    "box-shadow": "0 0 0 1px rgba(11, 11, 15, 0.06),\n    0 12px 26px -20px rgba(11, 20, 60, 0.4)",
+    "box-shadow": "0 0 0 1px rgba(255, 255, 255, 0.096),\n    0 12px 26px -20px rgba(0, 0, 0, 0.6)",
     "font-size": "var(--fs-ui)",
     "line-height": "1.6",
     "color": "var(--text-secondary)",
@@ -144,17 +144,23 @@ export const pageBlocksStyles = [
     "color": "var(--mk-on-deep)",
   } },
   /*
-   * The callout's reading edge, as light rather than as a rule.
+   * The callout's light, with its bar removed (21 Nov 2026).
    *
-   * Both gradients are safe in either edition without a `[dir]` override, and
-   * that is why they are shaped the way they are: the bar runs *down* its own
-   * length, and a vertical gradient has no side to get wrong, while the pool
-   * is a radial centred on itself and anchored with `inset-inline-start`. The
-   * one direction-dependent form — a horizontal `linear-gradient` fading away
-   * from the edge — would have needed the same four-rule flip `.mk-web-line`
-   * carries, for an effect the eye cannot tell apart from this one.
+   * There were two marks here: a 3px blue gradient bar down the reading edge
+   * and a soft pool behind it. The owner asked for the bar to come off. What
+   * stays is the pool, which is the site's own signature — blue as light
+   * rather than as a rule — and it carries the same job the bar was doing,
+   * which is to say "this paragraph is an aside" without drawing a border
+   * around it.
    *
-   * `z-index: -1` keeps both under the words: `.mk-card` isolates, so a
+   * The pool is a radial centred on itself and anchored with
+   * `inset-inline-start`, so it is safe in either edition with no `[dir]`
+   * override. The one direction-dependent form — a horizontal
+   * `linear-gradient` fading away from the edge — would have needed the same
+   * four-rule flip `.mk-web-line` carries, for an effect the eye cannot tell
+   * apart from this one.
+   *
+   * `z-index: -1` keeps it under the words: `.mk-card` isolates, so a
    * negative child paints after the card's own background and before its
    * content, and cannot escape the card. `.mk-card` is already `overflow:
    * clip`, so the pool is trimmed to the radius.
@@ -171,19 +177,11 @@ export const pageBlocksStyles = [
   { ".mk-callout": {
     "max-inline-size": "48rem",
   } },
-  { ".mk-callout::before, .mk-callout::after": {
+  { ".mk-callout::after": {
     "content": "\"\"",
     "position": "absolute",
     "z-index": "-1",
     "pointer-events": "none",
-  } },
-  { ".mk-callout::before": {
-    "inset-block": "0",
-    "inset-inline-start": "0",
-    "inline-size": "3px",
-    "background": "linear-gradient(to bottom, var(--mk-blue), rgba(0, 85, 255, 0))",
-  } },
-  { ".mk-callout::after": {
     "inset-block": "-30%",
     "inset-inline-start": "-8%",
     "inline-size": "48%",
@@ -234,15 +232,26 @@ export const pageBlocksStyles = [
    * nothing. It is in `em` because what it has to clear is a property of the
    * type size, not of the layout.
    */
+  /*
+   * The closing clause is no longer blue.
+   *
+   * It was a blue gradient painted through `background-clip: text` -- the one
+   * gradient on the light page, and the design file's signature.
+   * `docs/21st-reference/BRIEF.md` section 1 lists every place the accent is
+   * allowed to appear: "primary buttons, the selection colour, underlines on
+   * key numbers, and the glowing light blobs". A headline is none of them, and
+   * `screenshots/01-hero.jpg` shows both lines of the reference hero set in
+   * plain white.
+   *
+   * The class is kept rather than removed from the markup, because the copy
+   * layer marks the clause and that marking is still worth having -- it is
+   * what a future underline or highlight would hang off. Right now it paints
+   * the clause in the same ink as the rest of the line.
+   *
+   * To restore the gradient, this rule is the only thing to change back.
+   */
   { ".mk-accent-clause": {
-    "background": "linear-gradient(270deg, var(--mk-blue-ink), var(--mk-blue-deep))",
-    "-webkit-background-clip": "text",
-    "background-clip": "text",
-    "color": "transparent",
-    "padding-block": "0.22em",
-  } },
-  { "[dir=\"ltr\"] .mk-accent-clause": {
-    "background-image": "linear-gradient(90deg, var(--mk-blue-ink), var(--mk-blue-deep))",
+    "color": "var(--text)",
   } },
   /*
    * The deep panel: the page's closing ask.
@@ -390,7 +399,37 @@ export const pageBlocksStyles = [
    */
   { ".mk-btn.mk-deep-solid": {
     "background": "var(--mk-on-deep)",
-    "color": "var(--text)",
+    /*
+     * `--canvas`, not `--text`.
+     *
+     * This read `var(--text)` for as long as the site was a light page, where
+     * `--text` was near-black ink and a white pill with ink on it was exactly
+     * right. The dark rework re-pointed `--text` to oklch(0.968 ...) -- the
+     * page's near-white -- and this rule went on saying "the label takes the
+     * ink" while painting white on white. Measured on the closing panel of
+     * /solutions/leadership-alignment: colour lab(96.28) on background
+     * lab(100), **1.07:1**. The label was there and could not be read.
+     *
+     * The ground is the thing that has to be named, not the role: this pill is
+     * white in both themes because it sits on the blue panel, so its label is
+     * the canvas colour rather than whatever `--text` currently means.
+     */
+    "color": "var(--canvas)",
+  } },
+  /*
+   * ...and the hover the page's primary has.
+   *
+   * `.mk-solid:hover` brightens its fill; brightening white does nothing, so
+   * the inverse pill answers the pointer the way the ghost one does -- the
+   * white scrim below, plus a cast of the panel's own light under it.
+   */
+  { ".mk-btn.mk-deep-solid:hover": {
+    "filter": "drop-shadow(0 6px 18px rgba(255, 255, 255, 0.22))",
+  } },
+  { "@media (prefers-reduced-motion: reduce)": {
+    ".mk-btn.mk-deep-solid:hover": {
+      "filter": "none",
+    },
   } },
   /*
    * …and its press scrim runs the other way, like `.mk-outline`'s.
@@ -404,7 +443,7 @@ export const pageBlocksStyles = [
    * silently undone by the next insertion, so both are qualified instead.
    */
   { ".mk-btn.mk-deep-solid::after": {
-    "background": "rgba(11, 11, 15, 0.07)",
+    "background": "rgba(255, 255, 255, 0.112)",
   } },
   /*
    * The second action inside the panel.

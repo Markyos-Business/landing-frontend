@@ -27,15 +27,52 @@ export const buttonsStyles = [
     "align-items": "center",
     "justify-content": "center",
     "gap": "0.625rem",
-    /* The landing design's CTAs are pills at 52px, with 32px in the header. */
-    "border-radius": "var(--radius-pill)",
-    "min-block-size": "3.25rem",
-    "padding-inline": "1.625rem",
-    "font-size": "1rem",
-    "font-weight": "500",
+    /*
+     * Not pills any more.
+     *
+     * The light page's CTAs were 52px pills. The brief's buttons are 10px
+     * rounded rectangles at two sizes -- 44px with 15px text for a hero or a
+     * section, 32px with 13px text inside a card or the header -- and the
+     * squarer corner is a large part of why the chrome reads as a tool rather
+     * than as a brochure.
+     */
+    "border-radius": "var(--radius-btn)",
+    "min-block-size": "2.75rem",
+    "padding-inline": "1.25rem",
+    "font-size": "0.9375rem",
+    "font-weight": "var(--mk-weight-text-medium)",
     "line-height": "1",
     "white-space": "nowrap",
-    "transition": "background-color var(--mk-dur-fast) var(--mk-ease),\n    color var(--mk-dur-fast) var(--mk-ease)",
+    /*
+     * The brief's four transitions, at its two durations: colour, edge and
+     * brightness at 250ms, and the press scale faster at 170ms so the button
+     * feels like it answers before it finishes moving. Both were 180/120
+     * until the page was slowed on 19 Nov 2026; the ratio between them is
+     * the part that matters and it is unchanged.
+     */
+    "transition": "background-color 250ms var(--ease-smooth),\n    box-shadow 250ms var(--ease-smooth),\n    filter 250ms var(--ease-smooth),\n    scale 170ms var(--ease-smooth)",
+  } },
+  /*
+   * The press.
+   *
+   * This is a deliberate reversal: the design system's section 13 forbade
+   * press and hover transforms outright, and "no animations while pressing on
+   * any button" was a standing instruction. The brief asks for scale 0.97 on
+   * every button and was adopted in full on 18 Nov 2026, knowing that.
+   *
+   * `scale` rather than `transform`, so it composes with the arrow nudge and
+   * the idle float instead of overwriting their transforms.
+   */
+  { ".mk-btn:active": {
+    "scale": "0.97",
+  } },
+  { "@media (prefers-reduced-motion: reduce)": {
+    ".mk-btn": {
+      "transition": "background-color 250ms var(--ease-smooth),\n      box-shadow 250ms var(--ease-smooth)",
+    },
+    ".mk-btn:active": {
+      "scale": "1",
+    },
   } },
   /*
    * Hover and press, for every filled variant at once.
@@ -55,15 +92,53 @@ export const buttonsStyles = [
     "pointer-events": "none",
     "transition": "opacity var(--mk-dur-fast) var(--mk-ease)",
   } },
-  { ".mk-btn:hover::after, .mk-btn:active::after": {
+  /*
+   * The scrim is now the *secondary* hover only.
+   *
+   * The brief gives the primary button `filter: brightness(1.1)`, and laying a
+   * white scrim over a brightened blue as well was visibly two effects. So the
+   * solid fill brightens and everything else keeps the scrim, which on this
+   * ground is what makes an 8%-white ghost button visibly answer the pointer.
+   */
+  { ".mk-btn:not(.mk-solid):hover::after, .mk-btn:not(.mk-solid):active::after": {
     "opacity": "1",
+  } },
+  /*
+   * The primary's hover: brighter, and lit.
+   *
+   * The brief gives it `filter: brightness(1.1)` and nothing else, which on a
+   * near-black page is a change you have to look for. The accent is already
+   * the page's one light source, so the hover says so: the fill brightens and
+   * the button casts a little of its own colour onto the ground under it.
+   *
+   * `drop-shadow` rather than a second `box-shadow`, so the inset lip that
+   * `.mk-solid` carries is left alone rather than replaced.
+   */
+  { ".mk-btn.mk-solid:hover": {
+    "filter": "brightness(1.12) drop-shadow(0 6px 18px var(--glow))",
+  } },
+  /*
+   * The secondary's hover gains an edge.
+   *
+   * The scrim alone lifts an 8%-white fill to about 20%, which reads as "a
+   * bit lighter" rather than as "this is a control". A hairline at the same
+   * time gives it a shape, which is what the primary gets from its lip.
+   */
+  { ".mk-btn:not(.mk-solid):hover": {
+    "box-shadow": "inset 0 0 0 1px oklch(0.975 0.002 286 / 0.14)",
+  } },
+  { "@media (prefers-reduced-motion: reduce)": {
+    ".mk-btn.mk-solid:hover": {
+      "filter": "brightness(1.12)",
+    },
   } },
   /* Inside a card or the header. Same type size — 14px is the UI size and there
    is nothing below it but meta. */
+  /* Inside a card or the header: the brief's small size, 32px with 13px text. */
   { ".mk-btn-sm": {
-    "min-block-size": "2.5rem",
-    "padding-inline": "1.125rem",
-    "font-size": "var(--fs-ui)",
+    "min-block-size": "2rem",
+    "padding-inline": "0.75rem",
+    "font-size": "0.8125rem",
   } },
   { "@media (pointer: coarse)": {
     ".mk-btn, .mk-btn-sm": {
@@ -125,7 +200,7 @@ export const buttonsStyles = [
       "transition": "translate var(--mk-dur-base) var(--mk-ease),\n      filter var(--mk-dur-base) var(--mk-ease)",
     } },
     { ":where(.mk-reach, a.mk-card):hover, :where(.mk-reach, a.mk-card):focus-within": {
-      "filter": "drop-shadow(0 18px 30px rgba(11, 20, 60, 0.16))",
+      "filter": "drop-shadow(0 18px 30px rgba(0, 0, 0, 0.6))",
     } },
     { "@media (prefers-reduced-motion: no-preference)": {
       ":where(.mk-reach, a.mk-card):hover, :where(.mk-reach, a.mk-card):focus-within": {
@@ -152,7 +227,7 @@ export const buttonsStyles = [
      * looking alike is not a reason to break it.
      */
     { ".mk-help-row:hover, .mk-help-row:focus-within": {
-      "filter": "drop-shadow(0 14px 22px rgba(11, 20, 60, 0.12))",
+      "filter": "drop-shadow(0 14px 22px rgba(0, 0, 0, 0.6))",
     } },
     { "@media (prefers-reduced-motion: no-preference)": {
       ".mk-help-row:hover, .mk-help-row:focus-within": {
@@ -165,7 +240,7 @@ export const buttonsStyles = [
    *
    * The line is always drawn and only its colour changes, transparent to the
    * link's own, so nothing on the line moves and the change can ease over the
-   * same 120ms every other hover on the site takes. On a link itself it
+   * same 170ms every other hover on the site takes. On a link itself it
    * answers its own hover; on a title inside a card that is the link
    * (`.group`), it answers the card's — which is what `hover:underline` and
    * `group-hover:underline` did instantly. Hover-capable pointers only, as

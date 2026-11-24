@@ -13,6 +13,58 @@
 
 ---
 
+> ## ⚠ This file no longer describes the website
+>
+> **18 Nov 2026.** markyos.com was restyled to `docs/design-brief.md`, which
+> asks for the design language of 21st.dev: a **near-black canvas**, one
+> **electric-blue** accent, **oversized tight headlines at weight 700**, bento
+> cards with hairline edges and no shadows, and **motion throughout** --
+> scroll reveals, a drifting hero aurora, hover scales and a press scale.
+>
+> That brief was adopted **in full**, by the owner, over this file. Read
+> `docs/design-brief.md` first; it is the governing document and it records
+> which four questions were asked and how each was answered.
+>
+> **What this file still gets right:**
+>
+> - **§2 fonts** -- Inter + Thmanya Sans. The brief asked for General Sans and
+>   was overruled on exactly this point: `/` is the Arabic edition and General
+>   Sans has no Arabic glyphs. Arabic is still never tracked.
+> - **§6 icons** -- Line Awesome 1.3.0 is still the one icon system, and a
+>   missing glyph is still a question rather than a drawing.
+> - **§11 copy and locale** -- voice, sentence case, dates, numerals, no emoji,
+>   Arabic transcreated. Unchanged.
+> - **§12 logos** -- files only, from `public/brand/`, never mirrored, never
+>   redrawn. This is why the brief's dot-matrix logo band was declined as
+>   drawn.
+> - The 12px type floor, logical properties only, `.mk-bidi`, `<Link>` CTAs,
+>   explicit `dir` on mocks, and `lib/status.ts` chips.
+>
+> **What is now superseded, and not coming back:**
+>
+> - **§1 "Black is the brand. Light is the colour."** The ten-line summary
+>   describes the black site of 2026; the canvas, panel and text ramps in §3
+>   and §4 describe grounds the site has not had since 3 Nov.
+> - **The weight ceiling of 500** (§1.5, §7, §13). Display type is 700 and card
+>   titles are 600. `WEIGHT_CEILING` in `scripts/check-design-rules.mjs` was
+>   raised to 700 to match; the rule still fails 800 and 900.
+> - **§13's motion bans.** Hover scales, entrance animations and scroll
+>   effects are the design language now, not violations of it. Each is turned
+>   off under `prefers-reduced-motion`.
+> - **§8 light, and the pill CTA.** Buttons are 10px rectangles at 32 and 44px,
+>   the primary is the blue fill with a white label, and the secondary is a
+>   ghost fill with no edge.
+>
+> `app/markyos-ds.css` is gone; the token layers are `tailwind/base-tokens.js`
+> and `tailwind/tokens.js`, owned here and no longer synced from the platform.
+>
+> **Replace this file** with an export that describes the dark page when the
+> design system catches up. Until then `docs/design-brief.md` is the spec and
+> `docs/DESIGN.md` is the running account of what ships.
+
+<details>
+<summary>The superseded 3 Nov 2026 note, kept for the record</summary>
+
 > ## ⚠ This file no longer describes the homepage
 >
 > **3 Nov 2026.** markyos.com was rebuilt to
@@ -44,6 +96,8 @@
 > **Replace this file** with a light-page export when the design system
 > catches up; until then `docs/DESIGN.md` is the accurate description of
 > what ships.
+
+</details>
 
 > **9 Nov 2026 — the site has no stylesheets any more.** Like markyos-frontend,
 > every value and rule lives in `tailwind.config.js` and `tailwind/*.js`
@@ -124,7 +178,7 @@ export const fontVariables = `${inter.variable} ${thmanya.variable} ${plexArabic
 
 Then replace every `var(--font-plex-arabic), var(--font-inter), sans-serif` Arabic stack in `globals.css` with `var(--font-arabic)` (defined in §4).
 
-Bricolage Grotesque is the **wordmark's** typeface. It is never set as live text on the site; the wordmark is always the SVG.
+Bricolage Grotesque is the **wordmark's** typeface. It is never set as live text on the site; the wordmark is always the SVG. *(This is why `LogoTrace` traces the lockup file rather than taking a `text` prop, which is what the component it was adapted from does — see §12.)*
 
 ### 2.2 Line Awesome
 
@@ -489,7 +543,7 @@ Work file by file through `src/components/navbar/`, `src/components/public/home/
 | `border-[var(--accent-edge)]` focus on inputs | `box-shadow: inset 0 0 0 1px var(--mk-blue), var(--mk-glow-soft)` |
 | Any hex in a component | a token. Exception: the client palette in `src/components/public/mock/BrandHub.tsx` is the customer's brand shown as content and stays. |
 
-**Header** (`src/components/navbar/Header.tsx`): 64px tall, `#000`, bottom rule `box-shadow: inset 0 -1px 0 var(--hairline-strong)`, no `backdrop-filter`. Nav links 14px 400 at 80% white, white on hover. "Log in" = `.mk-btn .mk-btn-sm .mk-outline`; "Start free" = `.mk-btn .mk-btn-sm .mk-solid`.
+**Header** (`src/components/navbar/Header.tsx`): 64px tall, `#000`, bottom rule `box-shadow: inset 0 -1px 0 var(--hairline-strong)`, no `backdrop-filter`. *(Superseded: the header is a top-down gradient with no rule, and it is blurred on a pseudo-element — see §13 and `tailwind/components/nav.js`.)* Nav links 14px 400 at 80% white, white on hover. "Log in" = `.mk-btn .mk-btn-sm .mk-outline`; "Start free" = `.mk-btn .mk-btn-sm .mk-solid`.
 
 **Dropdowns** (`Nav.tsx`): panel `#111`, 15px radius, `box-shadow: var(--mk-shadow-raised)`. Items 8px radius, hover `#242424`. The disclosure pattern and keyboard behaviour stay as built.
 
@@ -569,7 +623,17 @@ Approved key lines (use verbatim): "Build the brand. Hand it over. Keep it alive
 
 ## 12. Logo rules
 
-- Files only, from `public/brand/`. Never retype, redraw, recolour, stretch, rotate or add effects.
+- Files only, from `public/brand/`. Never retype, redraw, recolour, stretch,
+  rotate or add effects. **Amended 19 Nov 2026:** the footer lockup is
+  animated — `LogoTrace` walks the outline of
+  `public/brand/markyos-lockup{-ar}.svg` and draws anchor points along it.
+  That is an effect on the logo and the owner asked for it explicitly. The
+  rest of the rule held and is why the component works the way it does:
+  the supplied code built its shape from `ctx.fillText`, which would have
+  **retyped** the wordmark — in Inter, since §2 says Bricolage Grotesque is
+  never loaded as live text — so the mask is rasterised from the file
+  instead. Nothing is retyped, redrawn, recoloured or stretched; the
+  geometry still comes from `public/brand/`, as it does for `Logo.tsx`.
 - On the site: the white versions on black.
 - Lockup by default and on first appearance; mark for favicons and app icons (min 16px); wordmark only when the mark is already on screen. Lockup min 120px wide.
 - Clear space = half the iconmark height.
@@ -587,7 +651,12 @@ Approved key lines (use verbatim): "Build the brand. Hand it over. Keep it alive
 - Don't use blue as a flat fill for sections, cards or headings.
 - Don't add drop shadows to cards.
 - Don't add hover lifts, nudges, entrance animations, parallax or scroll effects.
-- Don't put `backdrop-filter` on the header (it breaks the fixed phone menu).
+- Don't put `backdrop-filter` **on the header element itself** (it becomes the
+  containing block for its `position: fixed` descendants, which collapses the
+  phone menu). **Amended 19 Nov 2026:** the header is blurred, on
+  `.mk-site-header::before` — a pseudo-element has no descendants, so the
+  mechanism this rule names never fires. `check:nav` opens and closes the
+  phone menu on every build.
 - Don't hand-draw SVG icons, illustrations or imagery; leave a labelled placeholder and ask.
 - Don't use physical properties (`left`, `right`, `margin-left`, `padding-right`, `text-align: left`).
 - Don't mirror product mocks, logos or media controls.

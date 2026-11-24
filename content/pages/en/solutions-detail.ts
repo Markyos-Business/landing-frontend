@@ -60,14 +60,13 @@ const clientProjects: PageDoc = {
         { term: "Clients as guests", body: "With no account and no limit." },
         { term: "Sign-off", body: "On the core sections, dated.", feature: "roles-approvals" },
         { term: "Not a CRM, on purpose", body: "Proposals and invoices stay in your tools." },
-        { term: "Webhooks to your tools", body: "And the Agency plan.", feature: "webhooks" },
       ],
     },
     {
       kind: "callout",
       title: "Works with, and plans",
       body: [
-        "Every feature in a project updates its stage, and handoff frees its slot. 1 active project free · 3 on Pro · 10 on Studio.",
+        "Every feature in a project updates its stage, and handoff frees its slot. 1 active project free · 2 on Solo · 5 on Pro · 10 on Studio · 25 on Agency.",
       ],
       cta: LINK.pricing,
     },
@@ -183,7 +182,7 @@ const discovery: PageDoc = {
           feature: "brief-analysis",
         },
       ],
-      note: "Reads the discovery form and writes drafts into the Strategy hub. The first one per project is free on every plan. A re-run uses 15 credits.",
+      note: "Reads the discovery form and writes drafts into the Strategy hub. The first one per project is free on every plan. Re-runs come with your plan's monthly limit.",
     },
     {
       kind: "cta",
@@ -309,8 +308,8 @@ const clientHandoff: PageDoc = {
         },
         { term: "The sign-off record", body: "It moves with it." },
         {
-          term: "The client's first year, prepaid",
-          body: "$190 instead of $228.",
+          term: "Agencies earn more",
+          body: "25% of the client's first year, not 20%.",
         },
         {
           term: "Stay on as a collaborator",
@@ -324,7 +323,7 @@ const clientHandoff: PageDoc = {
       eyebrow: "Partner reward",
       title: "You handed it over. The return keeps coming.",
       body: [
-        "20% of what your client pays in their first year, as credit on your plan. 25% on the Agency plan. Five clients on the Brand plan cover your Pro plan.",
+        "20% of what your client pays in their first year, as credit on your plan. Five clients on the Brand plan cover your Pro plan.",
       ],
       emphasiseLast: true,
     },
@@ -393,7 +392,7 @@ const brandHub: PageDoc = {
         { term: "Nothing uploads until you confirm", body: "You see the list first." },
         {
           term: "Reading an old PDF guide",
-          body: "And Figma sync.",
+          body: "And turning it into a living hub.",
           feature: "pdf-import",
         },
       ],
@@ -512,15 +511,15 @@ const toneChecker: PageDoc = {
         { term: "A score for each voice trait", body: "With the reason." },
         { term: "Banned words and wrong terms", body: "Caught against your term base." },
         { term: "Arabic register", body: "When it doesn't fit the channel." },
-        { term: "Deep check, rewrite and translate", body: "4 credits each." },
+        { term: "Deep check, rewrite and translate", body: "Each one counts as a writing task." },
         {
           term: "Your text isn't kept",
           body: "Unless you save it, and then for 30 days.",
         },
         {
-          term: "Word and PDF files",
-          body: "And a Chrome extension.",
-          feature: "document-checks",
+          term: "A Chrome extension",
+          body: "Review your writing anywhere you write it.",
+          feature: "chrome-extension",
         },
       ],
       note: "Checks against the brand voice and term base, and viewers use it free. 25 quick checks a month free · 1,000 on Brand · 3,000 on Team.",
@@ -575,7 +574,7 @@ const leadershipAlignment: PageDoc = {
         { term: "Possible directions", body: "Which become strategy drafts." },
         { term: "Everyone answers alone", body: "No one sees another leader's answers." },
       ],
-      note: "Runs on the discovery form engine, and writes into the strategy. The first report per brand is free. A re-run uses 20 credits.",
+      note: "Runs on the discovery form engine, and writes into the strategy. The first report per brand is free. Re-runs come with your plan's monthly limit.",
     },
     {
       kind: "cta",
@@ -634,11 +633,6 @@ const companyRollout: PageDoc = {
         {
           term: "Permissions on the server",
           body: "A viewer can't change anything.",
-        },
-        {
-          term: "Bilingual email signatures",
-          body: "For everyone in the company.",
-          feature: "email-signatures",
         },
         {
           term: "Ask the Brand",

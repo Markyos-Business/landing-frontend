@@ -48,6 +48,7 @@ export function AudienceTabs({
   label,
   head,
   white,
+  param,
   options,
 }: {
   id?: string;
@@ -57,6 +58,17 @@ export function AudienceTabs({
   /** The heading block above the switch. Server-rendered and passed in. */
   head?: ReactNode;
   white: boolean;
+  /*
+   * A query parameter that names the same options, for copy deck v4.3's
+   * `/pricing?for=studios`.
+   *
+   * The hash below is what an in-page link uses, because it both opens the
+   * panel and scrolls to it. A query parameter survives being pasted into a
+   * message with a trailing full stop, and is what the deck hands out, so the
+   * switch reads it on mount and writes it back on every pick. Only /pricing
+   * passes this; /platform's switch has no shareable form and wants none.
+   */
+  param?: string;
   options: { id: string; label: string; content: ReactNode }[];
 }) {
   const [active, setActive] = useState(options[0]?.id ?? "");
@@ -71,6 +83,19 @@ export function AudienceTabs({
 
   useEffect(() => {
     const known = ids.split(" ");
+    /*
+     * `?for=` on arrival, once, and it does not scroll — unlike the hash.
+     *
+     * Somebody who followed a link with a query parameter on it is arriving at
+     * the page, and the page should open at its own top with the right panel
+     * already showing, not a third of the way down at the switch. A hash is
+     * the opposite: it names the switch, so the switch is where it goes.
+     */
+    const fromQuery = () => {
+      if (!param) return;
+      const asked = new URLSearchParams(window.location.search).get(param);
+      if (asked && known.includes(asked)) setActive(asked);
+    };
     const fromHash = () => {
       const hash = decodeURIComponent(window.location.hash.replace(/^#/, ""));
       if (!known.includes(hash)) return;
@@ -87,10 +112,11 @@ export function AudienceTabs({
        */
       groupRef.current?.scrollIntoView({ block: "start" });
     };
+    fromQuery();
     fromHash();
     window.addEventListener("hashchange", fromHash);
     return () => window.removeEventListener("hashchange", fromHash);
-  }, [ids]);
+  }, [ids, param]);
 
   const index = Math.max(
     0,
@@ -104,9 +130,26 @@ export function AudienceTabs({
    * already how /solutions divides the same audience, and a control that
    * silently only works for two is the kind of thing nobody finds until then.
    */
+  /*
+   * One pick, and the URL that can be shared afterwards.
+   *
+   * `replaceState` rather than `pushState`: the reader is filtering a page,
+   * not navigating between pages, and three taps on the switch should not be
+   * three presses of the back button to get off this page. The hash is left
+   * alone — if a link brought them here with one, it still describes where
+   * they are.
+   */
+  const pick = (optionId: string) => {
+    setActive(optionId);
+    if (!param) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set(param, optionId);
+    window.history.replaceState(null, "", url);
+  };
+
   const move = (to: number) => {
     const next = (to + options.length) % options.length;
-    setActive(options[next].id);
+    pick(options[next].id);
     groupRef.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[next]?.focus();
   };
 
@@ -159,7 +202,7 @@ export function AudienceTabs({
                 aria-checked={option.id === active}
                 aria-controls={`audience-${option.id}`}
                 tabIndex={option.id === active ? 0 : -1}
-                onClick={() => setActive(option.id)}
+                onClick={() => pick(option.id)}
                 onKeyDown={(event) => {
                   /* `ArrowRight` moves the ring to the right of the
                      *screen*, which on /ar — where the track is mirrored —

@@ -1,7 +1,7 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { Words } from "@/components/ui";
 import type { ChoosePathCopy, PathCardCopy } from "@/content/types";
-import { TextLink, Band, Display, INK, INK_55, IconTile, RING } from "./landing";
+import { Band, Cta, Display, INK, INK_55, IconTile, RING } from "./landing";
 import type { IconName } from "@/components/ui";
 
 /*
@@ -44,10 +44,8 @@ export function ChoosePath({ copy, locale }: {
       </Display>
 
       <ul
-        className="mk-still mk-seq-pop"
+        className="mk-still mk-seq-pop mk-trio"
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,300px),1fr))",
           gap: 16,
           margin: 0,
           padding: 0,
@@ -66,8 +64,8 @@ export function ChoosePath({ copy, locale }: {
               flexDirection: "column",
               padding: 28,
               borderRadius: 26,
-              background: "#F7F8FA",
-              boxShadow: "0 0 0 1px rgba(11,11,15,.04)",
+              background: "var(--surface-2)",
+              boxShadow: "0 0 0 1px rgba(255,255,255,0.06)",
             }}
           >
             <IconTile name={ICONS[key]} size={46} tone="white" style={{ boxShadow: RING }} />
@@ -94,7 +92,9 @@ export function ChoosePath({ copy, locale }: {
               {card.youGet}
             </p>
             <div style={{ marginBlockStart: "auto", paddingBlockStart: 20 }}>
-              <TextLink locale={locale} href={card.cta.href}>{card.cta.label}</TextLink>
+              <Cta locale={locale} href={card.cta.href} size="sm">
+                {card.cta.label}
+              </Cta>
             </div>
           </li>
         ))}
@@ -109,7 +109,7 @@ export function ChoosePath({ copy, locale }: {
             textAlign: "center",
             fontSize: 17,
             lineHeight: 1.9,
-            color: "rgba(11,11,15,.64)",
+            color: "var(--text-muted)",
           }}
         >
           <Handover text={copy.closing} />

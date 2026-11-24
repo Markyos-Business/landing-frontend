@@ -143,8 +143,8 @@ const studios: PageDoc = {
         },
         {
           title: "Moodboards",
-          body: ["References that turn into colours. And a live board with your client."],
-          feature: "whiteboard",
+          body: ["References that turn into colours, pulled from your real images."],
+          feature: "moodboard",
         },
         {
           title: "Both languages",
@@ -165,17 +165,21 @@ const studios: PageDoc = {
       kind: "prose",
       title: "Hand over a brand, not a folder.",
       body: [
-        "Your client gets a hub with their name on it, and you keep the role you agreed. When they upgrade, you get 20% of what they pay in their first year, as credit on your plan.",
+        "Your client gets a hub with their name on it, and you keep the role you agreed. When they upgrade, you get 20% of what they pay in their first year, or 25% on Agency, as credit on your plan.",
       ],
       links: [LINK.handoff],
     },
     {
       kind: "table",
       numeric: true,
-      head: [{ text: "Clients on the Brand plan" }, { text: "You earn a month" }],
+      head: [
+        { text: "Clients on the Brand plan" },
+        { text: "You earn a month" },
+        { text: "On Agency" },
+      ],
       rows: [
-        [{ text: "5" }, { text: "$24, your whole Pro plan" }],
-        [{ text: "12" }, { text: "$57.60" }],
+        [{ text: "5" }, { text: "$24" }, { text: "$30" }],
+        [{ text: "12" }, { text: "$57.60" }, { text: "$72, most of an Agency plan" }],
       ],
     },
     audiencePlanTable("studio", "en", "Free to build. Pay per brand you share."),
@@ -401,7 +405,7 @@ const companies: PageDoc = {
       items: [
         {
           q: "Do we pay for everyone?",
-          a: "No. Viewers are free on paid plans.",
+          a: "No. You pay for editors. Viewers are free and unlimited from Brand up, 100 on Starter, 25 on Free.",
         },
         {
           q: "What happens to the text we check?",

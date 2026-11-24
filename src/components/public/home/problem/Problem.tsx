@@ -73,10 +73,8 @@ export function Problem({ copy, locale }: { copy: ProblemCopy; locale: Locale })
 
       {/* The three consequences, drawn. */}
       <div
-        className="mk-still mk-seq-pop"
+        className="mk-still mk-seq-pop mk-trio"
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,320px),1fr))",
           gap: 20,
           /* The table was a card and ended on its own edge; the dial ends on
              a line of type, which needs the room a card's padding used to

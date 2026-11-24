@@ -130,6 +130,13 @@ rather than an open question.
 
 ## 2. Where does a beta signup go? — RESOLVED
 
+> **Narrowed 21 Nov 2026.** This section is about *addresses captured for a
+> list*. Messages are no longer one of them: /contact has its own form, its
+> own endpoint and its own answer — see §8. The `contact` topic still exists
+> in `src/lib/waitlist.ts` and no form sends it any more, so the only signup
+> block left on the site is the newsletter on /resources, which is what
+> `check:waitlist` now opens.
+
 `/api/waitlist` validates and forwards submissions to the platform's Django
 `/content/public/signups/` endpoint. The WebsiteSignup table deduplicates each
 normalized email/topic pair. Newsletter, contact and studio/company beta
@@ -412,6 +419,136 @@ hreflang exists to prevent.
 hreflang pair, every sitemap entry and every route appears in that one edit.
 
 The homepage is already complete in both languages.
+
+---
+
+## 8. Where do contact messages go? — RESOLVED and BUILT
+
+**Resolved 21 Nov 2026 by the owner: markyos.web@gmail.com.**
+
+/contact had a form before this, and it could not work. It was a `signup`
+block — one email field posting to `/api/waitlist` — on a page headed "a small
+team, and we read every message". There was no message field, and the Send
+button reached the deliberate 501 above. Six `/contact?topic=…` links across
+the copy pointed at it and the topic they named went nowhere, because the form
+had no topic field to receive it.
+
+**What is built now**
+
+| Piece | Where |
+| :--- | :--- |
+| The contract — seven topics, field limits, the honeypot, the inbox | `src/lib/contact.ts` |
+| The transport | `src/lib/email.ts` |
+| The endpoint | `src/app/api/contact/route.ts` |
+| The form | `src/components/features/contact/` |
+| The block that places it on a page | `kind: "contact"` in `content/pages/types.ts` |
+| The gate | `npm run check:contact` |
+
+**Nine fields, four of them required** (extended the same day, from "add a
+full contact form"). Required: name, email, topic, message — everything
+needed to read a message and answer it. Optional: phone, studio or company,
+who you are, country, and the language to reply in. The optional ones carry
+the word "optional" in the label rather than the required ones carrying an
+asterisk; see docs/DESIGN.md for why.
+
+The topic is preselected from `?topic=`, so the six existing links now land
+on the right one. "Reply in" defaults to the edition being read. A filled
+`company_url` honeypot is accepted with 202 and discarded, the same contract
+the waitlist uses and deliberately the same field name.
+
+**The one rule it inherits from §2:** never answer 200 for a message that did
+not arrive. Each failure has its own status and its own sentence in the form —
+422 for a bad field, 429 for a burst, 503 when no mail provider is configured,
+502 when the provider refused. The last two also hand back the inbox address,
+and the form shows it as a `mailto:` link, so a visitor whose message did not
+send is one click from sending it themselves. Nothing anybody typed is cleared
+except on success.
+
+**Still needs doing, and it is not in this repository**
+
+Email goes out through Resend over HTTP — no SMTP, because every route handler
+here is a short-lived serverless function and SMTP is a long conversation over
+a socket that may be frozen mid-dialogue. Two things have to exist before a
+message reaches the inbox, and neither can be checked from here:
+
+1. **`RESEND_API_KEY`** in the deploy's environment.
+2. **A verified sending domain** for `CONTACT_FROM`. Resend will not send from
+   a domain it has not verified, and the test sender it issues before
+   verification only delivers to the Resend account's own address. The from
+   address must be on markyos.com — it cannot be the Gmail address itself.
+
+Until both exist the route answers 503, the form says plainly that the message
+was not sent, and it shows markyos.web@gmail.com instead. That is the honest
+state, and `check:contact` asserts it is the state — so this cannot quietly
+start claiming success.
+
+**Worth deciding later, not blocking:** whether messages are also *stored*.
+Email is a channel, not a record, and a send that fails is a message nobody
+can recover. The CMS already has Postgres; a `ContactMessages` collection
+would make /admin the record and the email the notification. Not built,
+because it was not asked for and a stored copy of unsolicited mail is a
+decision with its own consequences.
+
+**Also worth revisiting:** the rate limiter is per instance and in memory, so
+it is partial on a serverless deployment. It is burst control, not a spam
+defence — the honeypot and the message floor are. Shared state in Postgres is
+the real version, worth building when there is evidence it is needed.
+
+---
+
+## 9. The catalogue is on the site and not in billing — OPEN, and the page knows it
+
+**Status: v4.2 shipped 22 Nov 2026 and v4.3 replaced it the same day. Two
+external systems have to catch up before a single visitor can pay what the
+page says.**
+
+Copy deck v4.3 sells eleven plans across three audiences: Free, Solo $12 and
+Pro $24 to freelancers; Free, Studio $59 and Agency $119 to studios and
+agencies; Free, Starter $12, Brand $24, Team $59 and Business $119 to
+companies, with Enterprise behind a contract. Every AI tool carries a monthly
+limit instead of drawing on a pool of credits, and billing moves to PayPal.
+
+**None of it exists in billing.** The platform sells what `CURRENT_PRICES`
+describes — one one-time pass and one monthly subscription per account type,
+at freelancer $15/$19, studio $19/$29, company $49/$99 — and `check:pricing`
+still holds that constant against the backend's `billing.py` and the
+platform's `accountTypes.ts`. The two catalogues share no price and no plan.
+
+### What keeps the page honest in the meantime
+
+Nothing on it takes money. Every plan CTA creates a free account at `/start`
+with the account type its audience signs up as; Enterprise opens
+`/contact?topic=sales`. `check:pricing` asserts exactly that: each plan CTA
+resolves to `/start`, carries the right known account type, and carries no
+`plan` parameter. A visitor can read $12 and act on it without the checkout
+contradicting the page, because the only thing the page asks them to do is
+sign up for nothing.
+
+**Delete that assertion the day the plans are real in billing. Not before.**
+
+### What has to happen outside this repository
+
+| # | What | Who |
+| :-: | :--- | :--- |
+| 1 | The eleven plans exist in billing, at v4.3's prices, monthly and yearly — including Agency and Business at $119, which v4.1 had removed from the product | Platform + backend |
+| 2 | PayPal is connected, and the launch offer is set up as a discounted trial of three monthly cycles at half price — tested in sandbox before launch | Billing |
+| 3 | Card payments through PayPal without an account, in Saudi Arabia and Malaysia | Billing (deck Open item 2) |
+| 4 | The Arabic and English cost test, before 1 February 2027. If Arabic quick checks need the larger model, the quick-check numbers drop on every plan | Product |
+| 5 | The mockup renderer composites the approved logo file onto the AI scene | Product (deck Open item 3) |
+| 6 | The partner reward is recorded during the PayPal months and applied as billing credit once billing moves to Stripe — including the 25% rate on Agency | Billing (deck Open item 5) |
+| 7 | The prepaid client year ($190) returns with Stripe. It is off the site until then, and `check:pricing` fails on the figure | Billing |
+
+Items 3 and 5 are why two of the deck's FAQ answers are not on the site: "do I
+need a card to start?" and "does the AI draw my logo?" Both are written in
+v4.3 and both are gated on a fact nobody has established. Refunds are a
+[PLACEHOLDER] in the deck itself, and the tax and VAT clause on the receipts
+line is a [CONFIRM]; both are likewise absent.
+
+### What the site still says about the old model
+
+`CURRENT_PRICES` is on no page. It stays in `content/current-pricing.ts`
+because it is the only record here of what a card is actually charged, and the
+sibling comparison is what will tell us the day billing moves.
 
 ---
 

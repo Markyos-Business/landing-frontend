@@ -1,5 +1,5 @@
 import type { AiAlongsideCopy } from "@/content/types";
-import { BLUE_DEEP, INK, INK_62, LIFT } from "../landing";
+import { BLUE_INK, INK, INK_62, LIFT } from "../landing";
 
 type Effect = NonNullable<AiAlongsideCopy["effect"]>;
 
@@ -9,7 +9,7 @@ export function EffectTable({ effect }: { effect: Effect }) {
     <div
       className="mk-pop"
       style={{
-        background: "#fff",
+        background: "var(--surface-1)",
         borderRadius: 28,
         boxShadow: LIFT,
         padding: "clamp(20px,3vw,34px)",
@@ -88,7 +88,7 @@ function Cell({ head, body }: { head: string; body: string }) {
           that had no column headings at all. */}
       <span
         className="mk-bidi mk-effect-head"
-        style={{ fontSize: 12, fontWeight: 500, color: BLUE_DEEP, marginBlockEnd: 2 }}
+        style={{ fontSize: 12, fontWeight: 500, color: BLUE_INK, marginBlockEnd: 2 }}
       >
         {head}
       </span>

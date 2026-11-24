@@ -678,6 +678,39 @@ export type PlanCopy = {
   cta: Cta;
 };
 
+/**
+ * The launch offer, as the announcement bar above the nav.
+ *
+ * Copy deck v4.1 §1.1 moved this. In 4.0 the offer was an announcement pill
+ * above the hero headline, on the homepage only, and that pill had already
+ * been removed from this site by the owner on 19 Nov 2026. 4.1 puts it on
+ * every page instead, as a full-width bar above the floating nav, which is
+ * both a better place for it and the one surface that does not re-open a
+ * decision that was already made.
+ *
+ * `short` is the deck's own below-810px wording, not a truncation.
+ *
+ * Optional, so there is simply no bar when no offer is running -- which is
+ * the state this site is in for most of its life.
+ */
+export type OfferBarCopy = {
+  label: string;
+  /** The deck's short form, for narrow screens. */
+  short: string;
+  opens: string;
+  closes: string;
+  window: string;
+  countdown: {
+    before: string;
+    during: string;
+    after: string;
+    units: { days: string; hours: string; minutes: string; seconds: string };
+  };
+  link: Cta;
+  /** Accessible name for the dismiss control. */
+  close: string;
+};
+
 export type PricingTeaserCopy = {
   headline: string;
   /** v3 §2.9: what is free, in one line, above the toggle and the cards. */

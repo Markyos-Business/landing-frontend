@@ -19,6 +19,8 @@ export function Card({
   className = "",
   pad = true,
   as: Tag = "div",
+  id,
+  tabIndex,
 }: {
   children: ReactNode;
   className?: string;
@@ -26,9 +28,20 @@ export function Card({
       of thumbnails, a product mock that bleeds. */
   pad?: boolean;
   as?: "div" | "li" | "article";
+  /*
+   * For a card something else on the page points at — on this site, a plan
+   * card named by /pricing's chooser. `tabIndex={-1}` goes with it: the card
+   * is not a control and never enters the tab order, but a card that is
+   * about to be scrolled to and lit has to be able to take focus, or a
+   * screen-reader user is told nothing happened.
+   */
+  id?: string;
+  tabIndex?: number;
 }) {
   return (
-    <Tag className={`mk-card${pad ? " mk-card-pad" : ""} ${className}`}>{children}</Tag>
+    <Tag id={id} tabIndex={tabIndex} className={`mk-card${pad ? " mk-card-pad" : ""} ${className}`}>
+      {children}
+    </Tag>
   );
 }
 

@@ -110,7 +110,7 @@ export const editorialStyles = [
     "margin-block-end": "1rem",
     "border-radius": "var(--mk-r-button)",
     "background": "var(--accent-soft)",
-    "color": "var(--mk-blue-deep)",
+    "color": "var(--mk-blue-ink)",
     "transition": "background-color var(--mk-dur-fast) var(--mk-ease),\n    color var(--mk-dur-fast) var(--mk-ease),\n    box-shadow var(--mk-dur-fast) var(--mk-ease)",
   } },
   /*
@@ -245,7 +245,7 @@ export const editorialStyles = [
     "font-size": "var(--fs-eyebrow)",
     "font-weight": "500",
     "line-height": "1.3",
-    "color": "var(--mk-blue-deep)",
+    "color": "var(--mk-blue-ink)",
     /*
      * Wraps rather than refusing to.
      *
@@ -316,7 +316,7 @@ export const editorialStyles = [
     "padding-block": "11px",
     "padding-inline": "18px",
     "background": "var(--surface-0)",
-    "box-shadow": "0 0 0 1px var(--hairline-strong)",
+    "box-shadow": "0 0 0 1px var(--hairline-strong),\n    0 14px 30px -22px rgba(0, 0, 0, 0.6)",
   } },
   { ".mk-help-search:focus-within": {
     "box-shadow": "0 0 0 1.5px var(--accent),\n    0 0 0 5px rgba(0, 153, 255, 0.12)",
@@ -458,7 +458,7 @@ export const editorialStyles = [
     "block-size": "2.25rem",
     "border-radius": "var(--mk-r-button)",
     "background": "var(--accent-soft)",
-    "color": "var(--mk-blue-deep)",
+    "color": "var(--mk-blue-ink)",
   } },
   { ".mk-help-tile[aria-pressed=\"true\"] .mk-help-tile-icon": {
     "background": "var(--mk-blue-deep)",
@@ -644,7 +644,7 @@ export const editorialStyles = [
     "grid-template-columns": "1fr",
     "gap": "6px 20px",
     "padding-block": "0.875rem",
-    "box-shadow": "0 -1px 0 rgba(11, 11, 15, 0.06)",
+    "box-shadow": "0 -1px 0 rgba(255, 255, 255, 0.096)",
   } },
   /* The per-cell column name, shown only while the row is stacked. */
   { ".mk-effect-head": {
@@ -671,7 +671,7 @@ export const editorialStyles = [
   { ".mk-effect-col": {
     "font-size": "var(--fs-eyebrow)",
     "font-weight": "500",
-    "color": "var(--mk-blue-deep)",
+    "color": "var(--mk-blue-ink)",
   } },
   /* ── The Help Center (C1, 21 Nov 2026) ───────────────────────────────────
    *
