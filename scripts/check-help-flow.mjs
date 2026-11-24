@@ -12,6 +12,32 @@ import { BASE, assertServerUp, launch } from "./browser-lib.mjs";
 
 await assertServerUp();
 
+/*
+ * Nothing to walk through without published help content: with none, or with
+ * no CONTENT_API_URL at all (CI builds the site without a backend), /help is
+ * the fallback page and has no article to search for. The same rule as
+ * check:help, which this follows; once the API reports content, the flow is
+ * checked again.
+ */
+const API = process.env.CONTENT_API_URL?.trim().replace(/\/+$/, "") ?? "";
+async function helpPublished() {
+  if (!API) return false;
+  try {
+    const res = await fetch(`${API}/help/public/home/?locale=en`);
+    if (!res.ok) return false;
+    const home = await res.json();
+    return ["categories", "popular", "gettingStarted", "recent"].some((key) => (home[key]?.length ?? 0) > 0);
+  } catch {
+    return false;
+  }
+}
+if (!(await helpPublished())) {
+  console.log(
+    `\n  ✓ Help Center flow skipped: ${API ? "the help API has no published content" : "no CONTENT_API_URL (no help API)"}, so there is no article to search for.\n`,
+  );
+  process.exit(0);
+}
+
 const browser = await launch();
 const run = Math.random().toString(36).slice(2, 10);
 const failures = [];
