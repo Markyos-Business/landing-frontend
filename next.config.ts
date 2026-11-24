@@ -27,6 +27,20 @@ const nextConfig: NextConfig = {
   // Which deployment this is, fixed at build for server and browser alike
   // (src/lib/deployEnv.ts).
   env: { MARKYOS_DEPLOY_ENV: process.env.VERCEL_ENV ?? "" },
+  /*
+   * Blog, compare and help images are uploaded to the platform API and served
+   * from its /media/ path (src/lib/content). next/image only optimises hosts
+   * listed here, and with none listed every such image answered 400 ("url"
+   * parameter is not allowed), on staging and in CI alike (found 25 Nov 2026).
+   * Only the two API origins' /media/ files, with no query string. Local dev
+   * (localhost:8010) is a private address Next refuses to fetch anyway.
+   */
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "api.markyos.com", pathname: "/media/**", search: "" },
+      { protocol: "https", hostname: "api-staging.markyos.com", pathname: "/media/**", search: "" },
+    ],
+  },
   experimental: {
     agentUpgrade: "security",
   },
