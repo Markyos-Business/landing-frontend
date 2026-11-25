@@ -91,7 +91,7 @@ export function Footer({ copy, locale }: { copy: FooterCopy; locale: Locale }) {
                          to. `--mk-blue-ink` is the accent solved for a dark
                          ground, which is what the rest of the site hovers
                          links to. */
-                      className="mk-bidi block py-[0.4375rem] text-[length:var(--fs-ui)] font-medium text-[var(--text)] transition-colors hover:text-[var(--mk-blue-ink)]"
+                      className="mk-bidi mk-tap block py-[0.4375rem] text-[length:var(--fs-ui)] font-medium text-[var(--text)] transition-colors hover:text-[var(--mk-blue-ink)]"
                     >
                       {link.label}
                     </Link>
