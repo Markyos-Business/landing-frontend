@@ -1132,7 +1132,7 @@ export const copy: SiteCopy = {
             },
             {
               name: "Safe publishing",
-              line: "A Markyos link, your own domain, or password protection.",
+              line: "A Markyos link or password protection. Your own domain is coming soon.",
             },
           ],
           link: { label: "The guideline site", href: "/platform/guideline-sites" },

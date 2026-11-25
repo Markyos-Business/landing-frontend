@@ -17,7 +17,7 @@ import path from "node:path";
 
 const SIBLINGS = [
   // The product app, one level up from the landing page.
-  path.resolve(import.meta.dirname, "../../markyosmvp/package.json"),
+  path.resolve(import.meta.dirname, "../../markyos-frontend/package.json"),
 ];
 
 export function chromium() {

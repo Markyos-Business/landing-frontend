@@ -39,10 +39,15 @@ import { useContactMessage } from "../hooks/useContactMessage";
 function Field({
   label,
   hint,
+  error,
+  errorId,
   children,
 }: {
   label: string;
   hint?: string;
+  /** What is wrong with the field, shown under it. Its control points here. */
+  error?: string;
+  errorId?: string;
   children: ReactNode;
 }) {
   return (
@@ -52,6 +57,11 @@ function Field({
         {hint ? <em className="mk-field-hint">{hint}</em> : null}
       </span>
       {children}
+      {error ? (
+        <span id={errorId} className="mk-field-error mk-bidi">
+          {error}
+        </span>
+      ) : null}
     </label>
   );
 }
@@ -83,8 +93,14 @@ export function ContactForm({
   /** The content file's own word for the button, when it has one. */
   submitLabel?: string;
 }) {
-  const { state, inbox, copy, fields, set, onSubmit } = useContactMessage(locale, topic);
+  const { state, inbox, copy, fields, errors, set, onSubmit } = useContactMessage(locale, topic);
   const statusId = useId();
+  const errorId = useId();
+  /** The attributes a required control takes when it has a problem. */
+  const invalid = (field: "name" | "email" | "message") =>
+    errors[field]
+      ? { "aria-invalid": true as const, "aria-describedby": `${errorId}-${field}` }
+      : {};
   const sending = state === "sending";
   const optional = copy.optional;
 
@@ -108,10 +124,11 @@ export function ContactForm({
     <form noValidate onSubmit={onSubmit} className="mk-form" aria-describedby={statusId}>
       {/* Who you are, and how to reach you. */}
       <div className="mk-form-row">
-        <Field label={copy.fields.name}>
+        <Field label={copy.fields.name} error={errors.name} errorId={`${errorId}-name`}>
           <input
             type="text"
             name="name"
+          {...invalid("name")}
             required
             autoComplete="name"
             maxLength={80}
@@ -125,10 +142,11 @@ export function ContactForm({
           />
         </Field>
 
-        <Field label={copy.fields.email}>
+        <Field label={copy.fields.email} error={errors.email} errorId={`${errorId}-email`}>
           <input
             type="email"
             name="email"
+          {...invalid("email")}
             required
             autoComplete="email"
             inputMode="email"
@@ -250,9 +268,10 @@ export function ContactForm({
       </div>
 
       {/* The message itself, across the full width of the form. */}
-      <Field label={copy.fields.message}>
+      <Field label={copy.fields.message} error={errors.message} errorId={`${errorId}-message`}>
         <textarea
           name="message"
+          {...invalid("message")}
           required
           rows={6}
           minLength={10}

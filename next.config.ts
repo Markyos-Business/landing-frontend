@@ -43,6 +43,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     agentUpgrade: "security",
+    // A bilingual 404 for URLs that match no route (src/app/global-not-found.tsx);
+    // the locale layout never runs for those, so [lang]/not-found.tsx cannot.
+    globalNotFound: true,
   },
   async headers() {
     return [
@@ -65,6 +68,13 @@ const nextConfig: NextConfig = {
       ...["/start", "/signup", "/register", "/login"].map(source => ({
         source,
         destination: `${APP_URL}/${source === "/login" ? "login" : "signup"}`,
+        permanent: false,
+      })),
+      // The English edition's old auth paths (/en/start was a live CTA before
+      // the CTAs linked straight to the platform): same targets, in English.
+      ...["/start", "/signup", "/register", "/login"].map(source => ({
+        source: `/en${source}`,
+        destination: `${APP_URL}/${source === "/login" ? "login" : "signup"}?lang=en`,
         permanent: false,
       })),
 

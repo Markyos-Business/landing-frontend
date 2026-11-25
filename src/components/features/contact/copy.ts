@@ -53,6 +53,17 @@ export type ContactCopy = {
   sending: string;
   /** The honeypot's label. Never seen, but it is a real labelled field. */
   honeypot: string;
+  /**
+   * What is wrong with a required field, shown under it and announced with it
+   * (25 Nov 2026). Until then a blank submit did nothing at all and a bad
+   * address got only the generic `states.invalid` line.
+   */
+  errors: {
+    name: string;
+    email: string;
+    emailFormat: string;
+    message: string;
+  };
   states: {
     sent: string;
     invalid: string;
@@ -108,6 +119,12 @@ export const COPY: Record<Locale, ContactCopy> = {
     submit: "أرسل الرسالة",
     sending: "جارٍ الإرسال…",
     honeypot: "موقع الشركة",
+    errors: {
+      name: "اكتب اسمك.",
+      email: "اكتب بريدك الإلكتروني.",
+      emailFormat: "اكتب بريداً إلكترونياً صحيحاً، مثل name@company.com.",
+      message: "اكتب رسالتك.",
+    },
     states: {
       sent: "وصلت رسالتك. نقرأ كل رسالة، وسيصلك الردّ على بريدك.",
       invalid: "راجع الحقول ثم أعد المحاولة.",
@@ -160,6 +177,12 @@ export const COPY: Record<Locale, ContactCopy> = {
     submit: "Send message",
     sending: "Sending…",
     honeypot: "Company website",
+    errors: {
+      name: "Enter your name.",
+      email: "Enter your email address.",
+      emailFormat: "Enter a valid email, like name@company.com.",
+      message: "Write your message.",
+    },
     states: {
       sent: "Your message arrived. We read every one, and the reply comes to your email.",
       invalid: "Check the fields and try again.",
