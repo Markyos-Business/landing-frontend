@@ -213,32 +213,32 @@ export const overrides: DeepPartial<SiteCopy> = {
               {
                 title: "استبيان الاكتشاف",
                 line: "بديل عن Google Forms وTypeform",
-                href: "/platform/discovery-forms",
+                href: "/solutions/discovery",
               },
               {
                 title: "مركز الاستراتيجية",
                 line: "بديل عن ملفات Word والعروض التقديمية",
-                href: "/platform/strategy-hub",
+                href: "/platform",
               },
               {
                 title: "لوحات الإلهام",
                 line: "بديل عن Milanote وPinterest",
-                href: "/platform/moodboards",
+                href: "/platform",
               },
               {
                 title: "مركز الأصول",
                 line: "بديل عن Google Drive وDropbox",
-                href: "/platform/asset-library",
+                href: "/platform",
               },
               {
                 title: "موقع دليل الهوية",
                 line: "بديل عن دليل PDF وGuidelines.site",
-                href: "/platform/guideline-sites",
+                href: "/solutions/guideline-sites",
               },
               {
                 title: "لوحة الاستوديو",
                 line: "بديل عن جداول المتابعة وTrello",
-                href: "/platform/studio-board",
+                href: "/solutions/client-projects",
               },
             ],
           },
@@ -249,7 +249,7 @@ export const overrides: DeepPartial<SiteCopy> = {
               {
                 title: "التسليم",
                 line: "بديل عن الملف المضغوط ورسالة الوداع",
-                href: "/platform/handoff",
+                href: "/solutions/client-handoff",
               },
             ],
           },
@@ -260,19 +260,19 @@ export const overrides: DeepPartial<SiteCopy> = {
               {
                 title: "صوت العلامة ومدقّق النبرة",
                 line: "بديل عن Grammarly وWriter",
-                href: "/platform/brand-voice",
+                href: "/solutions/brand-voice",
               },
               {
                 title: "الشركة كلها",
                 line: "بديل عن المجلدات المشتركة ورسائل «أين الشعار؟»",
-                href: "/platform/team-and-sharing",
+                href: "/solutions/company-rollout",
               },
             ],
           },
         ],
         strip: [
           { label: "بُنيت بالعربية، لا تُرجمت إليها.", href: "/platform/arabic" },
-          { label: "عقل العلامة", href: "/platform/brand-brain" },
+          { label: "عقل العلامة", href: "/platform" },
         ],
       },
       { label: "الأسعار", href: "/pricing" },
@@ -300,7 +300,7 @@ export const overrides: DeepPartial<SiteCopy> = {
         heading: "المنتج",
         links: [
           { label: "كل المزايا", href: "/platform" },
-          { label: "عقل العلامة", href: "/platform/brand-brain" },
+          { label: "عقل العلامة", href: "/platform" },
           { label: "الأسعار", href: "/pricing" },
           { label: "خريطة الطريق", href: "/roadmap" },
           { label: "ما الجديد", href: "/whats-new" },
@@ -738,7 +738,7 @@ export const overrides: DeepPartial<SiteCopy> = {
         { term: "مستويات العربية", line: "لكل قناة", icon: "comments" },
         { term: "مصطلحات ثابتة", line: "في اللغتين", icon: "book" },
       ],
-      link: { label: "كيف بُني ماركيوس بالعربية", href: "/platform/bilingual" },
+      link: { label: "كيف بُني ماركيوس بالعربية", href: "/platform/arabic" },
     },
 
     aiRules: {
@@ -908,7 +908,7 @@ export const overrides: DeepPartial<SiteCopy> = {
       },
       cta: {
         label: "كيف يعمل عقل العلامة",
-        href: "/platform/brand-brain",
+        href: "/platform",
       },
     },
 
@@ -964,7 +964,7 @@ export const overrides: DeepPartial<SiteCopy> = {
             },
             { name: "مجاني وبلا حدود", line: "في كل الخطط." },
           ],
-          link: { label: "استبيان الاكتشاف والتحليل الذكي", href: "/platform/discovery-forms" },
+          link: { label: "استبيان الاكتشاف والتحليل الذكي", href: "/solutions/discovery" },
         },
         {
           n: 2,
@@ -996,7 +996,7 @@ export const overrides: DeepPartial<SiteCopy> = {
               chip: "strategy-ai",
             },
           ],
-          link: { label: "مركز الاستراتيجية", href: "/platform/strategy-hub" },
+          link: { label: "مركز الاستراتيجية", href: "/platform" },
         },
         {
           n: 3,
@@ -1021,7 +1021,7 @@ export const overrides: DeepPartial<SiteCopy> = {
               chip: "art-direction",
             },
           ],
-          link: { label: "لوحات الإلهام", href: "/platform/moodboards" },
+          link: { label: "لوحات الإلهام", href: "/platform" },
         },
         {
           n: 4,
@@ -1053,7 +1053,7 @@ export const overrides: DeepPartial<SiteCopy> = {
               line: "الخطوط غير المرخّصة للتوزيع تُعرض ولا تُنزَّل.",
             },
           ],
-          link: { label: "مركز الأصول", href: "/platform/asset-library" },
+          link: { label: "مركز الأصول", href: "/platform" },
         },
         {
           n: 5,
@@ -1080,7 +1080,7 @@ export const overrides: DeepPartial<SiteCopy> = {
             },
             { name: "نشر آمن", line: "رابط ماركيوس، أو حماية بكلمة مرور. ونطاقك الخاص قريباً." },
           ],
-          link: { label: "موقع دليل الهوية", href: "/platform/guideline-sites" },
+          link: { label: "موقع دليل الهوية", href: "/solutions/guideline-sites" },
         },
         {
           n: 6,
@@ -1105,7 +1105,7 @@ export const overrides: DeepPartial<SiteCopy> = {
               line: "يعتمد العميل الأقسام الأساسية من الدليل، ويُحفظ كل اعتماد بتاريخه.",
             },
           ],
-          link: { label: "لوحة الاستوديو", href: "/platform/studio-board" },
+          link: { label: "لوحة الاستوديو", href: "/solutions/client-projects" },
         },
         {
           n: 7,
@@ -1162,8 +1162,8 @@ export const overrides: DeepPartial<SiteCopy> = {
             },
             { name: "نصّك لا يُحفظ", line: "نحفظ الدرجة، لا الكلمات." },
           ],
-          link: { label: "صوت العلامة", href: "/platform/brand-voice" },
-          link2: { label: "مدقّق النبرة", href: "/platform/tone-checker" },
+          link: { label: "صوت العلامة", href: "/solutions/brand-voice" },
+          link2: { label: "مدقّق النبرة", href: "/solutions/tone-checker" },
         },
         {
           n: 9,
@@ -1200,7 +1200,7 @@ export const overrides: DeepPartial<SiteCopy> = {
               chip: "brand-health",
             },
           ],
-          link: { label: "المشاهدون والمشاركة", href: "/platform/team-and-sharing" },
+          link: { label: "المشاهدون والمشاركة", href: "/solutions/company-rollout" },
         },
       ],
       cells: [

@@ -23,11 +23,15 @@ import { NotTranslated } from "@/components/public/pages/NotTranslated";
  * their own files and win against this one. Nothing had to be rearranged for
  * that; it is how the router already works.
  *
- * Unknown paths resolve here so notFound() renders the localized recovery
- * page within the locale layout instead of the framework’s global fallback.
+ * `dynamicParams: false`: anything outside the registry is a 404 at routing,
+ * answered by the bilingual src/app/global-not-found.tsx. It was briefly
+ * `true` (25 Nov 2026) to render a single-language 404 here, but then the
+ * router's prefetch of a rewritten Arabic page (/solutions/companies → /ar/…)
+ * looped thousands of times a second whenever revalidation failed, which hung
+ * check:pages and check:motion in CI. A bilingual 404 is the better trade.
  */
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const params: { lang: string; slug: string[] }[] = [];

@@ -18,7 +18,8 @@ await assertServerUp();
 /*
  * Whether the platform has published any help content. With none — or with
  * no CONTENT_API_URL at all, as in CI, which builds the site without a
- * backend — /help rightly shows its fallback page, and the Help Center checks
+ * backend — /help rightly shows an empty Help Center home (the CMS fallback
+ * page was retired on 25 Nov 2026), and the Help Center checks
  * below have nothing to look at, the way check:articles passes with 0
  * articles. Once the API reports content, a /help without the Help Center is
  * a failure again.
@@ -58,7 +59,13 @@ for (const [lang, root] of Object.entries(ROOTS)) {
 
   const pattern = new RegExp(`href="(${root}/help/[^"/#?]+)"`, "g");
   topics[lang] = [...new Set([...html.matchAll(pattern)].map((m) => m[1]))].filter((p) => !p.endsWith("/search"));
-  if (topics[lang].length === 0) fail(`${root}/help links to no topics`);
+  if (topics[lang].length === 0) {
+    // No published help (or no API, as in CI): /help is the Help Center home
+    // with nothing in it yet, which is right. With content, it's a failure.
+    if (published) fail(`${root}/help links to no topics`);
+    else fallback.push(`${root}/help`);
+    continue;
+  }
   for (const path of topics[lang]) {
     const topic = await fetch(BASE + path, { redirect: "manual" });
     if (topic.status !== 200) fail(`${path} → ${topic.status}`);
@@ -132,7 +139,7 @@ if (failures.length) {
 }
 if (fallback.length === Object.keys(ROOTS).length) {
   console.log(
-    `\n  ✓ Help Center skipped: ${API ? "the help API has no published content" : "no CONTENT_API_URL (no help API)"}, so ${fallback.join(" and ")} show the fallback page, and both answer 200.\n`,
+    `\n  ✓ Help Center skipped: ${API ? "the help API has no published content" : "no CONTENT_API_URL (no help API)"}, so ${fallback.join(" and ")} show an empty Help Center home, and both answer 200.\n`,
   );
   process.exit(0);
 }
