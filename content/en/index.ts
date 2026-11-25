@@ -266,7 +266,7 @@ export const copy: SiteCopy = {
         links: [
           { label: "Blog", href: "/blog" },
           { label: "Guides", href: "/guides" },
-          { label: "Help center", href: "/help" },
+          { label: "Help Center", href: "/help" },
           { label: "Compare", href: "/compare" },
         ],
       },
@@ -309,7 +309,7 @@ export const copy: SiteCopy = {
         links: [
           { label: "Blog", href: "/blog" },
           { label: "Guides", href: "/guides" },
-          { label: "Help center", href: "/help" },
+          { label: "Help Center", href: "/help" },
           { label: "Compare", href: "/compare" },
         ],
       },

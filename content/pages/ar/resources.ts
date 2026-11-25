@@ -5,7 +5,7 @@ import { CTA, FORK, HOME, LINK } from "./_shared";
  * الموارد · المقارنات · من نحن · تواصل معنا —
  * docs/copy/pages_ar_3_resources_company.md, pages 20, 24 to 29.
  *
- * The blog, the guides and the help centre are *not* here. They are editorial
+ * The blog, the guides and the Help Center are *not* here. They are editorial
  * content with their own routes and their own lifecycle: added weekly, by
  * whoever is writing that week, through the CMS. Page copy and editorial
  * content are kept apart deliberately — see src/lib/content/adapter.ts, which is

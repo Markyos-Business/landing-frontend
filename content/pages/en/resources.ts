@@ -19,7 +19,7 @@ const resources: PageDoc = {
   shortTitle: "Resources",
   title: "Resources · Markyos",
   description:
-    "Practical writing on building bilingual brands, free templates, a help centre, and honest comparisons.",
+    "Practical writing on building bilingual brands, free templates, a Help Center, and honest comparisons.",
   breadcrumbs: [HOME],
   priority: 0.7,
   blocks: [
@@ -47,10 +47,10 @@ const resources: PageDoc = {
           cta: { label: "Browse the guides", href: "/guides" },
         },
         {
-          title: "Help centre",
+          title: "Help Center",
           icon: "comments",
           body: "Every step in Markyos, explained.",
-          cta: { label: "Open the help centre", href: "/help" },
+          cta: { label: "Open the Help Center", href: "/help" },
         },
         {
           title: "Compare",
@@ -177,7 +177,7 @@ const contact: PageDoc = {
         },
         {
           term: "Support",
-          body: "Try the help centre first — most answers are there.",
+          body: "Try the Help Center first — most answers are there.",
           cta: LINK.help,
         },
         {

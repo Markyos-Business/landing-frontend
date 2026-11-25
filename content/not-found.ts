@@ -28,7 +28,7 @@ export const NOT_FOUND_COPY: Record<
     links: [
       { label: "Solutions", href: "/solutions" },
       { label: "Pricing", href: "/pricing" },
-      { label: "Help centre", href: "/help" },
+      { label: "Help Center", href: "/help" },
     ],
   },
 };
