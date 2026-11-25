@@ -66,7 +66,7 @@ const clientProjects: PageDoc = {
       kind: "callout",
       title: "Works with, and plans",
       body: [
-        "Every feature in a project updates its stage, and handoff frees its slot. 1 active project free · 2 on Solo · 5 on Pro · 10 on Studio · 25 on Agency.",
+        "Every feature in a project updates its stage. Each brand is free to build, and takes a monthly plan when you share it, priced by your account type.",
       ],
       cta: LINK.pricing,
     },
@@ -275,14 +275,14 @@ const clientHandoff: PageDoc = {
   shortTitle: "Handoff",
   title: "Brand Handoff · A Live Hub Instead of a PDF · Markyos",
   description:
-    "Hand your client a live brand hub they own, not a zip file. Keep your role, and earn 20% of their first year when they upgrade.",
+    "Hand your client a live brand hub they own, not a zip file. The brand and its plan move to their account, and you stay on as an editor.",
   breadcrumbs: SOLUTION_TRAIL,
   priority: 0.8,
   blocks: [
     {
       kind: "hero",
       title: "Hand over a brand, not a folder.",
-      lead: "Your client gets a hub with their name on it, opened by their team every day. You keep your role, and you earn as they grow.",
+      lead: "Your client gets a hub with their name on it, opened by their team every day. You stay on as an editor.",
       buttons: [CTA.firstProject],
     },
     {
@@ -292,7 +292,7 @@ const clientHandoff: PageDoc = {
       items: [
         { body: "Publish the hub, and press “Hand off”." },
         { body: "Your client claims it in their company workspace." },
-        { body: "You keep your role, and the project slot frees up." },
+        { body: "The brand moves to their account, and you stay on its team." },
       ],
     },
     {
@@ -302,29 +302,15 @@ const clientHandoff: PageDoc = {
       items: [
         { term: "A full ownership transfer", body: "Not a copy.", feature: "handoff" },
         {
-          term: "Always free",
-          body: "And the hub stays live on the client's free plan.",
+          term: "Free to hand over",
+          body: "The brand's plan, if it has one, goes with it.",
         },
         { term: "The sign-off record", body: "It moves with it." },
         {
-          term: "Agencies earn more",
-          body: "25% of the client's first year, not 20%.",
-        },
-        {
           term: "Stay on as a collaborator",
-          body: "Without using a slot.",
+          body: "As an editor, or a viewer while the brand has no plan.",
         },
       ],
-    },
-    {
-      kind: "prose",
-      id: "reward",
-      eyebrow: "Partner reward",
-      title: "You handed it over. The return keeps coming.",
-      body: [
-        "20% of what your client pays in their first year, as credit on your plan. Five clients on the Brand plan cover your Pro plan.",
-      ],
-      emphasiseLast: true,
     },
     {
       kind: "cta",
@@ -460,7 +446,7 @@ const brandVoice: PageDoc = {
           feature: "department-playbooks",
         },
       ],
-      note: "Starts from the strategy, powers the tone checker, and guides every translation. On every plan. Voice per channel and team from the Team plan.",
+      note: "Starts from the strategy, powers the tone checker, and guides every translation. On every plan.",
     },
     {
       kind: "cta",
@@ -521,7 +507,7 @@ const toneChecker: PageDoc = {
           feature: "chrome-extension",
         },
       ],
-      note: "Checks against the brand voice and term base, and viewers use it free. 25 quick checks a month free · 1,000 on Brand · 3,000 on Team.",
+      note: "Checks against the brand voice and term base, and viewers use it free.",
     },
     {
       kind: "cta",

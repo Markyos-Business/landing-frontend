@@ -14,7 +14,7 @@ export type HelpCategory = {
   count: number;
 };
 
-/** The strings the help centre's search and lists need, already localised. */
+/** The strings the Help Center's search and lists need, already localised. */
 export type HelpLabels = {
   search: string;
   placeholder: string;

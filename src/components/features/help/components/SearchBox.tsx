@@ -27,6 +27,7 @@ export function SearchBox({
       <input
         id={search.fieldId}
         type="search"
+        dir="auto"
         role="combobox"
         aria-expanded={search.showing}
         aria-controls={search.listId}

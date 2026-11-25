@@ -198,9 +198,9 @@ export type MockCopy = {
     /** What the studio keeps. */
     rows: { label: string; value: string; good?: boolean }[];
     /** The reward line at the foot, which is the part nobody believes. */
-    rewardLabel: string;
-    rewardValue: string;
-    rewardNote: string;
+    planLabel: string;
+    planValue: string;
+    planNote: string;
   };
 
   /*
@@ -514,12 +514,12 @@ const EN: MockCopy = {
     ownerTo: "Nakhla Coffee",
     rows: [
       { label: "Your role after handover", value: "Editor" },
-      { label: "Active project freed", value: "1 of 3 back on your plan", good: true },
-      { label: "Client plan", value: "Company Free" },
+      { label: "Guideline site", value: "Live", good: true },
+      { label: "Client account", value: "Company" },
     ],
-    rewardLabel: "Partner reward",
-    rewardValue: "20% back as credit",
-    rewardNote: "For 12 months, if they upgrade.",
+    planLabel: "The brand's plan",
+    planValue: "Moves to Nakhla Coffee",
+    planNote: "They subscribe from their own account.",
   },
 
   seats: {
@@ -833,12 +833,12 @@ const AR: MockCopy = {
     ownerTo: "قهوة نخلة",
     rows: [
       { label: "دورك بعد التسليم", value: "محرّر" },
-      { label: "حصة المشروع", value: "عاد 1 من 3 إلى خطتك", good: true },
-      { label: "خطة العميل", value: "الشركات، المجانية" },
+      { label: "موقع الدليل", value: "منشور", good: true },
+      { label: "حساب العميل", value: "شركة" },
     ],
-    rewardLabel: "مكافأة الشريك",
-    rewardValue: "20% رصيداً لك",
-    rewardNote: "لمدة 12 شهراً، إن رقّى خطته.",
+    planLabel: "اشتراك العلامة",
+    planValue: "ينتقل إلى قهوة نخلة",
+    planNote: "ويشترك العميل من حسابه هو.",
   },
 
   seats: {

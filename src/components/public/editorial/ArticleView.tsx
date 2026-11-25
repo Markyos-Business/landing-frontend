@@ -6,6 +6,7 @@ import { pageUrl } from "@/lib/seo";
 import { Section, Icon, type IconName, Mark, RichText } from "@/components/ui";
 import { PATH, COLLECTIONS, UI } from "./copy";
 import { formatDate, Cover, ProvisionalNote } from "./shared";
+import { JsonLd } from "@/components/public/seo/JsonLd";
 
 /* ── the article ──────────────────────────────────────────────────────────── */
 
@@ -31,9 +32,26 @@ export function ArticleView({
   const ui = UI[locale];
   const published = post.publishedAt ? formatDate(post.publishedAt, locale) : null;
   const url = pageUrl(locale, `/${PATH[collection]}/${post.slug}`);
+  // Placeholder pieces are noindex, so they carry no structured data either.
+  const graph = post.provisional
+    ? []
+    : [
+        {
+          "@type": collection === "blog" ? "BlogPosting" : "Article",
+          headline: post.title,
+          description: post.seoDescription ?? post.excerpt,
+          url,
+          inLanguage: locale,
+          ...(post.publishedAt ? { datePublished: post.publishedAt } : {}),
+          ...(post.heroImage ? { image: post.heroImage } : {}),
+          ...(post.author?.name ? { author: { "@type": "Person", name: post.author.name } } : {}),
+          publisher: { "@type": "Organization", name: "Markyos", url: pageUrl("ar", "") },
+        },
+      ];
 
   return (
     <Section id="post" labelledBy="post-heading" className="pt-[clamp(2rem,5vw,3.5rem)]">
+      <JsonLd graph={graph} />
       <nav aria-label="Breadcrumb" className="mb-8">
         <Link
           href={localeHref(locale, `/${PATH[collection]}`)}
@@ -107,7 +125,7 @@ export function ArticleView({
       </div>
 
       <div className="mk-article-art mk-rise">
-        <Cover post={post} size="feature" word={copy.back} />
+        <Cover post={post} size="feature" word={copy.back} eager />
       </div>
 
       <div className="mk-article-body">

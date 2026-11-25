@@ -46,6 +46,7 @@ export function SignupForm({
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           aria-describedby={message ? statusId : undefined}
+          aria-invalid={state === "invalid" || undefined}
           // `dir="ltr"` and `text-start`: an email address is a Latin string
           // and reads left-to-right even on an Arabic page. Without it the
           // caret starts on the wrong side and "@gmail.com" ends up leading.

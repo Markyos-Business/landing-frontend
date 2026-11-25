@@ -1,5 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
+import { contentSiteKey } from "@/lib/content/djangoClient";
 
 /*
  * The daily salt.
@@ -39,4 +40,19 @@ export function visitorHash(ip: string, userAgent: string): string {
 export function clientIp(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for") ?? "";
   return forwarded.split(",")[0]?.trim() || "0.0.0.0";
+}
+
+/**
+ * Headers for a request this site's server makes to the platform on a
+ * visitor's behalf: signed with the site key, and naming the visitor by
+ * today's anonymous hash so the platform can rate-limit per visitor rather
+ * than per server. The IP itself never leaves this server.
+ */
+export function siteHeaders(request: Request): Record<string, string> {
+  return {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "X-Content-Key": contentSiteKey(),
+    "X-Visitor": visitorHash(clientIp(request), request.headers.get("user-agent") ?? ""),
+  };
 }

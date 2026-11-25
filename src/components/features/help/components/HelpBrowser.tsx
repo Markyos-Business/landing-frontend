@@ -9,7 +9,7 @@ import { CategoryTiles } from "./CategoryTiles";
 import { ArticleList } from "./ArticleList";
 
 /*
- * The help centre's search, its category tiles and its list of articles.
+ * The Help Center's search, its category tiles and its list of articles.
  *
  * ── Why this is a client component and the rest of the page is not ───────
  *

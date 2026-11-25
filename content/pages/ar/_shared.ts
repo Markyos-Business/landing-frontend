@@ -57,7 +57,7 @@ export const CTA = {
  *
  * So each one is now an action: verb first, two or three words, and
  * different from any heading it sits under (copy doc §11). The names that
- * are genuinely destinations — the help centre, the legal pages, "من نحن" —
+ * are genuinely destinations — the Help Center, the legal pages, "من نحن" —
  * stay names, because naming the place *is* the useful thing there.
  */
 export const LINK = {

@@ -6,9 +6,10 @@ import { chromium } from "playwright";
  *
  * ── Why this is not part of `check:live` ───────────────────────────────────
  *
- * It POSTs, and two of the things it POSTs into are stateful: the route's
- * per-instance rate limiter, and — once RESEND_API_KEY is set — a real
- * mailbox. A gate that runs in a loop beside five others would spend somebody
+ * It POSTs, and both things it POSTs into are stateful: the platform's
+ * per-visitor rate limiter, and the platform itself, which stores every
+ * message and emails it (console only when the platform runs with E2E=1).
+ * A gate that runs in a loop beside five others would spend somebody
  * else's send quota and would start failing on its own second run. So it
  * stands alone, like `check:waitlist`, and is run against an isolated build
  * when this contract changes.
@@ -18,8 +19,8 @@ import { chromium } from "playwright";
  *
  * Each API case sends its own `x-forwarded-for`, so each gets its own rate
  * limit bucket and the cases cannot starve each other. That header is
- * spoofable locally and overwritten by the proxy in production — see
- * `clientKey` in src/app/api/contact/route.ts.
+ * spoofable locally and overwritten by the proxy in production; the site
+ * turns it into the anonymous visitor hash (`siteHeaders` in src/lib/visitor.ts).
  */
 
 const base = process.env.BASE_URL ?? "http://localhost:3213";
@@ -28,8 +29,8 @@ assert(
   "Use an isolated local server: this script posts messages and can send real email",
 );
 
-/** Whether a send can actually be attempted, which decides the happy path. */
-const configured = Boolean(process.env.RESEND_API_KEY);
+/** Whether the platform stored the message (202) or was unreachable (503); set by the first valid post. */
+let configured = false;
 
 /*
  * A fresh set of rate-limit buckets for every run.
@@ -108,7 +109,7 @@ try {
   /* ── The optional fields are optional, and blanks are not values ────────── */
   const bare = await post(valid, ip(6));
   assert(
-    [200, 502, 503].includes(bare.status()),
+    [202, 503].includes(bare.status()),
     "a message with none of the five optional fields must reach the send decision",
   );
   const blanks = await post(
@@ -116,7 +117,7 @@ try {
     ip(7),
   );
   assert(
-    [200, 502, 503].includes(blanks.status()),
+    [202, 503].includes(blanks.status()),
     "an untouched optional field posts as an empty string and must be accepted, not rejected",
   );
 
@@ -127,13 +128,13 @@ try {
 
   /* ── The send path ──────────────────────────────────────────────────────── */
   const sent = await post(valid, ip(4));
+  configured = sent.status() === 202;
   if (configured) {
-    assert.equal(sent.status(), 200, "with a provider configured a valid message is sent");
-    assert.equal((await sent.json()).ok, true);
+    assert.equal((await sent.json()).ok, true, "a stored message is reported ok");
   } else {
     const payload = await sent.json();
-    assert.equal(sent.status(), 503, "with no provider configured the route says so, not 200");
-    assert.equal(payload.error, "not_configured");
+    assert.equal(sent.status(), 503, "when the platform doesn't take it the route says so, not 2xx");
+    assert.equal(payload.error, "unavailable");
     assert.equal(payload.ok, false, "an unsent message is never reported ok");
     assert(payload.inbox?.includes("@"), "the 503 carries the address to write to instead");
   }
@@ -402,7 +403,7 @@ try {
     );
 
     if (configured) {
-      assert.equal(response.status(), 200);
+      assert.equal(response.status(), 202);
       const confirmed = locale === "ar" ? "وصلت رسالتك" : "Your message arrived";
       await form.getByRole("status").filter({ hasText: confirmed }).waitFor();
     } else {
@@ -434,7 +435,7 @@ try {
   await context.close();
   console.log(
     configured
-      ? "Contact form: nine fields, chevrons, validation, honeypot, rate limit, live send and both editions passed."
+      ? "Contact form: nine fields, chevrons, validation, honeypot, rate limit, stored by the platform and both editions passed."
       : "Contact form: nine fields, chevrons, validation, honeypot, rate limit, honest 503 and both editions passed.",
   );
 } finally {

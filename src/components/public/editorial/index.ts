@@ -1,6 +1,6 @@
 
 /*
- * The editorial templates — blog, guides, help centre.
+ * The editorial templates — blog, guides, Help Center.
  *
  * ── Three indexes now, not one ────────────────────────────────────────────
  *

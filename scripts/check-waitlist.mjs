@@ -24,12 +24,15 @@ try {
     const page=await context.newPage();const errors=[];page.on("pageerror",e=>errors.push(e.message));
     await page.goto(`${base}/${locale}/resources`,{waitUntil:"networkidle"});
     const form=page.locator("form").filter({has:page.locator('input[name="email"]')});
+    await form.locator('button[type="submit"]').click();
+    await form.getByRole("status").filter({hasText:locale==="ar"?"اكتب بريداً إلكترونياً صحيحاً":"Enter a valid email address"}).waitFor();
+    assert.equal(await form.locator('input[name="email"]').getAttribute("aria-invalid"),"true");
     await form.locator('input[name="email"]').fill("visitor@markyos.test");
     const responsePromise=page.waitForResponse(r=>r.url().endsWith('/api/waitlist')&&r.request().method()==='POST');
     await form.locator('button[type="submit"]').click();
     const response=await responsePromise;assert.equal(response.status(),202);
     assert.deepEqual(response.request().postDataJSON(),{email:"visitor@markyos.test",topic:"newsletter",locale});
-    const pending=locale==="ar"?"تم حفظ طلبك":"Your request has been saved";
+    const pending=locale==="ar"?"اشتركت في النشرة":"You're subscribed";
     await form.getByRole("status").filter({hasText:pending}).waitFor();
     assert.equal(await form.locator('button[type="submit"]').isEnabled(),true);assert.deepEqual(errors,[]);
     await page.close();

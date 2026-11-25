@@ -128,6 +128,7 @@ export function ContactForm({
           <input
             type="text"
             name="name"
+            dir="auto"
           {...invalid("name")}
             required
             autoComplete="name"
@@ -186,6 +187,7 @@ export function ContactForm({
           <input
             type="text"
             name="company"
+            dir="auto"
             autoComplete="organization"
             maxLength={120}
             placeholder={copy.placeholders.company}
@@ -222,6 +224,7 @@ export function ContactForm({
           <input
             type="text"
             name="country"
+            dir="auto"
             autoComplete="country-name"
             maxLength={60}
             placeholder={copy.placeholders.country}
@@ -271,6 +274,7 @@ export function ContactForm({
       <Field label={copy.fields.message} error={errors.message} errorId={`${errorId}-message`}>
         <textarea
           name="message"
+          dir="auto"
           {...invalid("message")}
           required
           rows={6}

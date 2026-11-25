@@ -3,7 +3,7 @@ import type { HelpPost } from "../types";
 import { fold } from "../utils/fold";
 
 /*
- * The help centre's search state: the query, the picked category, the
+ * The Help Center's search state: the query, the picked category, the
  * suggestion panel and its highlighted row, and the keyboard handling that
  * makes the field an ARIA combobox. The markup is HelpBrowser's; the reasoning
  * for the combobox is in its header.

@@ -143,6 +143,7 @@ export function HelpFeedback({ locale, articleId }: { locale: Locale; articleId:
             </label>
             <textarea
               id={`${ids}-c`}
+              dir="auto"
               rows={3}
               maxLength={1000}
               value={comment}

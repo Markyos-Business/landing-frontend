@@ -39,6 +39,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "api.markyos.com", pathname: "/media/**", search: "" },
       { protocol: "https", hostname: "api-staging.markyos.com", pathname: "/media/**", search: "" },
+      // Where the platform serves media when cloud storage is on (a Spaces or
+      // CDN host): CONTENT_MEDIA_HOSTS=cdn.example.com,other.example.com
+      ...(process.env.CONTENT_MEDIA_HOSTS ?? "")
+        .split(",")
+        .map((host) => host.trim())
+        .filter(Boolean)
+        .map((hostname) => ({ protocol: "https" as const, hostname, pathname: "/**", search: "" })),
     ],
   },
   experimental: {
@@ -55,6 +62,14 @@ const nextConfig: NextConfig = {
           ? [...securityHeaders, { key: "X-Robots-Tag", value: "noindex, nofollow" }]
           : securityHeaders,
       },
+      // CMS draft previews: a signed link, never indexed even on production.
+      ...["/preview/:token", "/en/preview/:token"].map((source) => ({
+        source,
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Cache-Control", value: "private, no-store" },
+        ],
+      })),
     ];
   },
   // The marketing site is almost entirely static. Keeping `trailingSlash` off
