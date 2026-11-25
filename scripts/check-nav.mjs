@@ -125,8 +125,14 @@ try {
        */
       const panelBox = await panel.boundingBox();
       await page.mouse.move(panelBox.x + panelBox.width - 4, panelBox.y + panelBox.height + 60);
-      await page.waitForTimeout(SETTLE_MS);
-      if (await panel.isVisible()) {
+      // Wait for it to close rather than look once after a fixed pause: the close
+      // is delayed (CLOSE_DELAY_MS) and then fades, and on a slow CI runner a
+      // single look at 600ms caught menus mid-fade (PR #6, 2026-11-25). A menu
+      // that never closes still fails, after 2.5s.
+      const closed = await panel
+        .waitForElementState("hidden", { timeout: 2500 })
+        .then(() => true, () => false);
+      if (!closed) {
         problems.push(`${where}: did not close after the pointer left it`);
       }
     }
