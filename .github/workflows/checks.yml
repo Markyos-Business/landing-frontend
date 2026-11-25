@@ -14,7 +14,7 @@ name: checks
 
 on:
   push:
-    branches: [main]
+    branches: [main, release/staging-v1]
   pull_request:
 
 # A second push to the same branch cancels the first: no point finishing a
@@ -83,3 +83,31 @@ jobs:
       - name: Stop the server
         if: always()
         run: kill "$(cat server.pid)" 2>/dev/null || true
+
+  # ---------------------------------------------------------- notify-failure --
+  # Slack, 2026-11-25: one message when CI fails on a push to a branch that
+  # deploys (release/staging-v1 -> staging, main -> production), so the team
+  # knows why a deploy is held back. Passing runs and pull requests send
+  # nothing; deploy results come from the Vercel Slack app and a Railway
+  # webhook. The message logic is scripts/notify-slack.sh, the same in all
+  # three repos. It never fails: the run's result is the jobs above.
+  notify-failure:
+    name: notify Slack on failure
+    needs: [check]
+    if: always() && github.event_name == 'push' && contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Notify Slack
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          GH_TOKEN: ${{ github.token }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL_PROD: ${{ secrets.SLACK_WEBHOOK_URL_PROD }}
+          SLACK_WEBHOOK_URL_TEST: ${{ secrets.SLACK_WEBHOOK_URL_TEST }}
+          NOTIFY_TEST: "0"
+        run: bash scripts/notify-slack.sh
