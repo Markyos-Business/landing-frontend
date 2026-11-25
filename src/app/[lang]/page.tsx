@@ -10,6 +10,8 @@ import { PricingTeaser } from "@/components/public/home/pricing-teaser";
 import { Faq } from "@/components/public/home/Faq";
 import { teaserPlans } from "@/content/current-pricing";
 import { getPlans } from "@/lib/billing/plans";
+import { JsonLd } from "@/components/public/seo/JsonLd";
+import { pageUrl } from "@/lib/seo";
 
 /*
  * The homepage — `Landing Copy/Markyos Landing AR (readable).html`.
@@ -58,8 +60,28 @@ export default async function HomePage() {
   // The pricing cards' figures are the backend's; see src/lib/billing/plans.ts.
   const cards = teaserPlans(locale, await getPlans());
 
+  const homeUrl = pageUrl(locale, "");
+  const graph = [
+    {
+      "@type": "Organization",
+      "@id": `${pageUrl("ar", "")}#organization`,
+      name: "Markyos",
+      url: pageUrl("ar", ""),
+      logo: `${pageUrl("ar", "")}/brand/markyos-mark.svg`,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${homeUrl}#website`,
+      name: locale === "ar" ? "ماركيوس" : "Markyos",
+      url: homeUrl,
+      inLanguage: locale,
+      publisher: { "@id": `${pageUrl("ar", "")}#organization` },
+    },
+  ];
+
   return (
     <>
+      <JsonLd graph={graph} />
       {/*
        * Ten sections, and the order is copy deck v3 §2.
        *

@@ -69,8 +69,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const editorialEntries = (editorial?.results ?? []).filter(
     (entry) => !(help.length > 1 && entry.path.startsWith("/help/")),
   );
+  /*
+   * An editorial index (/blog, /guides, /compare, /whats-new) is listed once
+   * it has one real published piece in a language: that is exactly when the
+   * index stops being noindex. The platform's sitemap already leaves out
+   * placeholder (provisional) pieces, so its paths are the test.
+   */
+  const indexes: Entry[] = ["/blog", "/guides", "/compare", "/whats-new"].flatMap((section) => {
+    const locales = LOCALES.filter((l) =>
+      editorialEntries.some((e) => e.path.startsWith(`${section}/`) && e.locales.includes(l)),
+    );
+    return locales.length ? [{ path: section, priority: 0.7, locales }] : [];
+  });
   const routes: Entry[] = [
     ...ROUTES.filter((r) => !(help.length > 1 && r.path === "/help")),
+    ...indexes,
     ...editorialEntries.map((entry) => ({ ...entry, priority: 0.6 })),
     ...help,
   ];

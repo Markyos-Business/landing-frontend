@@ -65,29 +65,6 @@ const roadmap: PageDoc = {
 
 /* ── Page 3 · What's new ────────────────────────────────────────────────── */
 
-const whatsNew: PageDoc = {
-  path: "/whats-new",
-  shortTitle: "What's new",
-  title: "What's New in Markyos",
-  description: "Every update in a line: what changed, and why it matters to you.",
-  breadcrumbs: [HOME],
-  priority: 0.6,
-  blocks: [
-    {
-      kind: "hero",
-      title: "What's new.",
-      lead: "Every update in a line: what changed, and why it matters to you.",
-    },
-    {
-      kind: "prose",
-      body: [
-        "Each entry publishes on the day its feature ships, not before. The roadmap is where the seasons are.",
-      ],
-      links: [LINK.roadmap],
-    },
-  ],
-};
-
 /* ── Page 4 · Security ──────────────────────────────────────────────────── */
 
 const security: PageDoc = {
@@ -180,4 +157,4 @@ const security: PageDoc = {
   ],
 };
 
-export const pricingPages: PageDoc[] = [pricing, roadmap, whatsNew, security];
+export const pricingPages: PageDoc[] = [pricing, roadmap, security];
