@@ -12,11 +12,22 @@ export function useWaitlistSignup(topic: SignupTopic, locale: Locale) {
   const copy = COPY[locale];
 
   const message =
-    state === "sent" ? copy.sent : state === "failed" ? copy.failed : "";
+    state === "sent"
+      ? topic === "newsletter" ? copy.subscribed : copy.sent
+      : state === "failed"
+        ? copy.failed
+        : state === "invalid"
+          ? copy.invalid
+          : "";
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!email.trim()) return;
+    // The same rule the server applies (src/lib/waitlist.ts), said in the
+    // page's language instead of the browser's.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setState("invalid");
+      return;
+    }
     setState("sending");
     setState(await joinWaitlist({ email, topic, locale }));
   };
