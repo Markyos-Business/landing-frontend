@@ -23,11 +23,11 @@ import { NotTranslated } from "@/components/public/pages/NotTranslated";
  * their own files and win against this one. Nothing had to be rearranged for
  * that; it is how the router already works.
  *
- * `dynamicParams: false` makes anything outside the registry a 404 at build
- * time rather than a function invocation per bad URL.
+ * Unknown paths resolve here so notFound() renders the localized recovery
+ * page within the locale layout instead of the framework’s global fallback.
  */
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const params: { lang: string; slug: string[] }[] = [];

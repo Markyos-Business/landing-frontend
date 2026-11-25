@@ -1,6 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { getLocale } from "@/lib/i18n/dictionary";
-import { localeHref } from "@/lib/i18n/href";
+import { usePathname } from "next/navigation";
+import { localeHref, splitLocalePath } from "@/lib/i18n/href";
 import type { Locale } from "@/lib/i18n/locales";
 import { Eyebrow, Glow, Section } from "@/components/ui";
 
@@ -44,8 +46,8 @@ const COPY: Record<
   },
 };
 
-export default async function NotFound() {
-  const locale = await getLocale();
+export default function NotFound() {
+  const { locale } = splitLocalePath(usePathname() ?? "/");
   const copy = COPY[locale];
 
   return (

@@ -249,7 +249,7 @@ const guidelineSites: PageDoc = {
         },
         {
           term: "Published as a fixed snapshot",
-          body: "On your link or domain, or behind a password.",
+          body: "Share on your Markyos link. Custom domains are coming soon.",
           feature: "domains",
         },
         {

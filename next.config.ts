@@ -62,9 +62,9 @@ const nextConfig: NextConfig = {
       { source: "/admin/:path*", destination: `${APP_URL}/admin/cms`, permanent: false },
       // Keep bookmarked website auth paths working. New CTAs link directly
       // to the platform; incoming query strings (lang/type/plan) pass through.
-      ...["/start", "/signup", "/register", "/login"].map(source => ({
+      ...["/start", "/signup", "/register", "/login", "/en/start", "/en/signup", "/en/register", "/en/login"].map(source => ({
         source,
-        destination: `${APP_URL}/${source === "/login" ? "login" : "signup"}`,
+        destination: `${APP_URL}/${source.endsWith("/login") ? "login" : "signup"}${source.startsWith("/en/") ? "?lang=en" : ""}`,
         permanent: false,
       })),
 

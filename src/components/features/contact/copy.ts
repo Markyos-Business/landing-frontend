@@ -43,6 +43,7 @@ export type ContactCopy = {
    * on a form where most fields are optional it would put a mark on
    * everything that matters and nothing on what does not.
    */
+  validation: { name: string; email: string; message: string; other: string };
   optional: string;
   /** The empty first option of an optional select. */
   choose: string;
@@ -65,6 +66,12 @@ export type ContactCopy = {
 
 export const COPY: Record<Locale, ContactCopy> = {
   ar: {
+    validation: {
+      name: "إدخال اسم من حرفين إلى 80 حرفًا.",
+      email: "إدخال بريد إلكتروني صالح لا يتجاوز 254 حرفًا.",
+      message: "كتابة رسالة من 10 إلى 4000 حرف.",
+      other: "مراجعة هذا الحقل ثم إعادة المحاولة.",
+    },
     fields: {
       name: "الاسم",
       email: "البريد الإلكتروني",
@@ -117,6 +124,12 @@ export const COPY: Record<Locale, ContactCopy> = {
     },
   },
   en: {
+    validation: {
+      name: "Enter a name between 2 and 80 characters.",
+      email: "Enter a valid email address, up to 254 characters.",
+      message: "Write a message between 10 and 4000 characters.",
+      other: "Check this field and try again.",
+    },
     fields: {
       name: "Name",
       email: "Email",

@@ -1,6 +1,6 @@
-import { useState, useSyncExternalStore, type FormEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import type { Locale } from "@/lib/i18n/locales";
-import { topicFromParam, type ContactTopic, type ContactWho } from "@/lib/contact";
+import { ContactSchema, topicFromParam, type ContactTopic, type ContactWho } from "@/lib/contact";
 import { COPY } from "../copy";
 import { sendMessage } from "../services/contactService";
 import type { ContactState } from "../types";
@@ -25,6 +25,13 @@ const noTopicOnTheServer = () => "";
 export function useContactMessage(locale: Locale, initialTopic: ContactTopic) {
   const [state, setState] = useState<ContactState>("idle");
   const [inbox, setInbox] = useState<string>();
+  const [invalidFields, setInvalidFields] = useState<string[]>([]);
+  const formRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (state !== "invalid" || !invalidFields.length) return;
+    const control = formRef.current?.elements.namedItem(invalidFields[0]);
+    if (control instanceof HTMLElement) control.focus();
+  }, [state, invalidFields]);
 
   /* Required. */
   const [name, setName] = useState("");
@@ -81,7 +88,17 @@ export function useContactMessage(locale: Locale, initialTopic: ContactTopic) {
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!name.trim() || !email.trim() || !message.trim()) return;
+    const validation = ContactSchema.safeParse({
+      name, email, topic, message, phone, company, country, who: who || undefined, replyLanguage, locale,
+    });
+    if (!validation.success) {
+      const names = [...new Set(validation.error.issues.map(issue => String(issue.path[0])))];
+      setInvalidFields(names);
+      setState("invalid");
+      setInbox(undefined);
+      return;
+    }
+    setInvalidFields([]);
 
     /*
      * Read off the form synchronously, before the first await. `currentTarget`
@@ -122,6 +139,10 @@ export function useContactMessage(locale: Locale, initialTopic: ContactTopic) {
       company_url: honeypot,
     });
 
+    if (outcome.result === "invalid") {
+      const names = outcome.invalidFields ?? [];
+      setInvalidFields(names);
+    }
     setState(outcome.result);
     setInbox(outcome.inbox);
 
@@ -145,6 +166,8 @@ export function useContactMessage(locale: Locale, initialTopic: ContactTopic) {
 
   return {
     state,
+    formRef,
+    invalidFields,
     inbox,
     copy,
     fields: { name, email, topic, message, phone, company, country, who, replyLanguage },
