@@ -194,32 +194,32 @@ export const copy: SiteCopy = {
               {
                 title: "The discovery form",
                 line: "Replaces Google Forms and Typeform",
-                href: "/platform/discovery-forms",
+                href: "/solutions/discovery",
               },
               {
                 title: "The strategy hub",
                 line: "Replaces Word files and decks",
-                href: "/platform/strategy-hub",
+                href: "/platform",
               },
               {
                 title: "Moodboards",
                 line: "Replaces Milanote and Pinterest",
-                href: "/platform/moodboards",
+                href: "/platform",
               },
               {
                 title: "The asset hub",
                 line: "Replaces Google Drive and Dropbox",
-                href: "/platform/asset-library",
+                href: "/platform",
               },
               {
                 title: "The guideline site",
                 line: "Replaces a PDF guideline and Guidelines.site",
-                href: "/platform/guideline-sites",
+                href: "/solutions/guideline-sites",
               },
               {
                 title: "The studio board",
                 line: "Replaces tracking spreadsheets and Trello",
-                href: "/platform/studio-board",
+                href: "/solutions/client-projects",
               },
             ],
           },
@@ -230,7 +230,7 @@ export const copy: SiteCopy = {
               {
                 title: "Handoff",
                 line: "Replaces the zip file and the goodbye email",
-                href: "/platform/handoff",
+                href: "/solutions/client-handoff",
               },
             ],
           },
@@ -241,19 +241,19 @@ export const copy: SiteCopy = {
               {
                 title: "Brand voice and the tone checker",
                 line: "Replaces Grammarly and Writer",
-                href: "/platform/brand-voice",
+                href: "/solutions/brand-voice",
               },
               {
                 title: "The whole company",
                 line: "Replaces shared folders and “where's the logo?”",
-                href: "/platform/team-and-sharing",
+                href: "/solutions/company-rollout",
               },
             ],
           },
         ],
         strip: [
           { label: "Built in Arabic, not translated into it.", href: "/platform/arabic" },
-          { label: "Brand Brain", href: "/platform/brand-brain" },
+          { label: "Brand Brain", href: "/platform" },
         ],
       },
       { label: "Pricing", href: "/pricing" },
@@ -284,7 +284,7 @@ export const copy: SiteCopy = {
         heading: "Product",
         links: [
           { label: "All the features", href: "/platform" },
-          { label: "Brand Brain", href: "/platform/brand-brain" },
+          { label: "Brand Brain", href: "/platform" },
           { label: "Pricing", href: "/pricing" },
           { label: "Roadmap", href: "/roadmap" },
           { label: "What's new", href: "/whats-new" },
@@ -935,7 +935,7 @@ export const copy: SiteCopy = {
         line: "And your own AI tools, like ChatGPT and Claude, will read your brand before they write, through the AI Connector. They read only, and change nothing.",
         chip: "ai-connector",
       },
-      cta: { label: "How Brand Brain works", href: "/platform/brand-brain" },
+      cta: { label: "How Brand Brain works", href: "/platform" },
     },
 
     /*
@@ -993,7 +993,7 @@ export const copy: SiteCopy = {
             },
             { name: "Free and unlimited", line: "On every plan." },
           ],
-          link: { label: "The discovery form and AI analysis", href: "/platform/discovery-forms" },
+          link: { label: "The discovery form and AI analysis", href: "/solutions/discovery" },
         },
         {
           n: 2,
@@ -1035,7 +1035,7 @@ export const copy: SiteCopy = {
               chip: "strategy-ai",
             },
           ],
-          link: { label: "The strategy hub", href: "/platform/strategy-hub" },
+          link: { label: "The strategy hub", href: "/platform" },
         },
         {
           n: 3,
@@ -1063,7 +1063,7 @@ export const copy: SiteCopy = {
               chip: "art-direction",
             },
           ],
-          link: { label: "Moodboards", href: "/platform/moodboards" },
+          link: { label: "Moodboards", href: "/platform" },
         },
         {
           n: 4,
@@ -1098,7 +1098,7 @@ export const copy: SiteCopy = {
               line: "Fonts not licensed for distribution are shown but not downloadable.",
             },
           ],
-          link: { label: "The asset hub", href: "/platform/asset-library" },
+          link: { label: "The asset hub", href: "/platform" },
         },
         {
           n: 5,
@@ -1134,7 +1134,7 @@ export const copy: SiteCopy = {
               line: "A Markyos link or password protection. Your own domain is coming soon.",
             },
           ],
-          link: { label: "The guideline site", href: "/platform/guideline-sites" },
+          link: { label: "The guideline site", href: "/solutions/guideline-sites" },
         },
         {
           n: 6,
@@ -1162,7 +1162,7 @@ export const copy: SiteCopy = {
               line: "Your client approves the core guideline sections, and every approval is kept with its date.",
             },
           ],
-          link: { label: "The studio board", href: "/platform/studio-board" },
+          link: { label: "The studio board", href: "/solutions/client-projects" },
         },
         {
           n: 7,
@@ -1223,8 +1223,8 @@ export const copy: SiteCopy = {
             },
             { name: "Your text isn't stored", line: "We keep the score, not the words." },
           ],
-          link: { label: "Brand voice", href: "/platform/brand-voice" },
-          link2: { label: "The tone checker", href: "/platform/tone-checker" },
+          link: { label: "Brand voice", href: "/solutions/brand-voice" },
+          link2: { label: "The tone checker", href: "/solutions/tone-checker" },
         },
         {
           n: 9,
@@ -1261,7 +1261,7 @@ export const copy: SiteCopy = {
               chip: "brand-health",
             },
           ],
-          link: { label: "Viewers and sharing", href: "/platform/team-and-sharing" },
+          link: { label: "Viewers and sharing", href: "/solutions/company-rollout" },
         },
       ],
       cells: [
