@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { WaitlistSchema } from "@/lib/waitlist";
 
 import { contentApiUrl } from "@/lib/content/connection";
+import { siteHeaders } from "@/lib/visitor";
 
 /** Validate locally; report success only after the shared backend accepts it. */
 export async function POST(request: Request) {
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
 
   try {
     const response = await fetch(`${contentApiUrl()}/content/public/signups/`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
+      method: "POST", headers: siteHeaders(request),
       body: JSON.stringify(parsed.data), cache: "no-store", signal: AbortSignal.timeout(8000),
     });
     if (response.status === 429) {
