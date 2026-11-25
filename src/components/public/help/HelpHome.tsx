@@ -88,6 +88,7 @@ export function HelpSearchForm({ locale, query = "" }: { locale: Locale; query?:
         id="help-q"
         name="q"
         type="search"
+        dir="auto"
         defaultValue={query}
         required
         maxLength={200}
