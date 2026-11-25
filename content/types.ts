@@ -381,7 +381,7 @@ export type StudioPathCopy = {
 // ── §4.8 The handoff loop ───────────────────────────────────────────────────
 
 export type HandoffLoopCopy = {
-  /** The partner reward lands across v1.0–v2.0, so it is chipped before launch. */
+  /** The feature the loop is about, for its status chip. */
   feature: FeatureId;
   headline: string;
   body: string[];
@@ -429,7 +429,7 @@ export type ToneCheckerCopy = {
   comingHeading: string;
   coming: { feature: FeatureId; label: string }[];
   cta: Cta;
-  smallPrint: string;
+  smallPrint?: string;
 };
 
 // ── §4.11 One source of truth ───────────────────────────────────────────────

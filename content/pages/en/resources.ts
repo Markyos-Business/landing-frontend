@@ -68,9 +68,11 @@ const resources: PageDoc = {
     },
     {
       kind: "callout",
-      title: "Your brand strategy on one page.",
-      body: ["A free template, with an example for every field."],
-      cta: { label: "Read the guide", href: "/guides/brand-strategy-one-page" },
+      title: "Featured guide",
+      body: [
+        "How to write a discovery questionnaire that surfaces what your client doesn't say. With 40 ready questions in Arabic and English.",
+      ],
+      cta: { label: "Read the guide", href: "/solutions/discovery" },
     },
     {
       kind: "signup",
@@ -169,7 +171,7 @@ const contact: PageDoc = {
       cols: 2,
       items: [
         {
-          term: "Sales and Enterprise",
+          term: "Sales",
           body: "For plans, contracts and larger organisations.",
           cta: CTA.enterprise,
         },

@@ -71,21 +71,20 @@ export function HandoffCard({ locale }: { locale: Locale }) {
         ))}
       </dl>
 
-      {/* The reward, on its own tinted row: it is the part of this page
-          nobody believes on first reading, so it is the part that is drawn
-          rather than listed. */}
+      {/* Where the brand's plan goes, on its own tinted row: the question a
+          studio asks before it hands anything over. */}
       <div
         className="mt-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 rounded-[var(--radius-widget)] p-3.5"
         style={{ background: "var(--accent-soft)" }}
       >
         <span className="text-[length:var(--fs-eyebrow)] text-[var(--text-muted)]">
-          {h.rewardLabel}
+          {h.planLabel}
         </span>
         <span className="text-[0.875rem] font-medium text-[var(--accent-on-soft)]">
-          {h.rewardValue}
+          {h.planValue}
         </span>
         <span className="w-full text-[length:var(--fs-eyebrow)] text-[var(--text-muted)]">
-          {h.rewardNote}
+          {h.planNote}
         </span>
       </div>
     </div>

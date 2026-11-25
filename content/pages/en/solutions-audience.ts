@@ -165,22 +165,9 @@ const studios: PageDoc = {
       kind: "prose",
       title: "Hand over a brand, not a folder.",
       body: [
-        "Your client gets a hub with their name on it, and you keep the role you agreed. When they upgrade, you get 20% of what they pay in their first year, or 25% on Agency, as credit on your plan.",
+        "Your client gets a hub with their name on it, and the brand moves to their account with its plan. You stay on as an editor.",
       ],
       links: [LINK.handoff],
-    },
-    {
-      kind: "table",
-      numeric: true,
-      head: [
-        { text: "Clients on the Brand plan" },
-        { text: "You earn a month" },
-        { text: "On Agency" },
-      ],
-      rows: [
-        [{ text: "5" }, { text: "$24" }, { text: "$30" }],
-        [{ text: "12" }, { text: "$57.60" }, { text: "$72, most of an Agency plan" }],
-      ],
     },
     audiencePlanTable("studio", "en", "Free to build. Pay per brand you share."),
     {
@@ -269,10 +256,10 @@ const freelancers: PageDoc = {
           cta: LINK.seePricing,
         },
         {
-          title: "Partner reward",
-          body: ["Five clients cover your plan."],
+          title: "Handoff",
+          body: ["Your client owns the brand and its plan."],
           cta: LINK.handoff,
-          feature: "partner-reward",
+          feature: "handoff",
         },
         {
           title: "Both languages",
@@ -405,7 +392,7 @@ const companies: PageDoc = {
       items: [
         {
           q: "Do we pay for everyone?",
-          a: "No. You pay for editors. Viewers are free and unlimited from Brand up, 100 on Starter, 25 on Free.",
+          a: "No. You pay a monthly plan per brand you share. Viewers don't change the price.",
         },
         {
           q: "What happens to the text we check?",
@@ -413,7 +400,7 @@ const companies: PageDoc = {
         },
         {
           q: "We have more than one brand.",
-          a: "The Team plan includes three.",
+          a: "A company plan covers one brand. For more than one, contact us.",
         },
       ],
     },

@@ -111,7 +111,7 @@ const cookies: PageDoc = {
   path: "/cookies",
   shortTitle: "Cookies",
   title: "Cookies · Markyos",
-  description: "Which cookies keep the site working, and which ones only run if you say yes.",
+  description: "The one cookie this site sets, and how visits are counted without cookies.",
   breadcrumbs: [HOME],
   noindex: true,
   priority: 0.3,
@@ -119,7 +119,7 @@ const cookies: PageDoc = {
     {
       kind: "hero",
       title: "Cookies",
-      lead: "We use cookies to keep you signed in, remember your language and the path you chose, and understand how the site is used. Non-essential cookies only run with your consent.",
+      lead: "This site sets one cookie, and only if you rate a help article. Signing in happens in the app, and your language is part of the address.",
     },
     {
       kind: "terms",
@@ -127,14 +127,17 @@ const cookies: PageDoc = {
       cols: 2,
       items: [
         {
-          term: "Essential",
-          body: "Signing in, your language, and the path you chose. Always on.",
+          term: "Help Center feedback",
+          body: "An anonymous ID, set when you rate an article, so your vote counts once. Kept for a year.",
         },
-        { term: "Preferences", body: "What you picked last time, so you don't pick it again." },
-        { term: "Analytics", body: "How the site is used, in aggregate. Only with consent." },
-        { term: "Marketing", body: "Not used today. Listed so the list is complete." },
+        {
+          term: "Visit counts",
+          body: "Pages viewed, counted without cookies. Your IP address isn't stored, and nothing is counted when your browser sends Do Not Track or Global Privacy Control.",
+        },
+        { term: "Preferences", body: "None. Your language is in the address: / for Arabic, /en for English." },
+        { term: "Marketing", body: "None." },
       ],
-      note: "The full categories and the consent record are being set with a lawyer before launch.",
+      note: "The app at app.markyos.com sets its own cookies to keep you signed in.",
     },
     { kind: "cta", title: "Questions about cookies?", links: [LINK.contact, LINK.privacy] },
   ],

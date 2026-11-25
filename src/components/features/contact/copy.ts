@@ -108,7 +108,7 @@ export const COPY: Record<Locale, ContactCopy> = {
       en: "الإنجليزية",
     },
     topics: {
-      sales: "المبيعات وخطة المؤسسات",
+      sales: "المبيعات والشركات الكبيرة",
       support: "الدعم",
       studios: "شراكات الاستوديوهات",
       press: "الصحافة",
@@ -166,7 +166,7 @@ export const COPY: Record<Locale, ContactCopy> = {
       en: "English",
     },
     topics: {
-      sales: "Sales and Enterprise",
+      sales: "Sales and larger teams",
       support: "Support",
       studios: "Studio partnerships",
       press: "Press",

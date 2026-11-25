@@ -27,7 +27,7 @@ const roadmap: PageDoc = {
       items: [
         {
           title: "Live · launch, February 2027",
-          body: "For studios: forms and AI analysis · Strategy hub · moodboards · Asset library · guideline sites in 8 looks · handoff and partner reward · studio board. For companies: brand voice and tone checker · leadership alignment · viewers and partner links · invite your studio.",
+          body: "For studios: forms and AI analysis · Strategy hub · moodboards · Asset library · guideline sites in 8 looks · handoff · studio board. For companies: brand voice and tone checker · leadership alignment · viewers and partner links · invite your studio.",
         },
         {
           title: "Spring 2027 · Explore together",
@@ -39,7 +39,7 @@ const roadmap: PageDoc = {
         },
         {
           title: "Later in 2027 · Run a whole brand team",
-          body: "Reviews and approvals · brand health · Chrome extension · design checks · sub-brands · Figma · webhooks · API · Agency, Business and Enterprise plans · SSO.",
+          body: "Reviews and approvals · brand health · Chrome extension · design checks · sub-brands · Figma · webhooks · API · plans for larger teams · SSO.",
         },
       ],
     },
