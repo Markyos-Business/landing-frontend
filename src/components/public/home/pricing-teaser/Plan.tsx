@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n/locales";
 import type { PlanCopy } from "@/content/types";
-import { BLUE_DEEP, Cta, INK_55, RING_6, SELECTED } from "../landing";
+import { BLUE_INK, Cta, INK_55 } from "../landing";
 
 export function Plan({
   plan,
@@ -15,16 +15,16 @@ export function Plan({
     <li
       /* A plan card is a card with one CTA in it, so the card answers the
          pointer and the button inside it still does not move. */
-      className="mk-reach"
-      style={{
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        padding: 28,
-        borderRadius: 26,
-        background: "#fff",
-        boxShadow: plan.recommended ? SELECTED : RING_6,
-      }}
+      /*
+       * The card's ground, edge and radius now come from `.mk-plan`, and the
+       * recommended one's lit edge, halo and pool from `.mk-plan-lit`, so this
+       * card and the one on /pricing are the same object described once. The
+       * inline values that used to say it here are gone rather than
+       * overridden: an inline style beats a class, so leaving them would have
+       * meant the two surfaces drifting apart the next time one was edited.
+       */
+      className={`mk-reach mk-plan${plan.recommended ? " mk-plan-lit" : ""}`}
+      style={{ padding: "30px 28px 28px" }}
     >
       <div
         style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}
@@ -33,26 +33,9 @@ export function Plan({
           {plan.name}
         </h3>
         {plan.recommended ? (
-          <span
-            className="mk-bidi"
-            style={{
-              blockSize: 26,
-              paddingInline: 10,
-              borderRadius: 999,
-              /* The design file fills this with a #3DB0FF→#0077FF gradient.
-                 White on its top stop is 2.4:1 at 12px, so the badge takes
-                 the deep blue flat — 5.9:1, and the one gradient the page
-                 keeps is the one inside a headline. */
-              background: BLUE_DEEP,
-              color: "#fff",
-              fontSize: 12,
-              fontWeight: 500,
-              display: "inline-flex",
-              alignItems: "center",
-            }}
-          >
-            {recommendedLabel}
-          </span>
+          /* `.mk-plan-tag`: the accent edge with the canvas as ink, uppercase
+             and tracked in Latin and neither in Arabic, per §11. */
+          <span className="mk-bidi mk-plan-tag">{recommendedLabel}</span>
         ) : null}
       </div>
 
@@ -60,31 +43,23 @@ export function Plan({
       {/* Absent when the backend's plans were unreachable at build. */}
       {plan.price ? (
         <p style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "18px 0 0" }}>
-          <span className="mk-bidi" style={{ fontSize: 44, fontWeight: 500, lineHeight: 1 }}>
+          <span className="mk-bidi mk-plan-amount" style={{ fontSize: 44 }}>
             {plan.price}
           </span>
         </p>
       ) : null}
 
-      <dl style={{ display: "flex", flexDirection: "column", margin: "22px 0 0", flex: 1 }}>
+      {/*
+       * The ledger: ruled above and below as one block, rather than a top rule
+       * drawn on each row. `.mk-plan-limit dd` carries `tabular-nums`, which is
+       * what the reference's mono face was actually for — the values line up
+       * down the column without a third font family being loaded for figures.
+       */}
+      <dl className="mk-plan-limits" style={{ margin: "22px 0 0", flex: 1 }}>
         {plan.rows.map((row) => (
-          <div
-            key={row.label}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: 16,
-              padding: "12px 0",
-              boxShadow: "0 -1px 0 rgba(11,11,15,.06)",
-              fontSize: 14,
-            }}
-          >
-            <dt className="mk-bidi" style={{ color: INK_55 }}>
-              {row.label}
-            </dt>
-            <dd className="mk-bidi" style={{ margin: 0, fontWeight: 500 }}>
-              {row.value}
-            </dd>
+          <div key={row.label} className="mk-plan-limit">
+            <dt className="mk-bidi">{row.label}</dt>
+            <dd className="mk-bidi">{row.value}</dd>
           </div>
         ))}
       </dl>
@@ -118,7 +93,7 @@ export function Plan({
             inlineSize: "100%",
             blockSize: 46,
             justifyContent: "center",
-            color: plan.recommended ? "#fff" : BLUE_DEEP,
+            color: plan.recommended ? "#fff" : BLUE_INK,
             boxShadow: plan.recommended ? undefined : "inset 0 0 0 1px rgba(0,85,255,.25)",
           }}
         >
