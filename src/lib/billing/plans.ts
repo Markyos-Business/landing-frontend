@@ -37,7 +37,7 @@ const schema = z.object({
   currency: z.string().length(3),
   interval: z.literal("month"),
   perBrand: z.boolean(),
-  free: limits,
+  free: limits.extend({ publishedSites: z.number().int().nonnegative().optional() }),
   types: z.object({ freelancer: plan, studio: plan, company: plan }),
 });
 

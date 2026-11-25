@@ -66,7 +66,7 @@ const clientProjects: PageDoc = {
       kind: "callout",
       title: "Works with, and plans",
       body: [
-        "Every feature in a project updates its stage. Each brand is free to build, and takes a monthly plan when you share it, priced by your account type.",
+        "Every feature in a project updates its stage. Each brand is free to build and your first guideline site is free to publish; other brands take a monthly plan when you share them, priced by your account type.",
       ],
       cta: LINK.pricing,
     },

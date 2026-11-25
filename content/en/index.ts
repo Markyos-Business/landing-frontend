@@ -594,7 +594,7 @@ export const copy: SiteCopy = {
       feature: "handoff",
       headline: "Build the brand. Hand it over. Keep it alive.",
       body: [
-        "Build the strategy, the identity and the guideline free. When the brand is ready to share, it takes a monthly plan, priced by the owner's account type.",
+        "Build the strategy, the identity and the guideline free, and publish your first guideline site free, with the badge. Every other brand you share takes a monthly plan, priced by the owner's account type.",
         "Hand it over and your client owns it, plan and all. You stay on as an editor, so the brand keeps your standard after launch.",
       ],
       strip: [
