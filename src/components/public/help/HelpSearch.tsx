@@ -160,6 +160,7 @@ export function HelpSearch({
           id="help-search-q"
           name="q"
           type="search"
+          dir="auto"
           role="combobox"
           aria-expanded={results.length > 0}
           aria-controls={listId}

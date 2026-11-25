@@ -20,7 +20,7 @@ import { legalPages } from "./legal";
  * and product mocks; it is not a stack of blocks and should not be forced
  * into one. Its Arabic lives in `content/ar/overrides.ts`.
  *
- * **The blog, the guides and the help centre** (`/blog`, `/guides`, `/help`)
+ * **The blog, the guides and the Help Center** (`/blog`, `/guides`, `/help`)
  * are editorial content, not page copy. They have their own routes, read from
  * `src/lib/content`, and are added to weekly rather than reviewed once. See
  * `src/lib/content/adapter.ts` for why that line is drawn where it is.

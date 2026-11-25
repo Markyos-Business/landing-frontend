@@ -6,7 +6,7 @@ import { HelpBrowser } from "@/components/features/help";
 import { type CollectionCopy, UI } from "./copy";
 import { IndexHero } from "./shared";
 
-/* ── the help centre ──────────────────────────────────────────────────────
+/* ── the Help Center ──────────────────────────────────────────────────────
  *
  * Search first, then categories, then everything. A reader arrives here with
  * a question already formed, and the fastest route from a formed question to

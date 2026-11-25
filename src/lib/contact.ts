@@ -6,16 +6,10 @@ import { LOCALES } from "./i18n/locales";
  *
  * ── Why this is not another `topic` on the waitlist ────────────────────────
  *
- * `src/lib/waitlist.ts` already has a `"contact"` topic, and /contact already
- * used it: one email field, posted to `/api/waitlist`, which answers 501 on
- * purpose because nobody has decided where a mailing list lives. That is the
- * right answer for a mailing list and the wrong one for a message. An address
- * with no message attached is a lead to be stored and followed up; a message
- * is something a person wrote and expects an answer to, and it has somewhere
- * to go today — an inbox.
- *
- * So they stay separate contracts. The newsletter capture on /resources is
- * still the waitlist's, still honestly 501, and unaffected by this file.
+ * `src/lib/waitlist.ts` has a `"contact"` topic too, but that is an address
+ * on a list. A message is something a person wrote and expects an answer to,
+ * so it has its own contract and its own destination: the platform stores it
+ * (CMS → Messages) and emails it to the team (`/api/contact`).
  */
 
 /**
@@ -145,10 +139,8 @@ export type ContactRequest = z.input<typeof ContactSchema>;
 export type ContactMessage = z.output<typeof ContactSchema>;
 
 /**
- * Where messages go.
- *
- * Not a secret — it is a published destination, and writing it here means a
- * deploy cannot quietly lose it to an unset variable. `CONTACT_INBOX`
- * overrides it so staging can send somewhere else without a code change.
+ * The address shown when a message could not be handed to the platform, so
+ * the visitor can write directly. The platform's own `CONTACT_INBOX` decides
+ * where stored messages are emailed; set this to the same address.
  */
 export const CONTACT_INBOX = process.env.CONTACT_INBOX ?? "markyos.web@gmail.com";

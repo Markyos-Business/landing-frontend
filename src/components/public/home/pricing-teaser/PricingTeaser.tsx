@@ -38,8 +38,8 @@ export function PricingTeaser({ copy, cards, locale }: {
       style={{
         position: "relative",
         padding: "clamp(72px,10vw,120px) 24px",
-        background: "#fff",
-        boxShadow: "0 0 0 1px rgba(11,11,15,.04)",
+        background: "var(--surface-1)",
+        boxShadow: "0 0 0 1px rgba(255,255,255,0.06)",
         /* clip, not hidden: `overflow: hidden` makes a scroll container, and
            a scroll-driven `view()` timeline resolves against the nearest one
            — so every reveal inside this section was pinned at full progress
@@ -115,8 +115,8 @@ export function PricingTeaser({ copy, cards, locale }: {
                 inlineSize: "calc(50% - 4px)",
                 blockSize: 44,
                 borderRadius: 999,
-                background: "#fff",
-                boxShadow: "0 1px 2px rgba(11,11,15,.08),0 6px 14px -6px rgba(11,20,60,.2)",
+                background: "var(--surface-1)",
+                boxShadow: "0 1px 2px rgba(255,255,255,0.12),0 6px 14px -6px rgba(0,0,0,.6)",
                 transition: "transform 420ms cubic-bezier(.32,.72,0,1)",
                 transform: studio ? "none" : "translateX(var(--mk-knob))",
               }}

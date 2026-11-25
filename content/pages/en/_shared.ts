@@ -60,7 +60,7 @@ export const CTA = {
  * from any heading it sits under. The reasoning is in the Arabic file and
  * applies here unchanged: a link that repeats the heading above it adds
  * nothing but a colour. The names that are genuinely destinations — the
- * help centre, the legal pages, "About" — stay names, because naming the
+ * Help Center, the legal pages, "About" — stay names, because naming the
  * place *is* the useful thing there.
  */
 export const LINK = {
@@ -72,7 +72,7 @@ export const LINK = {
   terms: { label: "Terms", href: "/terms" } satisfies Cta,
   roadmap: { label: "See the roadmap", href: "/roadmap" } satisfies Cta,
   whatsNew: { label: "Read what's new", href: "/whats-new" } satisfies Cta,
-  help: { label: "Help centre", href: "/help" } satisfies Cta,
+  help: { label: "Help Center", href: "/help" } satisfies Cta,
   about: { label: "About us", href: "/about" } satisfies Cta,
   contact: { label: "Contact us", href: "/contact" } satisfies Cta,
   platform: { label: "Browse every feature", href: "/platform" } satisfies Cta,

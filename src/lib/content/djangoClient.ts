@@ -37,6 +37,23 @@ function absolute(value: unknown, origin: string): unknown {
  * A cached GET. `null` for a 404 (unpublished, or never written); any other
  * failure throws, for the caller's fallback to catch.
  */
+/**
+ * The same read, never cached: for draft previews, which must show the draft
+ * as it is now and must never be stored where a public page could reuse it.
+ */
+export async function contentApiFresh<T>(path: string): Promise<T | null> {
+  const root = contentApiUrl();
+  if (!root) throw new Error("CONTENT_API_URL is not set");
+  const response = await fetch(`${root}${path}`, {
+    headers: { Accept: "application/json" },
+    cache: "no-store",
+    signal: AbortSignal.timeout(8000),
+  });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`${response.status} from ${path}`);
+  return absolute(await response.json(), new URL(root).origin) as T;
+}
+
 export async function contentApi<T>(path: string, tags: string[]): Promise<T | null> {
   const root = contentApiUrl();
   if (!root) throw new Error("CONTENT_API_URL is not set");

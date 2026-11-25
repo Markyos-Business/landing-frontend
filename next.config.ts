@@ -39,10 +39,20 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "api.markyos.com", pathname: "/media/**", search: "" },
       { protocol: "https", hostname: "api-staging.markyos.com", pathname: "/media/**", search: "" },
+      // Where the platform serves media when cloud storage is on (a Spaces or
+      // CDN host): CONTENT_MEDIA_HOSTS=cdn.example.com,other.example.com
+      ...(process.env.CONTENT_MEDIA_HOSTS ?? "")
+        .split(",")
+        .map((host) => host.trim())
+        .filter(Boolean)
+        .map((hostname) => ({ protocol: "https" as const, hostname, pathname: "/**", search: "" })),
     ],
   },
   experimental: {
     agentUpgrade: "security",
+    // A bilingual 404 for URLs that match no route (src/app/global-not-found.tsx);
+    // the locale layout never runs for those, so [lang]/not-found.tsx cannot.
+    globalNotFound: true,
   },
   async headers() {
     return [
@@ -52,6 +62,14 @@ const nextConfig: NextConfig = {
           ? [...securityHeaders, { key: "X-Robots-Tag", value: "noindex, nofollow" }]
           : securityHeaders,
       },
+      // CMS draft previews: a signed link, never indexed even on production.
+      ...["/preview/:token", "/en/preview/:token"].map((source) => ({
+        source,
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Cache-Control", value: "private, no-store" },
+        ],
+      })),
     ];
   },
   // The marketing site is almost entirely static. Keeping `trailingSlash` off
@@ -65,6 +83,13 @@ const nextConfig: NextConfig = {
       ...["/start", "/signup", "/register", "/login"].map(source => ({
         source,
         destination: `${APP_URL}/${source === "/login" ? "login" : "signup"}`,
+        permanent: false,
+      })),
+      // The English edition's old auth paths (/en/start was a live CTA before
+      // the CTAs linked straight to the platform): same targets, in English.
+      ...["/start", "/signup", "/register", "/login"].map(source => ({
+        source: `/en${source}`,
+        destination: `${APP_URL}/${source === "/login" ? "login" : "signup"}?lang=en`,
         permanent: false,
       })),
 

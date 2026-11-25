@@ -71,6 +71,23 @@ export const formStyles = [
   } },
 
   /*
+   * What is wrong with a required field (25 Nov 2026), under its control. The
+   * state hue, never colour alone: the sentence says what to fix, and the
+   * control's `aria-describedby` points at it so a screen reader reads it with
+   * the field. 13px, one step above the floor, because it has to be read.
+   */
+  /* `.mk-field > .mk-field-error`, not just the class: the message is a direct
+     span of the label, and `.mk-field > span` (the label text) would win. */
+  { ".mk-field > .mk-field-error": {
+    "font-size": "0.8125rem",
+    "font-weight": "500",
+    "color": "var(--mk-state-rejected)",
+  } },
+  { ".mk-field :where(input, textarea, select)[aria-invalid=\"true\"]": {
+    "box-shadow": "inset 0 0 0 1px var(--mk-state-rejected)",
+  } },
+
+  /*
    * The controls.
    *
    * Selected by element inside `.mk-field` rather than by a class on each

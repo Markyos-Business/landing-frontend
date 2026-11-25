@@ -45,7 +45,17 @@ const ROUTES: Entry[] = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const editorial = await contentApi<{results: {path:string; locales:Locale[]; lastModified:string}[]}>("/content/public/sitemap/", [CONTENT_TAG]);
+  type Editorial = { results: { path: string; locales: Locale[]; lastModified: string }[] };
+  let editorial: Editorial | null;
+  try {
+    editorial = await contentApi<Editorial>("/content/public/sitemap/", [CONTENT_TAG]);
+  } catch (error) {
+    // A sleeping backend must not fail a deploy: build with the static pages
+    // and let the hourly revalidation add the CMS ones. At runtime, throw so
+    // Next keeps serving the last good sitemap.
+    if (process.env.NEXT_PHASE !== "phase-production-build") throw error;
+    editorial = null;
+  }
   /*
    * The Help Center: the home, each topic with published articles, and each
    * published public article, in the languages it is published in. Its
@@ -69,8 +79,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const editorialEntries = (editorial?.results ?? []).filter(
     (entry) => !(help.length > 1 && entry.path.startsWith("/help/")),
   );
+  /*
+   * An editorial index (/blog, /guides, /compare, /whats-new) is listed once
+   * it has one real published piece in a language: that is exactly when the
+   * index stops being noindex. The platform's sitemap already leaves out
+   * placeholder (provisional) pieces, so its paths are the test.
+   */
+  const indexes: Entry[] = ["/blog", "/guides", "/compare", "/whats-new"].flatMap((section) => {
+    const locales = LOCALES.filter((l) =>
+      editorialEntries.some((e) => e.path.startsWith(`${section}/`) && e.locales.includes(l)),
+    );
+    return locales.length ? [{ path: section, priority: 0.7, locales }] : [];
+  });
   const routes: Entry[] = [
     ...ROUTES.filter((r) => !(help.length > 1 && r.path === "/help")),
+    ...indexes,
     ...editorialEntries.map((entry) => ({ ...entry, priority: 0.6 })),
     ...help,
   ];

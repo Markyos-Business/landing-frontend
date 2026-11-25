@@ -107,7 +107,18 @@ for (const file of [...walk(path.join(root, "content")), ...walk(path.join(root,
 assert.deepEqual(stray, [], `A current plan price is written into the site:\n${stray.join("\n")}`);
 
 // 2. Retired products and providers never appear on the site again.
-const RETIRED = [/project pass/i, /تصريح (ال)?مشروع/, /\bstripe\b/i];
+const RETIRED = [
+  /project pass/i, /تصريح (ال)?مشروع/, /\bstripe\b/i,
+  // The pre-billing plan model (Nov 2026): plan names, project slots, seats and
+  // the partner reward. The app sells one plan per brand, by account type.
+  /\b(Solo|Starter|Agency|Business|Enterprise|Brand|Team|Pro) plans?\b/,
+  /\bon (Solo|Pro|Agency|Brand|Team|Starter)\b/,
+  /partner reward|\b2[05]% (of what|back|when)/i,
+  /«(الوكالة|العلامة|الفريق|البداية|الفردية|الاحترافية|الأعمال|المؤسسات)»/,
+  /مكافأة الشريك|حصة المشروع|خطة المؤسسات|الخطة الاحترافية/,
+  // A dollar figure in copy is a price that can drift from /billing/plans/.
+  /\$\d/,
+];
 const offenders = [];
 for (const file of [...walk(path.join(root, "content")), ...walk(path.join(root, "src/components"))]) {
   const text = shipped(file);

@@ -8,7 +8,7 @@ import { Section } from "@/components/ui";
  *
  * Arabic is the primary edition and English is translated from it, so this is
  * the honest answer for the twenty-seven subpages and for every article in
- * the blog, the guides and the help centre.
+ * the blog, the guides and the Help Center.
  *
  * It is a notice and not a 404, and that is the whole reason it exists: the
  * language switch sits in the header of every page, so a 404 here would be

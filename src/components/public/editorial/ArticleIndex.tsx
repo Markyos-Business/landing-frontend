@@ -38,7 +38,7 @@ export function ArticleIndex({
         ) : collection === "blog" ? (
           <BlogBody posts={posts} locale={locale} copy={copy} ui={ui} />
         ) : (
-          /* Every section that is not the help centre and not the blog: the
+          /* Every section that is not the Help Center and not the blog: the
              guides, the comparisons and the release notes. The collection
              was hard-coded to "guides" here, which was true while guides
              were the only one and silently wrong the day they were not —
@@ -196,7 +196,7 @@ function FeaturePost({
  * Cards and not the rows this used to be: a row carries a title and nothing
  * else, which is right for a support index where the title *is* the question,
  * and wrong for a magazine where the excerpt is half the reason to open one.
- * The help centre kept the rows.
+ * The Help Center kept the rows.
  */
 function PostGrid({
   posts,

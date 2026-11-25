@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     const { path, locale, referrer } = parsed.data;
 
     // Only record real site paths. Never the admin, never the API.
-    if (!path.startsWith("/") || /^\/(admin|api)\b/.test(path)) return ok;
+    if (!path.startsWith("/") || /^\/(admin|api|preview)\b/.test(path)) return ok;
 
     const forwarded = request.headers.get("x-forwarded-for") ?? "";
     const ip = forwarded.split(",")[0]?.trim() || "0.0.0.0";

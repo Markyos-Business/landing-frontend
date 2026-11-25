@@ -5,7 +5,7 @@ import type { Locale } from "@/lib/i18n/locales";
  *
  * Arabic does not have one plural, it has six categories, and a count of one
  * takes a different word from a count of three — "1 دقائق" is as wrong as
- * "1 minutes" and was on every card in the help centre until a screenshot
+ * "1 minutes" and was on every card in the Help Center until a screenshot
  * caught it. `Intl.PluralRules` knows the categories; these map them to each
  * noun's four written forms. Written out rather than templated, because the
  * number itself disappears in the dual and the singular — which is exactly
@@ -170,11 +170,11 @@ export const COLLECTIONS: Record<Collection, Record<Locale, CollectionCopy>> = {
         "هذا المقال محتوى مبدئي، كُتب لتجربة تصميم الصفحة. قد تختلف الخطوات عن المنتج النهائي.",
     },
     en: {
-      eyebrow: "Help centre",
+      eyebrow: "Help Center",
       title: "How can we help?",
       lead: "Step-by-step guidance for everything in Markyos.",
       empty: "The help articles are being written.",
-      back: "Help centre",
+      back: "Help Center",
       readingTime: (m) => `${m} min read`,
       provisional:
         "This article is placeholder content, written to try the page design.",
@@ -233,7 +233,7 @@ export const UI: Record<
     categories: "Categories",
     related: "Read next",
     share: "Share",
-    searchLabel: "Search the help centre",
+    searchLabel: "Search the Help Center",
     searchPlaceholder: "Search help articles…",
     clear: "Clear search",
     noMatch: "No articles match your search.",

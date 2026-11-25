@@ -83,8 +83,8 @@ export const copy: SiteCopy = {
                 href: "/solutions/guideline-sites",
               },
               {
-                title: "A handoff that pays you back",
-                line: "Hand over a live hub, and earn 20% when your client upgrades.",
+                title: "A handoff your client owns",
+                line: "Hand over a live hub with their name on it, not a zip file.",
                 href: "/solutions/client-handoff",
               },
             ],
@@ -132,7 +132,7 @@ export const copy: SiteCopy = {
                 href: "/solutions/tone-checker",
               },
               {
-                title: "The whole company, free",
+                title: "The whole company, one plan",
                 line: "Unlimited viewers on paid plans, and safe links for your agencies and partners.",
                 href: "/solutions/company-rollout",
               },
@@ -148,7 +148,7 @@ export const copy: SiteCopy = {
         strip: [
           { label: "Built in Arabic, not translated into it.", href: "/platform/arabic" },
           { label: "How does handoff work?", href: "/solutions/client-handoff#how" },
-          { label: "Not sure? Help me choose", href: "/start" },
+          { label: "Not sure? Help me choose", href: "/solutions" },
         ],
       },
       /*
@@ -266,7 +266,7 @@ export const copy: SiteCopy = {
         links: [
           { label: "Blog", href: "/blog" },
           { label: "Guides", href: "/guides" },
-          { label: "Help center", href: "/help" },
+          { label: "Help Center", href: "/help" },
           { label: "Compare", href: "/compare" },
         ],
       },
@@ -309,7 +309,7 @@ export const copy: SiteCopy = {
         links: [
           { label: "Blog", href: "/blog" },
           { label: "Guides", href: "/guides" },
-          { label: "Help center", href: "/help" },
+          { label: "Help Center", href: "/help" },
           { label: "Compare", href: "/compare" },
         ],
       },
@@ -584,23 +584,23 @@ export const copy: SiteCopy = {
           name: "Hand off",
           feature: "handoff",
           headline: "Hand it over like it's worth what they paid.",
-          body: "Invite your client, and the hub becomes theirs. Their own brand site, live and editable, with their own login. You keep the role you agreed on, the project stops counting against your plan, and your slot is free for the next client. No zip file. No “final_FINAL_v3.pdf”. A brand they can actually use.",
+          body: "Invite your client, and the hub becomes theirs. Their own brand site, live and editable, with their own login. You stay on as an editor, and the brand moves to their account and their plan. No zip file. No “final_FINAL_v3.pdf”. A brand they can actually use.",
         },
       ],
       cta: { label: "Start your first project free", href: "/start?type=studio" },
     },
 
     handoffLoop: {
-      feature: "partner-reward",
-      headline: "Build it free. Hand it over. Get rewarded when they grow.",
+      feature: "handoff",
+      headline: "Build the brand. Hand it over. Keep it alive.",
       body: [
-        "You can run a full project on the free plan, from brief to handoff. When your client upgrades their hub, you earn 20% of what they pay for the first 12 months, as credit on your own plan.",
-        "Five clients on the Brand plan covers your own Pro subscription.",
+        "Build the strategy, the identity and the guideline free. When the brand is ready to share, it takes a monthly plan, priced by the owner's account type.",
+        "Hand it over and your client owns it, plan and all. You stay on as an editor, so the brand keeps your standard after launch.",
       ],
       strip: [
         { label: "You build", line: "the brand, the strategy, the hub" },
         { label: "They own", line: "a live brand hub with their name on it" },
-        { label: "You earn", line: "20% back as credit while they grow" },
+        { label: "You stay", line: "on the team, as an editor" },
       ],
       cta: { label: "I make brands for clients", href: "/start?type=studio" },
     },
@@ -707,7 +707,6 @@ export const copy: SiteCopy = {
         { feature: "chrome-extension", label: "Check text anywhere you write, from a Chrome extension" },
       ],
       cta: { label: "Run your first tone check free", href: "/start?type=company" },
-      smallPrint: "25 quick checks a month on the free plan. 1,000 a month on Brand.",
     },
 
     pillars: {
@@ -1132,7 +1131,7 @@ export const copy: SiteCopy = {
             },
             {
               name: "Safe publishing",
-              line: "A Markyos link, your own domain, or password protection.",
+              line: "A Markyos link or password protection. Your own domain is coming soon.",
             },
           ],
           link: { label: "The guideline site", href: "/platform/guideline-sites" },
@@ -1180,23 +1179,15 @@ export const copy: SiteCopy = {
             },
             { name: "You keep a role", line: "Editor or viewer, whichever you agreed." },
             {
-              name: "Your slot frees up",
-              line: "The project stops counting against your plan the moment it's handed over.",
+              name: "Their plan, their account",
+              line: "The brand moves to your client's account, and its plan is theirs to keep.",
             },
             {
-              name: "Always free",
-              line: "Handoff is free on every plan, and the hub stays live on the client's free plan.",
-            },
-            {
-              name: "The partner reward",
-              line: "20% of what your client pays in their first year, as credit on your subscription.",
-            },
-            {
-              name: "And agencies earn 25%",
-              line: "On the Agency plan the partner reward is a quarter of the client's first year, not a fifth.",
+              name: "Free to hand over",
+              line: "Handing a brand over costs nothing, on any account type.",
             },
           ],
-          link: { label: "Handoff and the partner reward", href: "/platform/handoff" },
+          link: { label: "How handoff works", href: "/solutions/client-handoff" },
         },
         {
           n: 8,
@@ -1390,7 +1381,7 @@ export const copy: SiteCopy = {
         "An honest comparison, stop by stop. What matters isn't how many tools you drop. It's that everything left is connected.",
       trademarkNote:
         "The names above are trademarks of their owners, and are mentioned only to describe the tools people commonly use.",
-      link: { label: "The full comparison", href: "/compare/tool-stack" },
+      link: { label: "All comparisons", href: "/compare" },
       notReplacedHeadline: "What Markyos does not replace",
       notReplaced: [
         {
@@ -1441,7 +1432,7 @@ export const copy: SiteCopy = {
             "Check your writing anywhere with a Chrome extension",
             "Reviews and approvals, and a brand health dashboard",
             "Download tracking on partner links",
-            "The Enterprise plan, with single sign-on and audit logs",
+            "Single sign-on and audit logs for larger teams",
           ],
         },
       ],
