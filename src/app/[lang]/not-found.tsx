@@ -1,9 +1,7 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { localeHref, splitLocalePath } from "@/lib/i18n/href";
-import type { Locale } from "@/lib/i18n/locales";
+import { getLocale } from "@/lib/i18n/dictionary";
+import { localeHref } from "@/lib/i18n/href";
+import { NOT_FOUND_COPY as COPY } from "@/content/not-found";
 import { Eyebrow, Glow, Section } from "@/components/ui";
 
 /*
@@ -20,34 +18,9 @@ import { Eyebrow, Glow, Section } from "@/components/ui";
  * solutions URL wants the solutions hub, not the top of the site.
  */
 
-const COPY: Record<
-  Locale,
-  { title: string; body: string; home: string; links: { label: string; href: string }[] }
-> = {
-  ar: {
-    title: "هذه الصفحة غير موجودة.",
-    body: "ربما تغيّر الرابط، أو لم تُنشر الصفحة بعد. لكن العلامة كلها هنا.",
-    home: "العودة إلى الرئيسية",
-    links: [
-      { label: "الحلول", href: "/solutions" },
-      { label: "الأسعار", href: "/pricing" },
-      { label: "مركز المساعدة", href: "/help" },
-    ],
-  },
-  en: {
-    title: "That page is not here.",
-    body: "The link may be old, or the page may not be written yet.",
-    home: "Back to the homepage",
-    links: [
-      { label: "Solutions", href: "/solutions" },
-      { label: "Pricing", href: "/pricing" },
-      { label: "Help centre", href: "/help" },
-    ],
-  },
-};
 
-export default function NotFound() {
-  const { locale } = splitLocalePath(usePathname() ?? "/");
+export default async function NotFound() {
+  const locale = await getLocale();
   const copy = COPY[locale];
 
   return (

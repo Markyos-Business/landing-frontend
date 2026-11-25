@@ -249,8 +249,7 @@ const guidelineSites: PageDoc = {
         },
         {
           term: "Published as a fixed snapshot",
-          body: "Share on your Markyos link. Custom domains are coming soon.",
-          feature: "domains",
+          body: "On your Markyos link, or behind a password. Your own domain is coming soon.",
         },
         {
           term: "Section copy from Brand Brain",

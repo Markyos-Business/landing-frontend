@@ -43,7 +43,6 @@ export type ContactCopy = {
    * on a form where most fields are optional it would put a mark on
    * everything that matters and nothing on what does not.
    */
-  validation: { name: string; email: string; message: string; other: string };
   optional: string;
   /** The empty first option of an optional select. */
   choose: string;
@@ -54,6 +53,17 @@ export type ContactCopy = {
   sending: string;
   /** The honeypot's label. Never seen, but it is a real labelled field. */
   honeypot: string;
+  /**
+   * What is wrong with a required field, shown under it and announced with it
+   * (25 Nov 2026). Until then a blank submit did nothing at all and a bad
+   * address got only the generic `states.invalid` line.
+   */
+  errors: {
+    name: string;
+    email: string;
+    emailFormat: string;
+    message: string;
+  };
   states: {
     sent: string;
     invalid: string;
@@ -66,12 +76,6 @@ export type ContactCopy = {
 
 export const COPY: Record<Locale, ContactCopy> = {
   ar: {
-    validation: {
-      name: "إدخال اسم من حرفين إلى 80 حرفًا.",
-      email: "إدخال بريد إلكتروني صالح لا يتجاوز 254 حرفًا.",
-      message: "كتابة رسالة من 10 إلى 4000 حرف.",
-      other: "مراجعة هذا الحقل ثم إعادة المحاولة.",
-    },
     fields: {
       name: "الاسم",
       email: "البريد الإلكتروني",
@@ -115,6 +119,12 @@ export const COPY: Record<Locale, ContactCopy> = {
     submit: "أرسل الرسالة",
     sending: "جارٍ الإرسال…",
     honeypot: "موقع الشركة",
+    errors: {
+      name: "اكتب اسمك.",
+      email: "اكتب بريدك الإلكتروني.",
+      emailFormat: "اكتب بريداً إلكترونياً صحيحاً، مثل name@company.com.",
+      message: "اكتب رسالتك.",
+    },
     states: {
       sent: "وصلت رسالتك. نقرأ كل رسالة، وسيصلك الردّ على بريدك.",
       invalid: "راجع الحقول ثم أعد المحاولة.",
@@ -124,12 +134,6 @@ export const COPY: Record<Locale, ContactCopy> = {
     },
   },
   en: {
-    validation: {
-      name: "Enter a name between 2 and 80 characters.",
-      email: "Enter a valid email address, up to 254 characters.",
-      message: "Write a message between 10 and 4000 characters.",
-      other: "Check this field and try again.",
-    },
     fields: {
       name: "Name",
       email: "Email",
@@ -173,6 +177,12 @@ export const COPY: Record<Locale, ContactCopy> = {
     submit: "Send message",
     sending: "Sending…",
     honeypot: "Company website",
+    errors: {
+      name: "Enter your name.",
+      email: "Enter your email address.",
+      emailFormat: "Enter a valid email, like name@company.com.",
+      message: "Write your message.",
+    },
     states: {
       sent: "Your message arrived. We read every one, and the reply comes to your email.",
       invalid: "Check the fields and try again.",

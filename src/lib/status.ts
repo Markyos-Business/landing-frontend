@@ -75,7 +75,7 @@ export const FEATURES = [
   { id: "department-pages", label: "Department pages (publishable, import from .docx/PDF)", status: "current", shipsIn: "Prototype" },
   { id: "drafts-queue", label: "Drafts queue with provenance", status: "current", shipsIn: "Prototype" },
   { id: "roles-approvals", label: "Roles, approval requests, sign-off pins", status: "current", shipsIn: "Prototype, server in v1.0" },
-  { id: "domains", label: "Custom subdomain and domain", status: "coming", shipsIn: "After launch" },
+  { id: "domains", label: "Custom domain for a published guide", status: "coming", shipsIn: "After launch (the app shows it as not available yet, 25 Nov 2026)" },
   { id: "studio-board", label: "Studio board (all projects by stage)", status: "current", shipsIn: "Prototype" },
   { id: "colour-checks", label: "Colour checks and copy linter", status: "current", shipsIn: "Prototype (partial)" },
 

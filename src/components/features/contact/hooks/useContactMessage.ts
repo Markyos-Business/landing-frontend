@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
+import { useState, useSyncExternalStore, type FormEvent } from "react";
 import type { Locale } from "@/lib/i18n/locales";
-import { ContactSchema, topicFromParam, type ContactTopic, type ContactWho } from "@/lib/contact";
+import { topicFromParam, type ContactTopic, type ContactWho } from "@/lib/contact";
 import { COPY } from "../copy";
 import { sendMessage } from "../services/contactService";
 import type { ContactState } from "../types";
@@ -21,17 +21,21 @@ const topicInUrl = () => new URLSearchParams(window.location.search).get("topic"
 /** The server has no URL query to read, so it renders the page's own default. */
 const noTopicOnTheServer = () => "";
 
+/** The required fields, in the order they appear in the form. */
+const REQUIRED = ["name", "email", "message"] as const;
+type RequiredField = (typeof REQUIRED)[number];
+
+/*
+ * A shape check, not a verdict: something@something.tld, no spaces. The server
+ * validates again with the schema in src/lib/contact.ts; this only catches the
+ * typo before the round trip.
+ */
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 /** The nine fields, the state machine, and the line the form reports back. */
 export function useContactMessage(locale: Locale, initialTopic: ContactTopic) {
   const [state, setState] = useState<ContactState>("idle");
   const [inbox, setInbox] = useState<string>();
-  const [invalidFields, setInvalidFields] = useState<string[]>([]);
-  const formRef = useRef<HTMLFormElement>(null);
-  useEffect(() => {
-    if (state !== "invalid" || !invalidFields.length) return;
-    const control = formRef.current?.elements.namedItem(invalidFields[0]);
-    if (control instanceof HTMLElement) control.focus();
-  }, [state, invalidFields]);
 
   /* Required. */
   const [name, setName] = useState("");
@@ -51,6 +55,13 @@ export function useContactMessage(locale: Locale, initialTopic: ContactTopic) {
    * translated before it can be read.
    */
   const [replyLanguage, setReplyLanguage] = useState<Locale>(locale);
+
+  /*
+   * What is wrong with each required field, if anything. Set on submit,
+   * cleared field by field as somebody fixes it, so a corrected field stops
+   * saying it is wrong the moment it is right.
+   */
+  const [errors, setErrors] = useState<Partial<Record<RequiredField, string>>>({});
 
   const copy = COPY[locale];
 
@@ -88,17 +99,26 @@ export function useContactMessage(locale: Locale, initialTopic: ContactTopic) {
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const validation = ContactSchema.safeParse({
-      name, email, topic, message, phone, company, country, who: who || undefined, replyLanguage, locale,
-    });
-    if (!validation.success) {
-      const names = [...new Set(validation.error.issues.map(issue => String(issue.path[0])))];
-      setInvalidFields(names);
+
+    /*
+     * Check the required fields here, before anything is sent. The form is
+     * `noValidate`, so the browser reports nothing on its own, and this used
+     * to return silently on a blank field: the button did nothing and nobody
+     * was told why. Now each problem is written under its field, the field is
+     * marked invalid, and focus moves to the first one.
+     */
+    const found: Partial<Record<RequiredField, string>> = {};
+    if (!name.trim()) found.name = copy.errors.name;
+    if (!email.trim()) found.email = copy.errors.email;
+    else if (!EMAIL.test(email.trim())) found.email = copy.errors.emailFormat;
+    if (!message.trim()) found.message = copy.errors.message;
+    setErrors(found);
+    const first = REQUIRED.find((field) => found[field]);
+    if (first) {
       setState("invalid");
-      setInbox(undefined);
+      (event.currentTarget.elements.namedItem(first) as HTMLElement | null)?.focus();
       return;
     }
-    setInvalidFields([]);
 
     /*
      * Read off the form synchronously, before the first await. `currentTarget`
@@ -139,10 +159,6 @@ export function useContactMessage(locale: Locale, initialTopic: ContactTopic) {
       company_url: honeypot,
     });
 
-    if (outcome.result === "invalid") {
-      const names = outcome.invalidFields ?? [];
-      setInvalidFields(names);
-    }
     setState(outcome.result);
     setInbox(outcome.inbox);
 
@@ -166,16 +182,24 @@ export function useContactMessage(locale: Locale, initialTopic: ContactTopic) {
 
   return {
     state,
-    formRef,
-    invalidFields,
     inbox,
     copy,
     fields: { name, email, topic, message, phone, company, country, who, replyLanguage },
+    errors,
     set: {
-      name: setName,
-      email: setEmail,
+      name: (value: string) => {
+        setName(value);
+        if (errors.name && value.trim()) setErrors((now) => ({ ...now, name: undefined }));
+      },
+      email: (value: string) => {
+        setEmail(value);
+        if (errors.email && EMAIL.test(value.trim())) setErrors((now) => ({ ...now, email: undefined }));
+      },
       topic: setChosen,
-      message: setMessage,
+      message: (value: string) => {
+        setMessage(value);
+        if (errors.message && value.trim()) setErrors((now) => ({ ...now, message: undefined }));
+      },
       phone: setPhone,
       company: setCompany,
       country: setCountry,

@@ -43,6 +43,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     agentUpgrade: "security",
+    // A bilingual 404 for URLs that match no route (src/app/global-not-found.tsx);
+    // the locale layout never runs for those, so [lang]/not-found.tsx cannot.
+    globalNotFound: true,
   },
   async headers() {
     return [
@@ -62,9 +65,16 @@ const nextConfig: NextConfig = {
       { source: "/admin/:path*", destination: `${APP_URL}/admin/cms`, permanent: false },
       // Keep bookmarked website auth paths working. New CTAs link directly
       // to the platform; incoming query strings (lang/type/plan) pass through.
-      ...["/start", "/signup", "/register", "/login", "/en/start", "/en/signup", "/en/register", "/en/login"].map(source => ({
+      ...["/start", "/signup", "/register", "/login"].map(source => ({
         source,
-        destination: `${APP_URL}/${source.endsWith("/login") ? "login" : "signup"}${source.startsWith("/en/") ? "?lang=en" : ""}`,
+        destination: `${APP_URL}/${source === "/login" ? "login" : "signup"}`,
+        permanent: false,
+      })),
+      // The English edition's old auth paths (/en/start was a live CTA before
+      // the CTAs linked straight to the platform): same targets, in English.
+      ...["/start", "/signup", "/register", "/login"].map(source => ({
+        source: `/en${source}`,
+        destination: `${APP_URL}/${source === "/login" ? "login" : "signup"}?lang=en`,
         permanent: false,
       })),
 

@@ -39,14 +39,15 @@ import { useContactMessage } from "../hooks/useContactMessage";
 function Field({
   label,
   hint,
-  children,
   error,
   errorId,
+  children,
 }: {
-  error?: string;
-  errorId?: string;
   label: string;
   hint?: string;
+  /** What is wrong with the field, shown under it. Its control points here. */
+  error?: string;
+  errorId?: string;
   children: ReactNode;
 }) {
   return (
@@ -56,7 +57,11 @@ function Field({
         {hint ? <em className="mk-field-hint">{hint}</em> : null}
       </span>
       {children}
-      {error ? <span id={errorId} className="mk-bidi text-sm text-[var(--text)]">{error}</span> : null}
+      {error ? (
+        <span id={errorId} className="mk-field-error mk-bidi">
+          {error}
+        </span>
+      ) : null}
     </label>
   );
 }
@@ -88,17 +93,15 @@ export function ContactForm({
   /** The content file's own word for the button, when it has one. */
   submitLabel?: string;
 }) {
-  const { state, formRef, invalidFields, inbox, copy, fields, set, onSubmit } = useContactMessage(locale, topic);
+  const { state, inbox, copy, fields, errors, set, onSubmit } = useContactMessage(locale, topic);
   const statusId = useId();
+  const errorId = useId();
+  /** The attributes a required control takes when it has a problem. */
+  const invalid = (field: "name" | "email" | "message") =>
+    errors[field]
+      ? { "aria-invalid": true as const, "aria-describedby": `${errorId}-${field}` }
+      : {};
   const sending = state === "sending";
-  const errorId = (name: string) => `${statusId}-${name}-error`;
-  const error = (name: string) => invalidFields.includes(name)
-    ? copy.validation[name as keyof typeof copy.validation] ?? copy.validation.other
-    : undefined;
-  const errorProps = (name: string) => ({
-    "aria-invalid": invalidFields.includes(name) || undefined,
-    "aria-describedby": invalidFields.includes(name) ? errorId(name) : undefined,
-  });
   const optional = copy.optional;
 
   /* One sentence for the outcome. `undelivered` adds the address as a link. */
@@ -118,15 +121,14 @@ export function ContactForm({
                 : "";
 
   return (
-    <form ref={formRef} noValidate onSubmit={onSubmit} className="mk-form" aria-describedby={statusId}>
+    <form noValidate onSubmit={onSubmit} className="mk-form" aria-describedby={statusId}>
       {/* Who you are, and how to reach you. */}
       <div className="mk-form-row">
-        <Field error={error("name")} errorId={errorId("name")} label={copy.fields.name}>
+        <Field label={copy.fields.name} error={errors.name} errorId={`${errorId}-name`}>
           <input
             type="text"
             name="name"
-            dir="auto"
-            {...errorProps("name")}
+          {...invalid("name")}
             required
             autoComplete="name"
             maxLength={80}
@@ -140,11 +142,11 @@ export function ContactForm({
           />
         </Field>
 
-        <Field error={error("email")} errorId={errorId("email")} label={copy.fields.email}>
+        <Field label={copy.fields.email} error={errors.email} errorId={`${errorId}-email`}>
           <input
             type="email"
             name="email"
-            {...errorProps("email")}
+          {...invalid("email")}
             required
             autoComplete="email"
             inputMode="email"
@@ -162,11 +164,10 @@ export function ContactForm({
       </div>
 
       <div className="mk-form-row">
-        <Field error={error("phone")} errorId={errorId("phone")} label={copy.fields.phone} hint={optional}>
+        <Field label={copy.fields.phone} hint={optional}>
           <input
             type="tel"
             name="phone"
-            {...errorProps("phone")}
             autoComplete="tel"
             inputMode="tel"
             maxLength={32}
@@ -181,12 +182,10 @@ export function ContactForm({
           />
         </Field>
 
-        <Field error={error("company")} errorId={errorId("company")} label={copy.fields.company} hint={optional}>
+        <Field label={copy.fields.company} hint={optional}>
           <input
             type="text"
             name="company"
-            dir="auto"
-            {...errorProps("company")}
             autoComplete="organization"
             maxLength={120}
             placeholder={copy.placeholders.company}
@@ -199,10 +198,9 @@ export function ContactForm({
       </div>
 
       <div className="mk-form-row">
-        <Field error={error("who")} errorId={errorId("who")} label={copy.fields.who} hint={optional}>
+        <Field label={copy.fields.who} hint={optional}>
           <Select
             name="who"
-            {...errorProps("who")}
             value={fields.who}
             onChange={(event) => set.who(event.target.value as ContactWho | "")}
             disabled={sending}
@@ -220,12 +218,10 @@ export function ContactForm({
           </Select>
         </Field>
 
-        <Field error={error("country")} errorId={errorId("country")} label={copy.fields.country} hint={optional}>
+        <Field label={copy.fields.country} hint={optional}>
           <input
             type="text"
             name="country"
-            dir="auto"
-            {...errorProps("country")}
             autoComplete="country-name"
             maxLength={60}
             placeholder={copy.placeholders.country}
@@ -238,10 +234,9 @@ export function ContactForm({
       </div>
 
       <div className="mk-form-row">
-        <Field error={error("topic")} errorId={errorId("topic")} label={copy.fields.topic}>
+        <Field label={copy.fields.topic}>
           <Select
             name="topic"
-            {...errorProps("topic")}
             value={fields.topic}
             onChange={(event) => set.topic(event.target.value as ContactTopic)}
             disabled={sending}
@@ -255,10 +250,9 @@ export function ContactForm({
           </Select>
         </Field>
 
-        <Field error={error("replyLanguage")} errorId={errorId("replyLanguage")} label={copy.fields.replyLanguage}>
+        <Field label={copy.fields.replyLanguage}>
           <Select
             name="replyLanguage"
-            {...errorProps("replyLanguage")}
             value={fields.replyLanguage}
             onChange={(event) => set.replyLanguage(event.target.value as Locale)}
             disabled={sending}
@@ -274,11 +268,10 @@ export function ContactForm({
       </div>
 
       {/* The message itself, across the full width of the form. */}
-      <Field error={error("message")} errorId={errorId("message")} label={copy.fields.message}>
+      <Field label={copy.fields.message} error={errors.message} errorId={`${errorId}-message`}>
         <textarea
           name="message"
-            dir="auto"
-            {...errorProps("message")}
+          {...invalid("message")}
           required
           rows={6}
           minLength={10}

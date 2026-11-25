@@ -15,4 +15,4 @@ export type ContactResult = "sent" | "invalid" | "limited" | "undelivered" | "fa
 export type ContactState = "idle" | "sending" | ContactResult;
 
 /** What the service hands back: how it went, and where to write if it didn't. */
-export type ContactOutcome = { result: ContactResult; inbox?: string; invalidFields?: string[] };
+export type ContactOutcome = { result: ContactResult; inbox?: string };

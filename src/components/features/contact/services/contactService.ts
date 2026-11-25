@@ -39,15 +39,7 @@ export async function sendMessage(request: ContactRequest): Promise<ContactOutco
 
   switch (response.status) {
     case 422:
-      return {
-        result: "invalid",
-        invalidFields: body && typeof body === "object" && "fields" in body && Array.isArray(body.fields)
-          ? body.fields.flatMap((field: unknown) =>
-              field && typeof field === "object" && "path" in field && typeof field.path === "string"
-                ? [field.path] : [],
-            )
-          : [],
-      };
+      return { result: "invalid" };
     case 429:
       return { result: "limited" };
     case 502:
