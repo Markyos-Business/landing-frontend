@@ -39,6 +39,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "api.markyos.com", pathname: "/media/**", search: "" },
       { protocol: "https", hostname: "api-staging.markyos.com", pathname: "/media/**", search: "" },
+      // Where the platform serves media when cloud storage is on (a Spaces or
+      // CDN host): CONTENT_MEDIA_HOSTS=cdn.example.com,other.example.com
+      ...(process.env.CONTENT_MEDIA_HOSTS ?? "")
+        .split(",")
+        .map((host) => host.trim())
+        .filter(Boolean)
+        .map((hostname) => ({ protocol: "https" as const, hostname, pathname: "/**", search: "" })),
     ],
   },
   experimental: {

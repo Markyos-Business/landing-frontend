@@ -36,10 +36,11 @@ export const inter = Inter({
 
 export const thmanya = localFont({
   src: [
-    { path: "./fonts/thmanyahsans-Light.otf", weight: "300", style: "normal" },
-    { path: "./fonts/thmanyahsans-Regular.otf", weight: "400", style: "normal" },
-    { path: "./fonts/thmanyahsans-Medium.otf", weight: "500", style: "normal" },
-    { path: "./fonts/thmanyahsans-Bold.otf", weight: "700", style: "normal" },
+    // WOFF2 (lossless, about a third of the .otf size), and no Light: nothing
+    // on the site sets weight 300. Three preloaded files, not four at 240 KB.
+    { path: "./fonts/thmanyahsans-Regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/thmanyahsans-Medium.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/thmanyahsans-Bold.woff2", weight: "700", style: "normal" },
   ],
   variable: "--font-thmanya",
   display: "swap",
@@ -47,9 +48,12 @@ export const thmanya = localFont({
 
 export const plexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "700"],
   variable: "--font-plex-arabic",
   display: "swap",
+  // A fallback behind Thmanya: fetched only if a glyph needs it, never
+  // preloaded ahead of the page's CSS on a slow connection.
+  preload: false,
 });
 
 export const fontVariables = `${inter.variable} ${thmanya.variable} ${plexArabic.variable}`;

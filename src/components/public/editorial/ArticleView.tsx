@@ -107,7 +107,7 @@ export function ArticleView({
       </div>
 
       <div className="mk-article-art mk-rise">
-        <Cover post={post} size="feature" word={copy.back} />
+        <Cover post={post} size="feature" word={copy.back} eager />
       </div>
 
       <div className="mk-article-body">
