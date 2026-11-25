@@ -24,7 +24,6 @@
     "check:pages": "node scripts/check-pages.mjs",
     "check:waitlist": "node scripts/check-waitlist.mjs",
     "check:contact": "node scripts/check-contact.mjs",
-    "check:cms-permissions": "node scripts/check-cms-permissions.mjs",
     "check:articles": "node scripts/check-articles.mjs",
     "check:help": "node scripts/check-help.mjs",
     "check:help-flow": "node scripts/check-help-flow.mjs",
