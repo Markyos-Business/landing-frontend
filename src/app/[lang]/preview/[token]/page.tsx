@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArticleView } from "@/components/public/editorial";
 import { getPreview } from "@/lib/content/django";
 import { isLocale } from "@/lib/i18n/locales";
+import { routeSlug } from "@/lib/pages/params";
 
 /*
  * A CMS draft, opened from the editor's "Preview" button.
@@ -27,7 +28,8 @@ export default async function PreviewPage({
 }) {
   const { lang, token } = await params;
   if (!isLocale(lang)) notFound();
-  const preview = await getPreview(token, lang);
+  // The param arrives still percent-encoded (the signed token has colons).
+  const preview = await getPreview(routeSlug(token), lang);
   if (!preview) notFound();
   return (
     <>
