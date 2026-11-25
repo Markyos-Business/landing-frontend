@@ -1,6 +1,6 @@
 import "server-only";
 import type { Article, ArticleSummary, Collection, ContentSource } from "./adapter";
-import { CONTENT_TAG, contentApi } from "./djangoClient";
+import { CONTENT_TAG, contentApi, contentApiFresh } from "./djangoClient";
 
 /*
  * The content source backed by the Markyos platform (Django).
@@ -108,5 +108,24 @@ export const djangoContent: ContentSource = {
     );
   },
 };
+
+const COLLECTIONS: readonly Collection[] = ["blog", "guides", "help", "compare", "whatsNew"];
+
+/**
+ * An editor's draft behind a signed preview link (7 days), or null when the
+ * link is bad, expired, or the draft has no title in this language. Never
+ * cached, never indexed.
+ */
+export async function getPreview(
+  token: string,
+  locale: string,
+): Promise<{ collection: Collection; article: Article } | null> {
+  const doc = await contentApiFresh<Doc>(
+    `/content/public/preview/${encodeURIComponent(token)}/?locale=${locale}`,
+  );
+  const kind = doc ? str(doc.kind) : "";
+  if (!doc || !translated(doc) || !(COLLECTIONS as readonly string[]).includes(kind)) return null;
+  return { collection: kind as Collection, article: toArticle(doc) };
+}
 
 export type { Collection };

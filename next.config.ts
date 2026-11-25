@@ -55,6 +55,14 @@ const nextConfig: NextConfig = {
           ? [...securityHeaders, { key: "X-Robots-Tag", value: "noindex, nofollow" }]
           : securityHeaders,
       },
+      // CMS draft previews: a signed link, never indexed even on production.
+      ...["/preview/:token", "/en/preview/:token"].map((source) => ({
+        source,
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Cache-Control", value: "private, no-store" },
+        ],
+      })),
     ];
   },
   // The marketing site is almost entirely static. Keeping `trailingSlash` off
