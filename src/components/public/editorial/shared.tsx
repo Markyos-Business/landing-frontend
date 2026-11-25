@@ -68,6 +68,9 @@ export function Cover({
         sizes="(min-width: 1100px) 1100px, 100vw"
         loading={eager ? "eager" : "lazy"}
         fetchPriority={eager ? "high" : "auto"}
+        // A local backend (http://localhost) is a private address the image
+        // optimiser refuses; serve those as they are. Production media is https.
+        unoptimized={!post.heroImage.startsWith("https://")}
         className="h-full w-full object-cover"
       />
     );
