@@ -595,7 +595,7 @@ export const copy: SiteCopy = {
       headline: "Build it free. Hand it over. Get rewarded when they grow.",
       body: [
         "You can run a full project on the free plan, from brief to handoff. When your client upgrades their hub, you earn 20% of what they pay for the first 12 months, as credit on your own plan.",
-        "Five clients on the Brand plan covers your own Pro subscription.",
+        "Four clients on the Company plan cover your own Freelancer subscription, and eight cover Studio.",
       ],
       strip: [
         { label: "You build", line: "the brand, the strategy, the hub" },
@@ -1192,8 +1192,8 @@ export const copy: SiteCopy = {
               line: "20% of what your client pays in their first year, as credit on your subscription.",
             },
             {
-              name: "And agencies earn 25%",
-              line: "On the Agency plan the partner reward is a quarter of the client's first year, not a fifth.",
+              name: "Credit on your bill",
+              line: "It comes off your subscription while you're on a paid plan.",
             },
           ],
           link: { label: "Handoff and the partner reward", href: "/platform/handoff" },

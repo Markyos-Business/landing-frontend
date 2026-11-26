@@ -66,7 +66,7 @@ const clientProjects: PageDoc = {
       kind: "callout",
       title: "Works with, and plans",
       body: [
-        "Every feature in a project updates its stage, and handoff frees its slot. 1 active project free · 2 on Solo · 5 on Pro · 10 on Studio · 25 on Agency.",
+        "Every feature in a project updates its stage, and handoff frees its slot. 1 active brand free · 3 on Freelancer · 10 on Studio, and five more for $10 a month.",
       ],
       cta: LINK.pricing,
     },
@@ -323,7 +323,7 @@ const clientHandoff: PageDoc = {
       eyebrow: "Partner reward",
       title: "You handed it over. The return keeps coming.",
       body: [
-        "20% of what your client pays in their first year, as credit on your plan. Five clients on the Brand plan cover your Pro plan.",
+        "20% of what your client pays in their first year, as credit on your bill while you're on a paid plan. Four clients on Company cover your Freelancer plan, and eight cover Studio.",
       ],
       emphasiseLast: true,
     },
@@ -461,7 +461,7 @@ const brandVoice: PageDoc = {
           feature: "department-playbooks",
         },
       ],
-      note: "Starts from the strategy, powers the tone checker, and guides every translation. On every plan. Voice per channel and team from the Team plan.",
+      note: "Starts from the strategy, powers the tone checker, and guides every translation. On the company plans, free and paid.",
     },
     {
       kind: "cta",

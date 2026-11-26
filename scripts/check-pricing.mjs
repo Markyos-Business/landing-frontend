@@ -68,7 +68,8 @@ const {
   LOWEST_PAID_MONTHLY,
   EXTRAS,
   PARTNER_SHARE,
-  AGENCY_PARTNER_SHARE,
+  YEARLY_MONTHS,
+  TRIAL,
   AI_LIMITS,
   partnerCredit,
   currentPricingPage,
@@ -105,72 +106,85 @@ if (fs.existsSync(platform)) {
 /* ── 2. The catalogue's own arithmetic ─────────────────────────────────────── */
 
 /*
- * The eight paid plans, read out of the page rather than imported.
+ * The three paid plans, read out of the page rather than imported.
  *
  * Importing the price table would prove the page agrees with the table; this
- * proves the page agrees with the deck. The figures below are v4.3's, typed
- * here once, in the only place in the repository where typing them is the
- * point.
+ * proves the page agrees with the deck. The figures below are copy deck v5.2's
+ * (docs/copy/markyos_pricing_page_copy_v5_2.md), typed here once, in the only
+ * place in the repository where typing them is the point.
  */
 const DECK = {
-  solo: { monthly: 12, yearly: 10, inOffer: false, audience: "freelancers" },
-  pro: { monthly: 24, yearly: 19, inOffer: true, audience: "freelancers" },
-  studio: { monthly: 59, yearly: 49, inOffer: true, audience: "studios" },
-  agency: { monthly: 119, yearly: 99, inOffer: true, audience: "studios" },
-  starter: { monthly: 12, yearly: 10, inOffer: false, audience: "companies" },
-  brand: { monthly: 24, yearly: 19, inOffer: true, audience: "companies" },
-  team: { monthly: 59, yearly: 49, inOffer: true, audience: "companies" },
-  business: { monthly: 119, yearly: 99, inOffer: true, audience: "companies" },
+  freelancer: { monthly: 12, yearly: 120, audience: "freelancers" },
+  studio: { monthly: 29, yearly: 290, audience: "studios" },
+  company: { monthly: 19, yearly: 190, audience: "companies" },
 };
 
-/* Free, then the paid plans in the order each tab shows them. */
+/*
+ * The three tabs, and the three cards on each.
+ *
+ * v5.2 puts the same Free card on both builder tabs and the same Studio card
+ * on both of them too, so a card id carries its tab. `bigger-team` is Studio
+ * plus add-ons rather than a fourth plan, and `enterprise` has no price at
+ * all, so neither is in DECK — the per-card price assertions skip a card with
+ * no annual rate, which is exactly those two and the free plans.
+ */
 const TABS = {
-  freelancers: { plans: ["free", "solo", "pro"], recommended: "pro", type: "freelancer" },
-  studios: { plans: ["free", "studio", "agency"], recommended: "studio", type: "studio" },
-  companies: {
-    plans: ["free", "starter", "brand", "team", "business"],
-    recommended: "brand",
-    type: "company",
-  },
+  freelancers: { plans: ["free", "freelancer", "studio"], recommended: "freelancer", type: "studio", tableCols: 4 },
+  studios: { plans: ["free", "studio", "bigger-team"], recommended: "studio", type: "studio", tableCols: 4 },
+  companies: { plans: ["free", "company", "enterprise"], recommended: "company", type: "company", tableCols: 3 },
 };
 
-assert.equal(LOWEST_PAID_MONTHLY, 12, "v4.3 puts the lowest paid price at $12 (Solo and Starter)");
+/*
+ * Cards that do not sign anybody up for a plan.
+ *
+ * Enterprise has no price and no checkout: v5.2 gives it "join the waitlist",
+ * and there is no waitlist page, so it goes to the contact form's sales topic.
+ * It is listed here rather than inferred, so a second card can never quietly
+ * stop creating an account.
+ */
+const OFF_SIGNUP = { "plan-companies-enterprise": "/contact?topic=sales" };
+
+assert.equal(LOWEST_PAID_MONTHLY, 12, "v5.2 puts the lowest paid price at $12 (Freelancer)");
 assert.deepEqual(
   serial(EXTRAS),
-  { projectPass: 19, brainPack: 12, mockupPack: 12, seat: 8, enterpriseFrom: 299 },
-  "the one-time purchases moved away from v4.3",
+  { seat: 8, brands5: 10, companyBrand: 19, companyEditor: 8, brainPack: 12, mockupPack: 9 },
+  "the add-ons moved away from v5.2 §5",
 );
-assert.equal(PARTNER_SHARE, 20);
-assert.equal(AGENCY_PARTNER_SHARE, 25, "v4.3 raises the partner reward on Agency alone");
-assert.equal(LAUNCH_OFFER.percent, 50);
+assert.equal(PARTNER_SHARE, 20, "v5.2 has one partner rate; the 25% belonged to the Agency plan, which is gone");
+assert.equal(TRIAL.days, 14, "v5.2's entry path is a 14 day trial");
+assert.deepEqual(serial(TRIAL.reminderDays), [10, 13], "the deck reminds on day 10 and day 13");
+assert.equal(TRIAL.freeFromDay, 15, "the workspace moves to Free on day 15");
+assert.equal(LAUNCH_OFFER.percent, 30, "v5.2 drops the launch offer from 50% to 30%");
 assert.equal(LAUNCH_OFFER.months, 3, "the offer is three monthly cycles, not a year");
 assert.deepEqual(
   [...LAUNCH_OFFER.plans].sort(),
-  Object.keys(DECK).filter((id) => DECK[id].inOffer).sort(),
-  "the offer covers the six plans above $12 — and never Solo or Starter",
+  Object.keys(DECK).sort(),
+  "v5.2 puts every paid monthly plan in the offer — there is no $6 plan left to carve out",
 );
 assert(Date.parse(LAUNCH_OFFER.closes) > Date.parse(LAUNCH_OFFER.opens), "the offer closes before it opens");
 
 /*
- * "Save about 20%" has to stay about true.
+ * Two months free, exactly.
  *
- * The yearly rates are a second list price, not a computed discount: $24 a
- * month is $19 yearly, which is 20.8%, and $119 is $99, which is 16.8%. A band
- * is the honest assertion. It fails the day somebody sets a yearly rate that
- * makes the toggle's own label a lie.
+ * v4.3 needed a tolerance band here because its yearly rates were a second
+ * list price covering four different real discounts. v5.2 states a rule — a
+ * year costs ten months — and its three amounts obey it to the dollar, so the
+ * rule is what gets asserted. $12 → $120, $29 → $290, $19 → $190.
  */
+assert.equal(YEARLY_MONTHS, 10, "two months free means a year costs ten months");
 for (const [id, plan] of Object.entries(DECK)) {
-  const saving = ((plan.monthly - plan.yearly) / plan.monthly) * 100;
-  assert(
-    saving >= 15 && saving <= 25,
-    `${id}: yearly saves ${saving.toFixed(1)}%, which the toggle cannot call "about 20%"`,
+  assert.equal(
+    plan.monthly * YEARLY_MONTHS,
+    plan.yearly,
+    `${id}: the yearly price is not the monthly price times ${YEARLY_MONTHS}`,
   );
 }
 
-/* The partner reward, derived from the plan it is a share of. */
-assert.equal(partnerCredit(5), dollars((5 * DECK.brand.monthly * PARTNER_SHARE) / 100));
-assert.equal(partnerCredit(12), dollars((12 * DECK.brand.monthly * PARTNER_SHARE) / 100));
-assert.equal(partnerCredit(1, "starter"), "$2.40", "a cent figure keeps both its digits");
+/* The partner reward, derived from the one plan it is a share of. */
+assert.equal(partnerCredit(1), dollars((DECK.company.monthly * PARTNER_SHARE) / 100));
+assert.equal(partnerCredit(4), dollars((4 * DECK.company.monthly * PARTNER_SHARE) / 100));
+assert.equal(partnerCredit(8), dollars((8 * DECK.company.monthly * PARTNER_SHARE) / 100));
+assert.equal(partnerCredit(1), "$3.80", "a cent figure keeps both its digits");
 
 /*
  * The limits the feature pages quote, against the deck's own tables.
@@ -182,30 +196,33 @@ assert.equal(partnerCredit(1, "starter"), "$2.40", "a cent figure keeps both its
  * one that outlived two decks at 3,000 while the deck said 2,500.
  */
 const LIMITS = {
-  freelancers: {
-    reruns: { free: null, solo: 5, pro: 15 },
-    quickChecks: { free: 10, solo: 50, pro: 100 },
-    writingTasks: { free: 5, solo: 20, pro: 50 },
-    assistant: { free: null, solo: 15, pro: 40 },
-    mockups: { free: 3, solo: 10, pro: 25 },
-  },
-  studios: {
-    reruns: { free: null, studio: 30, agency: 60 },
-    quickChecks: { free: 10, studio: 300, agency: 800 },
-    writingTasks: { free: 5, studio: 150, agency: 300 },
-    assistant: { free: null, studio: 100, agency: 200 },
-    mockups: { free: 3, studio: 60, agency: 120 },
+  builders: {
+    activeBrands: { free: 1, freelancer: 3, studio: 10 },
+    newProjects: { free: 1, freelancer: 3, studio: 10 },
+    seats: { free: 1, freelancer: 1, studio: 5 },
+    storage: { free: "2 GB", freelancer: "20 GB", studio: "100 GB" },
+    looks: { free: 2, freelancer: 8, studio: 8 },
+    reruns: { free: null, freelancer: 5, studio: 15 },
+    sectionDrafts: { free: 5, freelancer: 30, studio: 100 },
+    assistant: { free: null, freelancer: 40, studio: 150 },
+    mockups: { free: 3, freelancer: 15, studio: 40 },
   },
   companies: {
-    reports: { free: null, starter: 2, brand: 3, team: 10, business: 20 },
-    quickChecks: { free: 25, starter: 300, brand: 1000, team: 2500, business: 5000 },
-    askTheBrand: { free: 20, starter: 150, brand: 500, team: 1500, business: 3000 },
-    writingTasks: { free: 5, starter: 25, brand: 60, team: 150, business: 300 },
-    assistant: { free: null, starter: 10, brand: 30, team: 80, business: 150 },
-    mockups: { free: 3, starter: 10, brand: 20, team: 45, business: 90 },
+    brands: { free: 1, company: 1 },
+    editors: { free: 1, company: 5 },
+    viewers: { free: 25, company: null },
+    studioCollaborators: { free: 1, company: 1 },
+    storage: { free: "2 GB", company: "25 GB" },
+    looks: { free: 2, company: 8 },
+    alignmentReruns: { free: null, company: 3 },
+    quickChecks: { free: 25, company: 1000 },
+    askTheBrand: { free: 20, company: 500 },
+    deepChecks: { free: 5, company: 80 },
+    assistant: { free: null, company: 50 },
+    mockups: { free: 3, company: 30 },
   },
 };
-assert.deepEqual(serial(AI_LIMITS), LIMITS, "the AI limits moved away from copy deck v4.3");
+assert.deepEqual(serial(AI_LIMITS), LIMITS, "the AI limits moved away from copy deck v5.2");
 
 /* ── 3. Both editions, the homepage, and the page itself ───────────────────── */
 
@@ -234,14 +251,14 @@ for (const locale of ["en", "ar"]) {
    */
   const group = page.blocks.find((b) => b.kind === "audience");
   assert(group, `${locale}: /pricing has no audience switch`);
-  assert.equal(group.param, "for", "v4.3 asks for a shareable ?for= link");
+  assert.equal(group.param, "for", "v5.2 keeps the shareable ?for= link");
   assert.deepEqual(
     /* `serial`, because the catalogue is evaluated in a `vm` context: its
        arrays have that realm's prototype and `deepStrictEqual` compares
        prototypes, so two identical lists of ids would otherwise fail. */
     serial(group.options.map((option) => option.id)),
     Object.keys(TABS),
-    `${locale}: the three tabs are freelancers, studios and agencies, and companies`,
+    `${locale}: the three tabs are freelancers, studios and companies`,
   );
 
   /* Every DOM id on the page, so a hidden panel cannot shadow a visible one. */
@@ -323,22 +340,34 @@ for (const locale of ["en", "ar"]) {
        * into a checkout would send somebody to pay $12 for something priced
        * at $19 by the only system that can charge them.
        */
-      const url = new URL(plan.cta.href, "https://markyos.test");
-      assert.equal(url.pathname, "/start", `${plan.name}: a plan CTA must create a free account`);
-      assert.equal(
-        url.searchParams.get("type"),
-        tab.type,
-        `${plan.name}: a ${audience} plan signs up as ${tab.type}`,
-      );
-      assert.equal(url.searchParams.has("plan"), false, "Signup must not imply a paid purchase");
+      if (OFF_SIGNUP[plan.id]) {
+        assert.equal(
+          plan.cta.href,
+          OFF_SIGNUP[plan.id],
+          `${plan.name}: a card that sells nothing goes to ${OFF_SIGNUP[plan.id]}`,
+        );
+        assert.equal(plan.annual, undefined, `${plan.name}: a card with no price has no yearly rate`);
+      } else {
+        const url = new URL(plan.cta.href, "https://markyos.test");
+        assert.equal(url.pathname, "/start", `${plan.name}: a plan CTA must create a free account`);
+        assert.equal(
+          url.searchParams.get("type"),
+          tab.type,
+          `${plan.name}: a ${audience} plan signs up as ${tab.type}`,
+        );
+        assert.equal(url.searchParams.has("plan"), false, "Signup must not imply a paid purchase");
+      }
 
       /* Every paid card shows its monthly price and its yearly rate, both from the deck. */
       if (plan.annual) {
         const id = plan.id.replace(`plan-${audience}-`, "");
-        assert(DECK[id], `${plan.name}: ${id} is not a v4.3 plan`);
+        assert(DECK[id], `${plan.name}: ${id} is not a v5.2 plan`);
         assert.equal(plan.price, dollars(DECK[id].monthly), `${id}: monthly price drift`);
         assert.equal(plan.annual.price, dollars(DECK[id].yearly), `${id}: yearly rate drift`);
-        assert.equal(DECK[id].audience, audience, `${id} belongs on the ${DECK[id].audience} tab`);
+        assert(
+          DECK[id].audience === audience || id === "studio",
+          `${id} belongs on the ${DECK[id].audience} tab`,
+        );
       }
     }
 
@@ -372,15 +401,20 @@ for (const locale of ["en", "ar"]) {
      * break, and a five-column table is five chances to leave a cell out.
      */
     const tables = option.blocks.filter((b) => b.kind === "table");
-    assert.equal(tables.length, 1, `${audience}: one comparison table`);
-    const [table] = tables;
-    assert.equal(table.head.length, 1 + tab.plans.length, `${audience}: a column per plan, plus the limit`);
-    for (const [i, row] of table.rows.entries()) {
-      assert.equal(
-        row.length,
-        table.head.length,
-        `${locale}: the ${audience} table's row ${i} has ${row.length} cells, not ${table.head.length}`,
-      );
+    assert(tables.length >= 1, `${audience}: no comparison table`);
+    assert.equal(
+      tables[0].head.length,
+      tab.tableCols,
+      `${audience}: the comparison table has ${tables[0].head.length} columns, not ${tab.tableCols}`,
+    );
+    for (const table of tables) {
+      for (const [i, row] of table.rows.entries()) {
+        assert.equal(
+          row.length,
+          table.head.length,
+          `${locale}: a ${audience} table's row ${i} has ${row.length} cells, not ${table.head.length}`,
+        );
+      }
     }
   }
 
@@ -450,9 +484,22 @@ const RETIRED = [
    * subscription, which is the one thing PayPal cannot be asked to do here. It
    * returns with Stripe, and the deck says so.
    */
-  [/\$190\b|190 دولار/, "the prepaid client year, which v4.3 holds until billing moves to Stripe"],
   /* Stripe is not the processor during the PayPal months. */
-  [/\bStripe\b/, "paying by card through Stripe, which v4.3 replaced with PayPal"],
+  [/\bStripe\b/, "paying by card through Stripe, which v5.2 replaced with PayPal"],
+  /*
+   * And the nine cards v5.2 replaced.
+   *
+   * These are plan names, so they are matched as whole words in both scripts.
+   * «الوكالة» and «الأعمال» are ordinary Arabic nouns, so they are matched only
+   * in the quoted form the site uses for a plan name — «خطة الوكالة» and the
+   * like — rather than banned outright.
+   */
+  [/\b(?:Solo|Pro|Agency|Starter|Brand plan|Team plan|Business plan)\b/, "a v4.3 plan name"],
+  [/«(?:الفردية|الاحترافية|الوكالة|البداية|الأعمال)»/, "a v4.3 plan name"],
+  [/تصريح المشروع|\bProject Pass\b/, "the Project Pass, which v5.2 removed"],
+  [/\$(?:24|49|59|99|119)\b|\b(?:24|49|59|99|119) دولار/, "a v4.3 price"],
+  [/خصم 50%|50% off/, "the 50% launch offer, which v5.2 reduced to 30%"],
+  [/محرّرون ومشاهدون بلا حدود|[Uu]nlimited editors and viewers/, "unlimited editors, which v5.2 caps at five per brand"],
 ];
 
 const contentFiles = [];
@@ -486,11 +533,11 @@ for (const file of contentFiles) {
     const line = source.slice(0, hit.index).split("\n").length;
     assert.fail(
       `${path.relative(root, file).split(path.sep).join("/")}:${line} still states ${what} (“${hit[0]}”). ` +
-        "Copy deck v4.3 sells eleven plans with a monthly limit per tool, billed through PayPal; “billing credit” stays, for the partner reward only.",
+        "Copy deck v5.2 sells four plans with a monthly limit per tool, billed through PayPal; “billing credit” stays, for the partner reward only.",
     );
   }
 }
 
 console.log(
-  `Pricing: v4.3 catalogue, 11 plans across 3 audiences, both locales and the homepage agree, every chooser chip resolves, launch and partner figures derived, no retired pricing across ${contentFiles.length} content files; ${comparisons} sibling billing contracts compared${comparisons < 2 ? " (missing sibling repositories skipped)" : ""}.`,
+  `Pricing: v5.2 catalogue, 4 plans across 3 tabs, 14 day trial, both locales and the homepage agree, every chooser chip resolves, yearly and launch and partner figures derived, no retired pricing across ${contentFiles.length} content files; ${comparisons} sibling billing contracts compared${comparisons < 2 ? " (missing sibling repositories skipped)" : ""}.`,
 );

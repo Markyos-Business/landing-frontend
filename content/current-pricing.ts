@@ -4,60 +4,41 @@ import type { OfferBarCopy, PlanCopy, PricingTeaserCopy } from "./types";
 type Locale = "en" | "ar";
 
 /*
- * ── The pricing catalogue · copy deck v4.3, 22 Nov 2026 ─────────────────────
+ * The catalogue, and the one place every price on the site comes from.
  *
- * v4.3 replaces v4.2 four weeks after it shipped, and the thing it changes is
- * not the prices. It changes who the page is talking to.
+ * ── Which deck governs ──────────────────────────────────────────────────────
  *
- *   1. **Three audiences, not two.** Freelancers and studios used to share a
- *      panel, which meant a person working alone read a column of seats and
- *      team prices to find out that neither applied to them. They are now
- *      their own tab, with their own plans: Free, Solo at $12, Pro at $24.
- *   2. **Eleven plans.** Studios gain Agency at $119 and companies gain
- *      Business at $119 -- capacity plans only: more projects, seats, brands,
- *      editors and AI. No white-label portal and no sub-brands; those stayed
- *      off the roadmap, and nothing here implies them.
- *   3. **Pro is five projects, not three**, so it is a real step up from Solo
- *      rather than one project of difference for twice the money.
- *   4. **Every limit on every card**, in the same rows in the same order, plus
- *      the two sentences that actually decide a plan: pick it if, and move up
- *      when.
- *   5. **One question per tab.** The chooser asks the single fact that decides
- *      the plan -- clients at once, people on the team, brands and editors --
- *      and lights the card. Nobody has to read eleven cards to find theirs.
+ * Two documents dated 26 Nov 2026 describe this page, and they do not agree:
  *
- * Carried over from v4.2, unchanged: a monthly limit per AI tool instead of a
- * pool of credits ("billing credit" survives, for the partner reward only),
- * PayPal rather than Stripe, and therefore a launch offer that is half off
- * three monthly cycles rather than half off a year.
+ *   docs/copy/markyos_site_copy_v5_ar.md   Part D, page 1 — the whole site
+ *   docs/copy/markyos_pricing_page_copy_v5_2.md — this page only
  *
- * ── What this repository cannot guarantee ───────────────────────────────────
+ * The site file states its numbers come from "pricing v5.1 in Notion". v5.2 is
+ * later and is the pricing source, so **v5.2 wins on every figure it states**,
+ * and the site file supplies what v5.2 is silent about: the comparison tables,
+ * the AI-limits explanation, the free badge, how handoff pays, and billing.
+ * Where that rule changed a promise rather than a number it was put to the
+ * owner and answered: the Company plan caps editors at five per brand and
+ * sells a sixth for $8, so "pay for the brand, not the people" is now written
+ * as the viewers it is actually true of.
  *
- * That any of it exists in billing. This is a marketing site; the charge is
- * made by the platform, and the platform sells what `CURRENT_PRICES` below
- * describes: one one-time pass and one monthly subscription per account type.
- * None of the eleven plans on this page is in that catalogue, and PayPal is
- * not connected.
+ * ── What v5.2 changed from v4.3, which this file used to hold ───────────────
  *
- * So **no CTA on this page goes to a paid checkout.** Every button creates a
- * free account or opens a conversation, which is the one shape that lets the
- * page state the new prices without the checkout contradicting them at the
- * moment of payment. `check:pricing` asserts exactly that, and it is the
- * assertion to delete the day billing catches up -- not before.
- *
- * The deck's own Open item 7 says it plainly: prices and limits are hypotheses
- * until the cost test closes on 1 February 2027.
+ * Eleven plans became four. Free · Freelancer $12 · Studio $29 · Company $19
+ * per brand, on three tabs of three cards. A 14 day trial with no card
+ * replaces the old entry path; the launch offer drops from 50% to 30%; the
+ * shared credit pool becomes one monthly limit per AI tool; the Project Pass
+ * and the prepaid client year are gone; the partner reward is 20% everywhere,
+ * because the Agency plan that carried the 25% rate no longer exists.
  */
 
 /*
- * What the checkout charges today, per account type, in USD.
+ * What the platform actually charges today, which is none of the above.
  *
- * These no longer appear anywhere on the site. They stay because they are the
- * contract `check:pricing` holds against the backend's `billing.py` and the
- * platform's `accountTypes.ts`: the moment either of those moves to the v4.3
- * catalogue, this constant is what fails and tells us. Deleting it would not
- * simplify anything -- it would remove the only tie between this repository
- * and what a card is actually charged.
+ * `CURRENT_PRICES` is on no page. It is the contract `check:pricing` holds
+ * against the backend's `billing.py` and the platform's `accountTypes.ts`, and
+ * it is the only record here of the gap between what the site sells and what a
+ * card is charged. The day the two meet, this constant is what will say so.
  */
 export const CURRENT_PRICES = {
   freelancer: { pass: 15, subscription: 19 },
@@ -66,169 +47,197 @@ export const CURRENT_PRICES = {
 } as const;
 
 /*
- * The eight paid plans, monthly and yearly-per-month, from v4.3's cards.
+ * The three paid plans.
  *
- * `yearly` is a second list price, not a derived one: "save about 20%" is the
- * deck's rounding of four different real discounts (20.8%, 16.9%, 16.8%,
- * 16.7%), so computing it would produce $19.20 where the deck says $19.
- * `check:pricing` holds every one of them to a band instead -- between 15% and
- * 25% off -- which is what keeps the toggle's promise true without inventing a
- * figure.
- *
- * Solo and Starter are the same $12, and Brand is the same $24 as Pro, because
- * a company's small plan and a freelancer's are the same amount of product
- * sold to different people. They are separate entries rather than aliases:
- * they diverge the moment either audience's cost test closes differently.
+ * Monthly only. The yearly figure is derived rather than listed, because v5.2
+ * states the rule and the amounts agree with it exactly: two months free, so a
+ * year costs ten months. $12 → $120, $29 → $290, $19 → $190. v4.3 needed a
+ * second list of yearly prices and a tolerance band in the gate to cover four
+ * different real discounts; one rule needs neither, and `check:pricing`
+ * asserts the rule instead of a range.
  */
 const PLAN_PRICES = {
-  solo: { monthly: 12, yearly: 10 },
-  pro: { monthly: 24, yearly: 19 },
-  studio: { monthly: 59, yearly: 49 },
-  agency: { monthly: 119, yearly: 99 },
-  starter: { monthly: 12, yearly: 10 },
-  brand: { monthly: 24, yearly: 19 },
-  team: { monthly: 59, yearly: 49 },
-  business: { monthly: 119, yearly: 99 },
+  freelancer: 12,
+  studio: 29,
+  company: 19,
 } as const;
 
 type PaidPlan = keyof typeof PLAN_PRICES;
 
-/** The floor the homepage quotes. Derived, so the sentence moves with the plans. */
-export const LOWEST_PAID_MONTHLY = Math.min(
-  ...Object.values(PLAN_PRICES).map((plan) => plan.monthly),
-);
+/** Two months free: a year costs ten months. v5.2 §2, and every card's yearly line. */
+export const YEARLY_MONTHS = 10;
 
-/** The one-time and per-seat figures from v4.3's "when you need more". */
+/** The floor the homepage and the meta description quote. Derived, so the sentence moves with the plans. */
+export const LOWEST_PAID_MONTHLY = Math.min(...Object.values(PLAN_PRICES));
+
+/*
+ * The add-ons, from v5.2 §5.
+ *
+ * `companyEditor` is new in v5.2 and is the reason the Company plan's promise
+ * had to be rewritten: editors are five per brand, and the sixth is $8.
+ * `projectPass` and `enterpriseFrom` are gone — the pass has no job left with
+ * Freelancer at $12 for three brands, and Enterprise carries no price at all.
+ */
 export const EXTRAS = {
-  projectPass: 19,
-  brainPack: 12,
-  mockupPack: 12,
+  /** Studios and freelancers: a sixth member, a seventh. */
   seat: 8,
-  enterpriseFrom: 299,
+  /** Studios and freelancers: five more active brands and 50 GB. */
+  brands5: 10,
+  /** Companies: every other brand the company runs. */
+  companyBrand: 19,
+  /** Companies: a sixth editor on a brand. */
+  companyEditor: 8,
+  /** One-off packs, used after the monthly limit. Paid plans only. */
+  brainPack: 12,
+  mockupPack: 9,
 } as const;
 
-/**
- * The studio's share of a handed-off client's first year, as billing credit.
- *
- * v4.3 raises it on one plan only: an agency that hands off a dozen brands a
- * year is the reason the reward exists, so the reward is better there.
- */
+/** How long a pack lasts, in months. v5.2 §5. */
+export const PACK_MONTHS = 12;
+
+/** The studio's share of a handed-off client's first year, as billing credit. One rate now. */
 export const PARTNER_SHARE = 20;
-export const AGENCY_PARTNER_SHARE = 25;
+
+/*
+ * The trial, which is v5.2's entry path and did not exist in v4.3.
+ *
+ * Fourteen days on any paid plan with no card. The reminders and the move to
+ * the free plan are the product's job, not this site's — they are recorded
+ * here because the page states them, and `docs/V5-MIGRATION.md` carries them
+ * as an open item until they are built.
+ */
+export const TRIAL = {
+  days: 14,
+  reminderDays: [10, 13],
+  /** The day the workspace moves to the free plan if nobody subscribes. */
+  freeFromDay: 15,
+} as const;
 
 /*
  * The launch offer.
  *
- * Half off the first three monthly cycles of the six plans that can carry it.
- * Solo and Starter are out: at $6 the payment fee and the AI behind the plan
- * take the whole price, which is why v4.3 states their price as fixed on the
- * cards themselves rather than leaving a reader to notice the omission. The
- * pass, the packs and extra seats are out because they are not subscriptions.
- *
- * ── The window ──────────────────────────────────────────────────────────────
- *
- * v4.3 leaves the end date as [PLACEHOLDER], as v4.2 did. It keeps the instant
- * the site has carried since 21 Nov: the end of 15 Feb 2027, which is
- * PUBLIC_LAUNCH_DATE in src/lib/launch.ts. Both instants are written in UTC
- * rather than as dates, because a countdown that resolves "15 Feb 2027" in the
- * reader's own zone ends at a different moment in Riyadh than in London, and
- * this is one offer.
- *
- * `opens` is in the past, so every clock on the site runs to the close. The
- * `before` phase is kept rather than deleted because the next offer may well
- * be scheduled rather than live.
+ * 30% off the first three monthly cycles, on every paid plan — v5.2 drops
+ * v4.3's carve-out, because there is no $6 plan left to protect. Yearly
+ * billing is out: it already gives two months free. The window is the instant
+ * the site has carried since 21 Nov, in UTC rather than as a date, because a
+ * countdown that resolves "15 Feb 2027" in the reader's own zone ends at a
+ * different moment in Riyadh than in London, and this is one offer.
  */
 export const LAUNCH_OFFER = {
-  /** Per cent off, for `months` monthly cycles. Yearly billing is not discounted. */
-  percent: 50,
+  percent: 30,
   months: 3,
-  /** The plans it applies to. Solo and Starter are deliberately absent. */
-  plans: ["pro", "studio", "agency", "brand", "team", "business"] as readonly PaidPlan[],
+  plans: ["freelancer", "studio", "company"] as readonly PaidPlan[],
   opens: "2026-11-21T00:00:00Z",
   closes: "2027-02-15T23:59:59Z",
 } as const;
 
-/** `$1,188` and `$29.50`: a four-figure price keeps its separator, a cent figure both digits. */
+/** `$1,188` and `$8.40`: a four-figure price keeps its separator, a cent figure both digits. */
 function money(value: number): string {
   const digits = Number.isInteger(value) ? 0 : 2;
   return `$${value.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
 }
 
-/** A plan's launch price: always derived, never typed. */
-function launchPrice(plan: PaidPlan): string {
-  return money((PLAN_PRICES[plan].monthly * (100 - LAUNCH_OFFER.percent)) / 100);
+/** The same figure in Arabic prose: «12 دولاراً». */
+function dollars(value: number): string {
+  return `${value.toLocaleString("en-US")} ${value === 1 ? "دولار" : "دولاراً"}`;
 }
 
-/** The studio's monthly billing credit from `clients` clients on a given plan. */
-export function partnerCredit(clients: number, plan: PaidPlan = "brand"): string {
-  return money((clients * PLAN_PRICES[plan].monthly * PARTNER_SHARE) / 100);
+/** A plan's yearly price. Always derived from the two-months-free rule. */
+export function yearlyPrice(plan: PaidPlan): number {
+  return PLAN_PRICES[plan] * YEARLY_MONTHS;
+}
+
+/** A plan's launch price: always derived, never typed. $12 → $8.40. */
+function launchPrice(plan: PaidPlan): string {
+  return money((PLAN_PRICES[plan] * (100 - LAUNCH_OFFER.percent)) / 100);
+}
+
+/** The studio's monthly billing credit from `clients` clients on the Company plan. */
+export function partnerCredit(clients: number): string {
+  return money((clients * PLAN_PRICES.company * PARTNER_SHARE) / 100);
 }
 
 /*
- * The monthly limits, one table per audience.
+ * The monthly limits, one table per side of the catalogue.
  *
- * Every number v4.3 gives for an AI tool lives here once, and the plan cards,
- * the comparison tables and the three feature pages that quote an allowance
- * all read it. They disagreed in the deck's own draft history more than once
- * -- the Team quick-check figure moved from 3,000 to 2,500 between v4.1 and
- * v4.2 and was still 3,000 on /solutions/companies a deck later -- and a card
- * that says 2,500 above a table that says 3,000 is the kind of error a reader
- * finds before we do.
+ * Every number v5.2 prints on a card lives here once, and the cards, the
+ * comparison tables and the feature pages that quote an allowance all read it.
+ * They drifted apart in v4's draft history more than once — a card that says
+ * 2,500 above a table that says 3,000 is the kind of error a reader finds
+ * before we do.
  *
  * `null` is "not included", which the page prints as «لا · No» rather than as
  * a zero: zero quick checks and no quick-check tool are different facts.
+ *
+ * Rows marked (v5.0) are limits v5.2 does not state. They come from the site
+ * copy file's comparison tables, under the precedence rule at the top.
  */
-const FREELANCER_LIMITS = {
-  reruns: { free: null, solo: 5, pro: 15 },
-  quickChecks: { free: 10, solo: 50, pro: 100 },
-  writingTasks: { free: 5, solo: 20, pro: 50 },
-  assistant: { free: null, solo: 15, pro: 40 },
-  mockups: { free: 3, solo: 10, pro: 25 },
-} as const;
-
-const STUDIO_LIMITS = {
-  reruns: { free: null, studio: 30, agency: 60 },
-  quickChecks: { free: 10, studio: 300, agency: 800 },
-  writingTasks: { free: 5, studio: 150, agency: 300 },
-  assistant: { free: null, studio: 100, agency: 200 },
-  mockups: { free: 3, studio: 60, agency: 120 },
+const BUILDER_LIMITS = {
+  /** v5.2 cards. Handed-off brands stop counting. */
+  activeBrands: { free: 1, freelancer: 3, studio: 10 },
+  /** v5.2 sets Free to one; the paid figures are the site file's. */
+  newProjects: { free: 1, freelancer: 3, studio: 10 },
+  seats: { free: 1, freelancer: 1, studio: 5 },
+  /** (v5.0) */
+  storage: { free: "2 GB", freelancer: "20 GB", studio: "100 GB" },
+  /** (v5.0) */
+  looks: { free: 2, freelancer: 8, studio: 8 },
+  /** (v5.0) */
+  reruns: { free: null, freelancer: 5, studio: 15 },
+  /** v5.2 cards. */
+  sectionDrafts: { free: 5, freelancer: 30, studio: 100 },
+  /** v5.2 cards. */
+  assistant: { free: null, freelancer: 40, studio: 150 },
+  /** v5.2 cards. */
+  mockups: { free: 3, freelancer: 15, studio: 40 },
 } as const;
 
 const COMPANY_LIMITS = {
-  reports: { free: null, starter: 2, brand: 3, team: 10, business: 20 },
-  quickChecks: { free: 25, starter: 300, brand: 1000, team: 2500, business: 5000 },
-  askTheBrand: { free: 20, starter: 150, brand: 500, team: 1500, business: 3000 },
-  writingTasks: { free: 5, starter: 25, brand: 60, team: 150, business: 300 },
-  assistant: { free: null, starter: 10, brand: 30, team: 80, business: 150 },
-  mockups: { free: 3, starter: 10, brand: 20, team: 45, business: 90 },
+  brands: { free: 1, company: 1 },
+  /** v5.2: five per brand, and a sixth is an add-on. This replaced "unlimited". */
+  editors: { free: 1, company: 5 },
+  /** Unlimited on the paid plan, which is the half of the old promise that survived. */
+  viewers: { free: 25, company: null },
+  studioCollaborators: { free: 1, company: 1 },
+  /** (v5.0) */
+  storage: { free: "2 GB", company: "25 GB" },
+  /** (v5.0) */
+  looks: { free: 2, company: 8 },
+  /** (v5.0) */
+  alignmentReruns: { free: null, company: 3 },
+  /** v5.2 cards. */
+  quickChecks: { free: 25, company: 1000 },
+  /** v5.2 cards. */
+  askTheBrand: { free: 20, company: 500 },
+  /** v5.2 cards: deep checks, rewrites or translations. */
+  deepChecks: { free: 5, company: 80 },
+  /** (v5.0) */
+  assistant: { free: null, company: 50 },
+  /** (v5.0) */
+  mockups: { free: 3, company: 30 },
 } as const;
 
 /*
  * The limits, for the feature pages that quote them.
  *
- * /platform/tone-checker, the mockup page and the three audience pages each
- * state a monthly allowance, and until v4.2 each stated it in its own numbers.
- * They read this now, so there is one place to change.
+ * /platform/tone-checker, the mockup page and the audience pages each state a
+ * monthly allowance, and until v4.2 each stated it in its own numbers. They
+ * read this now, so there is one place to change.
  */
 export const AI_LIMITS = {
-  freelancers: FREELANCER_LIMITS,
-  studios: STUDIO_LIMITS,
+  builders: BUILDER_LIMITS,
   companies: COMPANY_LIMITS,
 } as const;
 
 /*
  * `✓` and `∞`, and why they are not icons.
  *
- * §6 of the design system allows one icon system and this is not it -- these
+ * §6 of the design system allows one icon system and this is not it — these
  * are typographic marks inside a table cell, set in the page's own face, the
  * way `→` is allowed inside copy. Neither is emoji by default and neither
  * carries a variation selector, so `check:design`'s §11 rule reads them as the
  * punctuation they are. A tick in a comparison table is the one place a mark
  * beats a word: forty rows of «نعم» is forty rows a reader has to read.
- *
- * "Not included" is the word and not a dash, because v4.3 says so and because
- * an empty cell in a five-column table is ambiguous: the reader cannot tell
- * "no" from "we forgot".
  */
 const YES = "✓";
 const ANY = "∞";
@@ -236,26 +245,18 @@ const ANY = "∞";
 const PLAN_NAMES = {
   en: {
     free: "Free",
-    solo: "Solo",
-    pro: "Pro",
+    freelancer: "Freelancer",
     studio: "Studio",
-    agency: "Agency",
-    starter: "Starter",
-    brand: "Brand",
-    team: "Team",
-    business: "Business",
+    biggerTeam: "Bigger team",
+    company: "Company",
     enterprise: "Enterprise",
   },
   ar: {
     free: "المجانية",
-    solo: "الفردية",
-    pro: "الاحترافية",
-    studio: "الاستوديو",
-    agency: "الوكالة",
-    starter: "البداية",
-    brand: "العلامة",
-    team: "الفريق",
-    business: "الأعمال",
+    freelancer: "مستقل",
+    studio: "استوديو",
+    biggerTeam: "فريق أكبر",
+    company: "شركة",
     enterprise: "المؤسسات",
   },
 } as const;
@@ -266,13 +267,14 @@ function translator(locale: Locale) {
 }
 
 /*
- * The three audiences, and the one place their ids are written.
+ * The three tabs, and the one place their ids are written.
  *
  * Each is an option on the switch, a deep link (`/pricing#studios`), and the
- * prefix of every plan-card id inside its panel. The free plan appears in all
- * three panels and all three panels are in the HTML, so a card id has to carry
- * its audience or the document ships three elements called `plan-free` and the
- * chooser lights whichever one the browser found first.
+ * prefix of every plan-card id inside its panel. v5.2 puts the same Free card
+ * on two tabs and the same Studio card on two tabs, and every panel is in the
+ * HTML — so a card id has to carry its tab, or the document ships two elements
+ * called `plan-studio` and the chooser lights whichever one the browser found
+ * first.
  */
 const AUDIENCES = ["freelancers", "studios", "companies"] as const;
 type Audience = (typeof AUDIENCES)[number];
@@ -284,17 +286,30 @@ function audienceLabel(locale: Locale, audience: Audience): string {
   const t = translator(locale);
   return {
     freelancers: t("المستقلون", "Freelancers"),
-    studios: t("الاستوديوهات والوكالات", "Studios and agencies"),
+    studios: t("الاستوديوهات", "Studios"),
     companies: t("الشركات", "Companies"),
   }[audience];
 }
 
 /*
- * A plan card.
+ * Which account type a tab signs up as.
  *
- * Every figure comes from PLAN_PRICES or the limit tables above. `pick` and
- * `moveUp` are v4.3's two deciding sentences; the labels over them belong to
- * the block, not to each of the eleven cards.
+ * Both builder tabs create a studio workspace — the platform has no separate
+ * freelancer type, and v5.2's own buttons send a freelancer to the same place
+ * a studio goes.
+ */
+const SIGNUP_TYPE: Record<Audience, string> = {
+  freelancers: "studio",
+  studios: "studio",
+  companies: "company",
+};
+
+/*
+ * A paid card.
+ *
+ * Every figure comes from PLAN_PRICES or the limit tables above. `pick` is
+ * v5.2's "pick it if"; `moveUp` is the site file's "move up when", which v5.2
+ * does not carry and which answers the only question a price cannot.
  */
 function paidCard(
   plan: PaidPlan,
@@ -306,40 +321,41 @@ function paidCard(
     moveUp: string;
     rows: PlanCard["rows"];
     recommended?: boolean;
-    href: string;
     cta: string;
+    perBrand?: boolean;
   },
 ): PlanCard {
   const t = translator(locale);
-  const price = PLAN_PRICES[plan];
+  const monthly = PLAN_PRICES[plan];
+  const perBrand = options.perBrand ? t(" لكل علامة", " per brand") : "";
   return {
     id: planId(options.audience, plan),
     name: PLAN_NAMES[locale][plan],
-    price: money(price.monthly),
-    period: t("شهرياً", "a month"),
+    price: money(monthly),
+    period: t(`شهرياً${perBrand}`, `a month${perBrand}`),
     annual: {
-      price: money(price.yearly),
-      note: t("شهرياً، تُدفع سنوياً", "a month, paid yearly"),
+      price: money(yearlyPrice(plan)),
+      note: t(`سنوياً${perBrand}، شهران مجاناً`, `a year${perBrand}, two months free`),
     },
     who: options.who,
     pick: options.pick,
     moveUp: options.moveUp,
     rows: options.rows,
     recommended: options.recommended,
-    cta: { label: options.cta, href: options.href },
+    cta: {
+      label: options.cta,
+      href: `/start?type=${SIGNUP_TYPE[options.audience]}`,
+    },
   };
 }
 
-/* ── The free plan, which is the same plan on three tabs ───────────────────── */
-
 /*
- * One plan, three cards.
+ * The free card, which is one plan on two tabs and a different one on the third.
  *
- * The deck notes it for the studios tab -- "the same Free plan as the
- * Freelancers tab, only the line changes" -- and it is true of the companies
- * tab too, up to the limits a company's free workspace gets. What differs is
- * who is reading: the line, the two deciding sentences, and which rows are
- * worth a column. So the shape is shared and the words are not.
+ * v5.2 is explicit that the builders' Free card is the same on the Freelancers
+ * and Studios tabs; the Companies tab has its own, with a company's limits and
+ * a company's reason to be there. What differs between the two builder copies
+ * is nothing at all, so they share everything but their id.
  */
 function freeCard(
   locale: Locale,
@@ -349,491 +365,372 @@ function freeCard(
     pick: string;
     moveUp: string;
     rows: PlanCard["rows"];
-    type: string;
   },
 ): PlanCard {
   const t = translator(locale);
   return {
     id: planId(options.audience, "free"),
     name: PLAN_NAMES[locale].free,
-    price: t("مجاناً", "$0"),
+    price: t("مجاناً", "Free"),
     who: options.who,
     pick: options.pick,
     moveUp: options.moveUp,
     rows: options.rows,
-    cta: { label: t("ابدأ مجاناً", "Start free"), href: `/start?type=${options.type}` },
+    cta: {
+      label: t("ابدأ مجاناً", "Start free"),
+      href: `/start?type=${SIGNUP_TYPE[options.audience]}`,
+    },
   };
+}
+
+/* ── The rows, which are the same rows on every card of a side ─────────────── */
+
+/*
+ * One row set per side of the catalogue.
+ *
+ * This is the whole point of a card in v5.2: a reader runs one row across the
+ * tab and compares three figures without opening anything. The rows a card
+ * cannot hold in one short value — partner links, who counts as a
+ * collaborator — are in the comparison table below, which has a column for
+ * prose.
+ */
+type BuilderPlan = "free" | "freelancer" | "studio";
+
+function builderRows(locale: Locale, plan: BuilderPlan): PlanCard["rows"] {
+  const t = translator(locale);
+  const L = BUILDER_LIMITS;
+  const no = t("لا", "No");
+  const num = (value: number | null) => (value === null ? no : value.toLocaleString("en-US"));
+  const row = (label: string, value: string, strong?: boolean) => ({ label, value, strong });
+
+  return [
+    row(t("العلامات النشطة", "Active brands"), num(L.activeBrands[plan]), true),
+    row(t("مشاريع جديدة كل 30 يوماً", "New projects every 30 days"), num(L.newProjects[plan])),
+    row(t("الأعضاء", "Members"), num(L.seats[plan])),
+    row(t("التخزين", "Storage"), L.storage[plan]),
+    row(t("نماذج الاستكشاف", "Discovery forms"), ANY),
+    row(t("تصاميم الدليل", "Guideline looks"), num(L.looks[plan])),
+    row(t("التحليل الأول لكل مشروع", "First analysis on every project"), YES),
+    row(t("إعادة التحليل شهرياً", "Analysis re-runs a month"), num(L.reruns[plan])),
+    row(t("نصوص أقسام الدليل شهرياً", "Guideline section drafts a month"), num(L.sectionDrafts[plan])),
+    row(t("رسائل المساعد الاستراتيجي", "Strategy assistant messages"), num(L.assistant[plan])),
+    row(t("موك اب بالذكاء الاصطناعي شهرياً", "AI mockups a month"), num(L.mockups[plan])),
+    row(
+      t("شارة «صُنع بماركيوس»", "“Made with Markyos” badge"),
+      plan === "free" ? t("تظهر", "Shown") : no,
+    ),
+    row(t("كلمة مرور للمركز", "Hub password"), plan === "free" ? no : YES),
+    row(
+      t("نطاق خاص قبل التسليم", "Custom domain before handoff"),
+      plan === "studio" ? YES : no,
+    ),
+    row(t("التسليم ونقل الملكية", "Handoff and ownership transfer"), YES),
+    row(t("مكافأة الشريك", "Partner reward"), `${PARTNER_SHARE}%`),
+    row(t("موصّل الذكاء الاصطناعي", "AI Connector"), plan === "free" ? no : YES),
+  ];
+}
+
+type CompanyPlan = "free" | "company";
+
+function companyRows(locale: Locale, plan: CompanyPlan): PlanCard["rows"] {
+  const t = translator(locale);
+  const L = COMPANY_LIMITS;
+  const no = t("لا", "No");
+  const num = (value: number | null) => (value === null ? ANY : value.toLocaleString("en-US"));
+  const row = (label: string, value: string, strong?: boolean) => ({ label, value, strong });
+
+  return [
+    row(t("العلامات", "Brands"), num(L.brands[plan]), true),
+    row(t("المحرّرون لكل علامة", "Editors per brand"), num(L.editors[plan]), true),
+    row(t("المشاهدون", "Viewers"), num(L.viewers[plan]), true),
+    row(t("استوديو متعاون", "Studio collaborator"), num(L.studioCollaborators[plan])),
+    row(t("التخزين لكل علامة", "Storage per brand"), L.storage[plan]),
+    row(t("تصاميم الدليل", "Guideline looks"), num(L.looks[plan])),
+    row(t("تقرير التوافق الأول", "First alignment report"), YES),
+    row(t("إعادة تقرير التوافق شهرياً", "Alignment report re-runs a month"), plan === "free" ? no : String(L.alignmentReruns.company)),
+    row(t("مراجعات نبرة سريعة شهرياً", "Quick tone checks a month"), L.quickChecks[plan].toLocaleString("en-US")),
+    row(t("أسئلة «اسأل علامتك» شهرياً", "Ask the Brand questions a month"), L.askTheBrand[plan].toLocaleString("en-US")),
+    row(
+      t("مراجعة معمّقة أو صياغة أو ترجمة", "Deep checks, rewrites or translations"),
+      L.deepChecks[plan].toLocaleString("en-US"),
+    ),
+    row(t("رسائل المساعد الاستراتيجي", "Strategy assistant messages"), plan === "free" ? no : String(L.assistant.company)),
+    row(t("موك اب بالذكاء الاصطناعي شهرياً", "AI mockups a month"), String(L.mockups[plan])),
+    row(
+      t("شارة «صُنع بماركيوس»", "“Made with Markyos” badge"),
+      plan === "free" ? t("تظهر", "Shown") : no,
+    ),
+    row(t("نطاق خاص", "Custom domain"), plan === "free" ? no : YES),
+    row(
+      t("روابط الشركاء", "Partner links"),
+      plan === "free" ? t("للعرض فقط", "View only") : t("بموعد وكلمة مرور", "Expiry and password"),
+    ),
+    row(t("دعوة استوديوك مجاناً", "Invite your studio, free"), YES),
+    row(t("المشاهدون يراجعون كتاباتهم", "Viewers check their own writing"), plan === "free" ? no : YES),
+    row(t("موصّل الذكاء الاصطناعي", "AI Connector"), plan === "free" ? no : YES),
+  ];
 }
 
 /* ── Tab 1 · Freelancers ───────────────────────────────────────────────────── */
 
 function freelancerCards(locale: Locale): PlanCard[] {
   const t = translator(locale);
-  const L = FREELANCER_LIMITS;
-  const no = t("لا", "No");
-  const num = (value: number | null) => (value === null ? no : value.toLocaleString("en-US"));
-  const row = (label: string, value: string) => ({ label, value });
-
-  /*
-   * The same rows, in the same order, on all three cards -- which is the whole
-   * point of v4.3's card: a reader runs one row across the tab and compares
-   * three figures, without opening anything. The rows a card cannot hold in
-   * one short value (partner links, who counts as a collaborator) are in the
-   * comparison table below, which has a column for prose.
-   */
-  const rows = (plan: "free" | "solo" | "pro"): PlanCard["rows"] => {
-    const projects = { free: "1", solo: "2", pro: "5" }[plan];
-    const fresh = plan === "free" ? "3" : ANY;
-    const storage = { free: "2 GB", solo: "20 GB", pro: "50 GB" }[plan];
-    const looks = plan === "free" ? "2" : "8";
-    const history = {
-      free: t("7 أيام", "7 days"),
-      solo: t("30 يوماً", "30 days"),
-      pro: t("90 يوماً", "90 days"),
-    }[plan];
-    const support = {
-      free: t("مركز المساعدة", "Help centre"),
-      solo: t("البريد", "Email"),
-      pro: t("البريد", "Email"),
-    }[plan];
-
-    return [
-      row(t("المشاريع النشطة", "Active projects"), projects),
-      row(t("مشاريع جديدة كل 30 يوماً", "New projects per 30 days"), fresh),
-      row(t("التخزين", "Storage"), storage),
-      row(t("تصاميم الدليل", "Guideline looks"), looks),
-      row(t("شارة «صُنع باستخدام ماركيوس»", "“Made with Markyos” badge"), plan === "free" ? t("تظهر", "Shown") : no),
-      row(t("كلمة مرور للمركز", "Hub password"), plan === "free" ? no : YES),
-      row(t("إعادة التحليل شهرياً", "Analysis re-runs a month"), num(L.reruns[plan])),
-      row(t("مراجعات نبرة سريعة شهرياً", "Quick tone checks a month"), num(L.quickChecks[plan])),
-      row(t("مهام الكتابة شهرياً", "Writing tasks a month"), num(L.writingTasks[plan])),
-      row(t("رسائل المساعد الاستراتيجي", "Strategy assistant messages"), num(L.assistant[plan])),
-      row(t("موك اب بالذكاء الاصطناعي شهرياً", "AI mockups a month"), num(L.mockups[plan])),
-      row(t("موصّل الذكاء الاصطناعي", "AI Connector"), plan === "free" ? no : YES),
-      row(t("سجل النسخ", "Version history"), history),
-      row(t("الدعم", "Support"), support),
-    ];
-  };
 
   return [
     freeCard(locale, {
       audience: "freelancers",
-      type: "freelancer",
-      who: t("مشروعك الأول، كاملاً.", "Your first project, in full."),
-      pick: t(
-        "لديك عميل واحد الآن، أو تريد تجربة مشروع كامل.",
-        "You have one client now, or want to try a full project.",
-      ),
+      who: t("ابدأ مشروعك الأول مجاناً.", "Start your first project free."),
+      pick: t("تريد أن تجرّب ماركيوس على مشروع واحد.", "You want to try Markyos on one project."),
       moveUp: t(
         "يأتيك عميل ثانٍ في الوقت نفسه، أو تريد إخفاء الشارة.",
         "A second client comes in at the same time, or you want the badge gone.",
       ),
-      rows: rows("free"),
+      rows: builderRows(locale, "free"),
     }),
-    paidCard("solo", locale, {
+    paidCard("freelancer", locale, {
       audience: "freelancers",
-      who: t("عميلان في الوقت نفسه، دون شارة.", "Two clients at a time, no badge."),
-      pick: t(
-        "تعمل وحدك مع عميل أو عميلين في الوقت نفسه.",
-        "You work alone, with one or two clients at a time.",
-      ),
-      moveUp: t(
-        "يأتيك عميل ثالث في الوقت نفسه، أو تحتاج ذكاءً أكثر.",
-        "A third client comes in at the same time, or you need more AI.",
-      ),
-      rows: rows("solo"),
-      cta: t("اختر الفردية", "Choose Solo"),
-      href: "/start?type=freelancer",
-    }),
-    paidCard("pro", locale, {
-      audience: "freelancers",
-      who: t("مستقل بعملاء كُثر.", "A freelancer with a full client list."),
       recommended: true,
+      who: t("تعمل وحدك، وعملاؤك كُثر.", "You work alone. Your clients don't."),
       pick: t(
-        "تعمل وحدك مع 3 إلى 5 عملاء في الوقت نفسه.",
-        "You work alone, with three to five clients at a time.",
+        "تعمل وحدك مع عميل إلى ثلاثة في الوقت نفسه.",
+        "You work alone, with one to three clients at a time.",
       ),
       moveUp: t(
-        "ينضم إليك شخص آخر. انتقل إلى «الاستوديو».",
-        "Someone joins you. Move to Studio.",
+        "ينضم إليك أحد، أو يصير عملاؤك أكثر من ثلاثة في الوقت نفسه.",
+        "Someone joins you, or more than three clients run at the same time.",
       ),
-      rows: rows("pro"),
-      cta: t("اختر الاحترافية", "Choose Pro"),
-      href: "/start?type=freelancer",
+      rows: builderRows(locale, "freelancer"),
+      cta: t(`جرّب ${TRIAL.days} يوماً مجاناً`, `Try ${TRIAL.days} days free`),
+    }),
+    paidCard("studio", locale, {
+      audience: "freelancers",
+      who: t("فريقك يبني، وعملاؤك يستلمون.", "Your team builds. Your clients take over."),
+      pick: t(
+        "معك فريق حتى خمسة، ومشاريعك حتى عشرة.",
+        "You have a team of up to five, and up to ten live brands.",
+      ),
+      moveUp: t(
+        "يتجاوز فريقك خمسة، أو علاماتك عشراً. أضف إضافاتك.",
+        "Your team passes five, or your brands pass ten. Add the add-ons.",
+      ),
+      rows: builderRows(locale, "studio"),
+      cta: t(`جرّب ${TRIAL.days} يوماً مجاناً`, `Try ${TRIAL.days} days free`),
     }),
   ];
 }
 
-function freelancerTable(locale: Locale): Cell[][] {
+/* ── Tab 2 · Studios ───────────────────────────────────────────────────────── */
+
+/*
+ * The third card is not a fourth plan.
+ *
+ * v5.2 calls it "Bigger team" and prices it "$29 a month + add-ons": it is the
+ * Studio plan with the two add-ons that lift its ceilings. So it carries no
+ * plan id of its own in the catalogue, its rows are the add-ons rather than
+ * limits, and its button says what it actually starts — a Studio trial. A card
+ * that looked like a plan and checked out as another one is the kind of thing
+ * a reader finds at the payment screen.
+ */
+function biggerTeamCard(locale: Locale): PlanCard {
   const t = translator(locale);
-  const L = FREELANCER_LIMITS;
-  const no = t("لا", "No");
-  const num = (value: number | null) => (value === null ? no : value.toLocaleString("en-US"));
-  const all = (value: string): Cell[] => [value, value, value];
+  const row = (label: string, value: string) => ({ label, value });
 
-  return [
-    group(t("العمل", "Work"), 3),
-    [t("المشاريع النشطة", "Active projects"), "1", "2", "5"],
-    [t("مشاريع جديدة كل 30 يوماً", "New projects per 30 days"), "3", ANY, ANY],
-    [t("المقاعد", "Seats"), ...all("1")],
-    [t("التخزين", "Storage"), "2 GB", "20 GB", "50 GB"],
-    [t("استبيانات الاكتشاف والإجابات", "Discovery forms and answers"), ...all(ANY)],
-    [t("ضيوف من العملاء", "Client guests"), ...all(ANY)],
-    [t("التحليل الذكي الأول لكل مشروع", "First AI brief analysis per project"), ...all(YES)],
-
-    group(t("النشر", "Publishing"), 3),
-    [t("تصاميم الدليل", "Guideline looks"), "2", "8", "8"],
-    [t("دليل واحد باللغتين", "One guide in both languages"), ...all(YES)],
-    [t("شارة «صُنع باستخدام ماركيوس»", "“Made with Markyos” badge"), t("تظهر", "Shown"), no, no],
-    [t("كلمة مرور للمركز", "Hub password"), no, YES, YES],
-
-    group(t("عقل العلامة، شهرياً", "Brand Brain, a month"), 3),
-    [t("إعادة التحليل", "Analysis re-runs"), num(L.reruns.free), num(L.reruns.solo), num(L.reruns.pro)],
-    [
-      t("مراجعات نبرة سريعة", "Quick tone checks"),
-      num(L.quickChecks.free),
-      num(L.quickChecks.solo),
-      num(L.quickChecks.pro),
+  return {
+    id: planId("studios", "bigger-team"),
+    name: PLAN_NAMES[locale].biggerTeam,
+    price: money(PLAN_PRICES.studio),
+    period: t("شهرياً + إضافات", "a month + add-ons"),
+    who: t("فريقك يكبر؟ الاستوديو يكبر معه.", "Team growing? Studio grows with it."),
+    pick: t(
+      "معك أكثر من خمسة أعضاء أو أكثر من عشر علامات نشطة.",
+      "You have more than five members or more than ten live brands.",
+    ),
+    rows: [
+      row(
+        t("5 علامات و50 جيجابايت", "+5 brands, 50 GB"),
+        t(`${dollars(EXTRAS.brands5)} شهرياً`, `${money(EXTRAS.brands5)} a month`),
+      ),
+      row(
+        t("عضو إضافي", "Extra member"),
+        t(`${dollars(EXTRAS.seat)} شهرياً`, `${money(EXTRAS.seat)} a month`),
+      ),
+      row(
+        t("حزمة عقل العلامة", "Brand Brain pack"),
+        t(`${dollars(EXTRAS.brainPack)} مرة واحدة`, `${money(EXTRAS.brainPack)} once`),
+      ),
+      row(
+        t("حزمة الموك اب", "Mockup pack"),
+        t(`${dollars(EXTRAS.mockupPack)} مرة واحدة`, `${money(EXTRAS.mockupPack)} once`),
+      ),
     ],
-    [
-      t("مهام الكتابة", "Writing tasks"),
-      num(L.writingTasks.free),
-      num(L.writingTasks.solo),
-      num(L.writingTasks.pro),
-    ],
-    [
-      t("رسائل المساعد الاستراتيجي", "Strategy assistant messages"),
-      num(L.assistant.free),
-      num(L.assistant.solo),
-      num(L.assistant.pro),
-    ],
-    [
-      t("موك اب بالذكاء الاصطناعي", "AI mockups"),
-      num(L.mockups.free),
-      num(L.mockups.solo),
-      num(L.mockups.pro),
-    ],
-    [t("موصّل الذكاء الاصطناعي", "AI Connector"), no, YES, YES],
-
-    group(t("الحساب", "Account"), 3),
-    [t("مكافأة الشريك", "Partner reward"), ...all(`${PARTNER_SHARE}%`)],
-    [t("التسليم ونقل الملكية", "Handoff and ownership transfer"), ...all(YES)],
-    [
-      t("سجل النسخ", "Version history"),
-      t("7 أيام", "7 days"),
-      t("30 يوماً", "30 days"),
-      t("90 يوماً", "90 days"),
-    ],
-    [t("الصلاحيات على الخادم", "Server-side permissions"), ...all(YES)],
-    [
-      t("الدعم", "Support"),
-      t("مركز المساعدة", "Help centre"),
-      t("البريد", "Email"),
-      t("البريد", "Email"),
-    ],
-  ];
+    cta: {
+      label: t(`جرّب الاستوديو ${TRIAL.days} يوماً`, `Try Studio for ${TRIAL.days} days`),
+      href: `/start?type=${SIGNUP_TYPE.studios}`,
+    },
+  };
 }
-
-/* ── Tab 2 · Studios and agencies ──────────────────────────────────────────── */
 
 function studioCards(locale: Locale): PlanCard[] {
   const t = translator(locale);
-  const L = STUDIO_LIMITS;
-  const no = t("لا", "No");
-  const num = (value: number | null) => (value === null ? no : value.toLocaleString("en-US"));
-  const row = (label: string, value: string) => ({ label, value });
-  const perMonth = t(`${EXTRAS.seat} دولارات`, `${money(EXTRAS.seat)} a month`);
-
-  const rows = (plan: "free" | "studio" | "agency"): PlanCard["rows"] => {
-    const projects = { free: "1", studio: "10", agency: "25" }[plan];
-    const seats = { free: "1", studio: "5", agency: "12" }[plan];
-    const storage = { free: "2 GB", studio: "250 GB", agency: "500 GB" }[plan];
-    const share = plan === "agency" ? AGENCY_PARTNER_SHARE : PARTNER_SHARE;
-    const support = {
-      free: t("مركز المساعدة", "Help centre"),
-      studio: t("بأولوية", "Priority"),
-      agency: t("بأولوية ومكالمة", "Priority, a call"),
-    }[plan];
-
-    return [
-      row(t("المشاريع النشطة", "Active projects"), projects),
-      row(t("مشاريع جديدة كل 30 يوماً", "New projects per 30 days"), plan === "free" ? "3" : ANY),
-      row(t("المقاعد", "Seats"), seats),
-      row(t("مقعد إضافي", "Extra seat"), plan === "free" ? no : perMonth),
-      row(t("التخزين", "Storage"), storage),
-      row(t("تصاميم الدليل", "Guideline looks"), plan === "free" ? "2" : "8"),
-      row(t("شارة «صُنع باستخدام ماركيوس»", "“Made with Markyos” badge"), plan === "free" ? t("تظهر", "Shown") : no),
-      row(t("نطاق خاص قبل التسليم", "Custom domain at handoff"), plan === "free" ? no : YES),
-      row(t("إعادة التحليل شهرياً", "Analysis re-runs a month"), num(L.reruns[plan])),
-      row(t("مراجعات نبرة سريعة شهرياً", "Quick tone checks a month"), num(L.quickChecks[plan])),
-      row(t("مهام الكتابة شهرياً", "Writing tasks a month"), num(L.writingTasks[plan])),
-      row(t("رسائل المساعد الاستراتيجي", "Strategy assistant messages"), num(L.assistant[plan])),
-      row(t("موك اب بالذكاء الاصطناعي شهرياً", "AI mockups a month"), num(L.mockups[plan])),
-      row(t("موصّل الذكاء الاصطناعي", "AI Connector"), plan === "free" ? no : YES),
-      row(t("مكافأة الشريك", "Partner reward"), `${share}%`),
-      row(
-        t("سجل النسخ", "Version history"),
-        plan === "free" ? t("7 أيام", "7 days") : t("سنة", "1 year"),
-      ),
-      row(t("الدعم", "Support"), support),
-    ];
-  };
 
   return [
     freeCard(locale, {
       audience: "studios",
-      type: "studio",
-      who: t(
-        "جرّب مشروعاً كاملاً قبل أن يدخل فريقك.",
-        "Try a full project before your team joins.",
+      who: t("ابدأ مشروعك الأول مجاناً.", "Start your first project free."),
+      pick: t("تريد أن تجرّب ماركيوس على مشروع واحد.", "You want to try Markyos on one project."),
+      moveUp: t(
+        "يعمل معك أحد، أو يأتيك عميل ثانٍ في الوقت نفسه.",
+        "Someone works with you, or a second client comes in at the same time.",
       ),
-      pick: t(
-        "تريد تجربة ماركيوس على مشروع حقيقي، وحدك أولاً.",
-        "You want to try Markyos on a real project, on your own first.",
-      ),
-      moveUp: t("ينضم شخص ثانٍ من فريقك.", "A second person from your team joins."),
-      rows: rows("free"),
+      rows: builderRows(locale, "free"),
     }),
     paidCard("studio", locale, {
       audience: "studios",
-      who: t("استوديو بفريق صغير.", "A studio with a small team."),
       recommended: true,
+      who: t("فريقك يبني، وعملاؤك يستلمون.", "Your team builds. Your clients take over."),
       pick: t(
-        "فريقك حتى 5 أشخاص، ومشاريعك النشطة حتى 10.",
-        "Your team is up to five people, with up to ten live projects.",
-      ),
-      moveUp: t("يزيد فريقك على 5، أو مشاريعك على 10.", "Your team passes five, or your projects pass ten."),
-      rows: rows("studio"),
-      cta: t("اختر الاستوديو", "Choose Studio"),
-      href: "/start?type=studio",
-    }),
-    paidCard("agency", locale, {
-      audience: "studios",
-      who: t("وكالة بمشاريع كثيرة، وفريق أكبر.", "An agency with many projects and a bigger team."),
-      pick: t(
-        "فريقك من 6 إلى 12 شخصاً، ومشاريعك النشطة حتى 25.",
-        "Your team is six to twelve people, with up to 25 live projects.",
+        "معك فريق حتى خمسة، ومشاريعك حتى عشرة.",
+        "You have a team of up to five, and up to ten live brands.",
       ),
       moveUp: t(
-        "تحتاج أكثر من 25 مشروعاً نشطاً. تواصل معنا.",
-        "You need more than 25 live projects. Talk to us.",
+        "يتجاوز فريقك خمسة، أو علاماتك عشراً.",
+        "Your team passes five, or your brands pass ten.",
       ),
-      rows: rows("agency"),
-      cta: t("اختر الوكالة", "Choose Agency"),
-      href: "/start?type=studio",
+      rows: builderRows(locale, "studio"),
+      cta: t(`جرّب ${TRIAL.days} يوماً مجاناً`, `Try ${TRIAL.days} days free`),
     }),
-  ];
-}
-
-function studioTable(locale: Locale): Cell[][] {
-  const t = translator(locale);
-  const L = STUDIO_LIMITS;
-  const no = t("لا", "No");
-  const num = (value: number | null) => (value === null ? no : value.toLocaleString("en-US"));
-  const all = (value: string): Cell[] => [value, value, value];
-  const perMonth = t(`${EXTRAS.seat} دولارات شهرياً`, `${money(EXTRAS.seat)} a month`);
-
-  return [
-    group(t("العمل", "Work"), 3),
-    [t("المشاريع النشطة", "Active projects"), "1", "10", "25"],
-    [t("مشاريع جديدة كل 30 يوماً", "New projects per 30 days"), "3", ANY, ANY],
-    [t("المقاعد", "Seats"), "1", "5", "12"],
-    [t("مقعد إضافي", "Extra seat"), no, perMonth, perMonth],
-    [t("التخزين", "Storage"), "2 GB", "250 GB", "500 GB"],
-    [t("استبيانات الاكتشاف والإجابات", "Discovery forms and answers"), ...all(ANY)],
-    [t("ضيوف من العملاء", "Client guests"), ...all(ANY)],
-    [t("أدوار الفريق وأختام الموافقة", "Team roles and client sign-off"), ...all(YES)],
-    [t("لوحة الاستوديو ومسار المشروع", "Studio board and project path"), ...all(YES)],
-
-    group(t("النشر", "Publishing"), 3),
-    [t("تصاميم الدليل", "Guideline looks"), "2", "8", "8"],
-    [t("دليل واحد باللغتين", "One guide in both languages"), ...all(YES)],
-    [t("شارة «صُنع باستخدام ماركيوس»", "“Made with Markyos” badge"), t("تظهر", "Shown"), no, no],
-    [t("كلمة مرور للمركز", "Hub password"), no, YES, YES],
-    [t("نطاق خاص قبل التسليم", "Custom domain before handoff"), no, YES, YES],
-
-    group(t("عقل العلامة، شهرياً", "Brand Brain, a month"), 3),
-    [t("إعادة التحليل", "Analysis re-runs"), num(L.reruns.free), num(L.reruns.studio), num(L.reruns.agency)],
-    [
-      t("مراجعات نبرة سريعة", "Quick tone checks"),
-      num(L.quickChecks.free),
-      num(L.quickChecks.studio),
-      num(L.quickChecks.agency),
-    ],
-    [
-      t("مهام الكتابة", "Writing tasks"),
-      num(L.writingTasks.free),
-      num(L.writingTasks.studio),
-      num(L.writingTasks.agency),
-    ],
-    [
-      t("رسائل المساعد الاستراتيجي", "Strategy assistant messages"),
-      num(L.assistant.free),
-      num(L.assistant.studio),
-      num(L.assistant.agency),
-    ],
-    [
-      t("موك اب بالذكاء الاصطناعي", "AI mockups"),
-      num(L.mockups.free),
-      num(L.mockups.studio),
-      num(L.mockups.agency),
-    ],
-    [t("موصّل الذكاء الاصطناعي", "AI Connector"), no, YES, YES],
-
-    group(t("الحساب", "Account"), 3),
-    [
-      t("مكافأة الشريك", "Partner reward"),
-      `${PARTNER_SHARE}%`,
-      `${PARTNER_SHARE}%`,
-      { text: `${AGENCY_PARTNER_SHARE}%`, strong: true },
-    ],
-    [t("التسليم ونقل الملكية", "Handoff and ownership transfer"), ...all(YES)],
-    [
-      t("سجل النسخ", "Version history"),
-      t("7 أيام", "7 days"),
-      t("سنة", "1 year"),
-      t("سنة", "1 year"),
-    ],
-    [t("الصلاحيات على الخادم", "Server-side permissions"), ...all(YES)],
-    [
-      t("الدعم", "Support"),
-      t("مركز المساعدة", "Help centre"),
-      t("بأولوية", "Priority"),
-      t("بأولوية ومكالمة إعداد", "Priority and a setup call"),
-    ],
+    biggerTeamCard(locale),
   ];
 }
 
 /* ── Tab 3 · Companies ─────────────────────────────────────────────────────── */
 
-type CompanyPlan = "free" | "starter" | "brand" | "team" | "business";
+/*
+ * Enterprise, which has no price and does not sign anybody up.
+ *
+ * v5.2 gives it a card with "Join the waitlist". There is no waitlist page —
+ * `/api/waitlist` answers 501 on purpose, which `docs/TESTING.md` explains —
+ * so the button goes to the contact form's sales topic, which is where the
+ * site file sends "register your interest" and the one route that reaches a
+ * person. It carries the coming-soon chip because none of it is built.
+ */
+function enterpriseCard(locale: Locale): PlanCard {
+  const t = translator(locale);
+  const row = (label: string, value: string) => ({ label, value });
+
+  return {
+    id: planId("companies", "enterprise"),
+    name: PLAN_NAMES[locale].enterprise,
+    price: t("قريباً", "Coming soon"),
+    who: t("لعدة علامات وفرق كبيرة.", "For many brands and large teams."),
+    pick: t(
+      "تدير عدة علامات، أو فرقاً في أكثر من دولة.",
+      "You run several brands, or teams in more than one country.",
+    ),
+    rows: [
+      row(t("تسجيل دخول موحّد", "Single sign-on"), t("قريباً", "Coming soon")),
+      row(t("لوحة صحة العلامة", "Brand health dashboard"), t("قريباً", "Coming soon")),
+      row(t("دعم مخصّص", "Dedicated support"), t("قريباً", "Coming soon")),
+    ],
+    cta: {
+      label: t("انضم لقائمة الانتظار", "Join the waitlist"),
+      href: "/contact?topic=sales",
+    },
+  };
+}
 
 function companyCards(locale: Locale): PlanCard[] {
   const t = translator(locale);
-  const L = COMPANY_LIMITS;
-  const no = t("لا", "No");
-  const num = (value: number | null) => (value === null ? no : value.toLocaleString("en-US"));
-  const row = (label: string, value: string) => ({ label, value });
-
-  /*
-   * Five cards in an 1100px container leave about 145px of content each, so a
-   * company card's values are figures and marks only -- `shrink-0` on the
-   * value means a long one leaves the card rather than wrapping. The rows that
-   * need a phrase (support, partner links, who counts as a collaborator) are
-   * in the comparison table directly below, which has the width for them.
-   * `check:pricing` holds the cap at the measured width.
-   */
-  const rows = (plan: CompanyPlan): PlanCard["rows"] => {
-    const brands = { free: "1", starter: "1", brand: "1", team: "3", business: "5" }[plan];
-    const editors = { free: "2", starter: "3", brand: "5", team: "15", business: "30" }[plan];
-    const extra = plan === "team" || plan === "business" ? money(EXTRAS.seat) : no;
-    const viewers = { free: "25", starter: "100", brand: ANY, team: ANY, business: ANY }[plan];
-    const storage = {
-      free: "2 GB",
-      starter: "10 GB",
-      brand: "25 GB",
-      team: "100 GB",
-      business: "250 GB",
-    }[plan];
-    const domains = { free: no, starter: no, brand: "1", team: "3", business: "5" }[plan];
-    const history = {
-      free: t("7 أيام", "7 days"),
-      starter: t("30 يوماً", "30 days"),
-      brand: t("90 يوماً", "90 days"),
-      team: t("سنة", "1 year"),
-      business: t("سنة", "1 year"),
-    }[plan];
-
-    return [
-      row(t("العلامات", "Brands"), brands),
-      row(t("المحرّرون", "Editors"), editors),
-      row(t("محرّر إضافي", "Extra editor"), extra),
-      row(t("المشاهدون", "Viewers"), viewers),
-      row(t("التخزين", "Storage"), storage),
-      row(t("تصاميم الدليل", "Guideline looks"), plan === "free" ? "2" : "8"),
-      row(t("النطاقات الخاصة", "Custom domains"), domains),
-      row(t("إعادة تقرير التوافق", "Alignment re-runs"), num(L.reports[plan])),
-      row(t("مراجعات نبرة سريعة", "Quick tone checks"), num(L.quickChecks[plan])),
-      row(t("«اسأل علامتك»", "Ask the Brand"), num(L.askTheBrand[plan])),
-      row(t("مهام الكتابة", "Writing tasks"), num(L.writingTasks[plan])),
-      row(t("رسائل المساعد", "Assistant messages"), num(L.assistant[plan])),
-      row(t("موك اب بالذكاء الاصطناعي", "AI mockups"), num(L.mockups[plan])),
-      row(t("صوت لكل قناة", "Voice per channel"), plan === "team" || plan === "business" ? YES : no),
-      row(t("موصّل الذكاء الاصطناعي", "AI Connector"), plan === "free" ? no : YES),
-      row(t("سجل النسخ", "Version history"), history),
-    ];
-  };
 
   return [
     freeCard(locale, {
       audience: "companies",
-      type: "company",
-      who: t("ابنِ مركزك وجرّب.", "Build your hub and try it."),
+      who: t("علامتك في مكان واحد، مجاناً.", "Your brand in one place, free."),
       pick: t(
-        "تجرّب ماركيوس بشخصين، قبل أن تُدخل أحداً.",
-        "You're trying Markyos with two people, before bringing anyone in.",
+        "استلمت علامتك من استوديو، أو تريد أن تجرّب.",
+        "Your studio handed you the brand, or you want to try it.",
       ),
       moveUp: t(
-        "تحتاج محرّراً ثالثاً، أو يزيد المستخدمون على 25.",
-        "You need a third editor, or more than 25 people use it.",
+        "يحتاج أكثر من شخص أن يعدّل، أو تنفد مراجعات النبرة.",
+        "More than one person needs to edit, or the tone checks run out.",
       ),
-      rows: rows("free"),
+      rows: companyRows(locale, "free"),
     }),
-    paidCard("starter", locale, {
+    paidCard("company", locale, {
       audience: "companies",
-      who: t("علامة مرتّبة، لفريق صغير.", "A tidy brand for a small team."),
-      pick: t(
-        "علامة واحدة، وحتى 3 يعدّلونها، وحتى 100 يستخدمونها.",
-        "One brand, up to three people who edit it, up to 100 who use it.",
-      ),
-      moveUp: t(
-        "تريد نطاقك الخاص، أو تُدخل الشركة كلها.",
-        "You want your own domain, or want the whole company in.",
-      ),
-      rows: rows("starter"),
-      cta: t("اختر البداية", "Choose Starter"),
-      href: "/start?type=company",
-    }),
-    paidCard("brand", locale, {
-      audience: "companies",
-      who: t("شركتك كلها على هوية واحدة.", "Your whole company on brand."),
       recommended: true,
+      perBrand: true,
+      who: t("شركتك كلها، بصوت واحد.", "Your whole company, one voice."),
       pick: t(
-        "علامة واحدة، وحتى 5 يعدّلونها، والشركة كلها تستخدمها.",
-        "One brand, up to five people who edit it, and the whole company uses it.",
+        "تدير علامة شركتك، وتريد أن يستعملها الجميع.",
+        "You run your company's brand and want everyone to use it.",
       ),
       moveUp: t(
-        "تأتي علامة ثانية، أو تحتاج أكثر من 5 محرّرين.",
-        "A second brand arrives, or you need more than five editors.",
+        "تدير عدة علامات، أو تحتاج تسجيل دخول موحّداً.",
+        "You run several brands, or you need single sign-on.",
       ),
-      rows: rows("brand"),
-      cta: t("اختر العلامة", "Choose Brand"),
-      href: "/start?type=company",
+      rows: companyRows(locale, "company"),
+      cta: t(`جرّب ${TRIAL.days} يوماً مجاناً`, `Try ${TRIAL.days} days free`),
     }),
-    paidCard("team", locale, {
-      audience: "companies",
-      who: t("عدة علامات، وفرق أكبر.", "Several brands, bigger teams."),
-      pick: t(
-        "حتى 3 علامات، وحتى 15 محرّراً، وأصوات مختلفة لكل قناة.",
-        "Up to three brands, up to fifteen editors, and a different voice for each channel.",
-      ),
-      moveUp: t("تزيد علاماتك على 3، أو محرّروك على 15.", "You pass three brands, or fifteen editors."),
-      rows: rows("team"),
-      cta: t("اختر الفريق", "Choose Team"),
-      href: "/start?type=company",
-    }),
-    paidCard("business", locale, {
-      audience: "companies",
-      who: t("مجموعة علامات، وقسم تسويق كامل.", "A group of brands, and a full marketing team."),
-      pick: t("حتى 5 علامات، وحتى 30 محرّراً.", "Up to five brands, and up to thirty editors."),
-      moveUp: t(
-        "تزيد علاماتك على 5. سجّل اهتمامك بخطة المؤسسات.",
-        "You pass five brands. Register your interest in Enterprise.",
-      ),
-      rows: rows("business"),
-      cta: t("اختر الأعمال", "Choose Business"),
-      href: "/start?type=company",
-    }),
+    enterpriseCard(locale),
+  ];
+}
+
+/* ── The comparison tables ─────────────────────────────────────────────────── */
+
+function group(label: string, columns: number): Cell[] {
+  return [{ text: label, strong: true }, ...Array.from({ length: columns }, () => "")];
+}
+
+/*
+ * The builder table, on both builder tabs.
+ *
+ * Freelancers and Studios are two doors onto the same three plans, so they
+ * compare the same three columns. The third card on the Studios tab is Studio
+ * with add-ons, not a fourth plan, so it is not a column here — the add-ons
+ * have their own block below, which is where v5.2 puts them.
+ */
+function builderTable(locale: Locale): Cell[][] {
+  const t = translator(locale);
+  const L = BUILDER_LIMITS;
+  const no = t("لا", "No");
+  const num = (value: number | null) => (value === null ? no : value.toLocaleString("en-US"));
+  const plans: BuilderPlan[] = ["free", "freelancer", "studio"];
+  const across = (pick: (plan: BuilderPlan) => Cell): Cell[] => plans.map(pick);
+  const line = (label: string, pick: (plan: BuilderPlan) => Cell): Cell[] => [label, ...across(pick)];
+
+  return [
+    group(t("العمل", "Work"), plans.length),
+    line(t("العلامات النشطة", "Active brands"), (p) => ({ text: num(L.activeBrands[p]), strong: true })),
+    line(t("مشاريع جديدة كل 30 يوماً", "New projects every 30 days"), (p) => num(L.newProjects[p])),
+    line(t("الأعضاء", "Members"), (p) => num(L.seats[p])),
+    line(t("التخزين", "Storage"), (p) => L.storage[p]),
+    line(t("ضيوف من العملاء", "Client guests"), () => ANY),
+
+    group(t("اكتشف وابنِ", "Discover and build"), plans.length),
+    line(t("استبيانات الاكتشاف والإجابات", "Discovery forms and answers"), () => ANY),
+    line(t("مركز الاستراتيجية باللغتين", "Bilingual strategy hub"), () => YES),
+    line(t("مركز الأصول واستلام الملفات", "Asset library and file intake"), () => YES),
+    line(t("تصاميم موقع الدليل", "Guideline site looks"), (p) => num(L.looks[p])),
+    line(t("لوحة الاستوديو ومسار المشروع", "Studio board and project path"), () => YES),
+    [t("لوحات الإلهام", "Moodboards"), { feature: "moodboard" }, { feature: "moodboard" }, { feature: "moodboard" }],
+
+    group(t("النشر والتسليم", "Publish and hand off"), plans.length),
+    line(t("شارة «صُنع بماركيوس»", "“Made with Markyos” badge"), (p) =>
+      p === "free" ? t("تظهر", "Shown") : no,
+    ),
+    line(t("كلمة مرور للمركز", "Hub password"), (p) => (p === "free" ? no : YES)),
+    line(t("نطاق خاص قبل التسليم", "Custom domain before handoff"), (p) => (p === "studio" ? YES : no)),
+    line(t("التسليم ونقل الملكية", "Handoff and ownership transfer"), () => YES),
+    line(t("مكافأة الشريك", "Partner reward"), () => `${PARTNER_SHARE}%`),
+
+    group(t("عقل العلامة، شهرياً", "Brand Brain, each month"), plans.length),
+    line(t("التحليل الأول لكل مشروع جديد", "First analysis on every new project"), () => YES),
+    line(t("إعادة التحليل", "Analysis re-runs"), (p) => num(L.reruns[p])),
+    line(t("نص أقسام الدليل", "Guideline section copy"), (p) => num(L.sectionDrafts[p])),
+    line(t("رسائل المساعد الاستراتيجي", "Strategy assistant messages"), (p) => num(L.assistant[p])),
+    line(t("موك اب", "Mockups"), (p) => num(L.mockups[p])),
+    line(t("موصّل الذكاء الاصطناعي", "AI Connector"), (p) => (p === "free" ? no : YES)),
   ];
 }
 
@@ -841,130 +738,80 @@ function companyTable(locale: Locale): Cell[][] {
   const t = translator(locale);
   const L = COMPANY_LIMITS;
   const no = t("لا", "No");
-  const num = (value: number | null) => (value === null ? no : value.toLocaleString("en-US"));
-  const all = (value: string): Cell[] => [value, value, value, value, value];
-  const extra = money(EXTRAS.seat);
-  const gated = t("بموعد وكلمة مرور", "Expiry and password");
+  const plans: CompanyPlan[] = ["free", "company"];
+  const line = (label: string, pick: (plan: CompanyPlan) => Cell): Cell[] => [
+    label,
+    ...plans.map(pick),
+  ];
 
   return [
-    group(t("العمل", "Work"), 5),
-    [t("العلامات", "Brands"), "1", "1", "1", "3", "5"],
-    [t("المحرّرون", "Editors"), "2", "3", "5", "15", "30"],
-    [t("محرّر إضافي", "Extra editor"), no, no, no, extra, extra],
-    [t("المشاهدون", "Viewers"), "25", "100", ANY, ANY, ANY],
-    [t("استوديوهات متعاونة لكل علامة", "Studio collaborators per brand"), "1", "1", "1", "3", "5"],
-    [t("التخزين", "Storage"), "2 GB", "10 GB", "25 GB", "100 GB", "250 GB"],
-    [t("استبيان القيادة", "Leadership questionnaire"), ...all(YES)],
-    [t("تقرير التوافق الأول لكل علامة", "First alignment report per brand"), ...all(YES)],
+    group(t("العمل", "Work"), plans.length),
+    line(t("العلامات", "Brands"), (p) =>
+      p === "free"
+        ? "1"
+        : {
+            text: t(
+              `1، وكل إضافية ${dollars(EXTRAS.companyBrand)}`,
+              `1, each extra ${money(EXTRAS.companyBrand)}`,
+            ),
+            strong: true,
+          },
+    ),
+    line(t("المحرّرون لكل علامة", "Editors per brand"), (p) => ({
+      text: String(L.editors[p]),
+      strong: p === "company",
+    })),
+    line(t("المشاهدون", "Viewers"), (p) => ({
+      text: p === "free" ? String(L.viewers.free) : ANY,
+      strong: p === "company",
+    })),
+    line(t("استوديو متعاون", "Studio collaborator"), (p) => String(L.studioCollaborators[p])),
+    line(t("التخزين لكل علامة", "Storage per brand"), (p) => L.storage[p]),
+
+    group(t("ابنِ", "Build"), plans.length),
+    line(t("مركز الأصول واستلام الملفات", "Asset library and file intake"), () => YES),
+    line(t("مركز الاستراتيجية باللغتين", "Bilingual strategy hub"), () => YES),
+    line(t("صوت العلامة وقاموس المصطلحات", "Brand voice and term base"), () => YES),
+    line(t("استبيان القيادة", "Leadership questionnaire"), () => YES),
+    line(t("تصاميم موقع الدليل", "Guideline site looks"), (p) => String(L.looks[p])),
     [
-      t("صفحات الأقسام واستيراد Word وPDF", "Department pages, Word and PDF import"),
-      ...all(YES),
-    ],
-    [
-      t("دعوة الاستوديو دون احتسابه محرّراً", "Invite a studio, not counted as an editor"),
-      ...all(YES),
+      t("أدلّة الأقسام", "Department playbooks"),
+      { feature: "department-playbooks" },
+      { feature: "department-playbooks" },
     ],
 
-    group(t("النشر", "Publishing"), 5),
-    [t("تصاميم الدليل", "Guideline looks"), "2", "8", "8", "8", "8"],
-    [t("دليل واحد باللغتين", "One guide in both languages"), ...all(YES)],
-    [
-      t("شارة «صُنع باستخدام ماركيوس»", "“Made with Markyos” badge"),
-      t("تظهر", "Shown"),
-      no,
-      no,
-      no,
-      no,
-    ],
-    [t("كلمة مرور للمركز", "Hub password"), no, YES, YES, YES, YES],
-    [t("النطاقات الخاصة", "Custom domains"), no, no, "1", "3", "5"],
-    [t("روابط الشركاء", "Partner links"), t("للعرض", "View only"), gated, gated, gated, gated],
+    group(t("النشر والمشاركة", "Publish and share"), plans.length),
+    line(t("شارة «صُنع بماركيوس»", "“Made with Markyos” badge"), (p) =>
+      p === "free" ? t("تظهر", "Shown") : no,
+    ),
+    line(t("كلمة مرور ونطاق خاص", "Password and custom domain"), (p) => (p === "free" ? no : YES)),
+    line(t("روابط الشركاء", "Partner links"), (p) =>
+      p === "free" ? t("للعرض فقط", "View only") : t("بموعد وكلمة مرور", "Expiry and password"),
+    ),
+    line(t("دعوة استوديو دون احتسابه محرّراً", "Invite a studio, not counted as an editor"), () => YES),
 
-    group(t("عقل العلامة، شهرياً", "Brand Brain, a month"), 5),
-    [
-      t("إعادة تقرير التوافق", "Alignment report re-runs"),
-      num(L.reports.free),
-      num(L.reports.starter),
-      num(L.reports.brand),
-      num(L.reports.team),
-      num(L.reports.business),
-    ],
-    [
-      t("مراجعات نبرة سريعة", "Quick tone checks"),
-      num(L.quickChecks.free),
-      num(L.quickChecks.starter),
-      num(L.quickChecks.brand),
-      num(L.quickChecks.team),
-      num(L.quickChecks.business),
-    ],
-    [
-      t("«اسأل علامتك»", "Ask the Brand"),
-      num(L.askTheBrand.free),
-      num(L.askTheBrand.starter),
-      num(L.askTheBrand.brand),
-      num(L.askTheBrand.team),
-      num(L.askTheBrand.business),
-    ],
-    [
-      t("مهام الكتابة", "Writing tasks"),
-      num(L.writingTasks.free),
-      num(L.writingTasks.starter),
-      num(L.writingTasks.brand),
-      num(L.writingTasks.team),
-      num(L.writingTasks.business),
-    ],
-    [
-      t("رسائل المساعد الاستراتيجي", "Strategy assistant messages"),
-      num(L.assistant.free),
-      num(L.assistant.starter),
-      num(L.assistant.brand),
-      num(L.assistant.team),
-      num(L.assistant.business),
-    ],
-    [
-      t("موك اب بالذكاء الاصطناعي", "AI mockups"),
-      num(L.mockups.free),
-      num(L.mockups.starter),
-      num(L.mockups.brand),
-      num(L.mockups.team),
-      num(L.mockups.business),
-    ],
-    [
-      t("المشاهدون يراجعون كتاباتهم", "Viewers check their own writing"),
-      no,
-      YES,
-      YES,
-      YES,
-      YES,
-    ],
-    [t("صوت لكل قناة", "Voice per channel"), no, no, no, YES, YES],
-    [t("موصّل الذكاء الاصطناعي", "AI Connector"), no, YES, YES, YES, YES],
-
-    group(t("الحساب", "Account"), 5),
-    [t("صوت العلامة وقاموس المصطلحات", "Brand voice and term base"), ...all(YES)],
-    [t("الصلاحيات على الخادم", "Server-side permissions"), ...all(YES)],
-    [
-      t("سجل النسخ", "Version history"),
-      t("7 أيام", "7 days"),
-      t("30 يوماً", "30 days"),
-      t("90 يوماً", "90 days"),
-      t("سنة", "1 year"),
-      t("سنة", "1 year"),
-    ],
-    [
-      t("الدعم", "Support"),
-      t("مركز المساعدة", "Help centre"),
-      t("البريد", "Email"),
-      t("البريد", "Email"),
-      t("بأولوية", "Priority"),
-      t("بأولوية ومكالمة إعداد", "Priority and a setup call"),
-    ],
+    group(t("عقل العلامة، شهرياً لكل علامة", "Brand Brain, each month, per brand"), plans.length),
+    line(t("تقرير التوافق الأول", "First alignment report"), () => YES),
+    line(t("إعادة تقرير التوافق", "Alignment report re-runs"), (p) =>
+      p === "free" ? no : String(L.alignmentReruns.company),
+    ),
+    line(t("مراجعات نبرة سريعة", "Quick tone checks"), (p) =>
+      L.quickChecks[p].toLocaleString("en-US"),
+    ),
+    line(t("«اسأل علامتك»", "Ask the Brand"), (p) => L.askTheBrand[p].toLocaleString("en-US")),
+    line(
+      t("مراجعة معمّقة، وإعادة صياغة، وترجمة", "Deep check, rewrite, translate"),
+      (p) => L.deepChecks[p].toLocaleString("en-US"),
+    ),
+    line(t("رسائل المساعد الاستراتيجي", "Strategy assistant messages"), (p) =>
+      p === "free" ? no : String(L.assistant.company),
+    ),
+    line(t("موك اب", "Mockups"), (p) => String(L.mockups[p])),
+    line(t("المشاهدون يراجعون كتاباتهم", "Viewers check their own writing"), (p) =>
+      p === "free" ? no : YES,
+    ),
+    line(t("موصّل الذكاء الاصطناعي", "AI Connector"), (p) => (p === "free" ? no : YES)),
   ];
-}
-
-/** A full-width heading inside the table body, the way the deck groups its rows. */
-function group(label: string, columns: number): Cell[] {
-  return [{ text: label, strong: true }, ...Array.from({ length: columns }, () => "")];
 }
 
 /* ── The three panels ──────────────────────────────────────────────────────── */
@@ -972,10 +819,8 @@ function group(label: string, columns: number): Cell[] {
 /*
  * What every plan includes, above the cards.
  *
- * v4.3 adds this strip so the cards can stop repeating themselves: six
- * sentences that are true of the free plan and of every plan above it, said
- * once per tab instead of eleven times. Terms with no body, which is what this
- * block renders as a plain list.
+ * Six sentences that are true of the free plan and of every plan above it,
+ * said once per tab instead of once per card.
  */
 function includesEveryPlan(locale: Locale, audience: Audience): PageBlock {
   const t = translator(locale);
@@ -986,11 +831,8 @@ function includesEveryPlan(locale: Locale, audience: Audience): PageBlock {
             "استبيان القيادة، وتقرير التوافق الأول لكل علامة مجاناً",
             "The leadership questionnaire, and the first alignment report per brand free",
           ),
-          t(
-            "مركز الاستراتيجية، وصفحات الأقسام، واستيراد Word وPDF",
-            "Strategy hub, department pages, Word and PDF import",
-          ),
-          t("مركز الأصول، ودليل واحد باللغتين", "Asset library, and one guide in both languages"),
+          t("مركز الاستراتيجية ومركز الأصول", "Strategy hub and asset library"),
+          t("دليل واحد باللغتين", "One guide in both languages"),
           t("صوت العلامة وقاموس المصطلحات", "Brand voice and term base"),
           t(
             "دعوة الاستوديو، دون أن يُحتسب من محرّريك",
@@ -1025,47 +867,96 @@ function includesEveryPlan(locale: Locale, audience: Audience): PageBlock {
 }
 
 /*
- * The handoff section, on two tabs of three.
+ * The add-ons, on the tab they belong to.
  *
- * A company reading "the studio builds, the client owns" is being told about
- * somebody else's business model. v4.3 puts it on the freelancers and the
- * studios tabs only, which is also why the figure differs between them: the
- * agency share is 25%.
+ * v5.2 §5 says to show the rows that match the active tab, and the reason is
+ * that an extra editor at $8 is a company's answer and an extra member at $8
+ * is a studio's — the same price for two different things, and a reader who
+ * sees both at once has to work out which is theirs.
  */
-function handoffBlock(locale: Locale, audience: Audience): PageBlock {
+function addOnsBlock(locale: Locale, audience: Audience): PageBlock {
   const t = translator(locale);
-  const names = PLAN_NAMES[locale];
-  const agency =
-    audience === "studios"
-      ? t(
-          `، و${AGENCY_PARTNER_SHARE}% في خطة «${names.agency}»`,
-          `, or ${AGENCY_PARTNER_SHARE}% on ${names.agency}`,
-        )
-      : "";
+  const once = (value: number) =>
+    t(`${dollars(value)} مرة واحدة`, `${money(value)} once`);
+  const monthly = (value: number) =>
+    t(`${dollars(value)} شهرياً`, `${money(value)} a month`);
+
+  const rows: Cell[][] =
+    audience === "companies"
+      ? [
+          [t("علامة إضافية", "Extra brand"), monthly(EXTRAS.companyBrand), t("لكل علامة أخرى تديرها الشركة.", "For every other brand the company runs.")],
+          [t("محرّر إضافي", "Extra editor"), monthly(EXTRAS.companyEditor), t("محرّر سادس على علامة، وسابع.", "A sixth editor on a brand, and a seventh.")],
+          [t("حزمة عقل العلامة", "Brand Brain pack"), once(EXTRAS.brainPack), t("100 مهمة كتابة، و60 رسالة للمساعد.", "100 writing tasks and 60 assistant messages.")],
+          [t("حزمة الموك اب", "Mockup pack"), once(EXTRAS.mockupPack), t("60 موك اب.", "60 AI mockups.")],
+        ]
+      : [
+          [t("عضو إضافي", "Extra member"), monthly(EXTRAS.seat), t("عضو سادس، وسابع، وما تحتاج.", "A sixth member, a seventh, as many as you need.")],
+          [t("5 علامات نشطة و50 جيجابايت", "5 more active brands and 50 GB"), monthly(EXTRAS.brands5), t("حين يكبر عدد عملائك في الوقت نفسه.", "For when more clients run at the same time.")],
+          [t("حزمة عقل العلامة", "Brand Brain pack"), once(EXTRAS.brainPack), t("100 مهمة كتابة، و60 رسالة للمساعد.", "100 writing tasks and 60 assistant messages.")],
+          [t("حزمة الموك اب", "Mockup pack"), once(EXTRAS.mockupPack), t("60 موك اب.", "60 AI mockups.")],
+        ];
 
   return {
-    kind: "prose",
-    title: t(
-      "الاستوديو يبني. العميل يملك. والعائد مستمر.",
-      "The studio builds. The client owns. The return keeps coming.",
+    kind: "table",
+    title: t("حين تحتاج أكثر.", "When you need more."),
+    head: [t("الإضافة", "Add-on"), t("السعر", "Price"), t("لماذا", "What for")],
+    rows,
+    note: t(
+      `الحزم صالحة ${PACK_MONTHS} شهراً، وتُستخدم بعد انتهاء حدّك الشهري، وهي للخطط المدفوعة وحدها.`,
+      `Packs last ${PACK_MONTHS} months and are used after your monthly limit runs out. Paid plans only.`,
     ),
-    body: [
-      t(
-        `التسليم مجاني، والمركز يبقى حيّاً على الخطة المجانية للعميل. وحين يرقّي خطته، تحصل على ${PARTNER_SHARE}% مما يدفعه في سنته الأولى${agency}، خصماً من فاتورتك: خمسة عملاء على خطة «${names.brand}» يعني ${partnerCredit(5)} شهرياً، واثنا عشر يعني ${partnerCredit(12)}.`,
-        `Handoff is free, and the hub stays live on the client's free plan. When the client upgrades, you get ${PARTNER_SHARE}% of their first year${agency} as billing credit: five clients on ${names.brand} is ${partnerCredit(5)} a month, and twelve is ${partnerCredit(12)}.`,
-      ),
-    ],
-    links: [{ label: t("التسليم ومكافأة الشريك", "How handoff works"), href: "/platform/handoff" }],
   };
 }
 
 /*
- * One tab.
+ * The handoff section, on the two builder tabs.
  *
- * The chooser, the strip, the cards and the comparison, in that order, with no
- * `id` on any of them: every panel is in the HTML and all but one is hidden,
- * so an id inside one would either be a duplicate of its opposite number or an
- * anchor that scrolls to nothing. The audience's own id is the deep link.
+ * A company reading "the studio builds, the client owns" is being told about
+ * somebody else's business model, so the companies tab does not get it. One
+ * rate now: v4.3's 25% belonged to the Agency plan, and that plan is gone.
+ */
+function handoffBlock(locale: Locale): PageBlock {
+  const t = translator(locale);
+
+  return {
+    kind: "terms",
+    title: t("الاستوديو يبني، والعميل يملك، والعائد مستمر.", "The studio builds. The client owns. The return keeps coming."),
+    lead: t(
+      `التسليم مجاني دائماً، والمركز يبقى حيّاً على الخطة المجانية لعميلك. وحين يشترك في خطة «${PLAN_NAMES[locale].company}»، تحصل على ${PARTNER_SHARE}% مما يدفعه في سنته الأولى، رصيداً على فاتورتك ما دمت على خطة مدفوعة.`,
+      `Handoff is always free, and the hub stays live on your client's free plan. When they subscribe to ${PLAN_NAMES[locale].company}, you get ${PARTNER_SHARE}% of what they pay in their first year, as credit on your bill while you are on a paid plan.`,
+    ),
+    cols: 3,
+    items: [
+      {
+        term: t("عميل واحد", "One client"),
+        body: t(`${partnerCredit(1)} شهرياً`, `${partnerCredit(1)} a month`),
+      },
+      {
+        term: t("أربعة عملاء", "Four clients"),
+        body: t(
+          `${partnerCredit(4)} شهرياً، أي خطة «${PLAN_NAMES[locale].freelancer}» كاملة`,
+          `${partnerCredit(4)} a month, your whole ${PLAN_NAMES[locale].freelancer} plan`,
+        ),
+      },
+      {
+        term: t("ثمانية عملاء", "Eight clients"),
+        body: t(
+          `${partnerCredit(8)} شهرياً، أي خطة «${PLAN_NAMES[locale].studio}» كاملة`,
+          `${partnerCredit(8)} a month, your whole ${PLAN_NAMES[locale].studio} plan`,
+        ),
+      },
+    ],
+  };
+}
+
+/*
+ * A panel: one tab's chooser, strip, cards, table and add-ons.
+ *
+ * Nothing inside a panel carries an `id`. Every panel is in the HTML so all
+ * nine cards are crawled and findable in a browser's own search, and an id in
+ * one panel is either a duplicate of its opposite number — Free is on two tabs
+ * and Studio is on two tabs — or an anchor that scrolls into something hidden.
+ * `check:pricing` walks the whole block tree and fails on a repeat.
  */
 function audiencePanel(locale: Locale, audience: Audience): PageBlock[] {
   const t = translator(locale);
@@ -1077,9 +968,14 @@ function audiencePanel(locale: Locale, audience: Audience): PageBlock[] {
     billing: {
       label: t("الفوترة", "Billing"),
       monthly: t("شهرياً", "Monthly"),
-      annual: t("سنوياً (وفّر نحو 20%)", "Yearly (save about 20%)"),
+      annual: t("سنوياً (شهران مجاناً)", "Yearly (two months free)"),
     },
   };
+
+  const trialNote = t(
+    `بدون بطاقة. بعد ${TRIAL.days} يوماً تنتقل إلى المجانية إن لم تشترك، ولا يُحذف شيء.`,
+    `No card needed. After ${TRIAL.days} days you move to Free unless you subscribe. Nothing is deleted.`,
+  );
 
   if (audience === "freelancers") {
     return [
@@ -1091,44 +987,27 @@ function audiencePanel(locale: Locale, audience: Audience): PageBlock[] {
         ),
         label: t("عدد عملائك", "How many clients"),
         options: [
+          { label: t("واحد", "One"), target: planId("freelancers", "free") },
+          { label: t("من واحد إلى ثلاثة", "One to three"), target: planId("freelancers", "freelancer") },
+          { label: t("أكثر من ثلاثة", "More than three"), target: planId("freelancers", "studio") },
           {
-            label: t("واحد", "One"),
-            target: planId("freelancers", "free"),
-            note: t(
-              `والمجانية تكفيه. وحين يأتي الثاني، أضفه بتصريح مشروع بـ ${EXTRAS.projectPass} دولاراً.`,
-              `Free covers it. When the second one comes, add it with a ${money(EXTRAS.projectPass)} Project Pass.`,
-            ),
-          },
-          { label: t("اثنان", "Two"), target: planId("freelancers", "solo") },
-          { label: t("من 3 إلى 5", "Three to five"), target: planId("freelancers", "pro") },
-          {
-            label: t("يعمل معي آخرون", "Others work with me"),
+            label: t("يعمل معي فريق", "I have a team"),
             target: "tab:studios",
-            note: t(
-              "خطط الفريق في تبويب «الاستوديوهات والوكالات».",
-              "Team plans are on the studios and agencies tab.",
-            ),
+            note: t("خطط الفرق في تبويب «الاستوديوهات».", "Team plans are on the Studios tab."),
           },
         ],
       },
       includesEveryPlan(locale, audience),
-      {
-        kind: "plans",
-        ...common,
-        plans: freelancerCards(locale),
-        note: t(
-          `مشروع إضافي لمرة واحدة؟ تصريح المشروع بـ ${EXTRAS.projectPass} دولاراً، بمزايا الاحترافية حتى تسلّمه.`,
-          `One extra project, just this once? A Project Pass is ${money(EXTRAS.projectPass)}, with Pro features until you hand it off.`,
-        ),
-      },
+      { kind: "plans", ...common, plans: freelancerCards(locale), note: trialNote },
       {
         kind: "table",
-        title: t("قارن كل الخطط، في جدول واحد.", "Every plan, in one table."),
+        title: t("كل حدّ، خطةً بخطة.", "Every limit, plan by plan."),
         numeric: true,
-        head: [t("الحد", "Limit"), names.free, names.solo, names.pro],
-        rows: freelancerTable(locale),
+        head: [t("الحد", "Limit"), names.free, names.freelancer, names.studio],
+        rows: builderTable(locale),
       },
-      handoffBlock(locale, audience),
+      addOnsBlock(locale, audience),
+      handoffBlock(locale),
     ];
   }
 
@@ -1139,101 +1018,57 @@ function audiencePanel(locale: Locale, audience: Audience): PageBlock[] {
         title: t("كم شخصاً في فريقك؟", "How many people are on your team?"),
         label: t("حجم فريقك", "How big your team is"),
         options: [
-          { label: t("نجرّب أولاً", "We want to try first"), target: planId("studios", "free") },
-          { label: t("حتى 5", "Up to 5"), target: planId("studios", "studio") },
-          { label: t("من 6 إلى 12", "6 to 12"), target: planId("studios", "agency") },
-          {
-            label: t("أكثر من 12", "More than 12"),
-            target: planId("studios", "agency"),
-            note: t(
-              `أضف مقاعد بـ ${EXTRAS.seat} دولارات للمقعد، أو تواصل معنا.`,
-              `Add seats at ${money(EXTRAS.seat)} each, or talk to us.`,
-            ),
-          },
+          { label: t("أنا وحدي", "Just me"), target: planId("studios", "free") },
+          { label: t("حتى خمسة", "Up to five"), target: planId("studios", "studio") },
+          { label: t("أكثر من خمسة", "More than five"), target: planId("studios", "bigger-team") },
         ],
       },
       includesEveryPlan(locale, audience),
-      {
-        kind: "plans",
-        ...common,
-        plans: studioCards(locale),
-        note: t(
-          "المشاريع المسلّمة لا تُحتسب. تتحرر حصتها لحظة يتسلّم العميل مركزه، والحدود الشهرية مشتركة بين فريقك كله.",
-          "Handed-off projects don't count. The slot frees up the moment your client takes the hub, and the monthly limits are shared by your whole team.",
-        ),
-      },
+      { kind: "plans", ...common, plans: studioCards(locale), note: trialNote },
       {
         kind: "table",
-        title: t("قارن كل الخطط، في جدول واحد.", "Every plan, in one table."),
+        title: t("كل حدّ، خطةً بخطة.", "Every limit, plan by plan."),
         numeric: true,
-        head: [t("الحد", "Limit"), names.free, names.studio, names.agency],
-        rows: studioTable(locale),
+        head: [t("الحد", "Limit"), names.free, names.freelancer, names.studio],
+        rows: builderTable(locale),
       },
-      handoffBlock(locale, audience),
+      addOnsBlock(locale, audience),
+      handoffBlock(locale),
     ];
   }
 
   return [
     {
       kind: "chooser",
-      title: t(
-        "كم شخصاً يعدّل علامتكم، وكم علامة لديكم؟",
-        "How many people edit your brand, and how many brands do you have?",
-      ),
-      label: t("علاماتكم ومحرّروها", "Your brands and editors"),
+      title: t("كم شخصاً يعدّل علامتك؟", "How many people edit your brand?"),
+      label: t("عدد المحرّرين", "How many editors"),
       options: [
-        { label: t("نجرّب، بشخصين", "Trying it, with two people"), target: planId("companies", "free") },
+        { label: t("واحد", "One"), target: planId("companies", "free") },
+        { label: t("حتى خمسة", "Up to five"), target: planId("companies", "company") },
         {
-          label: t("علامة واحدة، وحتى 3 محرّرين", "One brand, up to 3 editors"),
-          target: planId("companies", "starter"),
-        },
-        {
-          label: t("علامة واحدة، والشركة كلها تستخدمها", "One brand, the whole company uses it"),
-          target: planId("companies", "brand"),
-        },
-        {
-          label: t("حتى 3 علامات، أو 15 محرّراً", "Up to 3 brands, or 15 editors"),
-          target: planId("companies", "team"),
-        },
-        {
-          label: t("حتى 5 علامات، أو 30 محرّراً", "Up to 5 brands, or 30 editors"),
-          target: planId("companies", "business"),
+          label: t("أكثر من ذلك", "More than that"),
+          target: planId("companies", "company"),
           note: t(
-            "أكثر من ذلك؟ خطة المؤسسات قادمة، أسفل الخطط.",
-            "More than that? The Enterprise plan is coming, just below the plans.",
+            `كل محرّر بعد الخامس ${dollars(EXTRAS.companyEditor)} شهرياً، والمشاهدون بلا حدود.`,
+            `Every editor past the fifth is ${money(EXTRAS.companyEditor)} a month, and viewers are unlimited.`,
           ),
+        },
+        {
+          label: t("عدة علامات وفرق كبيرة", "Several brands, large teams"),
+          target: planId("companies", "enterprise"),
         },
       ],
     },
     includesEveryPlan(locale, audience),
-    {
-      kind: "plans",
-      ...common,
-      plans: companyCards(locale),
-      note: t(
-        "المشاهدون مجانيون في كل الخطط المدفوعة. تدفع لمن يعدّل العلامة، لا لمن يستخدمها.",
-        "Viewers are free on every paid plan. You pay for who edits the brand, not who uses it.",
-      ),
-    },
-    {
-      kind: "callout",
-      title: t("أكثر من 5 علامات، وفرق في عدة دول؟", "More than five brands, teams in several countries?"),
-      body: [
-        t(
-          `خطة المؤسسات قادمة، من ${EXTRAS.enterpriseFrom} دولاراً شهرياً بعقد سنوي: علامات ومحرّرون بلا حدود، وحدود ذكاء حسب الاتفاق، وتسجيل دخول موحّد، وسجلات تدقيق، واتفاقية خدمة. سجّل اهتمامك، ونتواصل معك أولاً.`,
-          `The Enterprise plan is coming, from ${money(EXTRAS.enterpriseFrom)} a month on an annual contract: unlimited brands and editors, AI limits set in your contract, SSO, audit logs and an SLA. Register your interest and we'll reach you first.`,
-        ),
-      ],
-      feature: "sso",
-      cta: { label: t("سجّل اهتمامك", "Register your interest"), href: "/contact?topic=sales" },
-    },
+    { kind: "plans", ...common, plans: companyCards(locale), note: trialNote },
     {
       kind: "table",
-      title: t("قارن كل الخطط، في جدول واحد.", "Every plan, in one table."),
+      title: t("كل حدّ، خطةً بخطة.", "Every limit, plan by plan."),
       numeric: true,
-      head: [t("الحد", "Limit"), names.free, names.starter, names.brand, names.team, names.business],
+      head: [t("الحد", "Limit"), names.free, `${names.company} · ${money(PLAN_PRICES.company)}`],
       rows: companyTable(locale),
     },
+    addOnsBlock(locale, audience),
   ];
 }
 
@@ -1242,53 +1077,47 @@ function audiencePanel(locale: Locale, audience: Audience): PageBlock[] {
 export function currentPricingPage(locale: Locale): PageDoc {
   const t = translator(locale);
   const names = PLAN_NAMES[locale];
-  const offerPlans = LAUNCH_OFFER.plans.map((plan) => PLAN_NAMES[locale][plan]);
-  const listed =
-    locale === "ar"
-      ? offerPlans.map((name) => `«${name}»`).join("، ")
-      : `${offerPlans.slice(0, -1).join(", ")} and ${offerPlans.at(-1)}`;
 
   return {
     path: "/pricing",
     shortTitle: t("الأسعار", "Pricing"),
     title: t("الأسعار والخطط · ماركيوس", "Pricing and Plans · Markyos"),
     description: t(
-      `خطط للمستقلين، وللاستوديوهات والوكالات، وللشركات. ابدأ مجاناً، والخطط المدفوعة من ${LOWEST_PAID_MONTHLY} دولاراً، وحدود كل خطة واضحة.`,
-      `Plans for freelancers, for studios and agencies, and for companies. Start free, paid plans from ${money(LOWEST_PAID_MONTHLY)}, and every limit in plain sight.`,
+      `جرّب أي خطة ${TRIAL.days} يوماً دون بطاقة دفع. «${names.freelancer}» بـ${dollars(PLAN_PRICES.freelancer)}، و«${names.studio}» بـ${dollars(PLAN_PRICES.studio)}، و«${names.company}» بـ${dollars(PLAN_PRICES.company)} لكل علامة، وخطة مجانية دائماً.`,
+      `Try any plan free for ${TRIAL.days} days, no card needed. ${names.freelancer} ${money(PLAN_PRICES.freelancer)}, ${names.studio} ${money(PLAN_PRICES.studio)}, ${names.company} ${money(PLAN_PRICES.company)} per brand, and a free plan, always.`,
     ),
     breadcrumbs: [{ label: t("الرئيسية", "Home"), href: "/" }],
     priority: 0.9,
     blocks: [
       {
         kind: "hero",
-        title: t("لكل طريقةِ عمل، خطتُها.", "Every way of working has its plan."),
+        title: t("ابدأ مجاناً. ادفع حين يبدأ العمل.", "Start free. Pay when it's working."),
         lead: t(
-          "اختر من أنت، فترى الخطط التي صُمّمت لك، وحدود كل خطة بالأرقام.",
-          "Choose who you are, and see the plans made for you, with every limit in numbers.",
+          "باقة واحدة لكل طريقة عمل، وكل حدودها أمامك.",
+          "One plan for each way of working, every limit in plain sight.",
         ),
       },
 
       /*
        * The offer, above the prices it changes.
        *
-       * v4.3 keeps it second in the page order, and that is right for a reason
-       * the deck does not state: a visitor who reads a column of cards and
-       * then finds out the figures on them were not the figures they would pay
-       * has been made to do the arithmetic twice. The cards carry the list
-       * price, which is the price from the fourth month on; the discount lives
-       * in one block that knows its own end date and takes itself down.
+       * A visitor who reads a column of cards and then finds out the figures
+       * on them were not the figures they would pay has been made to do the
+       * arithmetic twice. The cards carry the list price, which is the price
+       * from the fourth month on; the discount lives in one block that knows
+       * its own end date and takes itself down.
        */
       {
         kind: "offer",
         id: "launch-offer",
         eyebrow: t("عرض الإطلاق", "Launch offer"),
         title: t(
-          `نصف السعر، لأول ${LAUNCH_OFFER.months} أشهر.`,
-          `Half price, for your first ${LAUNCH_OFFER.months} months.`,
+          `خصم ${LAUNCH_OFFER.percent}% على أول ${LAUNCH_OFFER.months} أشهر.`,
+          `${LAUNCH_OFFER.percent}% off your first ${LAUNCH_OFFER.months} months.`,
         ),
         lead: t(
-          `خصم ${LAUNCH_OFFER.percent}% على أول ثلاثة أشهر من خطط ${listed}. يُطبَّق تلقائياً عند الاشتراك الشهري قبل انتهاء العرض، ثم تعود الخطة إلى سعرها العادي، ويمكنك الإلغاء قبل ذلك.`,
-          `${LAUNCH_OFFER.percent}% off your first three months on ${listed}. It applies automatically when you subscribe monthly before the offer ends. After three months the plan returns to its usual price, and you can cancel before then.`,
+          `يُطبَّق تلقائياً عند الاشتراك الشهري قبل انتهاء العرض، على أي خطة مدفوعة. بعد ثلاثة أشهر تعود الخطة إلى سعرها المعتاد، ويمكنك الإلغاء قبل ذلك.`,
+          `It applies automatically when you subscribe monthly before the offer ends, on any paid plan. After three months the plan returns to its usual price, and you can cancel before then.`,
         ),
         opens: LAUNCH_OFFER.opens,
         closes: LAUNCH_OFFER.closes,
@@ -1312,47 +1141,81 @@ export function currentPricingPage(locale: Locale): PageDoc {
         ],
         rows: LAUNCH_OFFER.plans.map((plan) => ({
           label: PLAN_NAMES[locale][plan],
-          was: money(PLAN_PRICES[plan].monthly),
+          was: money(PLAN_PRICES[plan]),
           now: launchPrice(plan),
         })),
         terms: [
           t(
-            "العرض للاشتراك الشهري وحده، ولا يجتمع مع الاشتراك السنوي.",
-            "The offer is for monthly billing only, and does not combine with yearly billing.",
+            "العرض للاشتراك الشهري وحده، ولا يجتمع مع الاشتراك السنوي، فالسنوي فيه شهران مجاناً أصلاً.",
+            "The offer is for monthly billing only. It does not combine with yearly billing, which already gives two months free.",
           ),
           t(
-            `خطتا «${names.solo}» و«${names.starter}» خارج العرض: سعرهما ثابت عند ${LOWEST_PAID_MONTHLY} دولاراً شهرياً.`,
-            `${names.solo} and ${names.starter} are not in the offer. Their price stays at ${money(LOWEST_PAID_MONTHLY)} a month.`,
+            "لا يشمل العرض الحزم ولا الإضافات، ويُستخدم مرة واحدة لكل مساحة عمل.",
+            "It does not cover the packs or the add-ons, and it is one use per workspace.",
           ),
           t(
-            "لا يشمل العرض تصريح المشروع ولا الحزم ولا المقاعد الإضافية، ويُستخدم مرة واحدة لكل مساحة عمل.",
-            "It does not cover the Project Pass, the packs or extra seats, and it is one use per workspace.",
+            `يجتمع العرض مع التجربة: جرّب ${TRIAL.days} يوماً، ثم اشترك شهرياً قبل نهاية العرض.`,
+            `It combines with the trial: try it for ${TRIAL.days} days, then subscribe monthly before the offer ends.`,
           ),
         ],
-        cta: { label: t("أنشئ حسابك", "Create your account"), href: "/start" },
+      },
+
+      {
+        kind: "terms",
+        id: "trial",
+        title: t(
+          `جرّب أي خطة مدفوعة ${TRIAL.days} يوماً، دون بطاقة دفع.`,
+          `Try any paid plan for ${TRIAL.days} days. No card needed.`,
+        ),
+        cols: 2,
+        items: [
+          {
+            term: t("تبدأ على خطتك", "You start on your plan"),
+            body: t(
+              `تبدأ مساحتك الجديدة على الخطة المناسبة لك: «${names.freelancer}»، أو «${names.studio}»، أو «${names.company}».`,
+              `Your new workspace starts on the plan that fits you: ${names.freelancer}, ${names.studio} or ${names.company}.`,
+            ),
+          },
+          {
+            term: t("نذكّرك مرتين", "We remind you twice"),
+            body: t(
+              `في اليوم ${TRIAL.reminderDays[0]} واليوم ${TRIAL.reminderDays[1]}.`,
+              `On day ${TRIAL.reminderDays[0]} and day ${TRIAL.reminderDays[1]}.`,
+            ),
+          },
+          {
+            term: t("ولا يُحذف شيء", "And nothing is deleted"),
+            body: t(
+              `إن لم تشترك، تنتقل إلى المجانية في اليوم ${TRIAL.freeFromDay}، ويبقى كل ما بنيته، وما يزيد عن حدود المجانية يصبح للقراءة فقط.`,
+              `If you don't subscribe, you move to Free on day ${TRIAL.freeFromDay}. Everything you built stays, and anything over the Free limits becomes read only.`,
+            ),
+          },
+          {
+            term: t("ولا شارة أثناء التجربة", "No badge during the trial"),
+            body: t(
+              "شارة «صُنع بماركيوس» لا تظهر على ما تنشره في أيام التجربة.",
+              "The “Made with Markyos” badge does not show on what you publish during the trial.",
+            ),
+          },
+        ],
       },
 
       /*
-       * Three tabs, and the whole page under them.
+       * The switch, and nine cards on three tabs.
        *
-       * v4.2 stacked two plan grids and two comparison tables, so a freelancer
-       * read a studio's seat prices and a company's editor counts on the way
-       * to the FAQ. v4.3 asks for three audiences, which makes stacking worse
-       * by half again -- eleven cards and three comparisons in one column.
-       *
-       * The switch was built for exactly this: every panel is in the HTML, so
-       * all eleven plans are indexed and findable, and only one is shown.
+       * `/pricing#studios` opens a tab and scrolls to the switch;
+       * `/pricing?for=studios` opens it without scrolling, which is what a
+       * link in a message should do. Both are the contract the three audience
+       * pages point at.
        */
       {
         kind: "audience",
         id: "choose",
         label: t("من أنت", "Who you are"),
-        /* `/pricing?for=studios`, which is the link the deck hands out and
-           the one the three audience pages point at. */
         param: "for",
         lead: t(
-          "تعمل وحدك؟ اختر «المستقلون». معك فريق؟ «الاستوديوهات والوكالات». العلامة لشركتك؟ «الشركات».",
-          "Work alone? Pick Freelancers. Have a team? Studios and agencies. Is it your own company's brand? Companies.",
+          "تعمل وحدك؟ اختر «المستقلون». معك فريق؟ «الاستوديوهات». العلامة لشركتك؟ «الشركات».",
+          "Work alone? Pick Freelancers. Have a team? Studios. Is it your own company's brand? Companies.",
         ),
         options: AUDIENCES.map((audience) => ({
           id: audience,
@@ -1363,224 +1226,111 @@ export function currentPricingPage(locale: Locale): PageDoc {
 
       {
         kind: "terms",
-        title: t("قريباً، على خطط تُعلن لاحقاً.", "Coming soon, on plans to be announced."),
-        cols: 2,
-        items: [
-          { term: t("لوحات الإلهام", "Moodboards"), feature: "moodboard" },
-          { term: t("التوجيه الفني من عقل العلامة", "Art direction from Brand Brain"), feature: "art-direction" },
-          { term: t("أدلّة الأقسام", "Department playbooks"), feature: "department-playbooks" },
-          { term: t("إضافة Chrome", "A Chrome extension"), feature: "chrome-extension" },
-          { term: t("تحويل دليل PDF قديم إلى مركز", "Turning an old PDF guide into a hub"), feature: "pdf-import" },
-          { term: t("صحة العلامة، والمراجعات والموافقات", "Brand health, reviews and approvals"), feature: "brand-health" },
-        ],
-      },
-
-      {
-        kind: "prose",
         id: "limits",
-        title: t("لكل أداةٍ حدّها، ولا مفاجأة في فاتورتها.", "Every tool has its limit. Your bill has no surprises."),
-        body: [
-          t(
-            "كل أداة ذكية لها عدد شهري واضح في خطتك. وإن نفد، تتوقف تلك الأداة وحدها، وتبقى البقية تعمل.",
-            "Every AI tool has a clear monthly number on your plan. If one runs out, only that tool pauses. The rest keep working.",
-          ),
-        ],
-      },
-      {
-        kind: "terms",
-        title: t("ما الذي يُحتسب.", "What counts as what."),
+        title: t("لكل أداة حدّها. ولا فاتورة مفاجئة.", "Every tool has its own limit. No surprise bills."),
         cols: 2,
         items: [
           {
-            term: t("مهمة كتابة", "Writing task"),
+            term: t("حدّ لكل أداة", "One limit per tool"),
             body: t(
-              "مراجعة معمّقة، أو إعادة صياغة بصوتك، أو ترجمة بصوتك، أو نص قسم في الدليل.",
-              "A deep check, a rewrite in your voice, a translation in your voice, or a guideline section's copy.",
+              "لكل أداة ذكاء حدّ شهري خاص بها. وإن انتهى حدّ أداة، تتوقف وحدها وتبقى البقية تعمل.",
+              "Every AI tool has its own monthly limit. If one runs out, only that tool stops; the rest keep working.",
             ),
           },
           {
-            term: t("مراجعة سريعة", "Quick check"),
-            body: t("درجة النص وملاحظاته، خلال ثوانٍ.", "A score and notes on a text, in seconds."),
-          },
-          {
-            term: t("«اسأل علامتك»", "Ask the Brand"),
-            body: t("سؤال واحد من موظف، وجوابه من مركزك.", "One question from your team, answered from your hub."),
-          },
-          {
-            term: t("رسالة للمساعد", "Assistant message"),
-            body: t("رسالة واحدة في المحادثة.", "One message in the conversation."),
-          },
-          {
-            term: t("موك اب", "AI mockup"),
+            term: t("والأساسيات مجانية", "The basics are free"),
             body: t(
-              "مشهد واحد يصنعه الذكاء الاصطناعي، وعليه هويتك الحقيقية.",
-              "One scene made by AI, with your real identity on it.",
+              "التحليل الأول لكل مشروع جديد، وتقرير التوافق الأول لكل علامة: في كل خطة.",
+              "The first analysis on every new project, and the first alignment report for every brand, on every plan.",
             ),
           },
           {
-            term: t("إعادة تحليل", "Re-run"),
+            term: t("تتجدد كل شهر", "They renew monthly"),
             body: t(
-              "تحليل جديد بعد إجابات أو ملاحظات جديدة.",
-              "A fresh analysis after new answers or notes.",
-            ),
-          },
-        ],
-      },
-      {
-        kind: "terms",
-        title: t("ولا يُحتسب أبداً.", "Never counted."),
-        cols: 3,
-        items: [
-          {
-            term: t("التحليل الأول، وتقرير التوافق الأول", "The first analysis, and the first alignment report"),
-            body: t("لكل مشروع، ولكل علامة.", "Per project, and per brand."),
-          },
-          {
-            term: t("الاستبيانات والإجابات", "Forms and answers"),
-            body: t("بلا حدود.", "Unlimited."),
-          },
-          {
-            term: t("القراءة من أداة ذكاء متصلة", "Reading from a connected AI tool"),
-            body: t("لا تمسّ حدودك.", "Doesn't touch your limits."),
-          },
-        ],
-      },
-      {
-        kind: "terms",
-        title: t("القواعد.", "The rules."),
-        cols: 2,
-        items: [
-          {
-            term: t("ما تبقّى", "What's left"),
-            body: t("ترى ما تبقّى داخل كل أداة.", "You see what's left inside each tool."),
-          },
-          {
-            term: t("التجديد", "Renewal"),
-            body: t(
-              "الحدود الشهرية تتجدد مع كل دورة فوترة، ولا تُرحَّل.",
-              "Monthly limits renew each billing period and don't roll over.",
+              "ولا يُرحَّل ما لم تستخدمه.",
+              "What you don't use doesn't roll over.",
             ),
           },
           {
-            term: t("المشاركة", "Sharing"),
+            term: t("وفي خطة الشركة للعلامة كلها", "On Company they belong to the brand"),
             body: t(
-              "الحدود مشتركة بين كل من في المساحة، ولكل مشاهد حدّ يومي صغير حتى لا يستهلكها شخص واحد.",
-              "Limits are shared by everyone in the workspace, with a small daily cap per viewer so no one person uses them all.",
+              "الحدود للعلامة لا للشخص، ولكل مشاهد حدّ يومي صغير حتى لا يستهلكها شخص واحد.",
+              "Limits belong to the whole brand, and each viewer has a small daily limit so no one person uses them up.",
             ),
           },
           {
-            term: t("حين ينفد حدّ", "When a limit runs out"),
+            term: t("وقراءة أدواتك لا تُحسب", "Your own tools don't count"),
             body: t(
-              "تعرض عليك الأداة حزمة أو ترقية. لا شيء يُخصم دون علمك.",
-              "The tool offers a pack or an upgrade. Nothing is charged without you knowing.",
+              "قراءة علامتك من ChatGPT أو Claude عبر موصّل الذكاء الاصطناعي لا تُحسب من أي حدّ.",
+              "Reading your brand from ChatGPT or Claude through the AI Connector doesn't count against any limit.",
+            ),
+          },
+          {
+            term: t("وإن احتجت أكثر", "If you need more"),
+            body: t(
+              "أضف حزمة. ولا شيء يُخصم دون أن تطلبه.",
+              "Add a pack. Nothing is charged unless you ask for it.",
             ),
           },
         ],
-        note: t(
-          "الحدود مبدئية حتى تنتهي تجربة التكلفة بالعربية والإنجليزية في فبراير 2027.",
-          "The limits are provisional until the Arabic and English cost test closes in February 2027.",
-        ),
       },
 
       {
-        kind: "table",
-        id: "one-time",
-        title: t("حين تحتاج أكثر.", "When you need more."),
-        head: [t("المنتج", "What you buy"), t("السعر", "Price"), t("ما تحصل عليه", "What you get")],
-        rows: [
-          [
-            t("تصريح مشروع", "Project Pass"),
-            { text: money(EXTRAS.projectPass), strong: true },
-            t(
-              `مشروع نشط إضافي بمزايا «${names.pro}»، ومعه 15 مهمة كتابة، و10 موك اب، و3 إعادات تحليل، حتى تسلّمه أو ستة أشهر. للمستقلين والاستوديوهات، ولا يشمل موصّل الذكاء الاصطناعي.`,
-              `One extra active project with ${names.pro} features, plus 15 writing tasks, 10 AI mockups and 3 re-runs, until handoff or six months. For freelancers and studios, and it doesn't include the AI Connector.`,
-            ),
-          ],
-          [
-            t("حزمة عقل العلامة", "Brand Brain pack"),
-            { text: money(EXTRAS.brainPack), strong: true },
-            t(
-              "100 مهمة كتابة، و30 رسالة للمساعد، صالحة 12 شهراً. لكل خطة مدفوعة.",
-              "100 writing tasks and 30 assistant messages, valid for 12 months. On every paid plan.",
-            ),
-          ],
-          [
-            t("حزمة الموك اب", "Mockup pack"),
-            { text: money(EXTRAS.mockupPack), strong: true },
-            t(
-              "50 موك اب بالذكاء الاصطناعي، صالحة 12 شهراً. لكل خطة مدفوعة.",
-              "50 AI mockups, valid for 12 months. On every paid plan.",
-            ),
-          ],
-          [
-            t("مقعد أو محرّر إضافي", "Extra seat or editor"),
-            { text: t(`${money(EXTRAS.seat)} شهرياً`, `${money(EXTRAS.seat)} a month`), strong: true },
-            t(
-              `مقعد إضافي لفريقك، أو محرّر إضافي لشركتك. في خطط «${names.studio}» و«${names.agency}» و«${names.team}» و«${names.business}».`,
-              `One more seat for your team, or one more editor for your company. On ${names.studio}, ${names.agency}, ${names.team} and ${names.business}.`,
-            ),
-          ],
-        ],
-        note: t(
-          "الحزم للخطط المدفوعة. والخطة المجانية ترقّي بدلاً منها.",
-          "Packs are for paid plans. On the free plan you upgrade instead.",
-        ),
-      },
-
-      {
-        kind: "prose",
+        kind: "terms",
         id: "badge",
-        title: t("مجاني، وبتوقيعنا الصغير.", "Free, with our small signature."),
-        body: [
-          t(
-            "كل ما تنشره من الخطة المجانية، من الاستبيانات والموك اب إلى الدليل والمركز، يحمل شارة صغيرة «صُنع باستخدام ماركيوس». من يضغطها يصل إلى صفحة «ابدأ علامتك». وتختفي الشارة في كل الخطط المدفوعة.",
-            "Everything you publish on the free plan, from forms and mockups to the guide and the hub, carries a small “Made with Markyos” badge. Anyone who clicks it lands on “Start your own”. The badge disappears on every paid plan.",
-          ),
-        ],
+        title: t("مجانية، وبتوقيعنا الصغير.", "Free, with our small signature."),
+        lead: t(
+          "كل ما تنشره من الخطة المجانية، من الاستبيان إلى الدليل والمركز، يحمل شارة صغيرة «صُنع بماركيوس». وتختفي الشارة في كل الخطط المدفوعة، وأثناء التجربة.",
+          "Everything you publish on the free plan, from the form to the guide and the hub, carries a small “Made with Markyos” badge. The badge disappears on every paid plan, and during the trial.",
+        ),
+        cols: 1,
+        items: [],
       },
 
-      /*
-       * Billing, with the lines that are answerable today.
-       *
-       * v4.3's block has eight. Refunds is a [PLACEHOLDER] in the deck itself,
-       * and the tax and VAT clause on the receipts line is a [CONFIRM], so the
-       * receipts line ships without it and refunds do not ship at all. A page
-       * that answers "what about refunds?" with a blank is worse than a page
-       * that has not raised the question.
-       */
       {
         kind: "terms",
         id: "billing",
         title: t("دفعٌ واضح، وإلغاءٌ أوضح.", "Clear billing. Clearer cancelling."),
         cols: 2,
         items: [
-          { term: t("العملة", "Currency"), body: t("الدولار الأمريكي.", "US dollars.") },
-          { term: t("الدفع", "Payment"), body: t("عبر PayPal.", "Through PayPal.") },
           {
-            term: t("السنوي", "Yearly"),
-            body: t("تدفع السنة مقدّماً، وتوفّر نحو 20%.", "Pay for the year up front and save about 20%."),
+            term: t("العملة", "Currency"),
+            body: t(
+              "الدولار الأمريكي، والأسعار قبل ضريبة القيمة المضافة.",
+              "US dollars, before VAT.",
+            ),
           },
           {
-            term: t("الإيصالات", "Receipts"),
-            body: t("تصلك بالبريد مع كل دفعة.", "By email with every payment."),
+            term: t("الدفع", "Payment"),
+            body: t("عبر PayPal، بحسابك أو ببطاقتك.", "Through PayPal, with your PayPal account or your card."),
+          },
+          {
+            term: t("طرق دفع أخرى", "More ways to pay"),
+            body: t(
+              "تصل قريباً، ومنها بطاقات مدى. وحين تصل نخبرك قبلها، وتبقى خطتك وسعرك كما هما.",
+              "Coming soon, including Mada cards. When they arrive, we'll tell you first, and your plan and price stay the same.",
+            ),
+          },
+          {
+            term: t("السنوي", "Yearly"),
+            body: t(
+              "تدفع السنة مقدّماً، وتحصل على شهرين مجاناً.",
+              "Pay for the year upfront and get two months free.",
+            ),
           },
           {
             term: t("الترقية", "Upgrades"),
             body: t(
-              "تُفتح حدود خطتك الجديدة فوراً، ويبدأ سعرها من تاريخ فوترتك التالي.",
-              "Your new plan's limits open right away. Its price starts on your next billing date.",
+              "تفتح حدود خطتك الجديدة فوراً، ويبدأ سعرها من تاريخ فوترتك التالي.",
+              "Your new limits open right away; the new price starts on your next billing date.",
             ),
           },
           {
             term: t("التخفيض والإلغاء", "Downgrades and cancelling"),
             body: t(
-              "متى شئت، ويسري في نهاية الفترة. لا يُحذف شيء، ويصبح الزائد للقراءة فقط.",
+              "متى شئت، ويسري في نهاية الفترة. لا يُحذف شيء، ويصبح ما يزيد على الحد للقراءة فقط.",
               "Any time, from the end of the period. Nothing is deleted; anything over the limit becomes read-only.",
             ),
-          },
-          {
-            term: t("سعر البرنامج التجريبي", "Beta pricing"),
-            body: t("ثابت 12 شهراً بعد الإطلاق.", "Locked for 12 months after launch."),
           },
         ],
       },
@@ -1588,137 +1338,92 @@ export function currentPricingPage(locale: Locale): PageDoc {
       {
         kind: "faq",
         id: "faq",
-        title: t("أسئلة عن اختيار الخطة.", "Questions about choosing a plan."),
+        title: t("أسئلة، وأجوبة قصيرة.", "Questions. Short answers."),
         items: [
           {
-            q: t("أنا مستقل أم استوديو؟", "Am I a freelancer or a studio?"),
+            q: t("ماذا يحدث بعد التجربة؟", "What happens after the trial?"),
             a: t(
-              "إن كنت تعمل وحدك فأنت مستقل، وإن كان معك فريق فأنت استوديو.",
-              "If you work alone, you're a freelancer. If you have a team, you're a studio.",
+              "تنتقل إلى المجانية إن لم تشترك. يبقى كل ما بنيته، وما يزيد عن حدود المجانية يصبح للقراءة فقط.",
+              "You move to Free unless you subscribe. Everything you built stays; anything over the Free limits becomes read only.",
             ),
           },
           {
-            q: t("أنا استوديو أم شركة؟", "A studio or a company?"),
+            q: t("هل أحتاج بطاقة؟", "Do I need a card?"),
+            a: t("لا. تحتاجها فقط حين تشترك.", "No. Only when you subscribe."),
+          },
+          {
+            q: t("ما العلامة النشطة؟", "What is an active brand?"),
             a: t(
-              "إن كانت العلامة لعميلك فأنت استوديو، وإن كانت لشركتك فأنت شركة. والحساب الواحد يجمع الاثنين.",
-              "If it's your client's brand, you're a studio. If it's your company's, you're a company. One account holds both.",
+              "علامة ما زلت تعمل عليها. حين تسلّمها لعميلك، لا تُحتسب عليك.",
+              "A brand you're still working on. Once you hand it to your client, it stops counting.",
             ),
           },
           {
-            q: t("ما المشروع النشط؟", "What's an active project?"),
+            q: t("من يُحتسب محرّراً؟", "Who counts as an editor?"),
             a: t(
-              "المشروع الذي ما زلت تعدّله. سلّمه أو أرشفه، فيتوقف احتسابه.",
-              "One you can still edit. Hand it off or archive it, and it stops counting.",
+              `من يعدّل محتوى العلامة. المشاهدون من فريقك بلا حدود ولا يُحتسبون، وخطة «${names.company}» فيها خمسة محرّرين لكل علامة، والسادس ${dollars(EXTRAS.companyEditor)} شهرياً.`,
+              `Anyone who changes the brand's content. Viewers on your team are unlimited and don't count. ${names.company} includes five editors per brand, and a sixth is ${money(EXTRAS.companyEditor)} a month.`,
             ),
           },
           {
-            q: t("ما الفرق بين المحرّر والمشاهد؟", "Editor or viewer?"),
+            q: t("ماذا يكسب الاستوديو؟", "What does my studio earn?"),
             a: t(
-              "المحرّر يغيّر العلامة. المشاهد يتصفحها، وينزّل، ويراجع كتاباته.",
-              "Editors change the brand. Viewers browse, download and check their writing.",
+              `${PARTNER_SHARE}% مما يدفعه عميلك في سنته الأولى، رصيداً على فاتورتك حين تكون على باقة مدفوعة.`,
+              `${PARTNER_SHARE}% of what your client pays in their first year, as credit on your bill while you're on a paid plan.`,
             ),
           },
           {
-            q: t("هل أستطيع تغيير خطتي لاحقاً؟", "Can I change plans later?"),
+            q: t("هل الأسعار قبل الضريبة؟", "Are prices before VAT?"),
             a: t(
-              "نعم، متى شئت، صعوداً أو نزولاً، ومشاريعك معك.",
-              "Yes, any time, up or down. Your projects come with you.",
+              "نعم، الأسعار بالدولار وقبل ضريبة القيمة المضافة.",
+              "Yes. Prices are in US dollars, before VAT.",
             ),
-          },
-          {
-            q: t("وإن زاد فريقي على حدّ الخطة؟", "What if my team outgrows the plan?"),
-            a: t(
-              `أضف مقاعد أو محرّرين بـ ${EXTRAS.seat} دولارات شهرياً، في خطط «${names.studio}» و«${names.agency}» و«${names.team}» و«${names.business}».`,
-              `Add seats or editors at ${money(EXTRAS.seat)} a month, on ${names.studio}, ${names.agency}, ${names.team} and ${names.business}.`,
-            ),
-          },
-          {
-            q: t("هل أحتاج استوديو؟", "Do I need a studio?"),
-            a: t("لا. الشركة تبدأ وحدها.", "No. A company can start on its own."),
           },
         ],
       },
+
       {
         kind: "faq",
-        id: "faq-billing",
-        title: t("أسئلة عن الدفع.", "Questions about paying."),
+        id: "faq-more",
+        title: t("وأسئلة أخرى.", "And a few more."),
         items: [
-          {
-            q: t("كيف أدفع؟", "How do I pay?"),
-            a: t("عبر PayPal، بالدولار الأمريكي.", "Through PayPal, in US dollars."),
-          },
           {
             q: t(
-              `هل يشمل عرض الإطلاق «${names.solo}» و«${names.starter}»؟`,
-              `Are ${names.solo} and ${names.starter} in the launch offer?`,
+              `لماذا لا يوجد مدقّق النبرة في «${names.freelancer}» و«${names.studio}»؟`,
+              `Why isn't the tone checker on ${names.freelancer} or ${names.studio}?`,
             ),
             a: t(
-              `لا. سعرهما ثابت، ${LOWEST_PAID_MONTHLY} دولاراً شهرياً.`,
-              `No. Their price stays at ${money(LOWEST_PAID_MONTHLY)} a month.`,
-            ),
-          },
-          {
-            q: t("هل يجتمع عرض الإطلاق مع السنوي؟", "Does the launch offer work with yearly billing?"),
-            a: t("لا. العرض للاشتراك الشهري.", "No. It's for monthly plans."),
-          },
-          {
-            q: t("ماذا يحدث لمركز عميلي إن لم يدفع؟", "What if my client never pays?"),
-            a: t(
-              "يبقى حيّاً وقابلاً للتعديل على الخطة المجانية.",
-              "The hub stays live and editable on the free plan.",
-            ),
-          },
-        ],
-      },
-      {
-        kind: "faq",
-        id: "faq-limits",
-        title: t("أسئلة عن الذكاء والحدود.", "Questions about AI and limits."),
-        items: [
-          {
-            q: t("ماذا يحدث حين ينفد حدّ أداة؟", "What happens when a limit runs out?"),
-            a: t(
-              "تتوقف تلك الأداة وحدها حتى الشهر التالي، أو تضيف حزمة. وبقية الأدوات تعمل.",
-              "Only that tool pauses until next month, or you add a pack. Everything else keeps working.",
+              "لأنه أداة لمن يكتب باسم العلامة كل يوم، أي فريق الشركة. وحين تسلّم عميلك مركزه، يجده في خطته.",
+              "Because it's for the people who write as the brand every day: the company's team. When you hand off the hub, your client finds it on their plan.",
             ),
           },
           {
-            q: t("هل ينتقل ما لم أستخدمه إلى الشهر التالي؟", "Do unused limits roll over?"),
-            a: t(
-              "لا. الحدود الشهرية تتجدد ولا تُرحَّل، والحزم صالحة 12 شهراً.",
-              "No. Monthly limits renew and don't roll over. Packs last 12 months.",
-            ),
+            q: t("مساحة استوديو ومساحة شركة معاً؟", "A studio and a company workspace together?"),
+            a: t("نعم، بحساب واحد.", "Yes, on one account."),
           },
           {
-            q: t("لماذا للموك اب حدّ؟", "Why do mockups have a limit?"),
+            q: t("هل أحتاج إلى استوديو؟", "Do I need a studio?"),
+            a: t("لا. الشركة تبدأ وحدها.", "No. A company can start on its own."),
+          },
+          {
+            q: t("ماذا يحدث إن انتهى حدّ أداة؟", "What if a tool's limit runs out?"),
             a: t(
-              "لأن الذكاء الاصطناعي يصنع كل مشهد من جديد، ولكل مشهد تكلفة حقيقية.",
-              "Because AI makes every scene from scratch, and each one has a real cost.",
+              "تتوقف تلك الأداة وحدها حتى الشهر التالي، أو حتى تضيف حزمة. وتبقى البقية تعمل.",
+              "That tool stops until next month, or until you add a pack. The rest keep working.",
             ),
           },
           {
             q: t("هل أربط ChatGPT أو Claude بعلامتي؟", "Can I connect ChatGPT or Claude?"),
             a: t(
-              "نعم، في الخطط المدفوعة. يقرأ فقط، ولا يمسّ حدودك.",
-              "Yes, on paid plans. It only reads, and doesn't touch your limits.",
+              "نعم، في كل الخطط المدفوعة. يقرأ فقط، ولا يُحسب من حدودك.",
+              "Yes, on every paid plan. It only reads, and doesn't count against your limits.",
             ),
           },
-        ],
-      },
-      {
-        kind: "faq",
-        id: "faq-data",
-        title: t("أسئلة عن بياناتك.", "Questions about your data."),
-        items: [
           {
-            q: t("هل محتواي آمن؟", "Is my content safe?"),
-            a: t("لا شيء يصبح عاماً حتى تنشره.", "Nothing goes public until you publish it."),
-          },
-          {
-            q: t("هل لوحة التحكم بالعربية؟", "Is the dashboard in Arabic?"),
+            q: t("هل يصمّم الذكاء الاصطناعي الشعارات؟", "Does the AI design logos?"),
             a: t(
-              "نعم. لغة الواجهة لك، ولغة العلامة لعلامتك.",
-              "Yes. You pick your interface language; the brand has its own.",
+              "أبداً. يقرأ ويكتب مسودات، وفي صانع الموك اب يضع هويتك أنت على القوالب.",
+              "Never. It reads and drafts words, and in the mockup builder it puts your own identity on the templates.",
             ),
           },
         ],
@@ -1728,26 +1433,20 @@ export function currentPricingPage(locale: Locale): PageDoc {
         kind: "cta",
         title: t("ابدأ مجاناً اليوم.", "Start free today."),
         lead: t(
-          "المشاهدون مجانيون في كل الخطط المدفوعة.",
-          "Viewers are free on every paid plan.",
+          `جرّب ${TRIAL.days} يوماً مجاناً، دون بطاقة دفع.`,
+          `Try it free for ${TRIAL.days} days. No card needed.`,
         ),
         buttons: [
-          { label: t("أصمّم هويات لعملائي", "I make brands for clients"), href: "/start?type=freelancer" },
+          { label: t("أصمّم هويات لعملائي", "I design brands for clients"), href: "/start?type=studio" },
           { label: t("أدير علامة شركتي", "I run my company's brand"), href: "/start?type=company" },
         ],
-        links: [{ label: t("تواصل معنا", "Talk to us"), href: "/contact?topic=sales" }],
       },
     ],
   };
 }
 
-/**
- * The launch offer, for the announcement bar on every page.
- *
- * Returns the same two instants as the block on /pricing, from the same
- * constant, so the bar and the page cannot disagree about when the window
- * closes.
- */
+/* ── The announcement bar and the homepage teaser ──────────────────────────── */
+
 export function currentLaunchOffer(locale: Locale): OfferBarCopy | null {
   const t = translator(locale);
   return {
@@ -1779,14 +1478,10 @@ export function currentLaunchOffer(locale: Locale): OfferBarCopy | null {
 /*
  * The homepage teaser.
  *
- * Three audiences now, because /pricing has three: a homepage that offered
- * "studios and freelancers" against "companies" would be the one place left on
- * the site where a freelancer is told to read a studio's prices. The switch is
- * built for any number of options, and the grid is
- * `auto-fit, minmax(280px, 1fr)` inside a 1040px container -- so each audience
- * shows three plans, which is all three for the two studio tabs and the first
- * three of five for companies. The note carries the rest to /pricing, which is
- * the page that can hold it.
+ * Three tabs, the same three /pricing has, read from the same cards. The grid
+ * is `auto-fit, minmax(280px, 1fr)` inside a 1040px container, so three cards
+ * is exactly what fits — and with v5.2 three is also all there is on every
+ * tab, which the five-card company tab of v4.3 never managed.
  */
 export function currentPricingTeaser(locale: Locale): PricingTeaserCopy {
   const t = translator(locale);
@@ -1804,10 +1499,10 @@ export function currentPricingTeaser(locale: Locale): PricingTeaserCopy {
   });
 
   return {
-    headline: t("لكل طريقةِ عمل، خطتُها.", "Every way of working has its plan."),
+    headline: t("ابدأ مجاناً. ادفع حين يبدأ العمل.", "Start free. Pay when it's working."),
     body: t(
-      `أعدّ علامتك مجاناً، والخطط المدفوعة من ${LOWEST_PAID_MONTHLY} دولاراً شهرياً. المشاهدون مجانيون في كل الخطط المدفوعة.`,
-      `Build your brand free, with paid plans from ${money(LOWEST_PAID_MONTHLY)} a month. Viewers are free on every paid plan.`,
+      `جرّب أي خطة مدفوعة ${TRIAL.days} يوماً دون بطاقة دفع، والخطط من ${dollars(LOWEST_PAID_MONTHLY)} شهرياً.`,
+      `Try any paid plan for ${TRIAL.days} days with no card, with plans from ${money(LOWEST_PAID_MONTHLY)} a month.`,
     ),
     audiences: [
       {
@@ -1815,8 +1510,8 @@ export function currentPricingTeaser(locale: Locale): PricingTeaserCopy {
         label: audienceLabel(locale, "freelancers"),
         plans: freelancerCards(locale).map(teaser),
         note: t(
-          `مشروع واحد مجاناً، واثنان في «${names.solo}»، وخمسة في «${names.pro}». والمشاريع المسلّمة لا تُحتسب.`,
-          `One project free, two on ${names.solo}, five on ${names.pro}. Handed-off projects don't count.`,
+          `علامة واحدة مجاناً، وثلاث في «${names.freelancer}»، وعشر في «${names.studio}». والمسلّمة لا تُحتسب.`,
+          `One brand free, three on ${names.freelancer}, ten on ${names.studio}. Handed-off brands don't count.`,
         ),
       },
       {
@@ -1824,17 +1519,17 @@ export function currentPricingTeaser(locale: Locale): PricingTeaserCopy {
         label: audienceLabel(locale, "studios"),
         plans: studioCards(locale).map(teaser),
         note: t(
-          `عشرة مشاريع لفريق من خمسة في «${names.studio}»، وخمسة وعشرون لفريق من اثني عشر في «${names.agency}».`,
-          `Ten projects for a team of five on ${names.studio}, twenty-five for a team of twelve on ${names.agency}.`,
+          `عشر علامات لفريق من خمسة، وما بعدها بالإضافات: خمس علامات بـ${dollars(EXTRAS.brands5)}، وعضو بـ${dollars(EXTRAS.seat)}.`,
+          `Ten brands for a team of five, and past that with add-ons: five brands for ${money(EXTRAS.brands5)}, a member for ${money(EXTRAS.seat)}.`,
         ),
       },
       {
         id: "companies",
         label: audienceLabel(locale, "companies"),
-        plans: companyCards(locale).slice(0, 3).map(teaser),
+        plans: companyCards(locale).map(teaser),
         note: t(
-          `ولعدة علامات خطة «${names.team}»، ولقسم تسويق كامل «${names.business}»، وللمؤسسات خطة خاصة.`,
-          `Several brands have ${names.team}, a full marketing team has ${names.business}, and larger organisations have Enterprise.`,
+          `تدفع لكل علامة، والمشاهدون بلا حدود، والمحرّرون خمسة لكل علامة.`,
+          `You pay per brand, viewers are unlimited, and editors are five per brand.`,
         ),
       },
     ],

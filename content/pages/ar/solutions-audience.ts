@@ -11,11 +11,11 @@ import { AI_LIMITS } from "../../current-pricing.ts";
  * they belong to. Typed here once, they drift -- the Team quick-check figure
  * on this page was still 3,000 a full deck after it became 2,500.
  *
- * v4.3 split the studios table in two: a freelancer's plans are Solo and Pro,
- * a studio's are Studio and Agency, and the two sets no longer share a column.
+ * v5.2 put freelancers and studios back on one set of plans -- Free,
+ * Freelancer and Studio -- so both strips read the same builder table. Only
+ * the companies strip has a table of its own.
  */
-const F = AI_LIMITS.freelancers;
-const S = AI_LIMITS.studios;
+const B = AI_LIMITS.builders;
 const C = AI_LIMITS.companies;
 /** An absent allowance is "لا", not a zero. */
 const limit = (value: number | null): string =>
@@ -301,7 +301,7 @@ const studios: PageDoc = {
         {
           title: "تسليم يعيد لك العائد",
           body: [
-            "بدلاً من ملف PDF، يتسلّم عميلك مركز علامة حيّاً باسمه. وتحتفظ أنت بالدور الذي اتفقتما عليه، وتتحرر حصة المشروع من خطتك. وحين يرقّي عميلك خطته، تحصل على 20% مما يدفعه في سنته الأولى، و25% في خطة «الوكالة»، رصيداً في اشتراكك.",
+            "بدلاً من ملف PDF، يتسلّم عميلك مركز علامة حيّاً باسمه. وتحتفظ أنت بالدور الذي اتفقتما عليه، وتتحرر حصة العلامة من خطتك. وحين يشترك عميلك في خطة «شركة»، تحصل على 20% مما يدفعه في سنته الأولى، رصيداً في اشتراكك.",
           ],
           cta: LINK.handoff,
         },
@@ -355,20 +355,19 @@ const studios: PageDoc = {
     },
     {
       kind: "table",
-      title: "عشرة مشاريع لفريق من خمسة. وخمسة وعشرون لفريق من اثني عشر.",
+      title: "عشر علامات لفريق من خمسة. وما بعدها بالإضافات.",
       numeric: true,
-      head: ["", "المجانية", { text: "الاستوديو", strong: true }, "الوكالة"],
+      head: ["", "المجانية", { text: "استوديو", strong: true }, "فريق أكبر"],
       rows: [
-        ["السعر", "مجاناً", { text: "59 دولاراً شهرياً", strong: true }, "119 دولاراً شهرياً"],
-        ["المشاريع النشطة", "1", { text: "10", strong: true }, "25"],
-        ["المقاعد", "1", { text: "5", strong: true }, "12"],
-        ["المقعد الإضافي", "لا", { text: "8 دولارات شهرياً", strong: true }, "8 دولارات شهرياً"],
-        ["مهام الكتابة شهرياً", limit(S.writingTasks.free), { text: limit(S.writingTasks.studio), strong: true }, limit(S.writingTasks.agency)],
-        ["الموك اب شهرياً", limit(S.mockups.free), { text: limit(S.mockups.studio), strong: true }, limit(S.mockups.agency)],
-        ["مكافأة الشريك", "20%", { text: "20%", strong: true }, "25%"],
-        ["النطاق الخاص", "لا", { text: "نعم", strong: true }, "نعم"],
+        ["السعر", "مجاناً", { text: "29 دولاراً شهرياً", strong: true }, "29 دولاراً + إضافات"],
+        ["العلامات النشطة", "1", { text: "10", strong: true }, "كل 5 بـ10 دولارات"],
+        ["الأعضاء", "1", { text: "5", strong: true }, "كل عضو بـ8 دولارات"],
+        ["نصوص أقسام الدليل شهرياً", limit(B.sectionDrafts.free), { text: limit(B.sectionDrafts.studio), strong: true }, "الحزمة: 100 مهمة"],
+        ["الموك اب شهرياً", limit(B.mockups.free), { text: limit(B.mockups.studio), strong: true }, "الحزمة: 60 موك اب"],
+        ["مكافأة الشريك", "20%", { text: "20%", strong: true }, "20%"],
+        ["النطاق الخاص قبل التسليم", "لا", { text: "نعم", strong: true }, "نعم"],
       ],
-      note: "المشاريع المسلّمة لا تُحتسب، وتتحرر حصتها لحظة يتسلّم العميل مركزه. وإن احتجت مشروعاً إضافياً قبل ذلك، أضفه بتصريح مشروع لمرة واحدة. وتعمل وحدك؟ خطط المستقلين تبدأ من 12 دولاراً.",
+      note: "العلامات المسلّمة لا تُحتسب، وتتحرر حصتها لحظة يتسلّم العميل مركزه. وجرّب الاستوديو 14 يوماً دون بطاقة دفع. وتعمل وحدك؟ خطة «مستقل» بـ12 دولاراً.",
     },
     {
       kind: "prose",
@@ -393,7 +392,7 @@ const studios: PageDoc = {
         },
         {
           q: "كم شخصاً من فريقي يستطيع العمل على المشروع؟",
-          a: "خطة «الاستوديو» تشمل 5 مقاعد، وخطة «الوكالة» 12، ويمكنك إضافة مقاعد بـ 8 دولارات شهرياً للمقعد في كلتيهما. والعملاء ضيوف مجانيون دون حدود.",
+          a: "خطة «استوديو» تشمل خمسة أعضاء، والعضو الإضافي 8 دولارات شهرياً. والعملاء ضيوف مجانيون دون حدود.",
         },
         {
           q: "ماذا يحدث للمشروع بعد التسليم؟",
@@ -479,7 +478,7 @@ const freelancers: PageDoc = {
         {
           title: "ابدأ مجاناً، وادفع حسب المشروع",
           body: [
-            "دخل المستقل غير ثابت، فلماذا يكون اشتراكك ثابتاً؟ نفّذ مشروعاً كاملاً على الخطة المجانية. وحين يأتيك مشروع إضافي، أضفه بتصريح مشروع بـ 19 دولاراً لمرة واحدة، بمزايا الخطة الاحترافية حتى تسلّمه. وإن صار عميلان معك في الوقت نفسه، فخطة «الفردية» بـ 12 دولاراً شهرياً.",
+            "دخل المستقل غير ثابت، فلماذا يكون اشتراكك ثابتاً؟ نفّذ مشروعاً كاملاً على الخطة المجانية. وحين يصير عملاؤك اثنين أو ثلاثة في الوقت نفسه، فخطة «مستقل» بـ 12 دولاراً شهرياً، وتجرّبها 14 يوماً دون بطاقة دفع.",
           ],
         },
         {
@@ -499,28 +498,29 @@ const freelancers: PageDoc = {
     },
     {
       kind: "table",
-      title: "مشروع مجاناً. واثنان في «الفردية». وخمسة في «الاحترافية».",
+      title: "علامة مجاناً. وثلاث في «مستقل». وعشر في «استوديو».",
       numeric: true,
       head: ["", "المجانية", "الفردية", { text: "الاحترافية", strong: true }],
       rows: [
         [
           "السعر",
           "مجاناً",
-          "12 دولاراً شهرياً (10 سنوياً)",
-          { text: "24 دولاراً شهرياً (19 سنوياً)", strong: true },
+          { text: "12 دولاراً شهرياً (120 سنوياً)", strong: true },
+          "29 دولاراً شهرياً (290 سنوياً)",
         ],
         [
           "ما يناسبه",
           "مشروعك الأول، كاملاً",
-          "عميلان في الوقت نفسه",
-          { text: "من ثلاثة إلى خمسة عملاء", strong: true },
+          { text: "من عميل إلى ثلاثة", strong: true },
+          "فريق حتى خمسة",
         ],
-        ["المشاريع النشطة", "1", "2", { text: "5", strong: true }],
-        ["كل التصاميم وإزالة الشارة", "لا", "نعم", { text: "نعم", strong: true }],
-        ["مهام الكتابة شهرياً", limit(F.writingTasks.free), limit(F.writingTasks.solo), { text: limit(F.writingTasks.pro), strong: true }],
-        ["الموك اب شهرياً", limit(F.mockups.free), limit(F.mockups.solo), { text: limit(F.mockups.pro), strong: true }],
+        ["العلامات النشطة", "1", { text: "3", strong: true }, "10"],
+        ["كل التصاميم وإزالة الشارة", "لا", { text: "نعم", strong: true }, "نعم"],
+        ["رسائل المساعد الاستراتيجي", limit(B.assistant.free), { text: limit(B.assistant.freelancer), strong: true }, limit(B.assistant.studio)],
+        ["نصوص أقسام الدليل شهرياً", limit(B.sectionDrafts.free), { text: limit(B.sectionDrafts.freelancer), strong: true }, limit(B.sectionDrafts.studio)],
+        ["الموك اب شهرياً", limit(B.mockups.free), { text: limit(B.mockups.freelancer), strong: true }, limit(B.mockups.studio)],
       ],
-      note: "ومشروع إضافي لمرة واحدة؟ تصريح المشروع بـ 19 دولاراً، بمزايا «الاحترافية» حتى تسلّمه أو ستة أشهر.",
+      note: "جرّب أي خطة مدفوعة 14 يوماً دون بطاقة دفع. والعلامة التي تسلّمها لا تُحتسب.",
     },
     {
       kind: "prose",
@@ -541,7 +541,7 @@ const freelancers: PageDoc = {
         },
         {
           q: "ماذا لو كبرت وصار لدي فريق؟",
-          a: "انتقل إلى خطة «الاستوديو» بخمسة مقاعد وعشرة مشاريع نشطة، أو «الوكالة» باثني عشر مقعداً وخمسة وعشرين مشروعاً. كل مشاريعك تنتقل معك.",
+          a: "انتقل إلى خطة «استوديو» بخمسة أعضاء وعشر علامات نشطة، وما بعدها بالإضافات. وكل مشاريعك تنتقل معك.",
         },
         {
           q: "هل يصمّم الذكاء الاصطناعي الهوية بدلاً مني؟",
@@ -677,32 +677,19 @@ const companies: PageDoc = {
     },
     {
       kind: "table",
-      title: "من 12 دولاراً لفريق صغير. و«الفريق» لثلاث علامات، و«الأعمال» لخمس.",
+      title: "تدفع للعلامة. والمشاهدون بلا حدود.",
       numeric: true,
-      head: ["", "المجانية", "البداية", { text: "العلامة", strong: true }, "الفريق", "الأعمال"],
+      head: ["", "المجانية", { text: "شركة", strong: true }],
       rows: [
-        [
-          "السعر",
-          "مجاناً",
-          "12 دولاراً",
-          { text: "24 دولاراً", strong: true },
-          "59 دولاراً",
-          "119 دولاراً",
-        ],
-        ["العلامات", "1", "1", { text: "1", strong: true }, "3", "5"],
-        ["المحرّرون", "2", "3", { text: "5", strong: true }, "15", "30"],
-        ["المشاهدون", "25", "100", { text: "بلا حدود", strong: true }, "بلا حدود", "بلا حدود"],
-        [
-          "مراجعات النبرة السريعة شهرياً",
-          limit(C.quickChecks.free),
-          limit(C.quickChecks.starter),
-          { text: limit(C.quickChecks.brand), strong: true },
-          limit(C.quickChecks.team),
-          limit(C.quickChecks.business),
-        ],
-        ["النطاقات الخاصة", "لا", "لا", { text: "1", strong: true }, "3", "5"],
+        ["السعر", "مجاناً", { text: "19 دولاراً لكل علامة (190 سنوياً)", strong: true }],
+        ["العلامات", "1", { text: "1، وكل إضافية 19 دولاراً", strong: true }],
+        ["المحرّرون لكل علامة", "1", { text: "5، والإضافي 8 دولارات شهرياً", strong: true }],
+        ["المشاهدون", "25", { text: "بلا حدود", strong: true }],
+        ["مراجعات النبرة السريعة شهرياً", limit(C.quickChecks.free), { text: limit(C.quickChecks.company), strong: true }],
+        ["أسئلة «اسأل علامتك» شهرياً", limit(C.askTheBrand.free), { text: limit(C.askTheBrand.company), strong: true }],
+        ["النطاق الخاص", "لا", { text: "نعم", strong: true }],
       ],
-      note: "الأسعار شهرية، والاشتراك السنوي يوفّر نحو 20%. والمشاهدون مجانيون في كل الخطط المدفوعة.",
+      note: "الأسعار شهرية، والاشتراك السنوي فيه شهران مجاناً. وجرّبها 14 يوماً دون بطاقة دفع.",
     },
     { kind: "prose", body: [], links: [{ label: "خطط الشركات", href: "/pricing#companies" }] },
     {
@@ -715,7 +702,7 @@ const companies: PageDoc = {
         },
         {
           q: "هل تحتاج كل الشركة حسابات مدفوعة؟",
-          a: "لا. تدفع فقط مقابل المحرّرين. المشاهدون مجانيون وبلا حدود من خطة «العلامة» وما فوقها، و100 في «البداية»، و25 في الخطة المجانية.",
+          a: "لا. تدفع لكل علامة. والمشاهدون بلا حدود في خطة «شركة»، و25 في الخطة المجانية. والمحرّرون خمسة لكل علامة، والسادس 8 دولارات شهرياً.",
         },
         {
           // [CONFIRM] in the source: keep the dialect line only if the
