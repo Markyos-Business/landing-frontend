@@ -39,11 +39,43 @@ export function Plan({
         ) : null}
       </div>
 
-      {/* The number carries the weight, the unit does not — §11. */}
-      <p style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "18px 0 0" }}>
+      {/*
+       * The number carries the weight, the unit does not — §11, and now
+       * literally: the amount is 44px at 600 in page ink, the unit 14px at
+       * 500 in muted, the way /pricing has always set the same two values.
+       *
+       * They were one string here until v5.2, which is the whole of the bug
+       * the owner photographed. `.mk-plan-amount` is `white-space: nowrap`
+       * so that an amount never breaks from its currency; glue the unit on
+       * and the unit cannot break away either. "$19 a month per brand" at
+       * 44px is wider than a 280px card, so it ran out of the card and over
+       * its neighbour, and "$29 a month + add-ons" did the same.
+       *
+       * `flex-wrap` as well as the split: the unit belongs beside the amount
+       * when it fits and under it when it does not, and neither case should
+       * depend on how long a future plan's unit is.
+       */}
+      <p
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "baseline",
+          columnGap: 8,
+          rowGap: 4,
+          margin: "18px 0 0",
+        }}
+      >
         <span className="mk-bidi mk-plan-amount" style={{ fontSize: 44 }}>
           {plan.price}
         </span>
+        {plan.period ? (
+          <span
+            className="mk-bidi"
+            style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: INK_55 }}
+          >
+            {plan.period}
+          </span>
+        ) : null}
       </p>
 
       {/*

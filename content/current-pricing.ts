@@ -1489,7 +1489,8 @@ export function currentPricingTeaser(locale: Locale): PricingTeaserCopy {
 
   const teaser = (card: PlanCard): PlanCopy => ({
     name: card.name,
-    price: card.period ? `${card.price} ${card.period}` : card.price,
+    price: card.price,
+    period: card.period,
     /* Four rows on the homepage, every row on /pricing: the teaser is an
        invitation to compare, not the comparison. */
     rows: card.rows.slice(0, 4),
