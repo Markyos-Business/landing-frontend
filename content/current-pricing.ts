@@ -27,8 +27,13 @@ export type BillingPlans = {
   currency: string;
   interval: "month";
   perBrand: boolean;
-  /** A brand without a plan: the account may own this many, with these editors. */
-  free: PlanLimits;
+  /**
+   * A brand without a plan: the account may own this many, with these editors.
+   * `publishedSites`: how many of the account's unpaid brands may have a live
+   * guideline site (the first one is free, with the badge). Absent on an older
+   * backend, which means none.
+   */
+  free: PlanLimits & { publishedSites?: number };
   types: Record<AccountType, { monthly: number; limits: PlanLimits }>;
 };
 
@@ -68,6 +73,8 @@ const copy = {
     share: "Share links",
     publish: "Publish the guideline site",
     draftOnly: "Draft only",
+    firstSiteFree: "First site free",
+    freeSiteNote: "The guideline site of one of your brands can go live free, with the badge.",
     site: "Guideline site",
     live: "Live for your client",
     badge: "“Made with Markyos” badge",
@@ -109,6 +116,8 @@ const copy = {
     share: "روابط المشاركة",
     publish: "نشر موقع الدليل",
     draftOnly: "مسودة فقط",
+    firstSiteFree: "الموقع الأول مجاني",
+    freeSiteNote: "يمكن نشر موقع دليل علامة واحدة من علاماتك مجاناً، مع الشارة.",
     site: "موقع الدليل",
     live: "منشور لعميلك",
     badge: "شارة «صُنع بماركيوس»",
@@ -190,11 +199,13 @@ function compareBlock(id: string | undefined, title: string | undefined, locale:
       ...figureRows,
       [c.build, c.yes, ...paid(c.yes)],
       [c.share, c.yes, ...paid(c.yes)],
-      [c.publish, c.draftOnly, ...paid(c.yes)],
+      [c.publish, plans?.free.publishedSites ? c.firstSiteFree : c.draftOnly, ...paid(c.yes)],
       [c.badge, c.shown, ...paid(c.removed)],
       [c.ai, c.firstFree, ...paid(c.firstFree)],
     ],
-    note: plans ? c.compareNote : `${c.compareNote} ${c.noFigures}`,
+    note: plans
+      ? [c.compareNote, plans.free.publishedSites ? c.freeSiteNote : ""].filter(Boolean).join(" ")
+      : `${c.compareNote} ${c.noFigures}`,
   };
 }
 
@@ -217,10 +228,12 @@ function audienceBlock(type: AccountType, id: string | undefined, title: string 
     head: ["", c.freeBrand, { text: c.plan(c.names[type]), strong: true }],
     rows: [
       ...figureRows,
-      [c.site, c.draftOnly, { text: c.live, strong: true }],
+      [c.site, plans?.free.publishedSites ? c.firstSiteFree : c.draftOnly, { text: c.live, strong: true }],
       [c.badge, c.shown, { text: c.removed, strong: true }],
     ],
-    note: plans ? c.audienceNote : `${c.audienceNote} ${c.noFigures}`,
+    note: plans
+      ? [c.audienceNote, plans.free.publishedSites ? c.freeSiteNote : ""].filter(Boolean).join(" ")
+      : `${c.audienceNote} ${c.noFigures}`,
   };
 }
 
