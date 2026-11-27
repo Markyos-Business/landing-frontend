@@ -43,11 +43,22 @@ export function Chooser({
   label: string;
   options: { label: string; target: string; note?: string }[];
 }) {
-  const [picked, setPicked] = useState<string | null>(null);
+  /*
+   * The pick is which chip, not which card.
+   *
+   * Two chips may honestly answer with the same card — on the companies tab
+   * "up to five" and "more than that" are both the Company plan, and what
+   * separates them is the note about the sixth editor. Keying the state on the
+   * target made them one chip in four different ways: a duplicate React key,
+   * both reading as checked, both holding the roving tab stop, and the second
+   * one's note unreachable because `find` stops at the first match.
+   */
+  const [picked, setPicked] = useState<number | null>(null);
   const rowRef = useRef<HTMLDivElement>(null);
 
-  const choose = (target: string) => {
-    setPicked(target);
+  const choose = (index: number) => {
+    setPicked(index);
+    const { target } = options[index];
 
     const tab = target.startsWith("tab:") ? target.slice(4) : null;
     if (tab) {
@@ -103,27 +114,27 @@ export function Chooser({
    */
   const move = (to: number) => {
     const next = (to + options.length) % options.length;
-    choose(options[next].target);
+    choose(next);
     rowRef.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[next]?.focus();
   };
 
-  const note = options.find((option) => option.target === picked)?.note;
+  const note = picked === null ? undefined : options[picked].note;
 
   return (
     <>
       <div ref={rowRef} role="radiogroup" aria-label={label} className="mk-choice-row mt-8">
         {options.map((option, i) => (
           <button
-            key={option.target}
+            /* The label, not the target: two chips may share a card, and no
+               chooser asks the same question twice. */
+            key={option.label}
             type="button"
             role="radio"
-            aria-checked={option.target === picked}
+            aria-checked={i === picked}
             /* Nothing is picked to begin with, so the first chip is the one
                the tab key reaches — the roving index a radio group wants. */
-            tabIndex={
-              picked === null ? (i === 0 ? 0 : -1) : option.target === picked ? 0 : -1
-            }
-            onClick={() => choose(option.target)}
+            tabIndex={picked === null ? (i === 0 ? 0 : -1) : i === picked ? 0 : -1}
+            onClick={() => choose(i)}
             onKeyDown={(event) => {
               const rtl = document.dir === "rtl";
               const keys: Record<string, number> = {
