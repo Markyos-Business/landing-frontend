@@ -267,7 +267,8 @@ export function currentPricingPage(locale: Locale): PageDoc {
     blocks: [
       {
         kind: "hero",
-        title: ar ? "ابنِ علامتك مجاناً. وادفع لكل علامة حين تشاركها." : "Build your brand free. Pay per brand when you share it.",
+        // Copy deck v5.2's headline; the figures stay the backend's.
+        title: ar ? "ابدأ مجاناً. ادفع حين يبدأ العمل." : "Start free. Pay when it's working.",
         lead: ar
           ? "أعدّ الاستراتيجية والهوية والدليل دون أن تدفع. وحين تريد مشاركة الدليل مع عميلك، اشترك شهرياً لتلك العلامة وحدها."
           : "Set up the strategy, identity and guideline without paying. When you share the guideline with your client, subscribe that one brand monthly.",
@@ -339,7 +340,9 @@ export function teaserPlans(locale: Locale, plans: BillingPlans | null): Pricing
     const plan = accountPlan(type, locale, plans);
     return {
       name: plan.name,
-      price: plan.price ? `${plan.price} ${plan.period}` : undefined,
+      // Amount and unit apart, so the card can wrap the unit under the amount.
+      price: plan.price,
+      period: plan.price ? plan.period : undefined,
       rows: plan.rows,
       line: plan.who ?? "",
       recommended: plan.recommended,

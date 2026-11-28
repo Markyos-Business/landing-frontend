@@ -663,6 +663,21 @@ export type PlanCopy = {
   name: string;
   /** Absent when the backend's plans could not be read; see current-pricing.ts. */
   price?: string;
+  /**
+   * The unit, kept out of the amount.
+   *
+   * It used to be glued onto the end of `price` by the teaser's own mapper,
+   * and the card sets `price` at 44px with `white-space: nowrap` so that an
+   * amount never breaks from its currency. That made the whole phrase
+   * unbreakable too: once v5.2 priced Company per brand, "$19 a month per
+   * brand" was one 44px line in a 280px card, and it hung out of the card
+   * and over the card beside it.
+   *
+   * Two fields, because the number and its unit are not the same size, the
+   * same weight or the same ink -- which is what the design system asks for
+   * in SS11, and what /pricing has always done with these same cards.
+   */
+  period?: string;
   /** Plan-shape rows: "Active projects: 3" / "Editors: 5". */
   rows: { label: string; value: string }[];
   line: string;
